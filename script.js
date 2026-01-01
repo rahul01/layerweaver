@@ -41,10 +41,34 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Auto slide change
-        setInterval(function() {
-            nextSlide();
-        }, 5000);
+        // Create and append navigation arrows
+        const testimonialSlider = document.querySelector('.testimonial-slider');
+        if (testimonialSlider) {
+            // Create previous arrow
+            const prevArrow = document.createElement('div');
+            prevArrow.className = 'testimonial-arrow testimonial-prev';
+            prevArrow.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            testimonialSlider.appendChild(prevArrow);
+            
+            // Create next arrow
+            const nextArrow = document.createElement('div');
+            nextArrow.className = 'testimonial-arrow testimonial-next';
+            nextArrow.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            testimonialSlider.appendChild(nextArrow);
+            
+            // Add click events to arrows
+            prevArrow.addEventListener('click', prevSlide);
+            nextArrow.addEventListener('click', nextSlide);
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                }
+            });
+        }
         
         function showSlide(index) {
             // Hide current slide
@@ -63,6 +87,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 nextIndex = 0;
             }
             showSlide(nextIndex);
+        }
+        
+        function prevSlide() {
+            let prevIndex = currentSlide - 1;
+            if (prevIndex < 0) {
+                prevIndex = slides.length - 1;
+            }
+            showSlide(prevIndex);
         }
     }
     

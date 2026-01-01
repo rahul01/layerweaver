@@ -711,6 +711,7 @@ section {
     max-width: 800px;
     margin: 0 auto;
     position: relative;
+    padding: 0 40px; /* Add space for the arrows */
 }
 
 .testimonial-slide {
@@ -748,6 +749,37 @@ section {
     display: flex;
     justify-content: center;
     margin-top: 30px;
+}
+
+.testimonial-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 5;
+}
+
+.testimonial-arrow:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.testimonial-prev {
+    left: -5px;
+}
+
+.testimonial-next {
+    right: -5px;
 }
 
 .dot {
