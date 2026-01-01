@@ -9,6 +9,7 @@ Thumbs.db
 
 # Editor directories and files
 .idea/
+.idea/firebender/
 .vscode/
 *.swp
 *.swo
