@@ -13,8 +13,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 const targetButton = document.querySelector(`.filter-btn[data-filter="${filterValue}"]`);
                 
                 if (targetButton) {
-                    // Trigger click on the target filter button
-                    targetButton.click();
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to target button
+                    targetButton.classList.add('active');
+                    
+                    // Filter gallery items
+                    galleryItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    
+                    // Re-initialize layout
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 100);
                 }
             }
         }
