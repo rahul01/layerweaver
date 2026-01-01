@@ -503,7 +503,7 @@ section {
 }
 
 .gallery-page {
-    padding: 20px 0 60px;
+    padding: 100px 0 60px; /* Increased top padding to account for fixed header */
 }
 
 .gallery-filters {
