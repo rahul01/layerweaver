@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get filter value
             const filterValue = button.getAttribute('data-filter');
             
+            // Update URL hash to store the filter selection
+            // This prevents losing the filter on page refresh
+            window.location.hash = `filter=${filterValue}`;
+            
             // Filter gallery items
             galleryItems.forEach(item => {
                 if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
