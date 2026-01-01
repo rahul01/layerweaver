@@ -460,12 +460,13 @@ section {
     break-inside: avoid;
     margin-bottom: 20px;
     display: block;
-    cursor: pointer;
+    cursor: default; /* Changed from pointer to default */
 }
 
 .gallery-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    /* Hover effects removed */
+    transform: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .gallery-item img {
@@ -476,7 +477,8 @@ section {
 }
 
 .gallery-item:hover img {
-    transform: scale(1.05);
+    /* Image hover effect removed */
+    transform: none;
 }
 
 .gallery-item.featured {
