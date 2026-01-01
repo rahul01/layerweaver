@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - LayerWeaver 3D Printing Studio</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="images/spider-fevicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="images/spider-fevicon.svg">
+    <meta name="theme-color" content="#A083D5">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo-container">
+                <img src="images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
+                <h1>LayerWeaver</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="gallery.html" class="active">Gallery</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#contact" class="btn-primary">Contact Us</a></li>
+                </ul>
+                <div class="hamburger">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section id="gallery-hero" class="hero hero-small">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1>Our <span class="brand-text">Gallery</span></h1>
+                <p>Explore our 3D printed creations and get inspired</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-page">
+        <div class="container">
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="figurine">Figurines</button>
+                <button class="filter-btn" data-filter="gadget">Gadgets</button>
+                <button class="filter-btn" data-filter="decor">Home Decor</button>
+                <button class="filter-btn" data-filter="art">Art Pieces</button>
+            </div>
+            
+            <div class="gallery-grid">
+                <!-- Column 1: Start with larger images -->
+                <div class="gallery-item featured" data-category="art">
+                    <picture>
+                        <source srcset="images/gallery/webp/PXL_20221210_145446678.webp" type="image/webp">
+                        <source srcset="images/gallery/PXL_20221210_145446678.jpg" type="image/jpeg">
+                        <img src="images/gallery/PXL_20221210_145446678.jpg" alt="Colorful 3D Printed Creation" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="gadget">
+                    <picture>
+                        <source srcset="images/gallery/webp/PXL_20251106_135840426.MP.webp" type="image/webp">
+                        <source srcset="images/gallery/PXL_20251106_135840426.MP.jpg" type="image/jpeg">
+                        <img src="images/gallery/PXL_20251106_135840426.MP.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="figurine">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251220_110512-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251220_110512-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251220_110512-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="decor">
+                    <picture>
+                        <source srcset="images/gallery/webp/PXL_20251216_052400181.webp" type="image/webp">
+                        <source srcset="images/gallery/PXL_20251216_052400181.jpg" type="image/jpeg">
+                        <img src="images/gallery/PXL_20251216_052400181.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="figurine">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251218_172614-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251218_172614-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251218_172614-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="gadget">
+                    <picture>
+                        <source srcset="images/gallery/PXL_20251214_024001474.MP-ANIMATION.gif" type="image/gif">
+                        <img src="images/gallery/PXL_20251214_024001474.MP-ANIMATION.gif" alt="3D Printing Animation" loading="lazy">
+                    </picture>
+                </div>
+                
+                <!-- Column 2: Mix of medium and small images -->
+                <div class="gallery-item" data-category="art">
+                    <picture>
+                        <source srcset="images/gallery/webp/IMG_20251219_143606885_HDR.webp" type="image/webp">
+                        <source srcset="images/gallery/IMG_20251219_143606885_HDR.jpg" type="image/jpeg">
+                        <img src="images/gallery/IMG_20251219_143606885_HDR.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="decor">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251221_144117-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251221_144117-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251221_144117-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="figurine">
+                    <picture>
+                        <source srcset="images/gallery/webp/PXL_20251128_054357294.webp" type="image/webp">
+                        <source srcset="images/gallery/PXL_20251128_054357294.jpg" type="image/jpeg">
+                        <img src="images/gallery/PXL_20251128_054357294.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="gadget">
+                    <picture>
+                        <source srcset="images/gallery/webp/IMG_20251220_174040191.webp" type="image/webp">
+                        <source srcset="images/gallery/IMG_20251220_174040191.jpg" type="image/jpeg">
+                        <img src="images/gallery/IMG_20251220_174040191.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                
+                <!-- Column 3: Larger images again -->
+                <div class="gallery-item" data-category="art">
+                    <picture>
+                        <source srcset="images/gallery/webp/PXL_20251206_082056716.MP.webp" type="image/webp">
+                        <source srcset="images/gallery/PXL_20251206_082056716.MP.jpg" type="image/jpeg">
+                        <img src="images/gallery/PXL_20251206_082056716.MP.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="decor">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251203_140116-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251203_140116-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251203_140116-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="figurine">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251216_101908-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251216_101908-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251216_101908-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="gadget">
+                    <picture>
+                        <source srcset="images/gallery/webp/PXL_20251201_053748139.webp" type="image/webp">
+                        <source srcset="images/gallery/PXL_20251201_053748139.jpg" type="image/jpeg">
+                        <img src="images/gallery/PXL_20251201_053748139.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                
+                <!-- Column 4: Finish with mix of sizes -->
+                <div class="gallery-item" data-category="decor">
+                    <picture>
+                        <source srcset="images/gallery/webp/IMG_20251225_153419967.webp" type="image/webp">
+                        <source srcset="images/gallery/IMG_20251225_153419967.jpg" type="image/jpeg">
+                        <img src="images/gallery/IMG_20251225_153419967.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="figurine">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251228_223938-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251228_223938-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251228_223938-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="art">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251212_180938-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251212_180938-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251212_180938-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="decor">
+                    <picture>
+                        <source srcset="images/gallery/webp/20251208_182851-COLLAGE.webp" type="image/webp">
+                        <source srcset="images/gallery/20251208_182851-COLLAGE.jpg" type="image/jpeg">
+                        <img src="images/gallery/20251208_182851-COLLAGE.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="gadget">
+                    <picture>
+                        <source srcset="images/gallery/webp/IMG_20251223_203146305.webp" type="image/webp">
+                        <source srcset="images/gallery/IMG_20251223_203146305.jpg" type="image/jpeg">
+                        <img src="images/gallery/IMG_20251223_203146305.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="figurine">
+                    <picture>
+                        <source srcset="images/gallery/webp/IMG_20251215_120251031.webp" type="image/webp">
+                        <source srcset="images/gallery/IMG_20251215_120251031.jpg" type="image/jpeg">
+                        <img src="images/gallery/IMG_20251215_120251031.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item" data-category="art">
+                    <picture>
+                        <source srcset="images/gallery/webp/PXL_20251229_160640582.MP.webp" type="image/webp">
+                        <source srcset="images/gallery/PXL_20251229_160640582.MP.jpg" type="image/jpeg">
+                        <img src="images/gallery/PXL_20251229_160640582.MP.jpg" alt="3D Printed Model" loading="lazy">
+                    </picture>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to bring your ideas to life?</h2>
+                <p>Contact us today to discuss your 3D printing project or request a custom quote</p>
+                <div class="cta-buttons">
+                    <a href="index.html#contact" class="btn-primary">Contact Us</a>
+                    <a href="https://wa.me/c/917558783018" class="btn-secondary" target="_blank">View Catalog <i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <img src="images/layerweaver-logo-white.svg" alt="LayerWeaver Logo" class="logo">
+                    <div class="footer-text">
+                        <h2>LayerWeaver</h2>
+                        <p>Affordable 3D Printing Solutions for Everyone</p>
+                    </div>
+                </div>
+                <div class="footer-right">
+                    <p>&copy; 2025 <span class="brand-text-small">LayerWeaver</span>. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="gallery.js"></script>
+</body>
+</html>

@@ -180,7 +180,7 @@ header .container {
     transition: width 0.3s ease;
 }
 
-.nav-links a:hover::after {
+.nav-links a:hover::after, .nav-links a.active::after {
     width: 100%;
 }
 
@@ -433,6 +433,18 @@ section {
     margin-top: 30px;
 }
 
+.gallery-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.view-all-container {
+    text-align: center;
+    margin-top: 40px;
+}
+
 .gallery-item {
     border-radius: 10px;
     overflow: hidden;
@@ -441,6 +453,7 @@ section {
     break-inside: avoid;
     margin-bottom: 20px;
     display: block;
+    cursor: pointer;
 }
 
 .gallery-item:hover {
@@ -475,6 +488,153 @@ section {
     margin: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     z-index: 1;
+}
+
+/* Gallery Page Styles */
+.hero-small {
+    padding: 80px 0;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.gallery-page {
+    padding: 60px 0;
+}
+
+.gallery-filters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+    background-color: var(--light);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background-color: var(--primary);
+    color: var(--light);
+}
+
+/* Lightbox Styles */
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    margin: auto;
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: 80vh;
+    display: block;
+    margin: 0 auto;
+}
+
+.lightbox-caption {
+    color: var(--light);
+    text-align: center;
+    padding: 10px 0;
+    font-size: 1.1rem;
+}
+
+.close-lightbox {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: var(--light);
+    font-size: 2.5rem;
+    cursor: pointer;
+}
+
+.lightbox-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+}
+
+.lightbox-prev, .lightbox-next {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: var(--light);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.lightbox-prev {
+    margin-left: -80px;
+}
+
+.lightbox-next {
+    margin-right: -80px;
+}
+
+.lightbox-prev:hover, .lightbox-next:hover {
+    background-color: rgba(160, 131, 213, 0.8);
+}
+
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, var(--primary) 0%, rgba(160, 131, 213, 0.8) 100%);
+    color: var(--light);
+    padding: 80px 0;
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 30px;
+    opacity: 0.9;
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 /* Process Section */
