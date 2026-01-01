@@ -498,16 +498,12 @@ section {
 }
 
 /* Gallery Page Styles */
-.hero-small {
-    padding: 80px 0;
-}
-
 .text-center {
     text-align: center;
 }
 
 .gallery-page {
-    padding: 60px 0;
+    padding: 20px 0 60px;
 }
 
 .gallery-filters {
