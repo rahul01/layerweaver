@@ -6,8 +6,10 @@
 # Display usage if no arguments are provided
 if [ $# -lt 3 ]; then
   echo "Usage: $0 <image_path> <rotation_angle> <output_dir>"
-  echo "Example: $0 images/design/clean/design-5.png 90 images/design/rotated"
+  echo "Example: $0 images/design/standard/design-5.png 90 images/design/rotated"
   echo "Rotation angle can be: 90, 180, 270 (clockwise degrees)"
+  echo "IMPORTANT: Now that images are standardized, you may want to use rotate_standard_image.sh instead."
+  echo "           Example: ./rotate_standard_image.sh design design-5.png 90"
   exit 1
 fi
 
@@ -49,3 +51,6 @@ fi
 echo "Rotation complete!"
 echo "Rotated image: $ROTATED_IMAGE"
 echo "WebP version: $ROTATED_WEBP"
+echo ""
+echo "Note: Since images are now in a standard structure, consider using:"
+echo "./rotate_standard_image.sh <category> <filename> <angle>"
