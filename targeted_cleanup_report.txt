@@ -1,0 +1,40 @@
+LayerWeaver Targeted Image Cleanup
+==================================
+
+Identifying unnecessary image directories...
+Identifying test and temporary images...
+The following directories will be removed:
+  /Users/rahul/StudioProjects/layerweaver/images/design/fixed
+    Contains       34 files
+  /Users/rahul/StudioProjects/layerweaver/image_backup_20260101_200614
+    Contains      126 files
+
+The following specific files will be removed:
+  /Users/rahul/StudioProjects/layerweaver/images/design/testimage.jpg
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 5.29.28 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.06.32 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.07.07 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.07.23 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.07.51 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.08.39 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.11.47 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.12.41 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.13.08 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.14.00 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.14.55 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.16.26 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.16.45 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.17.55 PM.png (not found)
+  /Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.18.31 PM.png (not found)
+
+REMOVING DIRECTORIES AND FILES...
+Creating backup in /Users/rahul/StudioProjects/layerweaver/image_backup_targeted_20260101_201336...
+Backed up: /Users/rahul/StudioProjects/layerweaver/images/design/fixed to /Users/rahul/StudioProjects/layerweaver/image_backup_targeted_20260101_201336/fixed
+Removed directory: /Users/rahul/StudioProjects/layerweaver/images/design/fixed
+Backed up: /Users/rahul/StudioProjects/layerweaver/image_backup_20260101_200614 to /Users/rahul/StudioProjects/layerweaver/image_backup_targeted_20260101_201336/image_backup_20260101_200614
+Removed directory: /Users/rahul/StudioProjects/layerweaver/image_backup_20260101_200614
+Backed up: /Users/rahul/StudioProjects/layerweaver/images/design/testimage.jpg to /Users/rahul/StudioProjects/layerweaver/image_backup_targeted_20260101_201336/images/design/
+Removed file: /Users/rahul/StudioProjects/layerweaver/images/design/testimage.jpg
+Removing empty directories...
+Empty directory cleanup complete.
+Cleanup complete. See /Users/rahul/StudioProjects/layerweaver/targeted_cleanup_report.txt for details.

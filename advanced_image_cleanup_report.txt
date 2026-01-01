@@ -1,0 +1,267 @@
+LayerWeaver Advanced Image Cleanup
+=================================
+
+Finding all images referenced in HTML files...
+Found      126 unique image references in HTML files.
+
+Finding all image files on disk...
+Found      248 image files on disk.
+
+Finding unused images...
+Found      248 unused image files:
+/Users/rahul/StudioProjects/layerweaver/images/corporate/PXL_20260101_112937926.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/IMG_20251206_185114417.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/Screenshot 2026-01-01 at 5.24.57 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/IMG_20251206_185114417.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/IMG_20251220_090636357.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/IMG_20251217_164910358.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/IMG_20260101_093541050.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/20251207_090320-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/PXL_20260101_112937926.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/PXL_20251010_062547012.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/Screenshot 2026-01-01 at 5.24.57 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/IMG_20251225_153501485.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/webp/PXL_20251216_052338486.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/20251207_090320-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/IMG_20260101_093541050.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/IMG_20251225_153501485.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/PXL_20251010_062547012.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/IMG_20251220_090636357.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/PXL_20251216_052338486.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/rotated/IMG_20251206_185114417.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/rotated/webp/IMG_20251206_185114417.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/rotated/webp/IMG_20251225_153501485.webp
+/Users/rahul/StudioProjects/layerweaver/images/corporate/rotated/IMG_20251225_153501485.jpg
+/Users/rahul/StudioProjects/layerweaver/images/corporate/IMG_20251217_164910358.jpg
+/Users/rahul/StudioProjects/layerweaver/images/workshop/webp/20251212_180938-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/workshop/webp/IMG_20251223_203155735.webp
+/Users/rahul/StudioProjects/layerweaver/images/workshop/webp/PXL_20250405_145233855.MP.webp
+/Users/rahul/StudioProjects/layerweaver/images/workshop/IMG_20251223_203155735.jpg
+/Users/rahul/StudioProjects/layerweaver/images/workshop/PXL_20250405_145233855.MP.jpg
+/Users/rahul/StudioProjects/layerweaver/images/workshop/20251212_180938-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/PXL_20260101_112730261.MP.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.12.41 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/testimage.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.06.32 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.08.39 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/PXL_20260101_113347578.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.07.51 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.14.55 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.14.00 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.13.08 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.13.08 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.16.26 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/PXL_20260101_112730261.MP.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.11.47 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.16.45 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.14.00 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.12.41 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/PXL_20260101_113347578.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.18.31 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.14.55 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.06.32 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 5.29.28 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.07.07 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.17.55 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.07.51 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.07.23 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/Screenshot 2026-01-01 at 7.08.39 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/webp/20251216_101908-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 5.29.28 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.11.47 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-13.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-12.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-10.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-11.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-15.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-14.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-16.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-17.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-2.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-3.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-1.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-4.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-5.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-14.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-2.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-3.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-15.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-8.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-12.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-4.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-5.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-13.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-9.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-6.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-10.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-11.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-7.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-16.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-17.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/webp/design-1.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-7.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-6.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-8.png
+/Users/rahul/StudioProjects/layerweaver/images/design/clean/design-9.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-13.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-12.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-10.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-11.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-15.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-14.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-16.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-17.jpg
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-2.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-3.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-1.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-4.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-5.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-14.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-2.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-3.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-15.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-8.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-12.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-4.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-5.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-13.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-9.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-6.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-10.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-11.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-7.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-16.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-17.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/webp/design-1.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-7.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-6.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-8.png
+/Users/rahul/StudioProjects/layerweaver/images/design/fixed/design-9.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.17.55 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.07.07 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.07.23 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.16.45 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.16.26 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/Screenshot 2026-01-01 at 7.18.31 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/design/rotated/webp/design-8.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/rotated/webp/design-6.webp
+/Users/rahul/StudioProjects/layerweaver/images/design/rotated/design-6.png
+/Users/rahul/StudioProjects/layerweaver/images/design/rotated/design-8.png
+/Users/rahul/StudioProjects/layerweaver/images/personalized/IMG_20251216_140411577.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/20251220_110512-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/IMG_20251206_185602219_HDR.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/Screenshot 2026-01-01 at 6.06.45 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/personalized/20251214_120432-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/IMG_20251219_143726761.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/IMG_20251206_185602219_HDR.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/20251214_120432-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/IMG_20251213_140023143.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/Screenshot 2026-01-01 at 6.06.45 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/PXL_20251203_122542597.MP.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/IMG_20251216_140411577.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/20251220_110512-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/webp/IMG_20251219_143726761.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-8.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-3.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-2.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-5.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-4.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-8.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-7.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-6.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/webp/personalized-1.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-6.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-7.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-5.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-4.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-1.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-3.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/clean/personalized-2.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/IMG_20251213_140023143.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/PXL_20251203_122542597.MP.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/rotated/IMG_20251216_140411577.jpg
+/Users/rahul/StudioProjects/layerweaver/images/personalized/rotated/webp/IMG_20251213_140023143.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/rotated/webp/IMG_20251216_140411577.webp
+/Users/rahul/StudioProjects/layerweaver/images/personalized/rotated/IMG_20251213_140023143.jpg
+/Users/rahul/StudioProjects/layerweaver/images/craft/PXL_20251126_112313042.MP.jpg
+/Users/rahul/StudioProjects/layerweaver/images/craft/PXL_20221212_145900932.PORTRAIT.jpg
+/Users/rahul/StudioProjects/layerweaver/images/craft/PXL_20260101_113211339.jpg
+/Users/rahul/StudioProjects/layerweaver/images/craft/PXL_20260101_113308898.jpg
+/Users/rahul/StudioProjects/layerweaver/images/craft/webp/PXL_20260101_113211339.webp
+/Users/rahul/StudioProjects/layerweaver/images/craft/webp/20251212_180938-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/craft/webp/PXL_20221210_145446678.webp
+/Users/rahul/StudioProjects/layerweaver/images/craft/webp/PXL_20260101_113308898.webp
+/Users/rahul/StudioProjects/layerweaver/images/craft/webp/PXL_20221212_145900932.PORTRAIT.webp
+/Users/rahul/StudioProjects/layerweaver/images/craft/webp/PXL_20251106_135840426.MP.webp
+/Users/rahul/StudioProjects/layerweaver/images/craft/webp/PXL_20251126_112313042.MP.webp
+/Users/rahul/StudioProjects/layerweaver/images/craft/PXL_20251106_135840426.MP.jpg
+/Users/rahul/StudioProjects/layerweaver/images/craft/20251212_180938-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/craft/PXL_20221210_145446678.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/PXL_20250302_121117012.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/PXL_20251229_160640582.MP.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/Screenshot 2026-01-01 at 5.26.52 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/IMG_20251127_194938438.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/Screenshot 2026-01-01 at 5.26.52 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/PXL_20251229_160640582.MP.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/IMG_20251220_090636357.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/Screenshot 2026-01-01 at 5.32.29 PM.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/IMG_20251127_194938438.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/IMG_20251225_153501485 (1).webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/PXL_20250302_121117012.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/IMG_20251220_174049589.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/IMG_20251215_120251031.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/20251208_182851-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/PXL_20251211_061802225.MP.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/webp/20251216_101908-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/Screenshot 2026-01-01 at 5.32.29 PM.png
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/IMG_20251220_174049589.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-4.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-5.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-7.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-6.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-2.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-3.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-1.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-11.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-7.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-6.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-10.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-1.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-3.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-2.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-5.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-9.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-8.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-12.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/webp/ondemand-4.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-12.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-11.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-10.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-8.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/clean/ondemand-9.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/IMG_20251215_120251031.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/20251216_101908-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/PXL_20251211_061802225.MP.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/IMG_20251220_090636357.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/20251208_182851-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/IMG_20251225_153501485 (1).jpg
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/rotated/webp/IMG_20251215_120251031.webp
+/Users/rahul/StudioProjects/layerweaver/images/ondemand/rotated/IMG_20251215_120251031.jpg
+/Users/rahul/StudioProjects/layerweaver/images/gallery/webp/20251207_090320-COLLAGE.webp
+/Users/rahul/StudioProjects/layerweaver/images/gallery/20251207_090320-COLLAGE.jpg
+/Users/rahul/StudioProjects/layerweaver/images/feedback/webp/feedback1.webp
+/Users/rahul/StudioProjects/layerweaver/images/feedback/webp/feedback4.webp
+/Users/rahul/StudioProjects/layerweaver/images/feedback/webp/feedback3.webp
+/Users/rahul/StudioProjects/layerweaver/images/feedback/webp/feedback2.webp
+/Users/rahul/StudioProjects/layerweaver/images/feedback/feedback3.png
+/Users/rahul/StudioProjects/layerweaver/images/feedback/feedback2.png
+/Users/rahul/StudioProjects/layerweaver/images/feedback/feedback1.png
+/Users/rahul/StudioProjects/layerweaver/images/feedback/feedback4.png
+
+Finding duplicate images (this may take some time)...
+Found        2 duplicate image files:
+# Note: Duplicate detection temporarily disabled due to macOS compatibility issues
+# To detect duplicates, use: find images/ -type f -exec md5 {} \; | sort | awk '{print ,}' | sort | uniq -D -f1
+
+This was a dry run. No files were removed.
+Run with --remove option to actually remove files.
