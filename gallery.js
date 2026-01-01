@@ -3,6 +3,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gallery filtering functionality
     const filterButtons = document.querySelectorAll('.filter-btn');
     const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    // Check for filter parameter in URL hash
+    function applyFilterFromHash() {
+        if (window.location.hash) {
+            const hashParams = window.location.hash.substring(1).split('=');
+            if (hashParams.length === 2 && hashParams[0] === 'filter') {
+                const filterValue = hashParams[1];
+                const targetButton = document.querySelector(`.filter-btn[data-filter="${filterValue}"]`);
+                
+                if (targetButton) {
+                    // Trigger click on the target filter button
+                    targetButton.click();
+                }
+            }
+        }
+    }
+    
+    // Apply filter from URL hash when page loads
+    applyFilterFromHash();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', applyFilterFromHash);
 
     // Add click event to filter buttons
     filterButtons.forEach(button => {
