@@ -1,38 +1,7 @@
 // Gallery page specific JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    // Gallery filtering functionality
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    // Gallery items
     const galleryItems = document.querySelectorAll('.gallery-item');
-
-    // Add click event to filter buttons
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            button.classList.add('active');
-            
-            // Get filter value
-            const filterValue = button.getAttribute('data-filter');
-            
-            // Filter gallery items
-            galleryItems.forEach(item => {
-                if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-            
-            // Re-initialize masonry layout after filtering
-            // This timeout allows the items to be hidden/shown before recalculating layout
-            setTimeout(() => {
-                // Force browser to recalculate layout
-                window.dispatchEvent(new Event('resize'));
-            }, 100);
-        });
-    });
     
     // Add lightbox functionality for gallery items
     const galleryImages = document.querySelectorAll('.gallery-item img');

@@ -503,31 +503,7 @@ section {
     padding: 60px 0;
 }
 
-.gallery-filters {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 40px;
-}
 
-.filter-btn {
-    background-color: var(--light);
-    border: 2px solid var(--primary);
-    color: var(--primary);
-    padding: 8px 20px;
-    border-radius: 30px;
-    font-family: var(--font-primary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-btn:hover, .filter-btn.active {
-    background-color: var(--primary);
-    color: var(--light);
-}
 
 /* Lightbox Styles */
 .lightbox {
