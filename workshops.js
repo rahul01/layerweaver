@@ -26,41 +26,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Syllabus download functionality was removed
     
-    // Enrollment form modal functionality
-    const enrollmentButtons = document.querySelectorAll('.open-enrollment-form');
-    const enrollmentModal = document.getElementById('enrollment-modal');
-    const closeModalButton = document.querySelector('.close-modal');
-    
-    // Open modal
-    enrollmentButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault();
-            enrollmentModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
-        });
-    });
-    
-    // Close modal
-    if (closeModalButton) {
-        closeModalButton.addEventListener('click', () => {
-            enrollmentModal.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Restore scrolling
-        });
-    }
-    
-    // Close modal when clicking outside of it
-    window.addEventListener('click', (event) => {
-        if (event.target === enrollmentModal) {
-            enrollmentModal.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Restore scrolling
-        }
-    });
-    
-    // Close modal with ESC key
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && enrollmentModal.classList.contains('active')) {
-            enrollmentModal.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Restore scrolling
-        }
-    });
+    // Enrollment modal functionality removed as it's now a separate page
 });
