@@ -485,18 +485,9 @@ section {
     position: relative;
 }
 
+/* Featured indicator dot removed */
 .gallery-item.featured::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 30px;
-    height: 30px;
-    background-color: var(--secondary);
-    border-radius: 50%;
-    margin: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+    display: none;
 }
 
 /* Gallery Page Styles */
