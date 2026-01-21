@@ -1062,6 +1062,36 @@ footer {
     transform: scale(1.05);
 }
 
+/* Multi-image layout for workshops */
+.course-card .course-image-multi {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.course-card .course-image-multi .image-half {
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.course-card .course-image-multi .image-half:first-child {
+    border-right: 2px solid white;
+}
+
+.course-card .course-image-multi .image-half img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.course-card:hover .course-image-multi .image-half img {
+    transform: scale(1.05);
+}
+
 .course-content {
     padding: 30px;
     flex: 1;
