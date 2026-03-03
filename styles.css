@@ -887,9 +887,79 @@ section {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* WhatsApp card and link styles for both home and connect page */
+.whatsapp-card .contact-icon {
+    background-color: rgba(37, 211, 102, 0.1);
+}
+
+.whatsapp-card .contact-icon i {
+    color: #25D366;
+}
+
+.whatsapp-card:hover {
+    border-color: #25D366;
+}
+
 .catalog-link:hover {
     background-color: var(--dark);
     color: var(--light);
+}
+
+.whatsapp-link {
+    background-color: #25D366;
+    color: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.whatsapp-link:hover {
+    background-color: #128C7E;
+    color: var(--light);
+}
+
+/* Instagram card and link styles for both home and connect page */
+.instagram-card .contact-icon {
+    background: linear-gradient(135deg, rgba(225, 48, 108, 0.1) 0%, rgba(228, 64, 95, 0.1) 100%);
+}
+
+.instagram-card .contact-icon i {
+    background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #F77737 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.instagram-card:hover {
+    border-color: #E4405F;
+}
+
+.instagram-link {
+    background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #F77737 100%);
+    color: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.instagram-link:hover {
+    opacity: 0.9;
+    color: var(--light);
+}
+
+/* Catalog card and link styles for home page */
+.catalog-card .contact-icon {
+    background-color: rgba(239, 207, 32, 0.1);
+}
+
+.catalog-card .contact-icon i {
+    color: var(--secondary);
+}
+
+.catalog-card:hover {
+    border-color: var(--secondary);
 }
 
 /* Footer */
@@ -1498,5 +1568,349 @@ footer {
 
     .course-card .course-image {
         height: 200px;
+    }
+}
+
+/* ================= CONNECT PAGE STYLES ================= */
+
+/* Connect Hero Section */
+.connect-hero {
+    padding: 170px 0 80px;
+    background-image: linear-gradient(135deg, rgba(160, 131, 213, 0.1) 0%, rgba(239, 207, 32, 0.1) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.connect-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.connect-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--dark);
+}
+
+.connect-header p {
+    font-size: 1.2rem;
+    color: var(--gray-medium);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Connect Cards Grid */
+.connect-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Individual Connect Cards */
+.connect-card {
+    background-color: var(--light);
+    border-radius: 20px;
+    padding: 50px 40px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid transparent;
+}
+
+.connect-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Card-specific border colors on hover */
+.whatsapp-card:hover {
+    border-color: #25D366;
+}
+
+.instagram-card:hover {
+    border-color: #E4405F;
+}
+
+.phone-card:hover {
+    border-color: var(--primary);
+}
+
+.catalog-card:hover {
+    border-color: var(--secondary);
+}
+
+/* Card Icons */
+.connect-card-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.connect-card-icon i {
+    font-size: 48px;
+}
+
+.whatsapp-card .connect-card-icon {
+    background-color: rgba(37, 211, 102, 0.1);
+}
+
+.whatsapp-card .connect-card-icon i {
+    color: #25D366;
+}
+
+.instagram-card .connect-card-icon {
+    background: linear-gradient(135deg, rgba(225, 48, 108, 0.1) 0%, rgba(228, 64, 95, 0.1) 100%);
+}
+
+.instagram-card .connect-card-icon i {
+    background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #F77737 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.phone-card .connect-card-icon {
+    background-color: rgba(160, 131, 213, 0.1);
+}
+
+.phone-card .connect-card-icon i {
+    color: var(--primary);
+}
+
+.catalog-card .connect-card-icon {
+    background-color: rgba(239, 207, 32, 0.1);
+}
+
+.catalog-card .connect-card-icon i {
+    color: var(--secondary);
+}
+
+/* Card Typography */
+.connect-card h2 {
+    font-size: 1.75rem;
+    margin-bottom: 15px;
+    color: var(--dark);
+}
+
+.connect-card p {
+    font-size: 1.05rem;
+    color: var(--gray-medium);
+    margin-bottom: 30px;
+    line-height: 1.6;
+    max-width: 280px;
+}
+
+/* Card Actions */
+.connect-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.connect-card-actions a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+/* Button Styles */
+.btn-catalog {
+    background-color: var(--secondary);
+    color: var(--dark);
+    border: none;
+}
+
+.btn-catalog:hover {
+    background-color: var(--dark);
+    color: var(--light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-instagram {
+    background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #F77737 100%);
+    color: var(--light);
+    border: none;
+}
+
+.btn-instagram:hover {
+    opacity: 0.9;
+    color: var(--light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-whatsapp {
+    background-color: #25D366;
+    color: var(--light);
+    border: none;
+}
+
+.btn-whatsapp:hover {
+    background-color: #128C7E;
+    color: var(--light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Make primary and secondary buttons in cards full width */
+.connect-card-actions .btn-primary,
+.connect-card-actions .btn-secondary {
+    width: 100%;
+}
+
+/* Quick Info Section */
+.quick-info {
+    padding: 80px 0;
+    background-color: var(--light);
+}
+
+.quick-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.quick-info-item {
+    text-align: center;
+    padding: 30px;
+}
+
+.quick-info-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: rgba(160, 131, 213, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.quick-info-icon i {
+    font-size: 28px;
+    color: var(--primary);
+}
+
+.quick-info-item h3 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: var(--dark);
+}
+
+.quick-info-item p {
+    font-size: 0.95rem;
+    color: var(--gray-medium);
+    margin-bottom: 0;
+}
+
+/* Active Navigation State - only for button-styled nav links */
+.nav-links a.btn-primary.active {
+    background-color: var(--dark);
+}
+
+/* Connect Page Responsive Styles */
+@media screen and (max-width: 992px) {
+    .connect-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .connect-card {
+        padding: 40px 30px;
+    }
+
+    .connect-card h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .connect-hero {
+        padding: 150px 0 60px;
+        min-height: auto;
+    }
+
+    .connect-header h1 {
+        font-size: 2.2rem;
+    }
+
+    .connect-header p {
+        font-size: 1.1rem;
+    }
+
+    .connect-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .connect-card {
+        padding: 35px 25px;
+    }
+
+    .connect-card-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 20px;
+    }
+
+    .connect-card-icon i {
+        font-size: 36px;
+    }
+
+    .quick-info-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .quick-info {
+        padding: 60px 0;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .connect-header h1 {
+        font-size: 1.9rem;
+    }
+
+    .connect-card {
+        padding: 30px 20px;
+    }
+
+    .connect-card h2 {
+        font-size: 1.35rem;
+    }
+
+    .connect-card p {
+        font-size: 1rem;
+    }
+
+    .connect-card-actions a {
+        padding: 12px 24px;
+        font-size: 0.9rem;
     }
 }

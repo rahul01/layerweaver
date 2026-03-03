@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enrollment Form - LayerWeaver 3D Printing Studio</title>
+    <title>Connect - LayerWeaver</title>
 
     <!-- Favicon -->
     <link rel="icon" href="../images/spider-fevicon.svg" type="image/svg+xml">
@@ -16,59 +16,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        body {
-            padding-top: 80px;
-            min-height: 100vh;
-        }
-        .enroll-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 10px 20px;
-        }
-
-        .form-container {
-            width: 100%;
-            padding: 0;
-            overflow: hidden;
-        }
-        .form-container iframe {
-            width: 100%;
-            height: 2100px; /* Fixed height to ensure form is fully displayed */
-            border: none;
-        }
-        .footer {
-            visibility: hidden;
-            display: none;
-        }
-
-         @media (min-width: 768px) {
-            .form-container {
-               height: 1800px; /* Aspect ratio for tablet (6:5) */
-            }
-            .footer {
-                visibility: visible;
-                display: flex;
-            }
-
-        }
-        .back-to-workshops {
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 10px;
-            color: var(--primary);
-            font-weight: 600;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .back-to-workshops i {
-            margin-right: 8px;
-        }
-        .back-to-workshops:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -84,7 +31,7 @@
                     <li><a href="../gallery.html">Gallery</a></li>
                     <li><a href="../workshops.html">Workshops</a></li>
                     <li><a href="../index.html#about">About</a></li>
-                    <li><a href="/layerweaver/connect/" class="btn-primary">Connect</a></li>
+                    <li><a href="/layerweaver/connect/" class="btn-primary active">Connect</a></li>
                 </ul>
                 <div class="hamburger">
                     <div class="bar"></div>
@@ -95,17 +42,60 @@
         </div>
     </header>
 
-    <div class="enroll-container">
-        <a href="../workshops.html#intro-to-3d-printing" class="back-to-workshops">
-            <i class="fa-solid fa-arrow-left"></i> Back to Workshop Details
-        </a>
+    <!-- Contact Section - Same layout as home page -->
+    <section id="contact" class="contact" style="padding-top: 170px;">
+        <div class="container">
+            <div class="contact-grid">
+                <!-- WhatsApp Card -->
+                <div class="contact-card whatsapp-card">
+                    <div class="contact-icon">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <h3>WhatsApp</h3>
+                    <p>Message us directly for inquiries and orders</p>
+                    <a href="https://wa.me/917558783018" class="contact-link whatsapp-link" target="_blank">
+                        <i class="fa-brands fa-whatsapp"></i> Message Us
+                    </a>
+                </div>
 
-        <div class="form-container">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf-fuo3vpeCpE1-9X_tNpF58EZS1p8XnXLy0Kp6e3QJJ3Ot0Q/viewform?embedded=true&usp=sf_link" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+                <!-- Instagram Card -->
+                <div class="contact-card instagram-card">
+                    <div class="contact-icon">
+                        <i class="fa-brands fa-instagram"></i>
+                    </div>
+                    <h3>Instagram</h3>
+                    <p>Follow us for latest creations and inspiration</p>
+                    <a href="https://instagram.com/thelayerweaver" class="contact-link instagram-link" target="_blank">
+                        <i class="fa-brands fa-instagram"></i> Follow
+                    </a>
+                </div>
+
+                <!-- Phone Card -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <h3>Phone</h3>
+                    <p>7558783018 <br/>call us for any urgent inquiries</p>
+                    <a href="tel:+917558783018" class="contact-link">Call Now</a>
+                </div>
+
+                <!-- Catalog Card -->
+                <div class="contact-card catalog-card">
+                    <div class="contact-icon">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3>Product Catalog</h3>
+                    <p>Browse our complete collection of 3D printed products</p>
+                    <a href="https://wa.me/c/917558783018" class="contact-link catalog-link" target="_blank">
+                        <i class="fa-solid fa-shopping-basket"></i> View Catalog
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <footer class="footer">
+    <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-left">
