@@ -1,0 +1,11 @@
+{
+  "name": "layerweaver",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build-shop": "node scripts/build-shop.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
