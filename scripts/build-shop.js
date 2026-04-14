@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SHOPIFY_DOMAIN = 'layerweaver-com.myshopify.com';
+const SHOPIFY_DOMAIN = 'shop.layerweaver.com';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '7f0eafeb115e99a4a917e044a1fb4125';
 const SITE_URL = 'https://www.layerweaver.com';
 
@@ -127,9 +127,6 @@ function shopHeaderHtml(base) {
                 <h1>LayerWeaver</h1>
             </a>
             <nav class="shop-nav">
-                <a href="https://${SHOPIFY_DOMAIN}/account" class="shop-nav-link" target="_blank">
-                    <i class="fa-solid fa-receipt"></i><span> My Orders</span>
-                </a>
                 <!-- cart.js injects cart icon here -->
             </nav>
         </div>
@@ -275,6 +272,7 @@ ${productCards}
 
     ${footerHtml(base)}
     ${swatchDataScript(products)}
+    <script src="auth.js"></script>
     <script src="cart.js"></script>
     <script src="wishlist.js"></script>
     <script src="${base}script.js"></script>
@@ -461,8 +459,80 @@ function generateProductPage(product) {
         });
     </script>
     ${swatchDataScript([product])}
+    <script src="${shopBase}auth.js"></script>
     <script src="${shopBase}cart.js"></script>
     <script src="${shopBase}wishlist.js"></script>
+    <script src="${base}script.js"></script>
+</body>
+</html>`;
+}
+
+// ── Account page (shop/account/index.html) ────────────────────────────────────
+// depth from root: 2  →  base = '../../'   shopBase = '../'
+
+function generateAccountPage() {
+  const base     = '../../';
+  const shopBase = '../';
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account – LayerWeaver</title>
+    <link rel="stylesheet" href="${base}styles.css">
+    <link rel="stylesheet" href="${shopBase}shop.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    ${shopHeaderHtml(base)}
+
+    <main class="account-page container">
+        <div id="account-loading" class="account-state">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <p>Loading your account…</p>
+        </div>
+
+        <div id="account-signin" class="account-state" style="display:none">
+            <i class="fa-regular fa-user"></i>
+            <h2>Sign in to view your account</h2>
+            <p>Access your order history and manage your wishlist across devices.</p>
+            <button id="account-signin-btn" class="btn-primary">
+                <i class="fa-solid fa-right-to-bracket"></i> Sign In
+            </button>
+        </div>
+
+        <div id="account-content" style="display:none">
+            <div class="account-hero">
+                <div class="account-user-info">
+                    <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
+                    <div>
+                        <h2 id="account-name">—</h2>
+                        <p id="account-email">—</p>
+                    </div>
+                </div>
+                <button id="account-logout-btn" class="btn-secondary">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+
+            <section class="account-orders-section">
+                <h3>Order History</h3>
+                <div id="account-orders">
+                    <div class="orders-empty">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <p>Loading orders…</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    ${footerHtml(base)}
+    <script src="${shopBase}auth.js"></script>
+    <script src="${shopBase}cart.js"></script>
+    <script src="${shopBase}wishlist.js"></script>
+    <script src="${shopBase}account.js"></script>
     <script src="${base}script.js"></script>
 </body>
 </html>`;
@@ -481,6 +551,11 @@ async function main() {
 
   fs.writeFileSync(path.join(shopDir, 'index.html'), generateShopIndex(products));
   console.log('Generated shop/index.html');
+
+  const accountDir = path.join(shopDir, 'account');
+  fs.mkdirSync(accountDir, { recursive: true });
+  fs.writeFileSync(path.join(accountDir, 'index.html'), generateAccountPage());
+  console.log('Generated shop/account/index.html');
 
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);

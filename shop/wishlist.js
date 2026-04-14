@@ -1,6 +1,6 @@
 /**
  * wishlist.js – LayerWeaver wishlist feature
- * Persists items in localStorage. Injects heart buttons, header icon, and drawer.
+ * Persists items in localStorage. Syncs to Shopify customer metafield when signed in.
  */
 (function () {
   const KEY = 'lw_wishlist';
@@ -23,14 +23,74 @@
 
   function addItem(item) {
     const items = load();
-    if (!items.some(i => i.handle === item.handle)) { items.push(item); save(items); }
+    if (!items.some(i => i.handle === item.handle)) {
+      items.push(item);
+      save(items);
+      syncToServer(items);
+    }
   }
 
-  function removeItem(handle) { save(load().filter(i => i.handle !== handle)); }
+  function removeItem(handle) {
+    const items = load().filter(i => i.handle !== handle);
+    save(items);
+    syncToServer(items);
+  }
 
   function toggle(item) {
     if (isWishlisted(item.handle)) { removeItem(item.handle); return false; }
     addItem(item); return true;
+  }
+
+  // ── Server sync ───────────────────────────────────────────────────────────
+
+  async function syncToServer(items) {
+    if (!window.LW_AUTH?.isLoggedIn()) return;
+    try {
+      await window.LW_AUTH.gql(`
+        mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+          metafieldsSet(metafields: $metafields) {
+            userErrors { field message }
+          }
+        }`, {
+        metafields: [{
+          namespace: 'wishlist',
+          key:       'items',
+          value:     JSON.stringify(items),
+          type:      'json',
+        }],
+      });
+    } catch (e) {
+      console.warn('[Wishlist] Sync to server failed:', e);
+    }
+  }
+
+  async function syncFromServer() {
+    if (!window.LW_AUTH?.isLoggedIn()) return;
+    try {
+      const data = await window.LW_AUTH.gql(`
+        query {
+          customer {
+            metafield(namespace: "wishlist", key: "items") {
+              value
+            }
+          }
+        }`);
+      const raw = data?.customer?.metafield?.value;
+      if (!raw) return;
+      const serverItems = JSON.parse(raw);
+      if (!Array.isArray(serverItems)) return;
+
+      const localItems = load();
+      const merged     = [...serverItems];
+      for (const item of localItems) {
+        if (!merged.some(i => i.handle === item.handle)) merged.push(item);
+      }
+      save(merged);
+      updateAllHearts();
+      updateBadge();
+    } catch (e) {
+      console.warn('[Wishlist] Sync from server failed:', e);
+    }
   }
 
   // ── Header icon ───────────────────────────────────────────────────────────
@@ -154,7 +214,6 @@
 
   function wireHeartButtons() {
     document.querySelectorAll('.wishlist-btn').forEach(btn => {
-      // Set initial state
       const handle = btn.dataset.handle;
       const active = isWishlisted(handle);
       btn.classList.toggle('active', active);
@@ -187,6 +246,14 @@
     injectDrawer();
     updateBadge();
     wireHeartButtons();
+
+    window.addEventListener('lw:auth-ready', async (e) => {
+      await syncFromServer();
+      if (e.detail?.justLoggedIn) {
+        updateAllHearts();
+        updateBadge();
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

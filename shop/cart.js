@@ -3,7 +3,7 @@
  * Uses Storefront API to manage cart. Injects cart icon + drawer into the page.
  */
 (function () {
-  const DOMAIN = 'layerweaver-com.myshopify.com';
+  const DOMAIN = 'shop.layerweaver.com';
   const TOKEN  = '7f0eafeb115e99a4a917e044a1fb4125';
   const API    = `https://${DOMAIN}/api/2025-01/graphql.json`;
   const KEY    = 'lw_cart_id';
