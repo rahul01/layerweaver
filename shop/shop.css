@@ -1125,3 +1125,35 @@
         padding: 3px 7px;
     }
 }
+
+/* ------- Shop Footer Nav ------- */
+.footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.footer-nav a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+
+.footer-nav a:hover {
+    color: var(--primary);
+}
+
+@media (max-width: 600px) {
+    .footer-nav {
+        gap: 6px 14px;
+    }
+
+    .footer-nav a {
+        font-size: 0.8rem;
+    }
+}

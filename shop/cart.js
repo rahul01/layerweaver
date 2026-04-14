@@ -144,7 +144,7 @@
           <span>Total</span>
           <span id="cart-total-price"></span>
         </div>
-        <a id="cart-checkout-btn" class="btn-primary" target="_blank">
+        <a id="cart-checkout-btn" class="btn-primary">
           Checkout <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>`;
