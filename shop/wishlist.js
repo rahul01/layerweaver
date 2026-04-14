@@ -5,6 +5,11 @@
 (function () {
   const KEY = 'lw_wishlist';
 
+  // Derive shop root from current URL (same approach as cart.js)
+  const _path     = window.location.pathname;
+  const _shopIdx  = _path.indexOf('/shop/');
+  const SHOP_ROOT = _shopIdx !== -1 ? _path.substring(0, _shopIdx + 6) : '/shop/';
+
   // ── Storage helpers ───────────────────────────────────────────────────────
 
   function load() {
@@ -95,7 +100,7 @@
     }
 
     body.innerHTML = items.map(item => `
-      <a class="wishlist-item" href="${item.url}" data-handle="${item.handle}">
+      <a class="wishlist-item" href="${SHOP_ROOT}products/${item.handle}/" data-handle="${item.handle}">
         <div class="wishlist-item-image">
           ${item.image ? `<img src="${item.image}" alt="${item.title}">` : '<i class="fa-solid fa-cube"></i>'}
         </div>
