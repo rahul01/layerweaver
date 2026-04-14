@@ -155,7 +155,7 @@ function footerHtml(base) {
                     <a href="${base}gallery.html">Gallery</a>
                     <a href="${base}workshop/">Workshops</a>
                     <a href="${base}#about">About</a>
-                    <a href="${base}connect/">Connect</a>
+                    <a href="${base}connect/">Contact Us</a>
                 </nav>
                 <div class="footer-right">
                     <p>&copy; 2025 <span class="brand-text-small">LayerWeaver</span>. All rights reserved.</p>
