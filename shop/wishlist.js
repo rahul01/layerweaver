@@ -95,22 +95,23 @@
     }
 
     body.innerHTML = items.map(item => `
-      <div class="wishlist-item" data-handle="${item.handle}">
+      <a class="wishlist-item" href="${item.url}" data-handle="${item.handle}">
         <div class="wishlist-item-image">
           ${item.image ? `<img src="${item.image}" alt="${item.title}">` : '<i class="fa-solid fa-cube"></i>'}
         </div>
         <div class="wishlist-item-info">
           <p class="wishlist-item-title">${item.title}</p>
           <p class="wishlist-item-price">${item.price}</p>
-          <a href="${item.url}" class="wishlist-view-link">View product</a>
         </div>
         <button class="wishlist-remove-btn" data-handle="${item.handle}" aria-label="Remove from wishlist">
           <i class="fa-solid fa-trash"></i>
         </button>
-      </div>`).join('');
+      </a>`).join('');
 
     body.querySelectorAll('.wishlist-remove-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         removeItem(btn.dataset.handle);
         updateAllHearts();
         updateBadge();

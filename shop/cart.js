@@ -8,6 +8,11 @@
   const API    = `https://${DOMAIN}/api/2025-01/graphql.json`;
   const KEY    = 'lw_cart_id';
 
+  // Derive the path to shop/ root from the current page URL
+  const path     = window.location.pathname;
+  const shopIdx  = path.indexOf('/shop/');
+  const SHOP_ROOT = shopIdx !== -1 ? path.substring(0, shopIdx + 6) : '/shop/';
+
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   function fmt(amount, code) {
@@ -182,19 +187,21 @@
         : '';
       return `
         <div class="cart-line" data-line-id="${line.id}">
-          <div class="line-image">${img}</div>
-          <div class="line-info">
-            <p class="line-title">${v.product.title}</p>
-            ${variantLabel}
-            <p class="line-price">${price}</p>
-            <div class="line-qty">
-              <button class="qty-btn qty-dec" data-line-id="${line.id}" data-qty="${line.quantity}">−</button>
-              <span>${line.quantity}</span>
-              <button class="qty-btn qty-inc" data-line-id="${line.id}" data-qty="${line.quantity}">+</button>
-              <button class="remove-btn" data-line-id="${line.id}" aria-label="Remove">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+          <a class="cart-line-link" href="${SHOP_ROOT}products/${v.product.handle}/">
+            <div class="line-image">${img}</div>
+            <div class="line-info">
+              <p class="line-title">${v.product.title}</p>
+              ${variantLabel}
+              <p class="line-price">${price}</p>
             </div>
+          </a>
+          <div class="line-qty">
+            <button class="qty-btn qty-dec" data-line-id="${line.id}" data-qty="${line.quantity}">−</button>
+            <span>${line.quantity}</span>
+            <button class="qty-btn qty-inc" data-line-id="${line.id}" data-qty="${line.quantity}">+</button>
+            <button class="remove-btn" data-line-id="${line.id}" aria-label="Remove">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </div>
         </div>`;
     }).join('');
@@ -242,9 +249,46 @@
   function setAddBtnLoading(btn, loading) {
     if (!btn) return;
     btn.disabled = loading;
-    btn.innerHTML = loading
-      ? '<i class="fa-solid fa-spinner fa-spin"></i> Adding…'
-      : '<i class="fa-solid fa-bag-shopping"></i> Add to Cart';
+    if (loading) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding…';
+  }
+
+  // Build variantGid → qty map from current cart
+  function cartQtyMap() {
+    if (!cart) return {};
+    const map = {};
+    cart.lines.edges.forEach(e => { map[e.node.merchandise.id] = e.node.quantity; });
+    return map;
+  }
+
+  // Sync all Add to Cart buttons on the page with current cart state
+  function updateCartBtns() {
+    const qtyMap = cartQtyMap();
+
+    document.querySelectorAll('.listing-add-to-cart').forEach(btn => {
+      const qty = qtyMap[btn.dataset.variantGid];
+      if (qty) {
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> In Cart (${qty})`;
+        btn.classList.add('btn-in-cart');
+      } else {
+        btn.innerHTML = 'Add to Cart';
+        btn.classList.remove('btn-in-cart');
+      }
+    });
+
+    // Product detail page button
+    const addBtn = document.getElementById('add-to-cart-btn');
+    if (addBtn) {
+      const activeVariant = document.querySelector('.variant-btn.active');
+      const gid = activeVariant ? activeVariant.dataset.variantGid : addBtn.dataset.variantGid;
+      const qty = qtyMap[gid];
+      if (qty) {
+        addBtn.innerHTML = `<i class="fa-solid fa-check"></i> In Cart (${qty})`;
+        addBtn.classList.add('btn-in-cart');
+      } else {
+        addBtn.innerHTML = 'Add to Cart';
+        addBtn.classList.remove('btn-in-cart');
+      }
+    }
   }
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -258,7 +302,6 @@
         try {
           cart = await addLine(cartId, variantGid, qty);
         } catch {
-          // Cart may have expired — create fresh
           cart = await createCart(variantGid, qty);
           saveCartId(cart.id);
         }
@@ -268,7 +311,7 @@
       }
       updateBadge();
       renderCart();
-      openDrawer();
+      updateCartBtns();
     } catch (err) {
       console.error('Add to cart failed:', err);
       alert('Could not add to cart. Please try again.');
@@ -284,6 +327,7 @@
       cart = await updateLine(cart.id, lineId, newQty);
       updateBadge();
       renderCart();
+      updateCartBtns();
     } finally {
       setDrawerLoading(false);
     }
@@ -295,6 +339,7 @@
       cart = await removeLine(cart.id, lineId);
       updateBadge();
       renderCart();
+      updateCartBtns();
     } finally {
       setDrawerLoading(false);
     }
@@ -318,6 +363,11 @@
         : addBtn.dataset.variantGid;
       if (variantGid) handleAddToCart(variantGid);
     });
+
+    // Update button state when variant changes
+    document.querySelectorAll('.variant-btn').forEach(btn => {
+      btn.addEventListener('click', () => updateCartBtns());
+    });
   }
 
   // ── Wire up listing page "Add to Cart" buttons ────────────────────────────
@@ -331,8 +381,6 @@
         swatch.classList.add('active');
         const addBtn = card.querySelector('.listing-add-to-cart');
         if (addBtn) addBtn.dataset.variantGid = swatch.dataset.variantGid;
-        const buyNow = card.querySelector('.listing-buy-now');
-        if (buyNow) buyNow.href = `https://${DOMAIN}/cart/${swatch.dataset.variantId}:1`;
       });
     });
 
@@ -340,7 +388,6 @@
       btn.addEventListener('click', async () => {
         const variantGid = btn.dataset.variantGid;
         if (!variantGid) return;
-        const orig = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding…';
         try {
@@ -354,13 +401,12 @@
           }
           updateBadge();
           renderCart();
-          openDrawer();
+          updateCartBtns();
         } catch (err) {
           console.error('Add to cart failed:', err);
           alert('Could not add to cart. Please try again.');
         } finally {
           btn.disabled = false;
-          btn.innerHTML = orig;
         }
       });
     });
@@ -383,6 +429,7 @@
 
     updateBadge();
     renderCart();
+    updateCartBtns();
     wireProductPage();
     wireListingPage();
   }

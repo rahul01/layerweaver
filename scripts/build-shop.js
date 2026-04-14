@@ -128,7 +128,7 @@ function shopHeaderHtml(base) {
             </a>
             <nav class="shop-nav">
                 <a href="https://${SHOPIFY_DOMAIN}/account" class="shop-nav-link" target="_blank">
-                    <i class="fa-solid fa-box"></i> My Orders
+                    <i class="fa-solid fa-receipt"></i><span> My Orders</span>
                 </a>
                 <!-- cart.js injects cart icon here -->
             </nav>
@@ -234,13 +234,8 @@ function generateShopIndex(products) {
                     <div class="product-card-actions-row">
                         <button class="listing-add-to-cart"
                                 data-variant-gid="${firstVariant.id}">
-                            <i class="fa-solid fa-bag-shopping"></i> Add to Cart
+                            Add to Cart
                         </button>
-                        <a class="listing-buy-now"
-                           href="https://${SHOPIFY_DOMAIN}/cart/${getNumericId(firstVariant.id)}:1"
-                           target="_blank">
-                            <i class="fa-solid fa-bolt"></i> Buy Now
-                        </a>
                     </div>
                 </div>`
               : '<span class="btn-disabled">Sold Out</span>'
@@ -396,14 +391,8 @@ function generateProductPage(product) {
                         <button id="add-to-cart-btn"
                                 class="btn-primary add-to-cart-btn"
                                 data-variant-gid="${firstAvailable.id}">
-                            <i class="fa-solid fa-bag-shopping"></i> Add to Cart
+                            Add to Cart
                         </button>
-                        <a id="buy-now-btn"
-                           href="https://${SHOPIFY_DOMAIN}/cart/${getNumericId(firstAvailable.id)}:1"
-                           class="btn-secondary buy-now-btn"
-                           target="_blank">
-                            <i class="fa-solid fa-bolt"></i> Buy Now
-                        </a>
                         <button class="wishlist-btn btn-secondary wishlist-page-btn"
                                 data-handle="${product.handle}"
                                 data-title="${product.title}"
@@ -438,8 +427,6 @@ function generateProductPage(product) {
                 document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 document.getElementById('product-price').textContent = btn.dataset.price;
-                const buyNow = document.getElementById('buy-now-btn');
-                if (buyNow) buyNow.href = 'https://${SHOPIFY_DOMAIN}/cart/' + btn.dataset.variantId + ':1';
                 const label = document.getElementById('selected-variant-label');
                 if (label) label.textContent = btn.title || btn.textContent.trim();
                 // Swap main image
