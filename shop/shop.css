@@ -210,7 +210,9 @@
 }
 
 .listing-add-to-cart.btn-in-cart,
-.add-to-cart-btn.btn-in-cart {
+.add-to-cart-btn.btn-in-cart,
+.product-card-actions .listing-add-to-cart.btn-in-cart,
+.product-actions .add-to-cart-btn.btn-in-cart {
     background-color: var(--primary);
     color: #fff;
 }
