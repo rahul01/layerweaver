@@ -46,19 +46,20 @@
   async function syncToServer(items) {
     if (!window.LW_AUTH?.isLoggedIn()) return;
     try {
-      await window.LW_AUTH.gql(`
-        mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
-          metafieldsSet(metafields: $metafields) {
+      const ownerId = JSON.stringify(window.LW_AUTH.getCustomer()?.id);
+      const value   = JSON.stringify(JSON.stringify(items));
+      const result  = await window.LW_AUTH.gql(`
+        mutation {
+          metafieldsSet(metafields: [{
+            ownerId:   ${ownerId}
+            namespace: "wishlist"
+            key:       "items"
+            type:      "json"
+            value:     ${value}
+          }]) {
             userErrors { field message }
           }
-        }`, {
-        metafields: [{
-          namespace: 'wishlist',
-          key:       'items',
-          value:     JSON.stringify(items),
-          type:      'json',
-        }],
-      });
+        }`);
     } catch (e) {
       console.warn('[Wishlist] Sync to server failed:', e);
     }
@@ -76,16 +77,18 @@
           }
         }`);
       const raw = data?.customer?.metafield?.value;
-      if (!raw) return;
+
+      if (!raw) {
+        // No server data yet — push local items up so they aren't lost
+        const localItems = load();
+        if (localItems.length) syncToServer(localItems);
+        return;
+      }
       const serverItems = JSON.parse(raw);
       if (!Array.isArray(serverItems)) return;
 
-      const localItems = load();
-      const merged     = [...serverItems];
-      for (const item of localItems) {
-        if (!merged.some(i => i.handle === item.handle)) merged.push(item);
-      }
-      save(merged);
+      // Server is source of truth — replace local entirely
+      save(serverItems);
       updateAllHearts();
       updateBadge();
     } catch (e) {
@@ -241,19 +244,25 @@
 
   // ── Boot ──────────────────────────────────────────────────────────────────
 
+  async function onAuthReady(justLoggedIn) {
+    await syncFromServer();
+    if (justLoggedIn) {
+      updateAllHearts();
+      updateBadge();
+    }
+  }
+
   function init() {
     injectHeaderIcon();
     injectDrawer();
     updateBadge();
     wireHeartButtons();
 
-    window.addEventListener('lw:auth-ready', async (e) => {
-      await syncFromServer();
-      if (e.detail?.justLoggedIn) {
-        updateAllHearts();
-        updateBadge();
-      }
-    });
+    if (window.LW_AUTH) {
+      onAuthReady(false);
+    } else {
+      window.addEventListener('lw:auth-ready', (e) => onAuthReady(e.detail?.justLoggedIn), { once: true });
+    }
   }
 
   if (document.readyState === 'loading') {

@@ -11,7 +11,7 @@
   const BASE       = `https://shopify.com/authentication/${SHOP_ID}`;
   const AUTH_URL   = `${BASE}/oauth/authorize`;
   const TOKEN_URL  = `${BASE}/oauth/token`;
-  const GQL_URL    = 'https://account.layerweaver.com/customer/api/2025-01/graphql';
+  const GQL_URL    = 'https://account.layerweaver.com/customer/api/unstable/graphql';
   const LOGOUT_URL = `${BASE}/logout`;
 
   const K_TOKEN    = 'lw_ca_token';
@@ -159,7 +159,6 @@
       });
       const data = await res.json();
       if (!data.access_token) { console.error('[Auth] Token exchange failed', data); return false; }
-      console.log('[Auth] Token type:', data.token_type, '| access_token prefix:', data.access_token?.substring(0, 12));
       saveTokens(data);
     } catch (e) { console.error('[Auth] Token exchange error', e); return false; }
 
@@ -184,6 +183,7 @@
     try {
       const payload = JSON.parse(atob(idToken.split('.')[1]));
       return {
+        id:        payload.sub ? `gid://shopify/Customer/${payload.sub}` : null,
         firstName: payload.given_name  || payload.firstName || '',
         lastName:  payload.family_name || payload.lastName  || '',
         email:     payload.email       || '',
