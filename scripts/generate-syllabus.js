@@ -228,7 +228,7 @@ const html = `<!DOCTYPE html>
 
 <div class="footer">
   <span>LayerWeaver 3D Printing Studio · layerweaver.com</span>
-  <span>Summer Camp Syllabus 2025</span>
+  <span>Summer Camp Syllabus 2026</span>
 </div>
 
 </body>
@@ -336,7 +336,7 @@ const htmlWeekend = `<!DOCTYPE html>
 
 <div class="footer">
   <span>LayerWeaver 3D Printing Studio - layerweaver.com</span>
-  <span>Weekend Workshop Syllabus 2025</span>
+  <span>Weekend Workshop Syllabus 2026</span>
 </div>
 
 </body>
