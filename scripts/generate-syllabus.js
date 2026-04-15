@@ -84,10 +84,14 @@ const html = `<!DOCTYPE html>
 
   /* Sessions */
   .sessions { }
+  .sessions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
   .session {
     border: 1px solid #e8e0f5;
     border-radius: 6px;
-    margin-bottom: 6px;
     overflow: hidden;
   }
   .session-header {
@@ -165,6 +169,7 @@ const html = `<!DOCTYPE html>
 
 <div class="sessions">
   <div class="section-title">What Happens Each Day</div>
+  <div class="sessions-grid">
 
   <div class="session">
     <div class="session-header">
@@ -262,6 +267,7 @@ const html = `<!DOCTYPE html>
     </div>
   </div>
 
+  </div>
 </div>
 
 <div class="footer">
