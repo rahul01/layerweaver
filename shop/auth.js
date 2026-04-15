@@ -196,6 +196,9 @@
   function logout() {
     const idToken = getIdToken();
     clearTokens();
+    localStorage.removeItem('lw_wishlist');
+    localStorage.removeItem('lw_cart_id');
+    localStorage.removeItem('lw_cart_qty');
     const params = new URLSearchParams({ post_logout_redirect_uri: REDIRECT_URI });
     if (idToken) params.set('id_token_hint', idToken);
     window.location.href = `${LOGOUT_URL}?${params}`;
@@ -210,7 +213,7 @@
     const btn = document.createElement('button');
     btn.id = 'auth-btn';
     btn.setAttribute('aria-label', 'Account');
-    btn.innerHTML = `<i class="fa-regular fa-user"></i><span class="auth-label">Sign In</span>`;
+    btn.innerHTML = `<i class="fa-regular fa-user"></i>`;
     btn.addEventListener('click', () => {
       // Always navigate to account page — sign in / sign out handled there
       const p       = window.location.pathname;
@@ -230,18 +233,15 @@
     if (!btn) return;
     const loggedIn = isLoggedIn();
     const icon     = btn.querySelector('i');
-    const label    = btn.querySelector('.auth-label');
     if (loggedIn) {
       icon.className = 'fa-solid fa-user';
       btn.classList.add('signed-in');
-      const customer    = getCustomer();
-      label.textContent = customer?.firstName ? `Hi, ${customer.firstName}` : 'Account';
-      btn.title         = 'My Account';
+      const customer = getCustomer();
+      btn.title      = customer?.firstName ? `Hi, ${customer.firstName}` : 'My Account';
     } else {
       icon.className = 'fa-regular fa-user';
       btn.classList.remove('signed-in');
-      label.textContent = 'Sign In';
-      btn.title         = '';
+      btn.title      = 'Sign In';
     }
   }
 

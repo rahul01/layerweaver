@@ -95,8 +95,10 @@
 
   let cart = null;
 
+  const KEY_QTY = 'lw_cart_qty';
   function saveCartId(id) { localStorage.setItem(KEY, id); }
   function loadCartId()   { return localStorage.getItem(KEY); }
+  function loadCachedQty(){ return parseInt(localStorage.getItem(KEY_QTY) || '0'); }
 
   // ── DOM: cart icon in header ───────────────────────────────────────────────
 
@@ -104,10 +106,11 @@
     const nav = document.querySelector('header nav');
     if (!nav || document.getElementById('cart-icon-btn')) return;
 
+    const qty = loadCachedQty();
     const btn = document.createElement('button');
     btn.id = 'cart-icon-btn';
     btn.setAttribute('aria-label', 'Open cart');
-    btn.innerHTML = `<i class="fa-solid fa-bag-shopping"></i><span class="cart-badge" id="cart-badge" style="display:none">0</span>`;
+    btn.innerHTML = `<i class="fa-solid fa-bag-shopping"></i><span class="cart-badge" id="cart-badge" style="display:${qty > 0 ? 'flex' : 'none'}">${qty}</span>`;
     btn.addEventListener('click', openDrawer);
     nav.appendChild(btn);
   }
@@ -116,6 +119,7 @@
     const badge = document.getElementById('cart-badge');
     if (!badge) return;
     const qty = cart ? cart.totalQuantity : 0;
+    localStorage.setItem(KEY_QTY, qty);
     badge.textContent = qty;
     badge.style.display = qty > 0 ? 'flex' : 'none';
   }
@@ -133,6 +137,7 @@
     drawer.id = 'cart-drawer';
     drawer.innerHTML = `
       <div class="cart-header">
+        <a href="${SHOP_ROOT}" class="drawer-back-link">← Back to Shop</a>
         <h3>Your Cart</h3>
         <button id="cart-close" aria-label="Close cart">
           <i class="fa-solid fa-xmark"></i>
@@ -304,10 +309,12 @@
         } catch {
           cart = await createCart(variantGid, qty);
           saveCartId(cart.id);
+          syncCartIdToServer(cart.id);
         }
       } else {
         cart = await createCart(variantGid, qty);
         saveCartId(cart.id);
+        syncCartIdToServer(cart.id);
       }
       updateBadge();
       renderCart();
@@ -394,10 +401,11 @@
           const cartId = loadCartId();
           if (cartId) {
             try { cart = await addLine(cartId, variantGid, 1); }
-            catch { cart = await createCart(variantGid, 1); saveCartId(cart.id); }
+            catch { cart = await createCart(variantGid, 1); saveCartId(cart.id); syncCartIdToServer(cart.id); }
           } else {
             cart = await createCart(variantGid, 1);
             saveCartId(cart.id);
+            syncCartIdToServer(cart.id);
           }
           updateBadge();
           renderCart();
@@ -410,6 +418,84 @@
         }
       });
     });
+  }
+
+  // ── Cart sync ──────────────────────────────────────────────────────────────
+
+  async function syncCartIdToServer(cartId) {
+    if (!window.LW_AUTH?.isLoggedIn()) return;
+    try {
+      const ownerId = JSON.stringify(window.LW_AUTH.getCustomer()?.id);
+      const value   = JSON.stringify(JSON.stringify(cartId));
+      await window.LW_AUTH.gql(`
+        mutation {
+          metafieldsSet(metafields: [{
+            ownerId:   ${ownerId}
+            namespace: "lw_cart"
+            key:       "active"
+            type:      "json"
+            value:     ${value}
+          }]) {
+            userErrors { field message }
+          }
+        }`);
+    } catch (e) {
+      console.warn('[Cart] Sync cart ID to server failed:', e);
+    }
+  }
+
+  async function syncCartFromServer() {
+    if (!window.LW_AUTH?.isLoggedIn()) return;
+    try {
+      const data = await window.LW_AUTH.gql(`
+        query {
+          customer {
+            metafield(namespace: "lw_cart", key: "active") {
+              value
+            }
+          }
+        }`);
+      const raw = data?.customer?.metafield?.value;
+      const serverCartId = raw ? JSON.parse(raw) : null;
+
+      if (!serverCartId) {
+        const localCartId = loadCartId();
+        if (localCartId) syncCartIdToServer(localCartId);
+        return;
+      }
+
+      const localCartId = loadCartId();
+      if (serverCartId === localCartId) return;
+
+      try {
+        const serverCart = await fetchCart(serverCartId);
+        if (serverCart && serverCart.lines.edges.length > 0) {
+          if (localCartId && localCartId !== serverCartId) {
+            try {
+              const localCart = await fetchCart(localCartId);
+              if (localCart) {
+                for (const edge of localCart.lines.edges) {
+                  const v = edge.node.merchandise;
+                  serverCart && await addLine(serverCartId, v.id, edge.node.quantity)
+                    .then(c => { cart = c; }).catch(() => {});
+                }
+              }
+            } catch { /* local cart gone — ignore */ }
+          }
+          saveCartId(serverCartId);
+          cart = await fetchCart(serverCartId);
+          updateBadge();
+          renderCart();
+          updateCartBtns();
+        } else if (localCartId) {
+          syncCartIdToServer(localCartId);
+        }
+      } catch {
+        if (localCartId) syncCartIdToServer(localCartId);
+      }
+    } catch (e) {
+      console.warn('[Cart] Sync cart from server failed:', e);
+    }
   }
 
   // ── Boot ──────────────────────────────────────────────────────────────────
@@ -432,6 +518,13 @@
     updateCartBtns();
     wireProductPage();
     wireListingPage();
+
+    // Sync with server when auth is ready
+    if (window.LW_AUTH) {
+      syncCartFromServer();
+    } else {
+      window.addEventListener('lw:auth-ready', () => syncCartFromServer(), { once: true });
+    }
   }
 
   if (document.readyState === 'loading') {

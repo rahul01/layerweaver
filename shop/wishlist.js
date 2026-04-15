@@ -135,6 +135,7 @@
     drawer.id = 'wishlist-drawer';
     drawer.innerHTML = `
       <div class="wishlist-header">
+        <a href="${SHOP_ROOT}" class="drawer-back-link">← Back to Shop</a>
         <h3>Wishlist</h3>
         <button id="wishlist-close" aria-label="Close wishlist">
           <i class="fa-solid fa-xmark"></i>
