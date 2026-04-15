@@ -149,7 +149,7 @@ function footerHtml(base) {
                     <a href="${base}">Home</a>
                     <a href="${base}shop/">Shop</a>
                     <a href="${base}#services">Services</a>
-                    <a href="${base}gallery.html">Gallery</a>
+                    <a href="${base}gallery/">Gallery</a>
                     <a href="${base}workshop/">Workshops</a>
                     <a href="${base}#about">About</a>
                     <a href="${base}connect/">Contact Us</a>
