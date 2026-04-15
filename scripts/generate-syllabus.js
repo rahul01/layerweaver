@@ -295,7 +295,7 @@ const htmlWeekend = `<!DOCTYPE html>
 </div>
 
 <div class="description">
-  A focused weekend crash course for adults who want to understand 3D printing without the fluff. Two practical sessions over a weekend - enough to go from complete beginner to confidently operating a printer, fixing common issues, and knowing exactly what to do next.
+  A focused weekend crash course for adults who want to understand 3D printing without the fluff. Two practical sessions over a weekend - enough to go from complete beginner to operating a printer, designing your own objects, fixing common issues, and knowing exactly what to do next.
 </div>
 
 <div class="outcomes">
@@ -304,6 +304,7 @@ const htmlWeekend = `<!DOCTYPE html>
     <li>Understand how a 3D printer works and what it can realistically make.</li>
     <li>Set up and operate a printer from scratch.</li>
     <li>Find ready-made designs online and print them.</li>
+    <li>Design a simple object from scratch using free software.</li>
     <li>Spot and fix the most common problems you'll run into.</li>
     <li>Decide confidently whether a 3D printer is right for you.</li>
   </ul>
@@ -318,17 +319,17 @@ const htmlWeekend = `<!DOCTYPE html>
       <div class="session-title">Getting Started - Your First Print</div>
     </div>
     <div class="session-body">
-      Meet the machine - how 3D printing actually works and what it can and can't do. Set up the printer, load the plastic, and get everything ready. Then download a real design, prepare it for printing, and watch your first object come to life.
+      Meet the machine - how 3D printing actually works and what it can and can't do. Set up the printer, load the plastic, and get everything ready. Then download a real design, prepare it for printing, and watch your first object come to life. We'll also cover the different types of plastic and when to use each.
     </div>
   </div>
 
   <div class="session">
     <div class="session-header">
       <div class="day-badge">Day 2 - Sun</div>
-      <div class="session-title">Going Further - Make Something Yours</div>
+      <div class="session-title">Design It Yourself - From Idea to Printed Object</div>
     </div>
     <div class="session-body">
-      When prints go wrong - learn to spot and fix the most common problems. Discover different types of plastic and when to use each. Find and customise designs online, or start sketching your own. Wrap up with honest advice on buying your own printer and where to go from here.
+      Learn to design your own 3D objects using free beginner-friendly software. Take a measurement, turn it into a shape, and print something you actually made. We'll also cover spotting and fixing common print problems, and wrap up with honest advice on buying your own printer and where to go from here.
     </div>
   </div>
 
