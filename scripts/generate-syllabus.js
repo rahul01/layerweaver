@@ -234,12 +234,122 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
+const htmlWeekend = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1a1a1a;
+    font-size: 10pt;
+    line-height: 1.5;
+    padding: 30px 40px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid #A083D5;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .brand { font-size: 18pt; font-weight: 800; color: #A083D5; }
+  .badge { background: #e8e0f5; color: #6b46c1; font-weight: 700; font-size: 8pt; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; }
+  .title-block { margin-bottom: 12px; }
+  .title-block h1 { font-size: 15pt; font-weight: 700; margin-bottom: 3px; }
+  .title-block p { color: #555; font-size: 9.5pt; }
+  .meta { display: flex; gap: 24px; background: #f7f4fe; border-radius: 6px; padding: 10px 16px; margin-bottom: 14px; font-size: 9.5pt; }
+  .meta-label { font-weight: 600; color: #A083D5; }
+  .description { background: #fffdf0; border-left: 4px solid #EFCF20; padding: 9px 14px; border-radius: 0 6px 6px 0; margin-bottom: 16px; font-size: 10pt; color: #333; }
+  .section-title { font-size: 9pt; font-weight: 700; color: #A083D5; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .outcomes { margin-bottom: 18px; }
+  .outcomes ul { padding-left: 18px; }
+  .outcomes li { margin-bottom: 4px; font-size: 10pt; }
+  .session { border: 1px solid #e8e0f5; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  .session-header { background: #f7f4fe; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .day-badge { background: #A083D5; color: #fff; font-weight: 700; font-size: 8.5pt; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .session-title { font-weight: 600; font-size: 10.5pt; color: #1a1a1a; }
+  .session-body { padding: 10px 16px; font-size: 10pt; color: #444; }
+  .footer { margin-top: 20px; border-top: 1px solid #e8e0f5; padding-top: 10px; display: flex; justify-content: space-between; font-size: 8.5pt; color: #999; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">LayerWeaver</div>
+  <div class="badge">ADULTS</div>
+</div>
+
+<div class="title-block">
+  <h1>Weekend Workshop: 3D Printing Essentials</h1>
+  <p>Course Syllabus - Hands-on 3D Printing for Adults, No Experience Needed</p>
+</div>
+
+<div class="meta">
+  <div><span class="meta-label">Duration:</span> 6 Hours total</div>
+  <div><span class="meta-label">Sessions:</span> 2 x 3 Hours</div>
+  <div><span class="meta-label">Schedule:</span> Saturday + Sunday</div>
+  <div><span class="meta-label">Level:</span> Complete Beginners</div>
+</div>
+
+<div class="description">
+  A focused weekend crash course for adults who want to understand 3D printing without the fluff. Two practical sessions over a weekend - enough to go from complete beginner to confidently operating a printer, fixing common issues, and knowing exactly what to do next.
+</div>
+
+<div class="outcomes">
+  <div class="section-title">What You'll Be Able to Do</div>
+  <ul>
+    <li>Understand how a 3D printer works and what it can realistically make.</li>
+    <li>Set up and operate a printer from scratch.</li>
+    <li>Find ready-made designs online and print them.</li>
+    <li>Spot and fix the most common problems you'll run into.</li>
+    <li>Decide confidently whether a 3D printer is right for you.</li>
+  </ul>
+</div>
+
+<div class="sessions">
+  <div class="section-title">What Happens Each Day</div>
+
+  <div class="session">
+    <div class="session-header">
+      <div class="day-badge">Day 1 - Sat</div>
+      <div class="session-title">Getting Started - Your First Print</div>
+    </div>
+    <div class="session-body">
+      Meet the machine - how 3D printing actually works and what it can and can't do. Set up the printer, load the plastic, and get everything ready. Then download a real design, prepare it for printing, and watch your first object come to life.
+    </div>
+  </div>
+
+  <div class="session">
+    <div class="session-header">
+      <div class="day-badge">Day 2 - Sun</div>
+      <div class="session-title">Going Further - Make Something Yours</div>
+    </div>
+    <div class="session-body">
+      When prints go wrong - learn to spot and fix the most common problems. Discover different types of plastic and when to use each. Find and customise designs online, or start sketching your own. Wrap up with honest advice on buying your own printer and where to go from here.
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span>LayerWeaver 3D Printing Studio - layerweaver.com</span>
+  <span>Weekend Workshop Syllabus 2025</span>
+</div>
+
+</body>
+</html>`;
+
 (async () => {
   const browser = await puppeteer.launch({
     executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     headless: true,
   });
-  const page = await browser.newPage();
+
+  // Summer camp syllabus
+  let page = await browser.newPage();
   await page.setContent(html, { waitUntil: 'networkidle0' });
 
   const outPath = path.join(__dirname, '../workshops/Syllabus_ Introduction to 3D Printing.pdf');
@@ -249,7 +359,18 @@ const html = `<!DOCTYPE html>
     margin: { top: '0', right: '0', bottom: '0', left: '0' },
     printBackground: true,
   });
-
-  await browser.close();
   console.log('PDF generated:', outPath);
+
+  // Weekend adult workshop syllabus
+  page = await browser.newPage();
+  await page.setContent(htmlWeekend, { waitUntil: 'networkidle0' });
+
+  const outPathWeekend = path.join(__dirname, '../workshops/Syllabus_ Weekend Workshop.pdf');
+  await page.pdf({
+    path: outPathWeekend,
+    format: 'A4',
+    margin: { top: '0', right: '0', bottom: '0', left: '0' },
+    printBackground: true,
+  });
+  console.log('PDF generated:', outPathWeekend);
 })();
