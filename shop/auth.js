@@ -175,7 +175,7 @@
     return true;
   }
 
-  // ── Customer info (decoded from ID token — no API call needed) ────────────
+  // ── Customer info (decoded from ID token - no API call needed) ────────────
 
   function getCustomer() {
     const idToken = getIdToken();
@@ -215,7 +215,7 @@
     btn.setAttribute('aria-label', 'Account');
     btn.innerHTML = `<i class="fa-regular fa-user"></i>`;
     btn.addEventListener('click', () => {
-      // Always navigate to account page — sign in / sign out handled there
+      // Always navigate to account page - sign in / sign out handled there
       const p       = window.location.pathname;
       const idx     = p.indexOf('/shop/');
       const shopRoot = idx !== -1 ? p.substring(0, idx + 6) : '/shop/';

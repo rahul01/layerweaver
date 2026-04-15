@@ -380,7 +380,7 @@
   // ── Wire up listing page "Add to Cart" buttons ────────────────────────────
 
   function wireListingPage() {
-    // Colour swatch selection — update active state + sync Add to Cart / Buy Now
+    // Colour swatch selection - update active state + sync Add to Cart / Buy Now
     document.querySelectorAll('.listing-swatch[data-variant-gid]').forEach(swatch => {
       swatch.addEventListener('click', () => {
         const card = swatch.closest('.shop-product-card');
@@ -480,7 +480,7 @@
                     .then(c => { cart = c; }).catch(() => {});
                 }
               }
-            } catch { /* local cart gone — ignore */ }
+            } catch { /* local cart gone - ignore */ }
           }
           saveCartId(serverCartId);
           cart = await fetchCart(serverCartId);

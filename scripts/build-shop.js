@@ -428,7 +428,7 @@ function generateProductPage(product) {
     ${footerHtml(base)}
 
     <script>
-        // Variant selection — sync price, image, Buy Now link, colour label
+        // Variant selection - sync price, image, Buy Now link, colour label
         document.querySelectorAll('.variant-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
@@ -507,8 +507,8 @@ function generateAccountPage() {
                 <div class="account-user-info">
                     <div class="account-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>
-                        <h2 id="account-name">—</h2>
-                        <p id="account-email">—</p>
+                        <h2 id="account-name">-</h2>
+                        <p id="account-email">-</p>
                     </div>
                 </div>
                 <button id="account-logout-btn" class="btn-secondary">

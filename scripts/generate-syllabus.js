@@ -135,7 +135,7 @@ const html = `<!DOCTYPE html>
 
 <div class="title-block">
   <h1>Summer Camp: 3D Printing Exploration</h1>
-  <p>Course Syllabus — Hands-on 3D Printing for Students &amp; Beginners</p>
+  <p>Course Syllabus - Hands-on 3D Printing for Students &amp; Beginners</p>
 </div>
 
 <div class="meta">
@@ -146,7 +146,7 @@ const html = `<!DOCTYPE html>
 </div>
 
 <div class="description">
-  A hands-on summer experience where students go from "what is a 3D printer?" to actually designing and printing their own creations. Across 6 fun sessions, you'll learn to set up the printer, fix things when they go wrong, and make objects that are actually useful — all while getting a taste of one of the most exciting technologies around.
+  A hands-on summer experience where students go from "what is a 3D printer?" to actually designing and printing their own creations. Across 6 fun sessions, you'll learn to set up the printer, fix things when they go wrong, and make objects that are actually useful - all while getting a taste of one of the most exciting technologies around.
 </div>
 
 <div class="outcomes">
@@ -154,7 +154,7 @@ const html = `<!DOCTYPE html>
   <ul>
     <li>Take a design file and print a real 3D object from start to finish.</li>
     <li>Use a 3D printer safely and with confidence.</li>
-    <li>Spot what went wrong with a print — and fix it.</li>
+    <li>Spot what went wrong with a print - and fix it.</li>
     <li>Design a simple object that actually fits and works in real life.</li>
     <li>Pick the right plastic and settings for whatever you want to make.</li>
     <li>Understand how 3D printing fits into today's world of making things.</li>
@@ -167,7 +167,7 @@ const html = `<!DOCTYPE html>
   <div class="session">
     <div class="session-header">
       <div class="session-num">1</div>
-      <div class="session-title">From Screen to Printer — Getting Your Design Ready</div>
+      <div class="session-title">From Screen to Printer - Getting Your Design Ready</div>
     </div>
     <div class="session-body">
       Learn how a 3D design file gets turned into instructions a printer can follow. We'll tweak settings like speed and layer thickness to see what changes, then kick off our very first print.
@@ -177,7 +177,7 @@ const html = `<!DOCTYPE html>
   <div class="session">
     <div class="session-header">
       <div class="session-num">2</div>
-      <div class="session-title">Setting Up the Printer — Nailing That First Layer</div>
+      <div class="session-title">Setting Up the Printer - Nailing That First Layer</div>
     </div>
     <div class="session-body">
       Load the plastic, clean the print surface, and get the printer dialled in so that very first layer sticks perfectly. It sounds small, but it makes or breaks the whole print!
@@ -197,27 +197,27 @@ const html = `<!DOCTYPE html>
   <div class="session">
     <div class="session-header">
       <div class="session-num">4</div>
-      <div class="session-title">When Things Go Wrong — Fixing Print Problems</div>
+      <div class="session-title">When Things Go Wrong - Fixing Print Problems</div>
     </div>
     <div class="session-body">
-      Every printer hits a snag sometimes. Learn to recognise common problems — corners lifting off, plastic not flowing right, or a blocked tip — and how to fix them quickly without wasting material.
+      Every printer hits a snag sometimes. Learn to recognise common problems - corners lifting off, plastic not flowing right, or a blocked tip - and how to fix them quickly without wasting material.
     </div>
   </div>
 
   <div class="session">
     <div class="session-header">
       <div class="session-num">5</div>
-      <div class="session-title">Make Something Useful — Designing for the Real World</div>
+      <div class="session-title">Make Something Useful - Designing for the Real World</div>
     </div>
     <div class="session-body">
-      Measure a real object and design something that actually fits it. We'll cover the little tricks — like leaving a tiny bit of extra space — that make 3D-printed parts work properly in the real world.
+      Measure a real object and design something that actually fits it. We'll cover the little tricks - like leaving a tiny bit of extra space - that make 3D-printed parts work properly in the real world.
     </div>
   </div>
 
   <div class="session">
     <div class="session-header">
       <div class="session-num">6</div>
-      <div class="session-title">The Bigger Picture — Where 3D Printing is Headed</div>
+      <div class="session-title">The Bigger Picture - Where 3D Printing is Headed</div>
     </div>
     <div class="session-body">
       See how 3D printing compares to traditional ways of making things, and explore other types of printers beyond what we've been using. We'll also help you figure out what to look for if you ever want to start printing at home.

@@ -79,7 +79,7 @@
       const raw = data?.customer?.metafield?.value;
 
       if (!raw) {
-        // No server data yet — push local items up so they aren't lost
+        // No server data yet - push local items up so they aren't lost
         const localItems = load();
         if (localItems.length) syncToServer(localItems);
         return;
@@ -87,7 +87,7 @@
       const serverItems = JSON.parse(raw);
       if (!Array.isArray(serverItems)) return;
 
-      // Server is source of truth — replace local entirely
+      // Server is source of truth - replace local entirely
       save(serverItems);
       updateAllHearts();
       updateBadge();
