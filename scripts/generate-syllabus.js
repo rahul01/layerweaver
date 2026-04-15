@@ -238,7 +238,7 @@ const html = `<!DOCTYPE html>
     <div class="session-body">
       <ul>
         <li>Taking accurate measurements of real objects at home</li>
-        <li>Introduction to beginner-friendly design software (Tinkercad)</li>
+        <li>Introduction to Fusion 360 - professional design software, free for personal use</li>
         <li>Basic shapes, combining and cutting geometry</li>
         <li>Understanding tolerances - why parts need a little extra clearance</li>
         <li>Exporting your design and slicing it for print</li>
@@ -378,7 +378,7 @@ const htmlWeekend = `<!DOCTYPE html>
     </div>
     <div class="session-body">
       <ul>
-        <li>Introduction to Tinkercad - free browser-based design software</li>
+        <li>Introduction to Fusion 360 - professional design software, free for personal use</li>
         <li>Basic shapes, combining and cutting geometry to make custom parts</li>
         <li>Taking measurements and turning them into a printable design</li>
         <li>Understanding tolerances - why parts need a little extra clearance</li>
