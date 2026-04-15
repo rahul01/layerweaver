@@ -112,7 +112,9 @@ const html = `<!DOCTYPE html>
   }
   .session-title { font-weight: 600; font-size: 9.5pt; color: #1a1a1a; }
   .session-duration { margin-left: auto; font-size: 8.5pt; color: #888; white-space: nowrap; }
-  .session-body { padding: 6px 12px; font-size: 9pt; color: #444; }
+  .session-body { padding: 6px 12px 8px; font-size: 9pt; color: #444; }
+  .session-body ul { padding-left: 15px; margin-top: 3px; }
+  .session-body li { margin-bottom: 1px; }
 
   /* Footer */
   .footer {
@@ -170,7 +172,13 @@ const html = `<!DOCTYPE html>
       <div class="session-title">From Screen to Printer - Getting Your Design Ready</div>
     </div>
     <div class="session-body">
-      Learn how a 3D design file gets turned into instructions a printer can follow. We'll tweak settings like speed and layer thickness to see what changes, then kick off our very first print.
+      <ul>
+        <li>What is a 3D design file and where to find free models online</li>
+        <li>Introduction to slicing software (Bambu Studio / Cura)</li>
+        <li>Key settings explained: layer height, print speed, infill density</li>
+        <li>Generating print instructions and sending them to the printer</li>
+        <li>Starting our first print together and understanding what to watch for</li>
+      </ul>
     </div>
   </div>
 
@@ -180,7 +188,13 @@ const html = `<!DOCTYPE html>
       <div class="session-title">Setting Up the Printer - Nailing That First Layer</div>
     </div>
     <div class="session-body">
-      Load the plastic, clean the print surface, and get the printer dialled in so that very first layer sticks perfectly. It sounds small, but it makes or breaks the whole print!
+      <ul>
+        <li>Loading and unloading filament correctly</li>
+        <li>Cleaning and preparing the build surface</li>
+        <li>Manual vs automatic bed leveling - how and when to use each</li>
+        <li>Adjusting nozzle height (Z-offset) for a perfect first layer</li>
+        <li>Diagnosing and fixing a bad first layer on a live print</li>
+      </ul>
     </div>
   </div>
 
@@ -190,7 +204,13 @@ const html = `<!DOCTYPE html>
       <div class="session-title">Choosing the Right Plastic for the Job</div>
     </div>
     <div class="session-body">
-      Not all 3D printing plastics are the same! Discover different types and when to use each one. We'll also look at how the inside structure of a print affects how strong it ends up being.
+      <ul>
+        <li>PLA - the everyday beginner-friendly material</li>
+        <li>PETG - stronger, more flexible, and heat-resistant</li>
+        <li>Specialty filaments: flexible, glow-in-the-dark, wood-filled, and more</li>
+        <li>How infill pattern and wall count affect strength and weight</li>
+        <li>Storing filament properly to prevent moisture damage</li>
+      </ul>
     </div>
   </div>
 
@@ -200,7 +220,13 @@ const html = `<!DOCTYPE html>
       <div class="session-title">When Things Go Wrong - Fixing Print Problems</div>
     </div>
     <div class="session-body">
-      Every printer hits a snag sometimes. Learn to recognise common problems - corners lifting off, plastic not flowing right, or a blocked tip - and how to fix them quickly without wasting material.
+      <ul>
+        <li>Identifying and clearing a clogged nozzle</li>
+        <li>Fixing warping and poor bed adhesion</li>
+        <li>Diagnosing under-extrusion and over-extrusion</li>
+        <li>Dealing with stringing, blobs, and layer shifts</li>
+        <li>Routine maintenance tasks and printing responsibly to reduce waste</li>
+      </ul>
     </div>
   </div>
 
@@ -210,7 +236,13 @@ const html = `<!DOCTYPE html>
       <div class="session-title">Make Something Useful - Designing for the Real World</div>
     </div>
     <div class="session-body">
-      Measure a real object and design something that actually fits it. We'll cover the little tricks - like leaving a tiny bit of extra space - that make 3D-printed parts work properly in the real world.
+      <ul>
+        <li>Taking accurate measurements of real objects at home</li>
+        <li>Introduction to beginner-friendly design software (Tinkercad)</li>
+        <li>Basic shapes, combining and cutting geometry</li>
+        <li>Understanding tolerances - why parts need a little extra clearance</li>
+        <li>Exporting your design and slicing it for print</li>
+      </ul>
     </div>
   </div>
 
@@ -220,7 +252,13 @@ const html = `<!DOCTYPE html>
       <div class="session-title">The Bigger Picture - Where 3D Printing is Headed</div>
     </div>
     <div class="session-body">
-      See how 3D printing compares to traditional ways of making things, and explore other types of printers beyond what we've been using. We'll also help you figure out what to look for if you ever want to start printing at home.
+      <ul>
+        <li>FDM vs resin (SLA/MSLA) vs powder (SLS) - what's the difference</li>
+        <li>Real-world applications: medical, aerospace, education, consumer products</li>
+        <li>How 3D printing compares to traditional manufacturing methods</li>
+        <li>Choosing a printer for home use - what to look for and what to spend</li>
+        <li>Communities, YouTube channels, and resources to keep learning</li>
+      </ul>
     </div>
   </div>
 
@@ -271,7 +309,9 @@ const htmlWeekend = `<!DOCTYPE html>
   .session-header { background: #f7f4fe; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
   .day-badge { background: #A083D5; color: #fff; font-weight: 700; font-size: 8.5pt; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
   .session-title { font-weight: 600; font-size: 10.5pt; color: #1a1a1a; }
-  .session-body { padding: 10px 16px; font-size: 10pt; color: #444; }
+  .session-body { padding: 10px 16px 12px; font-size: 10pt; color: #444; }
+  .session-body ul { padding-left: 16px; margin-top: 4px; }
+  .session-body li { margin-bottom: 2px; }
   .footer { margin-top: 20px; border-top: 1px solid #e8e0f5; padding-top: 10px; display: flex; justify-content: space-between; font-size: 8.5pt; color: #999; }
 </style>
 </head>
@@ -319,7 +359,15 @@ const htmlWeekend = `<!DOCTYPE html>
       <div class="session-title">Getting Started - Your First Print</div>
     </div>
     <div class="session-body">
-      Meet the machine - how 3D printing actually works and what it can and can't do. Set up the printer, load the plastic, and get everything ready. Then download a real design, prepare it for printing, and watch your first object come to life. We'll also cover the different types of plastic and when to use each.
+      <ul>
+        <li>How FDM 3D printing works - building objects one layer at a time</li>
+        <li>What 3D printing can and can't realistically do</li>
+        <li>Setting up the printer: loading filament, cleaning the build plate, calibration</li>
+        <li>Finding and downloading designs from Thingiverse and Printables</li>
+        <li>Slicing a model: key settings explained in plain English</li>
+        <li>Watching and understanding your first print as it happens</li>
+        <li>PLA vs PETG vs specialty filaments - which to use when</li>
+      </ul>
     </div>
   </div>
 
@@ -329,7 +377,15 @@ const htmlWeekend = `<!DOCTYPE html>
       <div class="session-title">Design It Yourself - From Idea to Printed Object</div>
     </div>
     <div class="session-body">
-      Learn to design your own 3D objects using free beginner-friendly software. Take a measurement, turn it into a shape, and print something you actually made. We'll also cover spotting and fixing common print problems, and wrap up with honest advice on buying your own printer and where to go from here.
+      <ul>
+        <li>Introduction to Tinkercad - free browser-based design software</li>
+        <li>Basic shapes, combining and cutting geometry to make custom parts</li>
+        <li>Taking measurements and turning them into a printable design</li>
+        <li>Understanding tolerances - why parts need a little extra clearance</li>
+        <li>Common print problems: nozzle clogs, warping, stringing - and how to fix them</li>
+        <li>Should you buy a printer? What to look for and what to budget</li>
+        <li>Communities and resources to keep learning after the workshop</li>
+      </ul>
     </div>
   </div>
 
