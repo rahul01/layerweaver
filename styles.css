@@ -184,6 +184,11 @@ header .container {
     width: 100%;
 }
 
+.nav-links a.active {
+    pointer-events: none;
+    cursor: default;
+}
+
 .nav-links a.btn-primary {
     padding: 8px 20px;
     border-radius: 50px;
@@ -209,27 +214,54 @@ header .container {
 
 /* Hero Section */
 .hero {
-    padding: 170px 0 100px;
+    padding: 170px 0 110px;
     background-image: linear-gradient(135deg, rgba(160, 131, 213, 0.1) 0%, rgba(239, 207, 32, 0.1) 100%);
     position: relative;
     overflow: hidden;
+    text-align: center;
+}
+
+.hero-bg-shape {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background-image: url('images/layerweaver-logo.svg');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    pointer-events: none;
 }
 
 .hero .container {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .hero-content {
-    flex: 1;
-    max-width: 600px;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.hero-eyebrow {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin: 0;
 }
 
 .hero-content h1 {
     font-size: 3.5rem;
-    margin-bottom: 1.5rem;
     color: var(--dark);
+    margin: 0;
 }
 
 .brand-text {
@@ -239,23 +271,39 @@ header .container {
     margin-top: 0.5rem;
 }
 
-.hero-content p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    color: var(--gray-medium);
-}
-
-.hero-buttons {
-    display: flex;
-    gap: 15px;
-}
-
-.hero-image {
-    flex: 1;
-    display: flex;
-    justify-content: center;
+.hero-shop-btn {
+    display: inline-flex;
     align-items: center;
-    position: relative;
+    gap: 10px;
+    padding: 20px 56px;
+    background-color: var(--primary);
+    color: var(--light);
+    border-radius: 50px;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 28px rgba(160, 131, 213, 0.4);
+    margin-top: 0.5rem;
+}
+
+.hero-shop-btn:hover {
+    background-color: var(--dark);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.hero-shop-btn i {
+    font-size: 1.2rem;
+}
+
+.hero-sub {
+    font-size: 0.95rem;
+    color: var(--gray-medium);
+    letter-spacing: 1px;
+    margin: 0;
 }
 
 .geometric-shape {
@@ -1397,20 +1445,6 @@ footer {
         font-size: 2.8rem;
     }
     
-    .hero .container {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .hero-content {
-        margin-bottom: 50px;
-        max-width: 100%;
-    }
-    
-    .hero-buttons {
-        justify-content: center;
-    }
-    
     .about-stats {
         justify-content: center;
     }
@@ -1543,15 +1577,10 @@ footer {
     .hero-content h1 {
         font-size: 2.2rem;
     }
-    
-    .hero-buttons {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .hero-buttons a {
-        width: 100%;
-        text-align: center;
+
+    .hero-shop-btn {
+        padding: 16px 40px;
+        font-size: 1rem;
     }
     
     .service-card, .material-card {
