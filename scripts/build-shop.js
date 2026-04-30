@@ -19,7 +19,7 @@ async function fetchProducts() {
         pageInfo { hasNextPage endCursor }
         edges {
           node {
-            id title handle description
+            id title handle tags description descriptionHtml
             priceRange {
               minVariantPrice { amount currencyCode }
               maxVariantPrice { amount currencyCode }
@@ -84,6 +84,14 @@ function buildSwatchMap(product) {
     }
   }
   return map;
+}
+
+function sanitizeDescriptionHtml(html) {
+  if (!html) return '';
+  return html
+    .replace(/<meta[^>]*>/gi, '')           // strip <meta> tags Shopify injects
+    .replace(/\s*data-[\w-]+="[^"]*"/g, '') // strip data-* attributes
+    .replace(/\s*style="[^"]*"/g, '');      // strip inline style attributes
 }
 
 function formatPrice(amount, currencyCode) {
@@ -394,10 +402,18 @@ function generateProductPage(product) {
                         </div>
                     </div>` : ''}
 
+                    ${product.tags.includes('personalized') ? `
+                    <div class="personalization-field">
+                        <label for="custom-text">Personalization <span class="required">*</span></label>
+                        <input type="text" id="custom-text" maxlength="20" placeholder="Enter the text to be printed">
+                        <p class="field-hint">This text will appear on your item exactly as entered.</p>
+                    </div>` : ''}
+
                     <div class="product-actions">
                         <button id="add-to-cart-btn"
                                 class="btn-primary add-to-cart-btn"
-                                data-variant-gid="${firstAvailable.id}">
+                                data-variant-gid="${firstAvailable.id}"
+                                ${product.tags.includes('personalized') ? 'data-personalized="true"' : ''}>
                             Add to Cart
                         </button>
                         <button class="wishlist-btn btn-secondary wishlist-page-btn"
@@ -418,7 +434,7 @@ function generateProductPage(product) {
 
                     <div class="product-description">
                         <h3>About this product</h3>
-                        <p>${product.description.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>
+                        ${sanitizeDescriptionHtml(product.descriptionHtml) || `<p>${product.description}</p>`}
                     </div>
                 </div>
             </div>

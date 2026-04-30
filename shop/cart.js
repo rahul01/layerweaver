@@ -39,6 +39,7 @@
     lines(first: 20) {
       edges { node {
         id quantity
+        attributes { key value }
         merchandise { ... on ProductVariant {
           id title
           price { amount currencyCode }
@@ -52,11 +53,13 @@
 
   // ── API calls ─────────────────────────────────────────────────────────────
 
-  async function createCart(variantId, qty) {
+  async function createCart(variantId, qty, attributes = []) {
+    const line = { merchandiseId: variantId, quantity: qty };
+    if (attributes.length) line.attributes = attributes;
     const data = await gql(`
       mutation cartCreate($input: CartInput!) {
         cartCreate(input: $input) { cart { ${CART_FIELDS} } }
-      }`, { input: { lines: [{ merchandiseId: variantId, quantity: qty }] } });
+      }`, { input: { lines: [line] } });
     return data.cartCreate.cart;
   }
 
@@ -67,11 +70,13 @@
     return data.cart;
   }
 
-  async function addLine(cartId, variantId, qty) {
+  async function addLine(cartId, variantId, qty, attributes = []) {
+    const line = { merchandiseId: variantId, quantity: qty };
+    if (attributes.length) line.attributes = attributes;
     const data = await gql(`
       mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
         cartLinesAdd(cartId: $cartId, lines: $lines) { cart { ${CART_FIELDS} } }
-      }`, { cartId, lines: [{ merchandiseId: variantId, quantity: qty }] });
+      }`, { cartId, lines: [line] });
     return data.cartLinesAdd.cart;
   }
 
@@ -190,6 +195,8 @@
       const variantLabel = v.title !== 'Default Title'
         ? `<span class="line-variant">${swatchDot}${v.title}</span>`
         : '';
+      const customAttrs = line.attributes?.filter(a => a.value)
+        .map(a => `<span class="line-attr"><em>${a.key}:</em> ${a.value}</span>`).join('') || '';
       return `
         <div class="cart-line" data-line-id="${line.id}">
           <a class="cart-line-link" href="${SHOP_ROOT}products/${v.product.handle}/">
@@ -197,6 +204,7 @@
             <div class="line-info">
               <p class="line-title">${v.product.title}</p>
               ${variantLabel}
+              ${customAttrs}
               <p class="line-price">${price}</p>
             </div>
           </a>
@@ -300,19 +308,34 @@
 
   async function handleAddToCart(variantGid, qty = 1) {
     const btn = document.getElementById('add-to-cart-btn');
+
+    // Collect personalization if this product requires it
+    const attributes = [];
+    if (btn?.dataset.personalized) {
+      const input = document.getElementById('custom-text');
+      const text  = input?.value.trim();
+      if (!text) {
+        input?.focus();
+        input?.classList.add('field-error');
+        input?.addEventListener('input', () => input.classList.remove('field-error'), { once: true });
+        return;
+      }
+      attributes.push({ key: 'Custom Text', value: text });
+    }
+
     setAddBtnLoading(btn, true);
     try {
       const cartId = loadCartId();
       if (cartId) {
         try {
-          cart = await addLine(cartId, variantGid, qty);
+          cart = await addLine(cartId, variantGid, qty, attributes);
         } catch {
-          cart = await createCart(variantGid, qty);
+          cart = await createCart(variantGid, qty, attributes);
           saveCartId(cart.id);
           syncCartIdToServer(cart.id);
         }
       } else {
-        cart = await createCart(variantGid, qty);
+        cart = await createCart(variantGid, qty, attributes);
         saveCartId(cart.id);
         syncCartIdToServer(cart.id);
       }
