@@ -179,7 +179,8 @@
 }
 
 .product-card-actions .listing-add-to-cart,
-.product-card-actions .listing-buy-now {
+.product-card-actions .listing-buy-now,
+.product-card-actions .listing-personalize-btn {
     flex: 1 1 120px;
     display: flex;
     align-items: center;
@@ -202,6 +203,17 @@
 
 .listing-add-to-cart {
     background-color: #FFD814;
+    color: var(--dark);
+}
+
+.listing-personalize-btn {
+    background-color: #FFD814;
+    color: var(--dark);
+    text-decoration: none;
+}
+
+.listing-personalize-btn:hover {
+    background-color: #F7CA00;
     color: var(--dark);
 }
 
@@ -1185,7 +1197,8 @@
     }
 
     .product-card-actions .listing-add-to-cart,
-    .product-card-actions .listing-buy-now {
+    .product-card-actions .listing-buy-now,
+    .product-card-actions .listing-personalize-btn {
         font-size: 0.7rem;
         min-height: 32px;
         padding: 0 8px;

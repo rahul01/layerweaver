@@ -246,10 +246,15 @@ function generateShopIndex(products) {
               ? `<div class="product-card-actions">
                     ${colorSwatchesHtml}
                     <div class="product-card-actions-row">
-                        <button class="listing-add-to-cart"
+                        ${product.tags.includes('personalized')
+                          ? `<a href="products/${product.handle}/" class="listing-personalize-btn">
+                                <i class="fa-solid fa-pen-nib"></i> Personalize
+                             </a>`
+                          : `<button class="listing-add-to-cart"
                                 data-variant-gid="${firstVariant.id}">
-                            Add to Cart
-                        </button>
+                                Add to Cart
+                             </button>`
+                        }
                     </div>
                 </div>`
               : '<span class="btn-disabled">Sold Out</span>'
