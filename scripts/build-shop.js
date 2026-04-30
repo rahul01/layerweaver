@@ -12,6 +12,59 @@ const SHOPIFY_DOMAIN = 'shop.layerweaver.com';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '7f0eafeb115e99a4a917e044a1fb4125';
 const SITE_URL = 'https://www.layerweaver.com';
 
+async function fetchCollections() {
+  const query = `{
+    collections(first: 20, sortKey: TITLE) {
+      edges {
+        node {
+          handle title description
+          image { url }
+          products(first: 50) {
+            edges {
+              node {
+                id title handle description
+                priceRange {
+                  minVariantPrice { amount currencyCode }
+                  maxVariantPrice { amount currencyCode }
+                }
+                images(first: 5) { edges { node { url altText } } }
+                options { name optionValues { name swatch { color } } }
+                variants(first: 20) {
+                  edges {
+                    node {
+                      id title
+                      price { amount currencyCode }
+                      availableForSale
+                      image { url altText }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
+
+  const res = await fetch(`https://${SHOPIFY_DOMAIN}/api/2025-01/graphql.json`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN,
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  const data = await res.json();
+  if (data.errors) throw new Error(JSON.stringify(data.errors));
+
+  return data.data.collections.edges.map(e => ({
+    ...e.node,
+    products: e.node.products.edges.map(pe => pe.node),
+  }));
+}
+
 async function fetchProducts() {
   const query = `
     query getProducts($cursor: String) {
@@ -182,85 +235,120 @@ function swatchDataScript(products) {
   return `<script>window.LW_SWATCHES = ${JSON.stringify(data)};</script>`;
 }
 
+// ── Shared product card (used on shop index + collection pages) ───────────────
+// productsBase: relative path from current page to shop/products/
+//   shop/index.html           → 'products/'
+//   shop/collections/*/       → '../../products/'
+
+function productCardHtml(product, productsBase) {
+  const minPrice    = formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
+  const maxPrice    = formatPrice(product.priceRange.maxVariantPrice.amount, product.priceRange.maxVariantPrice.currencyCode);
+  const priceDisplay = product.priceRange.minVariantPrice.amount === product.priceRange.maxVariantPrice.amount
+    ? minPrice : `${minPrice} – ${maxPrice}`;
+  const image        = product.images.edges[0]?.node;
+  const available    = product.variants.edges.some(v => v.node.availableForSale);
+  const firstVariant = product.variants.edges.find(v => v.node.availableForSale)?.node
+                       || product.variants.edges[0].node;
+  const hasMultiple  = product.variants.edges.length > 1 && product.variants.edges[0].node.title !== 'Default Title';
+  const swatchMap    = buildSwatchMap(product);
+  const allAreColors = hasMultiple && product.variants.edges.every(e => swatchMap[e.node.title]);
+
+  const colorSwatchesHtml = allAreColors
+    ? `<div class="listing-color-swatches">${
+        product.variants.edges.map(e => e.node).map(v => {
+          const hex     = swatchMap[v.title];
+          const isFirst = v.id === firstVariant.id;
+          return `<button class="listing-swatch${isFirst ? ' active' : ''}${!v.availableForSale ? ' sold-out' : ''}"
+                       style="background:${hex}${hex === '#ffffff' ? ';border-color:#ddd' : ''}"
+                       title="${v.title}"
+                       data-variant-gid="${v.id}"
+                       data-variant-id="${getNumericId(v.id)}"
+                       data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
+                       ${!v.availableForSale ? 'disabled' : ''}></button>`;
+        }).join('')
+      }</div>`
+    : (hasMultiple ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>` : '');
+
+  return `
+      <div class="shop-product-card">
+          <a href="${productsBase}${product.handle}/" class="product-card-link">
+              <div class="product-image-wrap">
+                  ${image
+                    ? `<img src="${image.url}" alt="${image.altText || product.title}" loading="lazy">`
+                    : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
+                  }
+                  ${!available ? '<span class="sold-out-badge">Sold Out</span>' : ''}
+                  <button class="wishlist-btn"
+                          data-handle="${product.handle}"
+                          data-title="${product.title}"
+                          data-price="${priceDisplay}"
+                          data-image="${image?.url || ''}"
+                          data-url="${SITE_URL}/shop/products/${product.handle}/"
+                          aria-label="Add to wishlist">
+                      <i class="fa-regular fa-heart"></i>
+                  </button>
+              </div>
+              <div class="product-card-info">
+                  <h3>${product.title}</h3>
+                  <p class="product-price">${priceDisplay}</p>
+              </div>
+          </a>
+          ${available
+            ? `<div class="product-card-actions">
+                  ${colorSwatchesHtml}
+                  <div class="product-card-actions-row">
+                      ${product.tags?.includes('personalized')
+                        ? `<a href="${productsBase}${product.handle}/" class="listing-personalize-btn">
+                               <i class="fa-solid fa-pen-nib"></i> Personalize
+                           </a>`
+                        : `<button class="listing-add-to-cart"
+                               data-variant-gid="${firstVariant.id}">
+                               Add to Cart
+                           </button>`
+                      }
+                  </div>
+              </div>`
+            : '<span class="btn-disabled">Sold Out</span>'
+          }
+      </div>`;
+}
+
+// ── Collection nav chip strip ─────────────────────────────────────────────────
+// shopBase:     path from current page back to shop/
+// activeHandle: collection handle to mark active, or null for "All"
+
+function collectionNavHtml(collections, shopBase, activeHandle = null) {
+  const items = [
+    { handle: null, title: 'All', href: shopBase },
+    ...collections.map(c => ({ handle: c.handle, title: c.title, href: `${shopBase}collections/${c.handle}/` })),
+  ];
+  const chips = items.map(({ handle, title, href }) => {
+    const active = handle === activeHandle ? ' active' : '';
+    return `<a href="${href}" class="collection-nav-chip${active}">${title}</a>`;
+  }).join('\n          ');
+  return `
+      <div class="collection-nav">
+          ${chips}
+      </div>`;
+}
+
 // ── Shop index (shop/index.html) ──────────────────────────────────────────────
 // depth from root: 1  →  base = '../'   shopBase = './'
 
-function generateShopIndex(products) {
+function generateShopIndex(products, collections) {
   const base     = '../';
   const shopBase = './';
 
-  const productCards = products.map(product => {
-    const minPrice   = formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
-    const maxPrice   = formatPrice(product.priceRange.maxVariantPrice.amount, product.priceRange.maxVariantPrice.currencyCode);
-    const priceDisplay = product.priceRange.minVariantPrice.amount === product.priceRange.maxVariantPrice.amount
-      ? minPrice : `${minPrice} – ${maxPrice}`;
-    const image         = product.images.edges[0]?.node;
-    const available     = product.variants.edges.some(v => v.node.availableForSale);
-    const firstVariant  = product.variants.edges.find(v => v.node.availableForSale)?.node
-                          || product.variants.edges[0].node;
-    const hasMultiple   = product.variants.edges.length > 1 && product.variants.edges[0].node.title !== 'Default Title';
-    const swatchMap     = buildSwatchMap(product);
-    const allAreColors  = hasMultiple && product.variants.edges.every(e => swatchMap[e.node.title]);
+  const productCards = products.map(p => productCardHtml(p, 'products/')).join('\n');
 
-    const colorSwatchesHtml = allAreColors
-      ? `<div class="listing-color-swatches">${
-          product.variants.edges.map(e => e.node).map(v => {
-            const hex = swatchMap[v.title];
-            const isFirst = v.id === firstVariant.id;
-            return `<button class="listing-swatch${isFirst ? ' active' : ''}${!v.availableForSale ? ' sold-out' : ''}"
-                         style="background:${hex}${hex === '#ffffff' ? ';border-color:#ddd' : ''}"
-                         title="${v.title}"
-                         data-variant-gid="${v.id}"
-                         data-variant-id="${getNumericId(v.id)}"
-                         data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
-                         ${!v.availableForSale ? 'disabled' : ''}></button>`;
-          }).join('')
-        }</div>`
-      : (hasMultiple ? `<a href="products/${product.handle}/" class="listing-choose-link">Choose option</a>` : '');
-
-    return `
-        <div class="shop-product-card">
-            <a href="products/${product.handle}/" class="product-card-link">
-                <div class="product-image-wrap">
-                    ${image
-                      ? `<img src="${image.url}" alt="${image.altText || product.title}" loading="lazy">`
-                      : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
-                    }
-                    ${!available ? '<span class="sold-out-badge">Sold Out</span>' : ''}
-                    <button class="wishlist-btn"
-                            data-handle="${product.handle}"
-                            data-title="${product.title}"
-                            data-price="${priceDisplay}"
-                            data-image="${image?.url || ''}"
-                            data-url="products/${product.handle}/"
-                            aria-label="Add to wishlist">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                </div>
-                <div class="product-card-info">
-                    <h3>${product.title}</h3>
-                    <p class="product-price">${priceDisplay}</p>
-                </div>
-            </a>
-            ${available
-              ? `<div class="product-card-actions">
-                    ${colorSwatchesHtml}
-                    <div class="product-card-actions-row">
-                        ${product.tags.includes('personalized')
-                          ? `<a href="products/${product.handle}/" class="listing-personalize-btn">
-                                <i class="fa-solid fa-pen-nib"></i> Personalize
-                             </a>`
-                          : `<button class="listing-add-to-cart"
-                                data-variant-gid="${firstVariant.id}">
-                                Add to Cart
-                             </button>`
-                        }
-                    </div>
-                </div>`
-              : '<span class="btn-disabled">Sold Out</span>'
-            }
-        </div>`;
-  }).join('\n');
+  // Pick the first product image from each collection for the "All" banner
+  const BANNER_EXCLUDE = ['cone-fidget'];
+  const allBannerImages = collections.flatMap(c =>
+    c.products
+      .filter(p => !BANNER_EXCLUDE.includes(p.handle))
+      .slice(-2)
+      .map(p => p.images.edges[0]?.node)
+  );
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -274,6 +362,17 @@ function generateShopIndex(products) {
 </head>
 <body>
     ${shopHeaderHtml(base)}
+    <div class="header-spacer"></div>
+
+    <section class="collection-topbar">
+        <div class="container">
+            ${collectionNavHtml(collections, shopBase, null)}
+        </div>
+    </section>
+
+    <div class="container">
+        ${collagebannerHtml('All Products', 'Browse our complete collection of 3D printed creations', allBannerImages)}
+    </div>
 
     <section class="shop-products">
         <div class="container">
@@ -488,6 +587,87 @@ function generateProductPage(product) {
 </html>`;
 }
 
+// ── Collage banner (shared by shop index + collection pages) ─────────────────
+// images: array of { url, altText } — up to 5 used
+
+function collagebannerHtml(title, description, images) {
+  const seen = new Set();
+  const imgs = images
+    .filter(i => i?.url && !seen.has(i.url) && seen.add(i.url))
+    .slice(0, 5);
+  const cells = imgs.map(img => `
+            <div class="banner-cell">
+                <img src="${img.url}" alt="${img.altText || title}" loading="lazy">
+            </div>`).join('');
+  return `
+    <div class="collection-banner">
+        <div class="banner-collage">${cells}
+        </div>
+        <div class="collection-banner-overlay">
+            <h1>${title}</h1>
+            ${description ? `<p>${description}</p>` : ''}
+        </div>
+    </div>`;
+}
+
+// ── Collection page (shop/collections/[handle]/index.html) ───────────────────
+// depth from root: 3  →  base = '../../../'   shopBase = '../../'
+
+function generateCollectionPage(collection, collections) {
+  const base     = '../../../';
+  const shopBase = '../../';
+
+  const productCards = collection.products.map(p => productCardHtml(p, '../../products/')).join('\n');
+
+  const BANNER_EXCLUDE = ['cone-fidget'];
+  const bannerImages = collection.products
+    .filter(p => !BANNER_EXCLUDE.includes(p.handle))
+    .slice(-5)
+    .map(p => p.images.edges[0]?.node);
+  const bannerHtml = collagebannerHtml(collection.title, collection.description, bannerImages);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    ${headHtml(base, shopBase, {
+      title: `${collection.title} – LayerWeaver`,
+      description: collection.description || `Shop ${collection.title} – unique 3D printed products from LayerWeaver.`,
+      ogImage: collection.image?.url,
+      ogUrl: `${SITE_URL}/shop/collections/${collection.handle}/`,
+    })}
+</head>
+<body>
+    ${shopHeaderHtml(base)}
+    <div class="header-spacer"></div>
+
+    <section class="collection-topbar">
+        <div class="container">
+            ${collectionNavHtml(collections, shopBase, collection.handle)}
+        </div>
+    </section>
+
+    <div class="container">
+        ${bannerHtml}
+    </div>
+
+    <section class="shop-products">
+        <div class="container">
+            <div class="shop-grid">
+${productCards}
+            </div>
+        </div>
+    </section>
+
+    ${footerHtml(base)}
+    ${swatchDataScript(collection.products)}
+    <script src="${shopBase}auth.js"></script>
+    <script src="${shopBase}cart.js"></script>
+    <script src="${shopBase}wishlist.js"></script>
+    <script src="${base}script.js"></script>
+</body>
+</html>`;
+}
+
 // ── Account page (shop/account/index.html) ────────────────────────────────────
 // depth from root: 2  →  base = '../../'   shopBase = '../'
 
@@ -566,17 +746,30 @@ async function main() {
   const products = await fetchProducts();
   console.log(`Found ${products.length} product(s)`);
 
-  const shopDir    = path.join(__dirname, '..', 'shop');
-  const productsDir = path.join(shopDir, 'products');
-  fs.mkdirSync(productsDir, { recursive: true });
+  console.log('Fetching collections...');
+  const collections = await fetchCollections();
+  console.log(`Found ${collections.length} collection(s)`);
 
-  fs.writeFileSync(path.join(shopDir, 'index.html'), generateShopIndex(products));
+  const shopDir        = path.join(__dirname, '..', 'shop');
+  const productsDir    = path.join(shopDir, 'products');
+  const collectionsDir = path.join(shopDir, 'collections');
+  fs.mkdirSync(productsDir, { recursive: true });
+  fs.mkdirSync(collectionsDir, { recursive: true });
+
+  fs.writeFileSync(path.join(shopDir, 'index.html'), generateShopIndex(products, collections));
   console.log('Generated shop/index.html');
 
   const accountDir = path.join(shopDir, 'account');
   fs.mkdirSync(accountDir, { recursive: true });
   fs.writeFileSync(path.join(accountDir, 'index.html'), generateAccountPage());
   console.log('Generated shop/account/index.html');
+
+  for (const collection of collections) {
+    const collectionDir = path.join(collectionsDir, collection.handle);
+    fs.mkdirSync(collectionDir, { recursive: true });
+    fs.writeFileSync(path.join(collectionDir, 'index.html'), generateCollectionPage(collection, collections));
+    console.log(`Generated shop/collections/${collection.handle}/index.html`);
+  }
 
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);
