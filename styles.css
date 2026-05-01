@@ -445,10 +445,15 @@ header .container {
         padding: 24px 0 20px;
     }
     .hero-right {
-        padding: 0 0 32px;
+        flex: 0 0 auto;
+        padding: 16px 0 24px;
     }
-    .hero-carousel {
-        min-height: 300px;
+    .hero-right-header {
+        flex: 0 0 auto;
+    }
+    .hero-carousel-wrap {
+        flex: none;
+        height: 300px;
     }
 }
 
@@ -456,8 +461,8 @@ header .container {
     .hero-right-header h1 {
         font-size: 1.7rem;
     }
-    .hero-carousel {
-        min-height: 240px;
+    .hero-carousel-wrap {
+        height: 240px;
     }
 }
 
