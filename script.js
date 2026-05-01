@@ -169,20 +169,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Hero carousel
-    const track = document.querySelector('.hero-carousel-track');
-    const slides = document.querySelectorAll('.hero-carousel-slide');
-    const dots = document.querySelectorAll('.hero-dot');
-    if (track && slides.length > 0) {
+    const heroTrack = document.querySelector('.hero-carousel-track');
+    const heroSlides = document.querySelectorAll('.hero-carousel-slide');
+    const heroDots = document.querySelectorAll('.hero-dot');
+    if (heroTrack && heroSlides.length > 0) {
         let current = 0;
         let timer;
 
         function goTo(n) {
-            slides[current].classList.remove('active');
-            dots[current].classList.remove('active');
-            current = (n + slides.length) % slides.length;
-            slides[current].classList.add('active');
-            dots[current].classList.add('active');
-            track.style.transform = `translateX(-${current * 100}%)`;
+            heroSlides[current].classList.remove('active');
+            heroDots[current].classList.remove('active');
+            current = (n + heroSlides.length) % heroSlides.length;
+            heroSlides[current].classList.add('active');
+            heroDots[current].classList.add('active');
+            heroTrack.style.transform = `translateX(-${current * 100}%)`;
         }
 
         function startTimer() {
@@ -190,11 +190,11 @@ document.addEventListener('DOMContentLoaded', function() {
             timer = setInterval(() => goTo(current + 1), 4000);
         }
 
-        dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startTimer(); }));
+        heroDots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startTimer(); }));
 
-        const carousel = document.querySelector('.hero-carousel');
-        carousel.addEventListener('mouseenter', () => clearInterval(timer));
-        carousel.addEventListener('mouseleave', startTimer);
+        const heroCarousel = document.querySelector('.hero-carousel');
+        heroCarousel.addEventListener('mouseenter', () => clearInterval(timer));
+        heroCarousel.addEventListener('mouseleave', startTimer);
 
         startTimer();
     }

@@ -822,7 +822,7 @@ async function main() {
   const { slides, dots } = heroCarouselSlidesHtml(collections);
   indexHtml = indexHtml.replace(
     /<!-- HERO-CAROUSEL-SLIDES-START -->[\s\S]*?<!-- HERO-CAROUSEL-SLIDES-END -->/,
-    `<!-- HERO-CAROUSEL-SLIDES-START -->${slides}\n<!-- HERO-CAROUSEL-SLIDES-END -->`
+    `<!-- HERO-CAROUSEL-SLIDES-START -->\n${slides}\n<!-- HERO-CAROUSEL-SLIDES-END -->`
   );
   indexHtml = indexHtml.replace(
     /<!-- HERO-CAROUSEL-DOTS-START -->[\s\S]*?<!-- HERO-CAROUSEL-DOTS-END -->/,
