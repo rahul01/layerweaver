@@ -209,7 +209,6 @@ function footerHtml(base) {
                 <nav class="footer-nav">
                     <a href="${base}">Home</a>
                     <a href="${base}shop/">Shop</a>
-                    <a href="${base}#services">Services</a>
                     <a href="${base}gallery/">Gallery</a>
                     <a href="${base}workshop/">Workshops</a>
                     <a href="${base}#about">About</a>
