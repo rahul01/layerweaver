@@ -22,7 +22,7 @@ async function fetchCollections() {
           products(first: 50) {
             edges {
               node {
-                id title handle description
+                id title handle tags description
                 priceRange {
                   minVariantPrice { amount currencyCode }
                   maxVariantPrice { amount currencyCode }
