@@ -326,6 +326,14 @@ header .container {
     font-size: 0.9rem;
     letter-spacing: 1.5px;
     white-space: nowrap;
+    background-color: var(--secondary);
+    color: var(--dark);
+    box-shadow: 0 6px 28px rgba(239, 207, 32, 0.4);
+}
+
+.hero-left .hero-shop-btn:hover {
+    background-color: #d4b800;
+    color: var(--dark);
 }
 
 /* Hero Carousel */
