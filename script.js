@@ -167,4 +167,35 @@ document.addEventListener('DOMContentLoaded', function() {
             element.style.transform = 'translateY(0)';
         });
     }
+
+    // Hero carousel
+    const track = document.querySelector('.hero-carousel-track');
+    const slides = document.querySelectorAll('.hero-carousel-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+    if (track && slides.length > 0) {
+        let current = 0;
+        let timer;
+
+        function goTo(n) {
+            slides[current].classList.remove('active');
+            dots[current].classList.remove('active');
+            current = (n + slides.length) % slides.length;
+            slides[current].classList.add('active');
+            dots[current].classList.add('active');
+            track.style.transform = `translateX(-${current * 100}%)`;
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => goTo(current + 1), 4000);
+        }
+
+        dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startTimer(); }));
+
+        const carousel = document.querySelector('.hero-carousel');
+        carousel.addEventListener('mouseenter', () => clearInterval(timer));
+        carousel.addEventListener('mouseleave', startTimer);
+
+        startTimer();
+    }
 });

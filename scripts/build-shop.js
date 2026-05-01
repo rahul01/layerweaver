@@ -610,6 +610,44 @@ function collagebannerHtml(title, description, images) {
     </div>`;
 }
 
+// ── Homepage hero carousel slides (index.html) ───────────────────────────────
+// Generates collage-style slides from each collection's product images,
+// matching the same banner-collage pattern used on shop/collection pages.
+
+function heroCarouselSlidesHtml(collections) {
+  const BANNER_EXCLUDE = ['cone-fidget'];
+
+  const slides = collections.map((collection, i) => {
+    const seen = new Set();
+    const imgs = collection.products
+      .filter(p => !BANNER_EXCLUDE.includes(p.handle))
+      .slice(-5)
+      .map(p => p.images.edges[0]?.node)
+      .filter(img => img?.url && !seen.has(img.url) && seen.add(img.url))
+      .slice(0, 5);
+
+    const cells = imgs.map(img => `
+                        <div class="banner-cell">
+                            <img src="${img.url}" alt="${img.altText || collection.title}" loading="lazy">
+                        </div>`).join('');
+
+    return `
+                        <a href="shop/collections/${collection.handle}/" class="hero-carousel-slide${i === 0 ? ' active' : ''}">
+                            <div class="banner-collage">${cells}
+                            </div>
+                            <div class="hero-carousel-caption">
+                                <span class="hero-carousel-title">${collection.title}</span>
+                            </div>
+                        </a>`;
+  }).join('');
+
+  const dots = collections.map((_, i) =>
+    `\n                        <span class="hero-dot${i === 0 ? ' active' : ''}"></span>`
+  ).join('');
+
+  return { slides, dots };
+}
+
 // ── Collection page (shop/collections/[handle]/index.html) ───────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
@@ -777,6 +815,21 @@ async function main() {
     fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
+
+  // Update homepage hero carousel with collage slides
+  const indexPath = path.join(__dirname, '..', 'index.html');
+  let indexHtml = fs.readFileSync(indexPath, 'utf8');
+  const { slides, dots } = heroCarouselSlidesHtml(collections);
+  indexHtml = indexHtml.replace(
+    /<!-- HERO-CAROUSEL-SLIDES-START -->[\s\S]*?<!-- HERO-CAROUSEL-SLIDES-END -->/,
+    `<!-- HERO-CAROUSEL-SLIDES-START -->${slides}\n<!-- HERO-CAROUSEL-SLIDES-END -->`
+  );
+  indexHtml = indexHtml.replace(
+    /<!-- HERO-CAROUSEL-DOTS-START -->[\s\S]*?<!-- HERO-CAROUSEL-DOTS-END -->/,
+    `<!-- HERO-CAROUSEL-DOTS-START -->${dots}\n<!-- HERO-CAROUSEL-DOTS-END -->`
+  );
+  fs.writeFileSync(indexPath, indexHtml);
+  console.log('Updated index.html hero carousel');
 
   console.log('Build complete.');
 }
