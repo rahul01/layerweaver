@@ -328,13 +328,28 @@ function collectionNavHtml(collections, shopBase, activeHandle = null) {
     { handle: null, title: 'All', href: shopBase },
     ...collections.map(c => ({ handle: c.handle, title: c.title, href: `${shopBase}collections/${c.handle}/` })),
   ];
+  const activeTitle = items.find(i => i.handle === activeHandle)?.title || 'All';
   const chips = items.map(({ handle, title, href }) => {
     const active = handle === activeHandle ? ' active' : '';
     return `<a href="${href}" class="collection-nav-chip${active}">${title}</a>`;
   }).join('\n          ');
+  const dropdownItems = items.map(({ handle, title, href }) => {
+    const active = handle === activeHandle ? ' active' : '';
+    return `<a href="${href}" class="collection-dropdown-item${active}">${title}</a>`;
+  }).join('\n          ');
   return `
       <div class="collection-nav">
           ${chips}
+      </div>
+      <div class="collection-nav-mobile">
+          <button class="collection-filter-btn" aria-expanded="false" aria-haspopup="true">
+              <i class="fa-solid fa-layer-group"></i>
+              <span>${activeTitle}</span>
+              <i class="fa-solid fa-chevron-down collection-filter-chevron"></i>
+          </button>
+          <div class="collection-dropdown" role="menu">
+              ${dropdownItems}
+          </div>
       </div>`;
 }
 

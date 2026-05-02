@@ -556,3 +556,29 @@
     init();
   }
 })();
+
+// Collection filter dropdown (mobile)
+(function () {
+  function initFilterDropdown() {
+    const btn = document.querySelector('.collection-filter-btn');
+    const dropdown = document.querySelector('.collection-dropdown');
+    if (!btn || !dropdown) return;
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = dropdown.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', () => {
+      dropdown.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFilterDropdown);
+  } else {
+    initFilterDropdown();
+  }
+})();
