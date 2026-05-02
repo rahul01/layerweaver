@@ -217,24 +217,25 @@ header .container {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 80px 0 0;
+    padding: 32px 0 0;
 }
 
 .hero-split {
     display: flex;
+    min-height: 70vh;
 }
 
 .hero-left {
-    flex: 0 0 30%;
+    flex: 0 0 32%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1.5rem;
-    padding: 40px 32px 40px 0;
+    gap: 2rem;
+    padding: 56px 40px 56px 0;
 }
 
 .hero-eyebrow {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -247,11 +248,11 @@ header .container {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-bottom: 16px;
+    padding-bottom: 20px;
 }
 
 .hero-right-header h1 {
-    font-size: 2.2rem;
+    font-size: 2.9rem;
     color: var(--dark);
     margin: 0;
     line-height: 1.2;
@@ -273,8 +274,8 @@ header .container {
 .hero-service-link {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 0;
+    gap: 18px;
+    padding: 16px 0;
     color: var(--dark);
     text-decoration: none;
     transition: color 0.2s ease, transform 0.2s ease;
@@ -287,9 +288,9 @@ header .container {
 }
 
 .hero-service-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
     background: rgba(160, 131, 213, 0.1);
     display: flex;
     align-items: center;
@@ -298,32 +299,32 @@ header .container {
 }
 
 .hero-service-icon i {
-    font-size: 17px;
+    font-size: 21px;
     color: var(--primary);
 }
 
 .hero-service-info {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
 }
 
 .hero-service-name {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     font-family: var(--font-primary);
     color: inherit;
 }
 
 .hero-service-desc {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     color: var(--gray-medium);
 }
 
 .hero-left .hero-shop-btn {
     align-self: flex-start;
-    padding: 13px 28px;
-    font-size: 0.9rem;
+    padding: 16px 36px;
+    font-size: 1rem;
     letter-spacing: 1.5px;
     white-space: nowrap;
     background-color: var(--secondary);
@@ -342,7 +343,7 @@ header .container {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 40px 0 40px 24px;
+    padding: 56px 0 56px 32px;
 }
 
 .hero-carousel-wrap {
@@ -405,7 +406,7 @@ header .container {
 .hero-carousel-title {
     font-family: var(--font-primary);
     font-weight: 700;
-    font-size: 1.4rem;
+    font-size: 1.7rem;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 1px;
