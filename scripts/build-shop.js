@@ -248,9 +248,14 @@ function productCardHtml(product, productsBase) {
   const available    = product.variants.edges.some(v => v.node.availableForSale);
   const firstVariant = product.variants.edges.find(v => v.node.availableForSale)?.node
                        || product.variants.edges[0].node;
-  const hasMultiple  = product.variants.edges.length > 1 && product.variants.edges[0].node.title !== 'Default Title';
-  const swatchMap    = buildSwatchMap(product);
-  const allAreColors = hasMultiple && product.variants.edges.every(e => swatchMap[e.node.title]);
+  const hasMultiple      = product.variants.edges.length > 1 && product.variants.edges[0].node.title !== 'Default Title';
+  const swatchMap        = buildSwatchMap(product);
+  const allAreColors     = hasMultiple && product.variants.edges.every(e => swatchMap[e.node.title]);
+  const uniqueListingVariantImgs = new Set(product.variants.edges.map(e => e.node.image?.url).filter(Boolean));
+  const hasVariantImages = hasMultiple && uniqueListingVariantImgs.size > 1;
+  // When variants have distinct images the user must visit the product page to choose;
+  // only applies to non-color products (color swatches handle selection inline).
+  const needsProductPage = hasMultiple && !allAreColors && hasVariantImages;
 
   const colorSwatchesHtml = allAreColors
     ? `<div class="listing-color-swatches">${
@@ -266,7 +271,7 @@ function productCardHtml(product, productsBase) {
                        ${!v.availableForSale ? 'disabled' : ''}></button>`;
         }).join('')
       }</div>`
-    : (hasMultiple ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>` : '');
+    : (hasMultiple && !needsProductPage ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>` : '');
 
   return `
       <div class="shop-product-card">
@@ -300,7 +305,9 @@ function productCardHtml(product, productsBase) {
                         ? `<a href="${productsBase}${product.handle}/" class="listing-personalize-btn">
                                <i class="fa-solid fa-pen-nib"></i> Personalize
                            </a>`
-                        : `<button class="listing-add-to-cart"
+                        : needsProductPage
+                          ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>`
+                          : `<button class="listing-add-to-cart"
                                data-variant-gid="${firstVariant.id}">
                                Add to Cart
                            </button>`
@@ -398,12 +405,24 @@ function generateProductPage(product) {
   const base     = '../../../';
   const shopBase = '../../';
 
-  const variants      = product.variants.edges.map(e => e.node);
-  const images        = product.images.edges.map(e => e.node);
-  const firstAvailable = variants.find(v => v.availableForSale) || variants[0];
-  const hasVariants   = variants.length > 1 || variants[0].title !== 'Default Title';
-  const swatchMap     = buildSwatchMap(product);
-  const mainImage     = images[0];
+  const variants        = product.variants.edges.map(e => e.node);
+  const images          = product.images.edges.map(e => e.node);
+  const firstAvailable  = variants.find(v => v.availableForSale) || variants[0];
+  const hasVariants     = variants.length > 1 || variants[0].title !== 'Default Title';
+  const swatchMap       = buildSwatchMap(product);
+  const allColors       = hasVariants && variants.every(v => swatchMap[v.title]);
+  // Only use variant-image mode when variants have 2+ distinct images —
+  // color products often share the same image across all variants.
+  const uniqueVariantImageUrls = new Set(variants.map(v => v.image?.url).filter(Boolean));
+  const hasVariantImages = hasVariants && uniqueVariantImageUrls.size > 1;
+  // Deduplicate by image URL so the same photo isn't shown as multiple thumbnails.
+  const variantsWithImages = hasVariantImages
+    ? variants.filter(v => v.image?.url).filter((v, _, arr) =>
+        arr.findIndex(u => u.image.url === v.image.url) === arr.indexOf(v))
+    : [];
+  const mainImage     = hasVariantImages
+    ? { url: firstAvailable.image?.url || images[0]?.url, altText: firstAvailable.title }
+    : images[0];
   const price         = formatPrice(firstAvailable.price.amount, firstAvailable.price.currencyCode);
 
   const structuredData = {
@@ -421,9 +440,6 @@ function generateProductPage(product) {
       url: `${SITE_URL}/shop/products/${product.handle}/`,
     })),
   };
-
-  // Detect if all variants are colors
-  const allColors = hasVariants && variants.every(v => swatchMap[v.title]);
 
   const variantButtons = hasVariants
     ? variants.map(v => {
@@ -454,11 +470,20 @@ function generateProductPage(product) {
       }).join('\n')
     : '';
 
-  const thumbnails = images.length > 1
-    ? images.map((img, i) => `
-        <img src="${img.url}" alt="${img.altText || product.title}"
-             class="thumbnail${i === 0 ? ' active' : ''}" loading="lazy">`).join('')
-    : '';
+  const thumbnails = hasVariantImages
+    ? variantsWithImages.map(v => `
+        <img src="${v.image.url}" alt="${v.title}"
+             class="thumbnail${v.id === firstAvailable.id ? ' active' : ''}"
+             data-variant-gid="${v.id}"
+             data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
+             data-variant-title="${v.title}"
+             loading="lazy">`).join('')
+    : images.length > 1
+      ? images.map((img, i) => `
+          <img src="${img.url}" alt="${img.altText || product.title}"
+               class="thumbnail${i === 0 ? ' active' : ''}" loading="lazy">`).join('')
+      : '';
+  const showThumbnails = thumbnails.length > 0;
 
   const waText = encodeURIComponent(`Hi! I'm interested in ${product.title}`);
 
@@ -490,7 +515,7 @@ function generateProductPage(product) {
                           : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                         }
                     </div>
-                    ${images.length > 1 ? `<div class="thumbnails">${thumbnails}</div>` : ''}
+                    ${showThumbnails ? `<div class="thumbnails">${thumbnails}</div>` : ''}
                 </div>
 
                 <div class="product-details">
@@ -547,33 +572,45 @@ function generateProductPage(product) {
     ${footerHtml(base)}
 
     <script>
-        // Variant selection - sync price, image, Buy Now link, colour label
+        const mainImg = document.getElementById('main-image');
+
+        function selectVariantBtn(btn) {
+            document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('product-price').textContent = btn.dataset.price;
+            const label = document.getElementById('selected-variant-label');
+            if (label) label.textContent = btn.title || btn.textContent.trim();
+            // Only swap the image when thumbnails are variant-linked;
+            // color-swatch products share one image across variants and should not reset it.
+            const hasVariantThumbs = !!document.querySelector('.thumbnail[data-variant-gid]');
+            if (mainImg && btn.dataset.image && hasVariantThumbs) {
+                mainImg.src = btn.dataset.image;
+                document.querySelectorAll('.thumbnail').forEach(t => {
+                    t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
+                });
+            }
+        }
+
         document.querySelectorAll('.variant-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('product-price').textContent = btn.dataset.price;
-                const label = document.getElementById('selected-variant-label');
-                if (label) label.textContent = btn.title || btn.textContent.trim();
-                // Swap main image
-                const mainImg = document.getElementById('main-image');
-                if (mainImg && btn.dataset.image) {
-                    mainImg.src = btn.dataset.image;
-                    // Sync thumbnail highlight
-                    document.querySelectorAll('.thumbnail').forEach(t => {
-                        t.classList.toggle('active', t.src === btn.dataset.image);
-                    });
-                }
-            });
+            btn.addEventListener('click', () => selectVariantBtn(btn));
         });
 
-        // Image thumbnails
-        const mainImg = document.getElementById('main-image');
+        // Thumbnail click — swap image and select variant if thumbnail is variant-linked
         document.querySelectorAll('.thumbnail').forEach(thumb => {
             thumb.addEventListener('click', () => {
                 document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
                 if (mainImg) mainImg.src = thumb.src;
+                if (thumb.dataset.variantGid) {
+                    const btn = document.querySelector(\`.variant-btn[data-variant-gid="\${thumb.dataset.variantGid}"]\`);
+                    if (btn) {
+                        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        document.getElementById('product-price').textContent = thumb.dataset.price;
+                        const label = document.getElementById('selected-variant-label');
+                        if (label) label.textContent = thumb.dataset.variantTitle || '';
+                    }
+                }
             });
         });
     </script>

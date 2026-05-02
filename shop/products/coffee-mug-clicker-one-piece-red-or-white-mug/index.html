@@ -48,10 +48,10 @@
                         <img id="main-image" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_29_23PM.png?v=1777377646" alt="Coffee mug Clicker (one piece, Red or White Mug)">
                     </div>
                     <div class="thumbnails">
-        <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_29_23PM.png?v=1777377646" alt="Coffee mug Clicker (one piece, Red or White Mug)"
-             class="thumbnail active" loading="lazy">
-        <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173100429534_3.jpg?v=1776050986" alt="Coffee mug Clicker (one piece, Red or White Mug)"
-             class="thumbnail" loading="lazy"></div>
+          <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_29_23PM.png?v=1777377646" alt="Coffee mug Clicker (one piece, Red or White Mug)"
+               class="thumbnail active" loading="lazy">
+          <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173100429534_3.jpg?v=1776050986" alt="Coffee mug Clicker (one piece, Red or White Mug)"
+               class="thumbnail" loading="lazy"></div>
                 </div>
 
                 <div class="product-details">
@@ -122,33 +122,45 @@
     </footer>
 
     <script>
-        // Variant selection - sync price, image, Buy Now link, colour label
+        const mainImg = document.getElementById('main-image');
+
+        function selectVariantBtn(btn) {
+            document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('product-price').textContent = btn.dataset.price;
+            const label = document.getElementById('selected-variant-label');
+            if (label) label.textContent = btn.title || btn.textContent.trim();
+            // Only swap the image when thumbnails are variant-linked;
+            // color-swatch products share one image across variants and should not reset it.
+            const hasVariantThumbs = !!document.querySelector('.thumbnail[data-variant-gid]');
+            if (mainImg && btn.dataset.image && hasVariantThumbs) {
+                mainImg.src = btn.dataset.image;
+                document.querySelectorAll('.thumbnail').forEach(t => {
+                    t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
+                });
+            }
+        }
+
         document.querySelectorAll('.variant-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('product-price').textContent = btn.dataset.price;
-                const label = document.getElementById('selected-variant-label');
-                if (label) label.textContent = btn.title || btn.textContent.trim();
-                // Swap main image
-                const mainImg = document.getElementById('main-image');
-                if (mainImg && btn.dataset.image) {
-                    mainImg.src = btn.dataset.image;
-                    // Sync thumbnail highlight
-                    document.querySelectorAll('.thumbnail').forEach(t => {
-                        t.classList.toggle('active', t.src === btn.dataset.image);
-                    });
-                }
-            });
+            btn.addEventListener('click', () => selectVariantBtn(btn));
         });
 
-        // Image thumbnails
-        const mainImg = document.getElementById('main-image');
+        // Thumbnail click — swap image and select variant if thumbnail is variant-linked
         document.querySelectorAll('.thumbnail').forEach(thumb => {
             thumb.addEventListener('click', () => {
                 document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
                 if (mainImg) mainImg.src = thumb.src;
+                if (thumb.dataset.variantGid) {
+                    const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
+                    if (btn) {
+                        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        document.getElementById('product-price').textContent = thumb.dataset.price;
+                        const label = document.getElementById('selected-variant-label');
+                        if (label) label.textContent = thumb.dataset.variantTitle || '';
+                    }
+                }
             });
         });
     </script>
