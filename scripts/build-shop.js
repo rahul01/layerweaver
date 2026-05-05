@@ -867,6 +867,22 @@ async function main() {
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
 
+  // Remove stale product/collection directories no longer in Shopify
+  const productHandles = new Set(products.map(p => p.handle));
+  for (const entry of fs.readdirSync(productsDir)) {
+    if (!productHandles.has(entry)) {
+      fs.rmSync(path.join(productsDir, entry), { recursive: true, force: true });
+      console.log(`Removed stale shop/products/${entry}`);
+    }
+  }
+  const collectionHandles = new Set(collections.map(c => c.handle));
+  for (const entry of fs.readdirSync(collectionsDir)) {
+    if (!collectionHandles.has(entry)) {
+      fs.rmSync(path.join(collectionsDir, entry), { recursive: true, force: true });
+      console.log(`Removed stale shop/collections/${entry}`);
+    }
+  }
+
   // Update homepage hero carousel with collage slides
   const indexPath = path.join(__dirname, '..', 'index.html');
   let indexHtml = fs.readFileSync(indexPath, 'utf8');
