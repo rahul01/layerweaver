@@ -69,6 +69,20 @@
             text-decoration: underline;
         }
     </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        const app = initializeApp({
+            apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+            authDomain: "layerweaver.firebaseapp.com",
+            projectId: "layerweaver",
+            storageBucket: "layerweaver.firebasestorage.app",
+            messagingSenderId: "1056344018064",
+            appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+            measurementId: "G-00DMH9PYCG"
+        });
+        getAnalytics(app);
+    </script>
 </head>
 <body>
     <header>

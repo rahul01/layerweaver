@@ -162,6 +162,13 @@
     document.body.appendChild(overlay);
     document.body.appendChild(drawer);
     document.getElementById('cart-close').addEventListener('click', closeDrawer);
+    document.getElementById('cart-checkout-btn').addEventListener('click', () => {
+      window.LW_LOG_EVENT?.('begin_checkout', {
+        value:     parseFloat(cart?.cost?.totalAmount?.amount || 0),
+        currency:  cart?.cost?.totalAmount?.currencyCode || '',
+        num_items: cart?.totalQuantity || 0,
+      });
+    });
   }
 
   function renderCart() {
@@ -342,6 +349,15 @@
       updateBadge();
       renderCart();
       updateCartBtns();
+      const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
+      if (newLine) {
+        window.LW_LOG_EVENT?.('add_to_cart', {
+          item_name: newLine.merchandise.product.title,
+          item_id:   newLine.merchandise.product.handle,
+          value:     parseFloat(newLine.merchandise.price.amount),
+          currency:  newLine.merchandise.price.currencyCode,
+        });
+      }
     } catch (err) {
       console.error('Add to cart failed:', err);
       alert('Could not add to cart. Please try again.');
@@ -364,12 +380,19 @@
   }
 
   async function handleRemoveLine(lineId) {
+    const line = cart?.lines.edges.find(e => e.node.id === lineId)?.node;
     setDrawerLoading(true);
     try {
       cart = await removeLine(cart.id, lineId);
       updateBadge();
       renderCart();
       updateCartBtns();
+      if (line) {
+        window.LW_LOG_EVENT?.('remove_from_cart', {
+          item_name: line.merchandise.product.title,
+          item_id:   line.merchandise.product.handle,
+        });
+      }
     } finally {
       setDrawerLoading(false);
     }
@@ -433,6 +456,15 @@
           updateBadge();
           renderCart();
           updateCartBtns();
+          const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
+          if (newLine) {
+            window.LW_LOG_EVENT?.('add_to_cart', {
+              item_name: newLine.merchandise.product.title,
+              item_id:   newLine.merchandise.product.handle,
+              value:     parseFloat(newLine.merchandise.price.amount),
+              currency:  newLine.merchandise.price.currencyCode,
+            });
+          }
         } catch (err) {
           console.error('Add to cart failed:', err);
           alert('Could not add to cart. Please try again.');

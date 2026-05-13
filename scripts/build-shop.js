@@ -176,7 +176,22 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />`;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        const app = initializeApp({
+            apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+            authDomain: "layerweaver.firebaseapp.com",
+            projectId: "layerweaver",
+            storageBucket: "layerweaver.firebasestorage.app",
+            messagingSenderId: "1056344018064",
+            appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+            measurementId: "G-00DMH9PYCG"
+        });
+        const analytics = getAnalytics(app);
+        window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
+    </script>`;
 }
 
 function shopHeaderHtml(base) {
@@ -628,6 +643,15 @@ function generateProductPage(product) {
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.LW_LOG_EVENT?.('view_item', {
+                item_name: ${JSON.stringify(product.title)},
+                item_id:   ${JSON.stringify(product.handle)},
+                price:     ${parseFloat(firstAvailable.price.amount).toFixed(2)},
+                currency:  ${JSON.stringify(firstAvailable.price.currencyCode)},
+            });
+        });
     </script>
     ${swatchDataScript([product])}
     <script src="${shopBase}auth.js"></script>
@@ -773,6 +797,21 @@ function generateAccountPage() {
     <link rel="stylesheet" href="${shopBase}shop.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        const app = initializeApp({
+            apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+            authDomain: "layerweaver.firebaseapp.com",
+            projectId: "layerweaver",
+            storageBucket: "layerweaver.firebasestorage.app",
+            messagingSenderId: "1056344018064",
+            appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+            measurementId: "G-00DMH9PYCG"
+        });
+        const analytics = getAnalytics(app);
+        window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
+    </script>
 </head>
 <body>
     ${shopHeaderHtml(base)}

@@ -239,6 +239,10 @@
         const ic = btn.querySelector('i');
         if (ic) ic.className = added ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
         updateBadge();
+        window.LW_LOG_EVENT?.(added ? 'add_to_wishlist' : 'remove_from_wishlist', {
+          item_name: item.title,
+          item_id:   item.handle,
+        });
       });
     });
   }
