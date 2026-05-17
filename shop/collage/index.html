@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Collage – LayerWeaver</title>
+    <meta name="description" content="Every 3D printed product from LayerWeaver in one place — browse our full collection.">
+    <meta property="og:title" content="Product Collage – LayerWeaver">
+    <meta property="og:description" content="Every 3D printed product from LayerWeaver in one place — browse our full collection.">
+    <meta property="og:url" content="https://www.layerweaver.com/shop/collage/">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../images/spider-fevicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../../images/spider-fevicon.svg">
+    <meta name="theme-color" content="#A083D5">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../shop.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        const app = initializeApp({
+            apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+            authDomain: "layerweaver.firebaseapp.com",
+            projectId: "layerweaver",
+            storageBucket: "layerweaver.firebasestorage.app",
+            messagingSenderId: "1056344018064",
+            appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+            measurementId: "G-00DMH9PYCG"
+        });
+        const analytics = getAnalytics(app);
+        window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
+    </script>
+    <style>
+        .collage-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #6c47b8 100%);
+            color: var(--light);
+            text-align: center;
+            padding: 56px 24px 48px;
+        }
+        .collage-hero h1 {
+            font-family: var(--font-primary);
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .collage-hero p {
+            font-size: 1.05rem;
+            opacity: 0.88;
+            max-width: 520px;
+            margin: 0 auto 24px;
+        }
+        .collage-hero .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary);
+            color: var(--dark);
+            font-family: var(--font-primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            padding: 10px 22px;
+            border-radius: 100px;
+            transition: opacity 0.2s;
+        }
+        .collage-hero .hero-cta:hover { opacity: 0.85; }
+
+        .collage-count {
+            display: inline-block;
+            background: rgba(255,255,255,0.18);
+            border-radius: 100px;
+            padding: 4px 14px;
+            font-size: 0.85rem;
+            font-family: var(--font-primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Masonry layout via CSS columns */
+        .collage-grid {
+            columns: 5 200px;
+            column-gap: 6px;
+            padding: 6px;
+            background: #111;
+        }
+
+        .collage-item {
+            break-inside: avoid;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .collage-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.35s ease;
+        }
+
+        .collage-item:hover img {
+            transform: scale(1.06);
+        }
+
+        .collage-item-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 55%);
+            opacity: 0;
+            transition: opacity 0.28s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 14px 12px 12px;
+            pointer-events: none;
+        }
+
+        .collage-item:hover .collage-item-overlay {
+            opacity: 1;
+        }
+
+        .collage-item-name {
+            color: #fff;
+            font-family: var(--font-primary);
+            font-size: 0.82rem;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .collage-item-shop {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--primary);
+            color: #fff;
+            font-family: var(--font-primary);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 100px;
+            padding: 3px 10px;
+            width: fit-content;
+            pointer-events: all;
+        }
+
+        @media (max-width: 600px) {
+            .collage-hero h1 { font-size: 1.8rem; }
+            .collage-grid { columns: 2 140px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="shop-header">
+        <div class="container">
+            <a href="../../" class="logo-container logo-link">
+                <img src="../../images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
+                <h1>LayerWeaver</h1>
+            </a>
+            <nav class="shop-nav">
+                <!-- cart.js injects cart icon here -->
+            </nav>
+        </div>
+    </header>
+
+    <div class="collage-hero">
+        <div class="collage-count">34 products</div>
+        <h1>All Products</h1>
+        <p>Every 3D printed creation from LayerWeaver — hover to explore, click to shop.</p>
+        <a href="../" class="hero-cta"><i class="fa-solid fa-store"></i> Browse Shop</a>
+    </div>
+
+    <div class="collage-grid">
+
+        <a href="../products/floating-ghost-lamp-with-balloon-3d-printed-led-tea-light-decor/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_30_35PM.png?v=1777374131" alt="Floating Ghost Lamp" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Floating Ghost Lamp with Balloon</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/orca/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_55PM.png?v=1777385918" alt="Orca" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Orca</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/pumpkin-articulated-legs/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_42_38_PM.png?v=1777371560" alt="Pumpkin Articulated Legs" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Pumpkin Articulated Legs</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/night-dragon/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Gemini_Generated_Image_7skqxm7skqxm7skq.png?v=1777609447" alt="Night Dragon" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Night Dragon</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/cat-bookmark/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_06_00_13_PM.png?v=1777386040" alt="Cat Bookmark" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Cat Bookmark</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/snail-lamp/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173100363998_0.jpeg?v=1776050823" alt="Snail Lamp" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Snail Lamp</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/cactus-headphone-stand/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productMay14_2026_03_08_21PM.png?v=1778751538" alt="Cactus Headphone Stand" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Cactus Headphone Stand</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/cone-fidget/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_21PM.png?v=1777377646" alt="Cone Fidget" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Cone Fidget</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/articulated-octopus/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173101183198_3.jpg?v=1776050908" alt="Articulated Octopus" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Articulated Octopus</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/vases/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_May_2_2026_01_41_22_PM.png?v=1777711643" alt="Vases" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Vases</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/cupcake-clicker-one-piece/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_29_18PM.png?v=1777377647" alt="Cupcake Clicker" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Cupcake Clicker (One Piece)</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/tree-articulated-legs/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Apr_28_2026_07_22_45_PM.png?v=1777384378" alt="Tree Articulated Legs" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Tree Articulated Legs</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/butterfly-bookmark/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_06_00_00_PM.png?v=1777379862" alt="Butterfly Bookmark" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Butterfly Bookmark</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/coffee-mug-clicker-one-piece-red-or-white-mug/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_29_23PM.png?v=1777377646" alt="Coffee Mug Clicker Keychain" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Coffee Mug Clicker Keychain</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/monstera-coaster-set/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr30_2026_11_46_22PM.png?v=1777573041" alt="Monstera Coaster Set" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Monstera Coaster Set</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/infinity-cube/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_45_24PM.png?v=1777378631" alt="Infinity Cube" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Infinity Cube</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/bunny-keychain/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_45_43_PM.png?v=1777371559" alt="Bunny Keychain" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Bunny Keychain</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/zigizigi-fidget/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_07_12_13_PM.png?v=1777383841" alt="Zigizigi Fidget" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Zigizigi Fidget</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/pineapple-articulated-legs/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_44_26_PM.png?v=1777371560" alt="Pineapple Articulated Legs" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Pineapple Articulated Legs</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/tulip-single-flower/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_May_2_2026_02_50_27_PM.png?v=1777713732" alt="Tulip Single Flower" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Tulip Single Flower</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/panda/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_07_33_08PM.png?v=1777385130" alt="Panda" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Panda</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/cat-cable-clip/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/white-cat-figurine-cleaned-up.png?v=1777898401" alt="Cat Cable Clip" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Cat Cable Clip</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/t-rex-skeleton/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_09_45PM.png?v=1777374131" alt="T-Rex Skeleton" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">T-Rex Skeleton</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/cubone-keychain/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_45_05PM.png?v=1777378631" alt="Cubone Skull Keychain" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Cubone Skull Keychain</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/monsterra-keychain/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_50PM.png?v=1777377647" alt="Monstera Keychain" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Monstera Keychain</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/star-fidget/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_15PM.png?v=1777377646" alt="Star Fidget" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Star Fidget</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/cat-bookmark-copy/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_06_00_07_PM.png?v=1777386010" alt="Dog Bookmark" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Dog Bookmark</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/hoodie-pen-pot/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Apr_28_2026_04_40_42_PM.png?v=1777374657" alt="Hoodie Pen Pot" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Hoodie Pen Pot</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/bird-ocarina/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_May_3_2026_08_15_35_PM.png?v=1777819604" alt="Bird Ocarina" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Bird Ocarina</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/tetris-balance-game/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_07_11_33_PM.png?v=1777383841" alt="Tetris Balance Game" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Tetris Balance Game</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/multi-purpose-box-pen-holder-toothbrush-holder/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_29_54PM.png?v=1777374131" alt="Multi Purpose Dino Box" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Multi Purpose Dino Box</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/personalized-number-plate-keychain/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_45_17PM.png?v=1777378631" alt="Personalized Number Plate Keychain" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Personalized Number Plate Keychain</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/uno-box/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/1dd1b3fd-5c47-4966-8680-8dcf2c377be8.jpg?v=1776001553" alt="Card Game Box" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Card Game Box</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+        <a href="../products/single-key-keyboard/" class="collage-item">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_03_47_28PM.png?v=1777374131" alt="Single Key Keyboard Clicker" loading="lazy">
+            <div class="collage-item-overlay">
+                <div class="collage-item-name">Single Key Keyboard Clicker</div>
+                <span class="collage-item-shop"><i class="fa-solid fa-arrow-right"></i> Shop</span>
+            </div>
+        </a>
+
+    </div>
+
+    <script src="../cart.js"></script>
+    <script src="../../script.js"></script>
+</body>
+</html>
