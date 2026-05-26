@@ -59,10 +59,30 @@ async function fetchCollections() {
   const data = await res.json();
   if (data.errors) throw new Error(JSON.stringify(data.errors));
 
-  return data.data.collections.edges.map(e => ({
+  const collections = data.data.collections.edges.map(e => ({
     ...e.node,
     products: e.node.products.edges.map(pe => pe.node),
   }));
+
+  const ORDER = [
+    'lamps-and-decor',
+    'toys-games-and-desk-buddies',
+    'articulated-fidgets',
+    'keychains-pocket-charms',
+    'page-pals',
+    'aquarium-tech-and-accessories',
+  ];
+
+  collections.sort((a, b) => {
+    const ai = ORDER.indexOf(a.handle);
+    const bi = ORDER.indexOf(b.handle);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+
+  return collections;
 }
 
 async function fetchProducts() {
