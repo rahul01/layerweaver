@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekend Workshop Flyer – May/June 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f0edf8;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .poster {
+    width: 800px;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.15);
+    position: relative;
+  }
+
+  /* ── TOP BAND ── */
+  .top-band {
+    background: #0d0d1a;
+    padding: 18px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-row img {
+    height: 28px;
+    filter: brightness(0) invert(1);
+  }
+  .logo-row span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #A083D5;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .adults-tag {
+    background: #A083D5;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: #EFCF20;
+    padding: 40px 48px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 50%;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: 60px;
+    width: 300px; height: 300px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 50%;
+  }
+
+  .hero-kicker {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+  }
+  .hero-title {
+    font-size: 3.4rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #0d0d1a;
+    text-transform: uppercase;
+  }
+  .hero-title span {
+    color: #A083D5;
+  }
+  .hero-sub {
+    margin-top: 14px;
+    font-size: 0.95rem;
+    color: rgba(0,0,0,0.65);
+    font-weight: 500;
+    max-width: 480px;
+    line-height: 1.5;
+  }
+  .hero-pills {
+    margin-top: 18px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .hero-pill {
+    background: rgba(0,0,0,0.1);
+    color: #0d0d1a;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── WEEKEND CARDS ── */
+  .weekends-section {
+    padding: 36px 48px;
+    background: #fff;
+  }
+  .weekends-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #A083D5;
+    margin-bottom: 16px;
+  }
+  .weekends-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .weekend-card {
+    border: 2px solid #0d0d1a;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .weekend-card .wc-header {
+    background: #0d0d1a;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .weekend-card .wc-header .wc-batch {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .weekend-card .wc-header .wc-spots {
+    background: #EFCF20;
+    color: #0d0d1a;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+  .weekend-card .wc-body {
+    padding: 16px 20px;
+  }
+  .weekend-card .wc-days {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wc-day {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .wc-day .day-label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #A083D5;
+    width: 26px;
+    flex-shrink: 0;
+  }
+  .wc-day .day-date {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #0d0d1a;
+    line-height: 1;
+  }
+  .wc-day .day-full {
+    font-size: 0.7rem;
+    color: #888;
+    font-weight: 600;
+  }
+  .wc-day-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 2px 0;
+  }
+  .wc-time {
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: #666;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .wc-time::before {
+    content: '⏱';
+    font-size: 0.75rem;
+  }
+
+  /* ── SCHEDULE ── */
+  .schedule-section {
+    background: #f8f7fc;
+    padding: 32px 48px;
+    border-top: 1px solid #ede9f7;
+  }
+  .section-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #A083D5;
+    margin-bottom: 16px;
+  }
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .schedule-day {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    border: 1px solid #ede9f7;
+  }
+  .schedule-day .sd-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .sd-dot {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+  .sd-dot.sat { background: #A083D5; color: #fff; }
+  .sd-dot.sun { background: #EFCF20; color: #0d0d1a; }
+  .sd-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0d0d1a;
+    line-height: 1.3;
+  }
+  .sd-desc {
+    font-size: 0.72rem;
+    color: #666;
+    line-height: 1.5;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  /* ── OUTCOMES ── */
+  .outcomes-section {
+    padding: 32px 48px;
+    background: #fff;
+    border-top: 1px solid #ede9f7;
+  }
+  .outcomes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .outcome-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.78rem;
+    color: #333;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .outcome-check {
+    width: 18px; height: 18px;
+    background: #A083D5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .outcome-check::after {
+    content: '✓';
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 900;
+  }
+
+  /* ── FOOTER ── */
+  .footer-section {
+    background: #0d0d1a;
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  .footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .fi-row {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fi-row strong {
+    color: rgba(255,255,255,0.9);
+  }
+  .cta-button {
+    background: #EFCF20;
+    color: #0d0d1a;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-block;
+    box-shadow: 0 4px 20px rgba(239,207,32,0.3);
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .poster { box-shadow: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- TOP BAND -->
+  <div class="top-band">
+    <div class="logo-row">
+      <img src="../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+      <span>LayerWeaver</span>
+    </div>
+    <span class="adults-tag">For Adults · No Experience Needed</span>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="hero-kicker">✦ One Weekend. Real Skills. ✦</p>
+    <h1 class="hero-title">Weekend<br><span>Workshop</span></h1>
+    <p class="hero-sub">A focused crash course in 3D printing - go from complete beginner to operating a printer, designing objects, and fixing problems. All in one weekend.</p>
+    <div class="hero-pills">
+      <span class="hero-pill">6 Hours Total</span>
+      <span class="hero-pill">2 Sessions × 3 Hours</span>
+      <span class="hero-pill">Sat + Sun</span>
+      <span class="hero-pill">100% Hands-On</span>
+    </div>
+  </div>
+
+  <!-- WEEKEND DATES -->
+  <div class="weekends-section">
+    <div class="weekends-label">Upcoming Batches</div>
+    <div class="weekends-grid">
+
+      <div class="weekend-card">
+        <div class="wc-header">
+          <span class="wc-batch">Batch 1</span>
+          <span class="wc-spots">3 Seats Only</span>
+        </div>
+        <div class="wc-body">
+          <div class="wc-days">
+            <div class="wc-day">
+              <span class="day-label">SAT</span>
+              <div>
+                <div class="day-date">30 May</div>
+                <div class="day-full">Saturday, 2026</div>
+              </div>
+            </div>
+            <div class="wc-day-divider"></div>
+            <div class="wc-day">
+              <span class="day-label">SUN</span>
+              <div>
+                <div class="day-date">31 May</div>
+                <div class="day-full">Sunday, 2026</div>
+              </div>
+            </div>
+          </div>
+          <div class="wc-time">3 hours each day</div>
+        </div>
+      </div>
+
+      <div class="weekend-card">
+        <div class="wc-header">
+          <span class="wc-batch">Batch 2</span>
+          <span class="wc-spots">3 Seats Only</span>
+        </div>
+        <div class="wc-body">
+          <div class="wc-days">
+            <div class="wc-day">
+              <span class="day-label">SAT</span>
+              <div>
+                <div class="day-date">6 June</div>
+                <div class="day-full">Saturday, 2026</div>
+              </div>
+            </div>
+            <div class="wc-day-divider"></div>
+            <div class="wc-day">
+              <span class="day-label">SUN</span>
+              <div>
+                <div class="day-date">7 June</div>
+                <div class="day-full">Sunday, 2026</div>
+              </div>
+            </div>
+          </div>
+          <div class="wc-time">3 hours each day</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div class="schedule-section">
+    <div class="section-label">What Happens Each Day</div>
+    <div class="schedule-grid">
+      <div class="schedule-day">
+        <div class="sd-header">
+          <div class="sd-dot sat">SAT</div>
+          <div class="sd-title">Getting Started -<br>Your First Print</div>
+        </div>
+        <div class="sd-desc">How 3D printing works, what it can and can't do. Set up the printer, load filament, prepare a design, and watch your first object come to life.</div>
+      </div>
+      <div class="schedule-day">
+        <div class="sd-header">
+          <div class="sd-dot sun">SUN</div>
+          <div class="sd-title">Design It Yourself -<br>Idea to Printed Object</div>
+        </div>
+        <div class="sd-desc">Model something from scratch using free software, print your own design, and troubleshoot common problems - so you can keep going on your own.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTCOMES -->
+  <div class="outcomes-section">
+    <div class="section-label">What You'll Walk Away With</div>
+    <div class="outcomes-grid">
+      <div class="outcome-item">
+        <div class="outcome-check"></div>
+        Operate a 3D printer from scratch
+      </div>
+      <div class="outcome-item">
+        <div class="outcome-check"></div>
+        Design a simple object yourself
+      </div>
+      <div class="outcome-item">
+        <div class="outcome-check"></div>
+        Find &amp; print ready-made designs
+      </div>
+      <div class="outcome-item">
+        <div class="outcome-check"></div>
+        Fix the most common print failures
+      </div>
+      <div class="outcome-item">
+        <div class="outcome-check"></div>
+        Understand different filament types
+      </div>
+      <div class="outcome-item">
+        <div class="outcome-check"></div>
+        Decide if a printer is right for you
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-section">
+    <div class="footer-info">
+      <div class="fi-row">📍 <strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
+      <div class="fi-row">🌐 www.layerweaver.com/workshop/</div>
+      <div class="fi-row">📞 9405616775</div>
+    </div>
+    <a href="https://www.layerweaver.com/enroll/" class="cta-button">Register Now →</a>
+  </div>
+
+</div>
+</body>
+</html>

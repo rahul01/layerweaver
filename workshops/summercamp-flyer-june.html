@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summer Camp Flyer – June 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .poster {
+    width: 800px;
+    background: #0d0d1a;
+    border: 2px solid #A083D5;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 60px rgba(160, 131, 213, 0.3), 0 0 120px rgba(160, 131, 213, 0.1);
+  }
+
+  /* Top grid accent */
+  .grid-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 420px;
+    background-image:
+      linear-gradient(rgba(160,131,213,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(160,131,213,0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* Radial glow */
+  .glow {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 500px;
+    background: radial-gradient(ellipse at center, rgba(160,131,213,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: relative;
+    padding: 40px 48px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 2;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-area img {
+    height: 36px;
+    filter: brightness(0) invert(1);
+  }
+  .logo-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #A083D5;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .badge-summer {
+    background: #EFCF20;
+    color: #0d0d1a;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    padding: 32px 48px 0;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #EFCF20;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .hero-title {
+    font-size: 4.2rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  .hero-title .accent {
+    color: #A083D5;
+  }
+
+  .hero-title .line2 {
+    color: #EFCF20;
+    display: block;
+  }
+
+  .hero-sub {
+    margin-top: 16px;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.65);
+    font-weight: 500;
+    max-width: 400px;
+    line-height: 1.5;
+  }
+
+  /* ── BATCH DATES ── */
+  .dates-section {
+    position: relative;
+    z-index: 2;
+    margin: 32px 48px 0;
+    display: flex;
+    gap: 16px;
+  }
+
+  .date-card {
+    flex: 1;
+    background: linear-gradient(135deg, #A083D5 0%, #7a5cb8 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .date-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+
+  .date-card .batch-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 4px;
+  }
+  .date-card .batch-date {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+  }
+  .date-card .batch-day {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.75);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .date-card.alt {
+    background: linear-gradient(135deg, #EFCF20 0%, #d4b800 100%);
+  }
+  .date-card.alt .batch-label { color: rgba(0,0,0,0.55); }
+  .date-card.alt .batch-date { color: #0d0d1a; }
+  .date-card.alt .batch-day { color: rgba(0,0,0,0.6); }
+
+  .seats-note {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(160,131,213,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .seats-note .seats-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #A083D5;
+    line-height: 1;
+  }
+  .seats-note .seats-text {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    margin: 32px 48px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(160,131,213,0.5), transparent);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── CONTENT GRID ── */
+  .content-grid {
+    position: relative;
+    z-index: 2;
+    padding: 0 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .content-block h4 {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #EFCF20;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .content-block h4::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(239,207,32,0.25);
+  }
+
+  .content-block ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .content-block ul li {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.4;
+  }
+  .content-block ul li::before {
+    content: '▸';
+    color: #A083D5;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── SESSIONS STRIP ── */
+  .sessions-strip {
+    position: relative;
+    z-index: 2;
+    margin: 28px 48px 0;
+    background: rgba(160,131,213,0.08);
+    border: 1px solid rgba(160,131,213,0.25);
+    border-radius: 12px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .sessions-strip .sessions-big {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #A083D5;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .sessions-strip .sessions-desc {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+  }
+  .sessions-strip .sessions-desc strong {
+    color: #fff;
+    font-weight: 700;
+  }
+  .sessions-strip .pill-row {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .pill {
+    background: rgba(239,207,32,0.12);
+    border: 1px solid rgba(239,207,32,0.3);
+    color: #EFCF20;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-align: center;
+  }
+
+  /* ── FOOTER ── */
+  .footer-section {
+    position: relative;
+    z-index: 2;
+    margin: 28px 0 0;
+    background: rgba(255,255,255,0.03);
+    border-top: 1px solid rgba(160,131,213,0.2);
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .footer-info .fi-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.65);
+  }
+  .footer-info .fi-row .icon {
+    color: #A083D5;
+    font-size: 0.8rem;
+    width: 14px;
+    text-align: center;
+  }
+  .footer-info .fi-row strong {
+    color: rgba(255,255,255,0.9);
+  }
+
+  .cta-button {
+    background: linear-gradient(135deg, #A083D5 0%, #7a5cb8 100%);
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 16px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 24px rgba(160,131,213,0.4);
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .age-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239,207,32,0.1);
+    border: 1px solid rgba(239,207,32,0.4);
+    color: #EFCF20;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .poster { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="grid-bg"></div>
+  <div class="glow"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-area">
+      <img src="../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+      <span class="logo-name">LayerWeaver</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span class="age-tag">Ages 8 &amp; up</span>
+      <span class="badge-summer">Summer 2026</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="hero-eyebrow">✦ Hands-On 3D Printing Experience ✦</p>
+    <h1 class="hero-title">
+      3D <span class="accent">Printing</span><br>
+      <span class="line2">Summer Camp</span>
+    </h1>
+    <p class="hero-sub">Turn digital ideas into real objects - design, print, and take home your own creations.</p>
+  </div>
+
+  <!-- BATCH DATES -->
+  <div class="dates-section">
+    <div class="date-card">
+      <div class="batch-label">Batch 1 · Starts</div>
+      <div class="batch-date">1st June</div>
+      <div class="batch-day">Sunday, 2026</div>
+    </div>
+    <div class="date-card alt">
+      <div class="batch-label">Batch 2 · Starts</div>
+      <div class="batch-date">8th June</div>
+      <div class="batch-day">Sunday, 2026</div>
+    </div>
+    <div class="seats-note">
+      <div class="seats-num">3</div>
+      <div class="seats-text">Seats per<br>batch only</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CONTENT GRID -->
+  <div class="content-grid">
+    <div class="content-block">
+      <h4>What you'll learn</h4>
+      <ul>
+        <li>How 3D printers work - top to bottom</li>
+        <li>Design your own models from scratch</li>
+        <li>Set up, slice &amp; start a real print</li>
+        <li>Diagnose and fix common print failures</li>
+        <li>Choose the right filament for the job</li>
+        <li>Design something useful &amp; take it home</li>
+      </ul>
+    </div>
+    <div class="content-block">
+      <h4>Skills you gain</h4>
+      <ul>
+        <li>3D modelling basics (beginner-friendly)</li>
+        <li>Design thinking &amp; spatial reasoning</li>
+        <li>Materials science fundamentals</li>
+        <li>Real-world problem solving</li>
+        <li>Tech confidence &amp; maker mindset</li>
+        <li>A tangible portfolio piece to show off</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SESSIONS STRIP -->
+  <div class="sessions-strip">
+    <div class="sessions-big">6</div>
+    <div class="sessions-desc">
+      <strong>Sessions of 2 hours each</strong><br>
+      12 total hours of hands-on learning.<br>
+      Small batches mean <strong>personal attention</strong> - not a classroom lecture.
+    </div>
+    <div class="pill-row">
+      <div class="pill">100% Practical</div>
+      <div class="pill">Personal Attention</div>
+      <div class="pill">Take Home Prints</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-section">
+    <div class="footer-info">
+      <div class="fi-row">
+        <span class="icon">📍</span>
+        <span><strong>C-701 Orchid Towers</strong>, Baner Road, Pune</span>
+      </div>
+      <div class="fi-row">
+        <span class="icon">🌐</span>
+        <span>www.layerweaver.com/workshop/</span>
+      </div>
+      <div class="fi-row">
+        <span class="icon">📞</span>
+        <span>9405616775</span>
+      </div>
+    </div>
+    <a href="https://www.layerweaver.com/enroll/" class="cta-button">Register Now →</a>
+  </div>
+</div>
+</body>
+</html>
