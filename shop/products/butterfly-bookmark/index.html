@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css">
+    <link rel="stylesheet" href="../../shop.css?v=1779788579926">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -45,6 +45,14 @@
                 <img src="../../../images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
                 <h1>LayerWeaver</h1>
             </a>
+            <div class="search-container" data-index-url="../../search-index.json" data-products-url="../../products/">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" class="search-input" placeholder="Search products…" autocomplete="off" spellcheck="false">
+                    <button class="search-clear" aria-label="Clear search"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="search-dropdown" role="listbox"></div>
+            </div>
             <nav class="shop-nav">
                 <!-- cart.js injects cart icon here -->
             </nav>
@@ -226,9 +234,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"butterfly-bookmark":{"Blue":"#005bd3","Orange":"#ff8a00"}};</script>
-    <script src="../../auth.js"></script>
-    <script src="../../cart.js"></script>
-    <script src="../../wishlist.js"></script>
+    <script src="../../auth.js?v=1779788579926"></script>
+    <script src="../../cart.js?v=1779788579926"></script>
+    <script src="../../search.js?v=1779788579926"></script>
+    <script src="../../wishlist.js?v=1779788579926"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

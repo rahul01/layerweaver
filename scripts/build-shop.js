@@ -11,6 +11,7 @@ const path = require('path');
 const SHOPIFY_DOMAIN = 'shop.layerweaver.com';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '7f0eafeb115e99a4a917e044a1fb4125';
 const SITE_URL = 'https://www.layerweaver.com';
+const BUILD_VER = Date.now();
 
 async function fetchCollections() {
   const query = `{
@@ -199,7 +200,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <link rel="apple-touch-icon" href="${base}images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="${base}styles.css">
-    <link rel="stylesheet" href="${shopBase}shop.css">
+    <link rel="stylesheet" href="${shopBase}shop.css?v=${BUILD_VER}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -221,7 +222,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     </script>`;
 }
 
-function shopHeaderHtml(base) {
+function shopHeaderHtml(base, shopBase) {
   return `
     <header class="shop-header">
         <div class="container">
@@ -229,6 +230,14 @@ function shopHeaderHtml(base) {
                 <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
                 <h1>LayerWeaver</h1>
             </a>
+            <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" class="search-input" placeholder="Search products…" autocomplete="off" spellcheck="false">
+                    <button class="search-clear" aria-label="Clear search"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="search-dropdown" role="listbox"></div>
+            </div>
             <nav class="shop-nav">
                 <!-- cart.js injects cart icon here -->
             </nav>
@@ -392,6 +401,14 @@ function collectionNavHtml(collections, shopBase, activeHandle = null) {
           <div class="collection-dropdown" role="menu">
               ${dropdownItems}
           </div>
+          <div class="mobile-inline-search" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
+              <div class="search-bar">
+                  <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                  <input type="search" class="search-input" placeholder="Search…" autocomplete="off" spellcheck="false">
+                  <button class="search-clear" aria-label="Clear search"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="search-dropdown" role="listbox"></div>
+          </div>
       </div>`;
 }
 
@@ -424,7 +441,7 @@ function generateShopIndex(products, collections) {
     })}
 </head>
 <body>
-    ${shopHeaderHtml(base)}
+    ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
 
     <section class="collection-topbar">
@@ -447,9 +464,10 @@ ${productCards}
 
     ${footerHtml(base)}
     ${swatchDataScript(products)}
-    <script src="auth.js"></script>
-    <script src="cart.js"></script>
-    <script src="wishlist.js"></script>
+    <script src="auth.js?v=${BUILD_VER}"></script>
+    <script src="cart.js?v=${BUILD_VER}"></script>
+    <script src="search.js?v=${BUILD_VER}"></script>
+    <script src="wishlist.js?v=${BUILD_VER}"></script>
     <script src="${base}script.js"></script>
 </body>
 </html>`;
@@ -556,7 +574,7 @@ function generateProductPage(product) {
     })}
 </head>
 <body>
-    ${shopHeaderHtml(base)}
+    ${shopHeaderHtml(base, shopBase)}
 
     <section class="product-page">
         <div class="container">
@@ -682,9 +700,10 @@ function generateProductPage(product) {
         });
     </script>
     ${swatchDataScript([product])}
-    <script src="${shopBase}auth.js"></script>
-    <script src="${shopBase}cart.js"></script>
-    <script src="${shopBase}wishlist.js"></script>
+    <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>
     <script src="${base}script.js"></script>
 </body>
 </html>`;
@@ -778,7 +797,7 @@ function generateCollectionPage(collection, collections) {
     })}
 </head>
 <body>
-    ${shopHeaderHtml(base)}
+    ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
 
     <section class="collection-topbar">
@@ -801,9 +820,10 @@ ${productCards}
 
     ${footerHtml(base)}
     ${swatchDataScript(collection.products)}
-    <script src="${shopBase}auth.js"></script>
-    <script src="${shopBase}cart.js"></script>
-    <script src="${shopBase}wishlist.js"></script>
+    <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>
     <script src="${base}script.js"></script>
 </body>
 </html>`;
@@ -822,7 +842,7 @@ function generateAccountPage() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account – LayerWeaver</title>
     <link rel="stylesheet" href="${base}styles.css">
-    <link rel="stylesheet" href="${shopBase}shop.css">
+    <link rel="stylesheet" href="${shopBase}shop.css?v=${BUILD_VER}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script type="module">
@@ -842,7 +862,7 @@ function generateAccountPage() {
     </script>
 </head>
 <body>
-    ${shopHeaderHtml(base)}
+    ${shopHeaderHtml(base, shopBase)}
 
     <main class="account-page container">
         <div id="account-loading" class="account-state">
@@ -886,10 +906,11 @@ function generateAccountPage() {
     </main>
 
     ${footerHtml(base)}
-    <script src="${shopBase}auth.js"></script>
-    <script src="${shopBase}cart.js"></script>
-    <script src="${shopBase}wishlist.js"></script>
-    <script src="${shopBase}account.js"></script>
+    <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}account.js?v=${BUILD_VER}"></script>
     <script src="${base}script.js"></script>
 </body>
 </html>`;
@@ -914,6 +935,17 @@ async function main() {
 
   fs.writeFileSync(path.join(shopDir, 'index.html'), generateShopIndex(products, collections));
   console.log('Generated shop/index.html');
+
+  const searchIndex = products.map(p => ({
+    handle: p.handle,
+    title:  p.title,
+    price:  isContactOnly(p) ? '' : formatPrice(p.priceRange.minVariantPrice.amount, p.priceRange.minVariantPrice.currencyCode),
+    image:  p.images.edges[0]?.node.url || '',
+    tags:   p.tags.join(' '),
+    desc:   p.description.slice(0, 200),
+  }));
+  fs.writeFileSync(path.join(shopDir, 'search-index.json'), JSON.stringify(searchIndex));
+  console.log('Generated shop/search-index.json');
 
   const accountDir = path.join(shopDir, 'account');
   fs.mkdirSync(accountDir, { recursive: true });
