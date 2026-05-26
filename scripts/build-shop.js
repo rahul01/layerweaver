@@ -594,7 +594,7 @@ function generateProductPage(product) {
                         <a href="https://wa.me/917558783018?text=${waText}"
                            class="btn-secondary whatsapp-btn"
                            target="_blank">
-                            <i class="fa-brands fa-whatsapp"></i> Ask on WhatsApp
+                            <i class="fa-brands fa-whatsapp"></i> ${isContactOnly(product) ? 'Request on WhatsApp' : 'Ask on WhatsApp'}
                         </a>
                     </div>
 
