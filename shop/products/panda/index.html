@@ -80,6 +80,7 @@
                     
 
                     <div class="product-actions">
+                        
                         <button id="add-to-cart-btn"
                                 class="btn-primary add-to-cart-btn"
                                 data-variant-gid="gid://shopify/ProductVariant/48079833497822"
@@ -144,7 +145,7 @@
         function selectVariantBtn(btn) {
             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('product-price').textContent = btn.dataset.price;
+            const priceEl = document.getElementById('product-price'); if (priceEl) priceEl.textContent = btn.dataset.price;
             const label = document.getElementById('selected-variant-label');
             if (label) label.textContent = btn.title || btn.textContent.trim();
             // Only swap the image when thumbnails are variant-linked;
@@ -173,7 +174,7 @@
                     if (btn) {
                         document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-                        document.getElementById('product-price').textContent = thumb.dataset.price;
+                        const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                         const label = document.getElementById('selected-variant-label');
                         if (label) label.textContent = thumb.dataset.variantTitle || '';
                     }

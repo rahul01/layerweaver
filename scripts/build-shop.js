@@ -152,6 +152,13 @@ function formatPrice(amount, currencyCode) {
   return currencyCode === 'INR' ? `₹${n.toFixed(0)}` : `${currencyCode} ${n.toFixed(2)}`;
 }
 
+// Products tagged 'personalized' with a ₹1 placeholder price are contact-only:
+// hide price everywhere and replace cart/personalization UI with WhatsApp-only.
+function isContactOnly(product) {
+  return product.tags.includes('personalized') &&
+    parseFloat(product.priceRange.minVariantPrice.amount) <= 1;
+}
+
 // ── HTML partials (all paths relative to site root via `base`) ────────────────
 // base:     path from this file back to site root  (e.g. '../' or '../../../')
 // shopBase: path from this file back to shop/       (e.g. './'  or '../../')
@@ -309,7 +316,7 @@ function productCardHtml(product, productsBase) {
               </div>
               <div class="product-card-info">
                   <h3>${product.title}</h3>
-                  <p class="product-price">${priceDisplay}</p>
+                  ${isContactOnly(product) ? '' : `<p class="product-price">${priceDisplay}</p>`}
               </div>
           </a>
           ${available
@@ -550,7 +557,7 @@ function generateProductPage(product) {
 
                 <div class="product-details">
                     <h1>${product.title}</h1>
-                    <p class="product-price" id="product-price">${price}</p>
+                    ${isContactOnly(product) ? '' : `<p class="product-price" id="product-price">${price}</p>`}
 
                     ${hasVariants ? `
                     <div class="variants-section">
@@ -560,7 +567,7 @@ function generateProductPage(product) {
                         </div>
                     </div>` : ''}
 
-                    ${product.tags.includes('personalized') ? `
+                    ${product.tags.includes('personalized') && !isContactOnly(product) ? `
                     <div class="personalization-field">
                         <label for="custom-text">Personalization <span class="required">*</span></label>
                         <input type="text" id="custom-text" maxlength="20" placeholder="Enter the text to be printed">
@@ -568,16 +575,17 @@ function generateProductPage(product) {
                     </div>` : ''}
 
                     <div class="product-actions">
+                        ${isContactOnly(product) ? '' : `
                         <button id="add-to-cart-btn"
                                 class="btn-primary add-to-cart-btn"
                                 data-variant-gid="${firstAvailable.id}"
                                 ${product.tags.includes('personalized') ? 'data-personalized="true"' : ''}>
                             Add to Cart
-                        </button>
+                        </button>`}
                         <button class="wishlist-btn btn-secondary wishlist-page-btn"
                                 data-handle="${product.handle}"
                                 data-title="${product.title}"
-                                data-price="${price}"
+                                data-price="${isContactOnly(product) ? '' : price}"
                                 data-image="${mainImage?.url || ''}"
                                 data-url="${SITE_URL}/shop/products/${product.handle}/"
                                 aria-label="Add to wishlist">
@@ -607,7 +615,7 @@ function generateProductPage(product) {
         function selectVariantBtn(btn) {
             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('product-price').textContent = btn.dataset.price;
+            const priceEl = document.getElementById('product-price'); if (priceEl) priceEl.textContent = btn.dataset.price;
             const label = document.getElementById('selected-variant-label');
             if (label) label.textContent = btn.title || btn.textContent.trim();
             // Only swap the image when thumbnails are variant-linked;
@@ -636,7 +644,7 @@ function generateProductPage(product) {
                     if (btn) {
                         document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-                        document.getElementById('product-price').textContent = thumb.dataset.price;
+                        const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                         const label = document.getElementById('selected-variant-label');
                         if (label) label.textContent = thumb.dataset.variantTitle || '';
                     }
