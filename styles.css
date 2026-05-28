@@ -1455,6 +1455,50 @@ footer {
     line-height: 1.6;
 }
 
+/* Collapsible course cards */
+.course-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 30px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.course-card-header:hover {
+    background-color: rgba(160, 131, 213, 0.05);
+}
+
+.course-card-header-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.course-card-header-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.course-card-chevron {
+    color: var(--primary);
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-left: 16px;
+    transition: transform 0.35s ease;
+}
+
+.course-card.collapsed .course-card-chevron {
+    transform: rotate(-90deg);
+}
+
+.course-card-body {
+    overflow: hidden;
+    transition: max-height 0.45s ease;
+}
+
 .lesson-content {
     display: flex;
     flex-wrap: wrap;

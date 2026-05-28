@@ -203,6 +203,7 @@
     background: var(--light);
     padding: 0;
     border-bottom: 1px solid var(--gray);
+    transition: top 0.3s ease;
 }
 
 /* ------- Collection Banner (collage) ------- */

@@ -118,13 +118,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Header scroll effect
     const header = document.querySelector('header');
     if (header) {
+        const collectionTopbar = document.querySelector('.collection-topbar');
         window.addEventListener('scroll', function() {
             if (window.scrollY > 100) {
                 header.style.padding = '10px 0';
                 header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+                if (collectionTopbar) collectionTopbar.style.top = '70px';
             } else {
                 header.style.padding = '15px 0';
                 header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                if (collectionTopbar) collectionTopbar.style.top = '80px';
             }
         });
     }
