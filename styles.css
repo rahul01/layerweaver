@@ -2110,7 +2110,6 @@ footer {
     font-size: 3rem;
     color: var(--dark);
     margin: 0 0 16px;
-    white-space: nowrap;
 }
 
 .service-page-hero h1 .brand-text {
