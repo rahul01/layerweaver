@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Ad — Number Plate Keychain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #A083D5;
+            --secondary: #EFCF20;
+            --dark: #000000;
+            --light: #FFFFFF;
+            --font-primary: 'Montserrat', sans-serif;
+            --font-brand: 'Science Gothic', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: var(--font-primary);
+            gap: 16px;
+            padding: 40px;
+        }
+
+        .ad-label {
+            color: #666;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-family: var(--font-primary);
+        }
+
+        /* 1080×1080 canvas */
+        .ad {
+            width: 1080px;
+            height: 1080px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        /* Product image: natural size, rotated 30°, no clipping */
+        .bg-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 145%;
+            height: auto;
+            transform: translate(-50%, -50%) rotate(30deg);
+            transform-origin: center center;
+        }
+
+        /* Top gradient — fades image to dark for logo legibility */
+        .overlay-top {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.72) 0%,
+                rgba(0,0,0,0.20) 30%,
+                transparent 55%
+            );
+            z-index: 1;
+        }
+
+        /* Bottom gradient — gives the copy panel a solid base */
+        .overlay-bottom {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(0,0,0,0.92) 0%,
+                rgba(0,0,0,0.75) 30%,
+                transparent 58%
+            );
+            z-index: 1;
+        }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            padding: 52px 64px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand-logo {
+            height: 52px;
+            width: auto;
+        }
+
+        .brand-name {
+            font-family: var(--font-brand);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--light);
+            letter-spacing: 0.04em;
+        }
+
+        .tag {
+            background: var(--secondary);
+            color: var(--dark);
+            font-family: var(--font-primary);
+            font-size: 22px;
+            font-weight: 700;
+            padding: 12px 28px;
+            border-radius: 100px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        /* ── BOTTOM COPY ── */
+        .bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            padding: 0 64px 60px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 32px;
+        }
+
+        .copy {
+            flex: 1;
+        }
+
+        .eyebrow {
+            font-family: var(--font-primary);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .headline {
+            font-family: var(--font-primary);
+            font-size: 92px;
+            font-weight: 900;
+            color: var(--light);
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+        }
+
+        .headline em {
+            font-style: normal;
+            color: var(--secondary);
+        }
+
+        .sub {
+            font-family: var(--font-primary);
+            font-size: 28px;
+            color: rgba(255,255,255,0.65);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        /* ── RIGHT COLUMN: price + CTA ── */
+        .cta-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 18px;
+            flex-shrink: 0;
+        }
+
+        .price-block {
+            text-align: right;
+        }
+
+        .price-label {
+            font-family: var(--font-primary);
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.50);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .price {
+            font-family: var(--font-primary);
+            font-size: 64px;
+            font-weight: 900;
+            color: var(--secondary);
+            line-height: 1;
+        }
+
+        .cta-btn {
+            background: var(--primary);
+            color: var(--light);
+            font-family: var(--font-primary);
+            font-size: 26px;
+            font-weight: 700;
+            padding: 26px 52px;
+            border-radius: 100px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(160,131,213,0.4);
+        }
+
+        .url {
+            font-family: var(--font-brand);
+            font-size: 18px;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.06em;
+        }
+
+        /* ── Responsive scale-down for smaller screens ── */
+        @media (max-width: 1180px) {
+            .ad {
+                width: min(1080px, 90vw);
+                height: min(1080px, 90vw);
+            }
+            .top-bar { padding: min(52px, 4.8%) min(64px, 5.9%) 0; }
+            .brand-logo { height: min(52px, 4.8vw); }
+            .brand-name { font-size: min(36px, 3.3vw); }
+            .tag { font-size: min(22px, 2vw); padding: min(12px, 1.1vw) min(28px, 2.6vw); }
+            .bottom { padding: 0 min(64px, 5.9%) min(60px, 5.6%); gap: min(32px, 3vw); }
+            .eyebrow { font-size: min(26px, 2.4vw); }
+            .headline { font-size: min(92px, 8.5vw); }
+            .sub { font-size: min(28px, 2.6vw); }
+            .price { font-size: min(64px, 5.9vw); }
+            .price-label { font-size: min(18px, 1.7vw); }
+            .cta-btn { font-size: min(26px, 2.4vw); padding: min(26px, 2.4vw) min(52px, 4.8vw); }
+            .url { font-size: min(18px, 1.7vw); }
+        }
+    </style>
+</head>
+<body>
+    <p class="ad-label">Instagram Ad — 1080 × 1080 px</p>
+
+    <div class="ad">
+        <img class="bg-img"
+             src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jun_5_2026_03_58_20_PM.png?v=1780655357"
+             alt="">
+
+        <div class="overlay-top"></div>
+        <div class="overlay-bottom"></div>
+
+        <div class="top-bar">
+            <div class="brand">
+                <img class="brand-logo"
+                     src="../../images/layerweaver-logo-white.svg"
+                     alt="LayerWeaver">
+                <span class="brand-name">LayerWeaver</span>
+            </div>
+            <span class="tag">3D Printed</span>
+        </div>
+
+        <div class="bottom">
+            <div class="copy">
+                <p class="eyebrow">Personalized Keychain</p>
+                <h2 class="headline">Your Plate.<br><em>Your Keys.</em></h2>
+                <p class="sub">Custom 3D printed with your vehicle<br>registration. A unique gift for car lovers.</p>
+            </div>
+            <div class="cta-col">
+                <div class="price-block">
+                    <span class="price-label">Starting at</span>
+                    <span class="price">₹149</span>
+                </div>
+                <button class="cta-btn">Shop Now →</button>
+                <span class="url">layerweaver.com/shop</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
