@@ -67,4 +67,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Hash-based deep link: expand the target card, collapse others
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+        const target = document.getElementById(hash);
+        if (target && target.classList.contains('course-card')) {
+            document.querySelectorAll('.course-card').forEach(card => {
+                const body = card.querySelector('.course-card-body');
+                if (card === target) {
+                    card.classList.remove('collapsed');
+                    body.style.maxHeight = '';
+                } else {
+                    card.classList.add('collapsed');
+                    body.style.maxHeight = '0px';
+                }
+            });
+            setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        }
+    }
 });
