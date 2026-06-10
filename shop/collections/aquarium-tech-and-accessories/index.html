@@ -32,6 +32,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        import { getPerformance } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js";
         const app = initializeApp({
             apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
             authDomain: "layerweaver.firebaseapp.com",
@@ -42,6 +43,7 @@
             measurementId: "G-00DMH9PYCG"
         });
         const analytics = getAnalytics(app);
+        getPerformance(app);
         window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
     </script>
 </head>

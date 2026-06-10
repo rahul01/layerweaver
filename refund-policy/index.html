@@ -25,6 +25,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        import { getPerformance } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js";
         const app = initializeApp({
             apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
             authDomain: "layerweaver.firebaseapp.com",
@@ -35,6 +36,7 @@
             measurementId: "G-00DMH9PYCG"
         });
         getAnalytics(app);
+        getPerformance(app);
     </script>
     <style>
         .policy-hero {
