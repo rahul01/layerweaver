@@ -187,6 +187,14 @@ function isContactOnly(product) {
 function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structuredData }) {
   return `
     <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GT-NC682MJG"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GT-NC682MJG');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title>
     <meta name="description" content="${description}">
@@ -208,6 +216,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        import { getPerformance } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js";
         const app = initializeApp({
             apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
             authDomain: "layerweaver.firebaseapp.com",
@@ -218,6 +227,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
             measurementId: "G-00DMH9PYCG"
         });
         const analytics = getAnalytics(app);
+        getPerformance(app);
         window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
     </script>`;
 }
@@ -264,6 +274,8 @@ function footerHtml(base) {
                     <a href="${base}workshop/">Workshops</a>
                     <a href="${base}#about">About</a>
                     <a href="${base}connect/">Contact Us</a>
+                    <a href="${base}refund-policy/">Refund Policy</a>
+                    <a href="${base}shipping-policy/">Shipping Policy</a>
                 </nav>
                 <div class="footer-right">
                     <p>&copy; 2025 <span class="brand-text-small">LayerWeaver</span>. All rights reserved.</p>
@@ -839,6 +851,14 @@ function generateAccountPage() {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GT-NC682MJG"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GT-NC682MJG');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account – LayerWeaver</title>
     <link rel="stylesheet" href="${base}styles.css">
@@ -848,6 +868,7 @@ function generateAccountPage() {
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        import { getPerformance } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js";
         const app = initializeApp({
             apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
             authDomain: "layerweaver.firebaseapp.com",
@@ -858,6 +879,7 @@ function generateAccountPage() {
             measurementId: "G-00DMH9PYCG"
         });
         const analytics = getAnalytics(app);
+        getPerformance(app);
         window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
     </script>
 </head>
