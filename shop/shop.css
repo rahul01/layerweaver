@@ -1093,6 +1093,126 @@
     gap: 14px;
 }
 
+.shipping-progress {
+    padding: 4px 0 8px;
+}
+
+.shipping-bar-track {
+    height: 6px;
+    background: #ede8f7;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.shipping-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.shipping-unlocked .shipping-bar-fill {
+    background: #22c55e;
+}
+
+.shipping-bar-msg {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+    margin: 7px 0 0;
+    text-align: center;
+}
+
+.shipping-unlocked .shipping-bar-msg {
+    color: #22c55e;
+    animation: shipping-pop 0.4s ease;
+}
+
+@keyframes shipping-pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+/* Free shipping speech bubble */
+#shipping-bubble {
+    position: fixed;
+    background: #fff;
+    border: 1.5px solid #e8e0f5;
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.13);
+    width: 210px;
+    z-index: 9998;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+}
+
+#shipping-bubble.bubble-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#shipping-bubble::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: 16px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-left: 1.5px solid #e8e0f5;
+    border-top: 1.5px solid #e8e0f5;
+    transform: rotate(45deg);
+}
+
+.bubble-msg {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #444;
+    margin: 0 0 7px;
+}
+
+#shipping-bubble.bubble-unlocked .bubble-msg {
+    color: #22c55e;
+    animation: shipping-pop 0.4s ease;
+}
+
+.bubble-track {
+    height: 5px;
+    background: #ede8f7;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bubble-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+#shipping-bubble.bubble-unlocked .bubble-fill {
+    background: #22c55e;
+}
+
+/* Cart icon bounce on free shipping unlock */
+.cart-icon-celebrate {
+    animation: cart-bounce 0.5s ease;
+}
+
+@keyframes cart-bounce {
+    0%   { transform: scale(1) rotate(0deg); }
+    25%  { transform: scale(1.3) rotate(-10deg); }
+    50%  { transform: scale(1.3) rotate(10deg); }
+    75%  { transform: scale(1.15) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
 .cart-total {
     display: flex;
     justify-content: space-between;
@@ -1110,6 +1230,29 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+}
+
+.cart-policy-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 2px;
+}
+
+.cart-policy-links a {
+    font-size: 0.78rem;
+    color: #888;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-primary);
+    font-weight: 500;
+    transition: color 0.18s;
+}
+
+.cart-policy-links a:hover {
+    color: var(--primary);
 }
 
 /* Add to Cart button */
@@ -1680,6 +1823,7 @@
     gap: 8px 20px;
     align-items: center;
     justify-content: center;
+    max-width: 360px;
     padding: 8px 0;
 }
 

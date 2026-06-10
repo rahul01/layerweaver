@@ -3,15 +3,17 @@
  * Uses Storefront API to manage cart. Injects cart icon + drawer into the page.
  */
 (function () {
-  const DOMAIN = 'shop.layerweaver.com';
-  const TOKEN  = '7f0eafeb115e99a4a917e044a1fb4125';
-  const API    = `https://${DOMAIN}/api/2025-01/graphql.json`;
-  const KEY    = 'lw_cart_id';
+  const DOMAIN            = 'shop.layerweaver.com';
+  const TOKEN             = '7f0eafeb115e99a4a917e044a1fb4125';
+  const API               = `https://${DOMAIN}/api/2025-01/graphql.json`;
+  const KEY               = 'lw_cart_id';
+  const FREE_SHIPPING_MIN = 500;
 
   // Derive the path to shop/ root from the current page URL
   const path     = window.location.pathname;
   const shopIdx  = path.indexOf('/shop/');
-  const SHOP_ROOT = shopIdx !== -1 ? path.substring(0, shopIdx + 6) : '/shop/';
+  const SHOP_ROOT  = shopIdx !== -1 ? path.substring(0, shopIdx + 6) : '/shop/';
+  const SITE_ROOT  = shopIdx !== -1 ? path.substring(0, shopIdx + 1) : '/';
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -150,6 +152,12 @@
       </div>
       <div class="cart-body" id="cart-body"></div>
       <div class="cart-footer" id="cart-footer" style="display:none">
+        <div id="shipping-progress" class="shipping-progress">
+          <div class="shipping-bar-track">
+            <div class="shipping-bar-fill" id="shipping-bar-fill"></div>
+          </div>
+          <p class="shipping-bar-msg" id="shipping-bar-msg"></p>
+        </div>
         <div class="cart-total">
           <span>Total</span>
           <span id="cart-total-price"></span>
@@ -157,6 +165,10 @@
         <a id="cart-checkout-btn" class="btn-primary">
           Checkout <i class="fa-solid fa-arrow-right"></i>
         </a>
+        <div class="cart-policy-links">
+          <a href="${SITE_ROOT}shipping-policy/"><i class="fa-solid fa-truck-fast"></i> Shipping Policy</a>
+          <a href="${SITE_ROOT}refund-policy/"><i class="fa-solid fa-rotate-left"></i> Refund Policy</a>
+        </div>
       </div>`;
 
     document.body.appendChild(overlay);
@@ -169,6 +181,101 @@
         num_items: cart?.totalQuantity || 0,
       });
     });
+  }
+
+  function spawnPageConfetti() {
+    const colors = ['#A083D5', '#EFCF20', '#22c55e', '#f97316', '#ec4899'];
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    for (let i = 0; i < 60; i++) {
+      const dot  = document.createElement('div');
+      const size = 5 + Math.random() * 7;
+      const sx   = Math.random() * W;
+      const sy   = 0.2 * H + Math.random() * 0.6 * H;
+      dot.style.cssText = `position:fixed;width:${size}px;height:${size}px;border-radius:50%;background:${colors[Math.floor(Math.random() * colors.length)]};left:${sx}px;top:${sy}px;pointer-events:none;z-index:9999;`;
+      document.body.appendChild(dot);
+      const tx = (Math.random() - 0.5) * 200;
+      const ty = -(60 + Math.random() * 180);
+      dot.animate(
+        [{ transform: 'translate(0,0) scale(1)', opacity: 1 },
+         { transform: `translate(${tx}px,${ty}px) scale(0)`, opacity: 0 }],
+        { duration: 800 + Math.random() * 600, easing: 'ease-out', fill: 'forwards', delay: Math.random() * 300 }
+      ).onfinish = () => dot.remove();
+    }
+    // Bounce the cart icon
+    const cartBtn = document.getElementById('cart-icon-btn');
+    if (cartBtn) {
+      cartBtn.classList.add('cart-icon-celebrate');
+      cartBtn.addEventListener('animationend', () => cartBtn.classList.remove('cart-icon-celebrate'), { once: true });
+    }
+  }
+
+  function injectShippingBubble() {
+    if (document.getElementById('shipping-bubble')) return;
+    const bubble = document.createElement('div');
+    bubble.id = 'shipping-bubble';
+    bubble.innerHTML = `
+      <p class="bubble-msg" id="bubble-msg"></p>
+      <div class="bubble-track"><div class="bubble-fill" id="bubble-fill"></div></div>`;
+    document.body.appendChild(bubble);
+  }
+
+  let _bubbleTimer = null;
+  function showShippingBubble(pct, msg, unlocked) {
+    const bubble = document.getElementById('shipping-bubble');
+    const fill   = document.getElementById('bubble-fill');
+    const msgEl  = document.getElementById('bubble-msg');
+    if (!bubble || !fill || !msgEl) return;
+
+    const cartBtn = document.getElementById('cart-icon-btn');
+    if (cartBtn) {
+      const rect = cartBtn.getBoundingClientRect();
+      bubble.style.top   = (rect.bottom + 10) + 'px';
+      bubble.style.right = (window.innerWidth - rect.right) + 'px';
+    }
+
+    fill.style.width = pct + '%';
+    msgEl.textContent = msg;
+    bubble.classList.toggle('bubble-unlocked', unlocked);
+    bubble.classList.add('bubble-visible');
+
+    clearTimeout(_bubbleTimer);
+    _bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-visible'), unlocked ? 3500 : 2800);
+  }
+
+  function renderShippingBar() {
+    const total       = parseFloat(cart?.cost?.totalAmount?.amount || 0);
+    const isUnlocked  = total >= FREE_SHIPPING_MIN;
+    const pct         = Math.min((total / FREE_SHIPPING_MIN) * 100, 100);
+    const unlockMsg   = '🎉 Free shipping unlocked!';
+    const pendingMsg  = `🚚 Add ₹${(FREE_SHIPPING_MIN - total).toFixed(0)} more for free shipping`;
+    const wasUnlocked = sessionStorage.getItem('lw_shipping_unlocked') === 'true';
+
+    // ── Cart drawer bar ──
+    const progressEl = document.getElementById('shipping-progress');
+    const fill       = document.getElementById('shipping-bar-fill');
+    const msg        = document.getElementById('shipping-bar-msg');
+    if (fill && msg && progressEl) {
+      fill.style.width = pct + '%';
+      if (isUnlocked) {
+        msg.textContent = unlockMsg;
+        progressEl.classList.add('shipping-unlocked');
+        if (!wasUnlocked) {
+          sessionStorage.setItem('lw_shipping_unlocked', 'true');
+          spawnPageConfetti();
+        }
+      } else {
+        msg.textContent = pendingMsg;
+        progressEl.classList.remove('shipping-unlocked');
+        sessionStorage.removeItem('lw_shipping_unlocked');
+      }
+    }
+
+    // ── Speech bubble near cart icon ──
+    // Show while building toward goal, or at the exact unlock moment — not on subsequent adds.
+    if (!isUnlocked || !wasUnlocked) {
+      showShippingBubble(pct, isUnlocked ? unlockMsg : pendingMsg, isUnlocked);
+    }
   }
 
   function renderCart() {
@@ -248,6 +355,7 @@
     total.textContent = fmt(costAmt.amount, costAmt.currencyCode);
     chkBtn.href = cart.checkoutUrl;
     footer.style.display = 'flex';
+    renderShippingBar();
   }
 
   // ── Drawer open / close ───────────────────────────────────────────────────
@@ -256,6 +364,11 @@
     document.getElementById('cart-drawer')?.classList.add('open');
     document.getElementById('cart-overlay')?.classList.add('open');
     document.body.style.overflow = 'hidden';
+    window.LW_LOG_EVENT?.('view_cart', {
+      value:     parseFloat(cart?.cost?.totalAmount?.amount || 0),
+      currency:  cart?.cost?.totalAmount?.currencyCode || '',
+      num_items: cart?.totalQuantity || 0,
+    });
   }
 
   function closeDrawer() {
@@ -334,9 +447,10 @@
     try {
       const cartId = loadCartId();
       if (cartId) {
-        try {
-          cart = await addLine(cartId, variantGid, qty, attributes);
-        } catch {
+        cart = await addLine(cartId, variantGid, qty, attributes);
+        if (!cart) {
+          // Shopify returned null — cart expired or completed. Start a fresh cart.
+          localStorage.removeItem(KEY);
           cart = await createCart(variantGid, qty, attributes);
           saveCartId(cart.id);
           syncCartIdToServer(cart.id);
@@ -352,10 +466,11 @@
       const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
       if (newLine) {
         window.LW_LOG_EVENT?.('add_to_cart', {
-          item_name: newLine.merchandise.product.title,
-          item_id:   newLine.merchandise.product.handle,
-          value:     parseFloat(newLine.merchandise.price.amount),
-          currency:  newLine.merchandise.price.currencyCode,
+          item_name:  newLine.merchandise.product.title,
+          item_id:    newLine.merchandise.product.handle,
+          value:      parseFloat(newLine.merchandise.price.amount),
+          currency:   newLine.merchandise.price.currencyCode,
+          cart_total: parseFloat(cart?.cost?.totalAmount?.amount || 0),
         });
       }
     } catch (err) {
@@ -446,8 +561,13 @@
         try {
           const cartId = loadCartId();
           if (cartId) {
-            try { cart = await addLine(cartId, variantGid, 1); }
-            catch { cart = await createCart(variantGid, 1); saveCartId(cart.id); syncCartIdToServer(cart.id); }
+            cart = await addLine(cartId, variantGid, 1);
+            if (!cart) {
+              localStorage.removeItem(KEY);
+              cart = await createCart(variantGid, 1);
+              saveCartId(cart.id);
+              syncCartIdToServer(cart.id);
+            }
           } else {
             cart = await createCart(variantGid, 1);
             saveCartId(cart.id);
@@ -459,10 +579,11 @@
           const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
           if (newLine) {
             window.LW_LOG_EVENT?.('add_to_cart', {
-              item_name: newLine.merchandise.product.title,
-              item_id:   newLine.merchandise.product.handle,
-              value:     parseFloat(newLine.merchandise.price.amount),
-              currency:  newLine.merchandise.price.currencyCode,
+              item_name:  newLine.merchandise.product.title,
+              item_id:    newLine.merchandise.product.handle,
+              value:      parseFloat(newLine.merchandise.price.amount),
+              currency:   newLine.merchandise.price.currencyCode,
+              cart_total: parseFloat(cart?.cost?.totalAmount?.amount || 0),
             });
           }
         } catch (err) {
@@ -558,14 +679,15 @@
   async function init() {
     injectCartIcon();
     injectDrawer();
+    injectShippingBubble();
 
     // Restore cart from previous session
     const cartId = loadCartId();
     if (cartId) {
       try {
         cart = await fetchCart(cartId);
-        if (!cart) { localStorage.removeItem(KEY); cart = null; }
-      } catch { localStorage.removeItem(KEY); }
+        if (!cart) { localStorage.removeItem(KEY); cart = null; } // cart explicitly gone on Shopify
+      } catch { /* network error — keep cart ID, will retry on next interaction */ }
     }
 
     updateBadge();
