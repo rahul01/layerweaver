@@ -176,6 +176,11 @@
     document.body.appendChild(overlay);
     document.body.appendChild(drawer);
     document.getElementById('cart-close').addEventListener('click', closeDrawer);
+    drawer.querySelector('.drawer-back-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      closeDrawer();
+      window.location.href = SHOP_ROOT;
+    });
     document.getElementById('cart-checkout-btn').addEventListener('click', () => {
       window.LW_LOG_EVENT?.('begin_checkout', {
         value:     parseFloat(cart?.cost?.totalAmount?.amount || 0),
@@ -293,7 +298,7 @@
         <div class="cart-empty">
           <i class="fa-solid fa-bag-shopping"></i>
           <p>Your cart is empty</p>
-          <a href="./" class="btn-primary">Browse Shop</a>
+          <a href="${SHOP_ROOT}" class="btn-primary">Browse Shop</a>
         </div>`;
       const checkoutSection = document.getElementById('cart-checkout-section');
       if (checkoutSection) checkoutSection.style.display = 'none';
@@ -535,9 +540,9 @@
       if (variantGid) handleAddToCart(variantGid);
     });
 
-    // Update button state when variant changes
-    document.querySelectorAll('.variant-btn').forEach(btn => {
-      btn.addEventListener('click', () => updateCartBtns());
+    // Update button state when variant changes (via button or thumbnail)
+    document.querySelectorAll('.variant-btn, .thumbnail').forEach(el => {
+      el.addEventListener('click', () => updateCartBtns());
     });
   }
 
@@ -712,6 +717,23 @@
   } else {
     init();
   }
+
+  // Refresh cart when page is restored from bfcache (back/forward navigation)
+  window.addEventListener('pageshow', async (event) => {
+    if (!event.persisted) return;
+    const cartId = loadCartId();
+    if (cartId) {
+      try {
+        cart = await fetchCart(cartId);
+        if (!cart) { localStorage.removeItem(KEY); cart = null; }
+      } catch {}
+    } else {
+      cart = null;
+    }
+    updateBadge();
+    renderCart();
+    updateCartBtns();
+  });
 })();
 
 // Collection filter dropdown (mobile)
