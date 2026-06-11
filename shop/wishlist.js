@@ -10,6 +10,10 @@
   const _shopIdx  = _path.indexOf('/shop/');
   const SHOP_ROOT = _shopIdx !== -1 ? _path.substring(0, _shopIdx + 6) : '/shop/';
 
+  function escAttr(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   // ── Storage helpers ───────────────────────────────────────────────────────
 
   function load() {
@@ -166,7 +170,7 @@
     body.innerHTML = items.map(item => `
       <a class="wishlist-item" href="${SHOP_ROOT}products/${item.handle}/" data-handle="${item.handle}">
         <div class="wishlist-item-image">
-          ${item.image ? `<img src="${item.image}" alt="${item.title}">` : '<i class="fa-solid fa-cube"></i>'}
+          ${item.image ? `<img src="${item.image}" alt="${escAttr(item.title)}">` : '<i class="fa-solid fa-cube"></i>'}
         </div>
         <div class="wishlist-item-info">
           <p class="wishlist-item-title">${item.title}</p>

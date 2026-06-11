@@ -149,6 +149,10 @@ function getNumericId(gid) {
   return gid.split('/').pop();
 }
 
+function escAttr(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 // Build a title→hex map from Shopify's swatch data for a product
 function buildSwatchMap(product) {
   const map = {};
@@ -330,7 +334,7 @@ function productCardHtml(product, productsBase) {
           const isFirst = v.id === firstVariant.id;
           return `<button class="listing-swatch${isFirst ? ' active' : ''}${!v.availableForSale ? ' sold-out' : ''}"
                        style="background:${hex}${hex === '#ffffff' ? ';border-color:#ddd' : ''}"
-                       title="${v.title}"
+                       title="${escAttr(v.title)}"
                        data-variant-gid="${v.id}"
                        data-variant-id="${getNumericId(v.id)}"
                        data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
@@ -344,13 +348,13 @@ function productCardHtml(product, productsBase) {
           <a href="${productsBase}${product.handle}/" class="product-card-link">
               <div class="product-image-wrap">
                   ${image
-                    ? `<img src="${image.url}" alt="${image.altText || product.title}" loading="lazy">`
+                    ? `<img src="${image.url}" alt="${escAttr(image.altText || product.title)}" loading="lazy">`
                     : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                   }
                   ${!available ? '<span class="sold-out-badge">Sold Out</span>' : ''}
                   <button class="wishlist-btn"
                           data-handle="${product.handle}"
-                          data-title="${product.title}"
+                          data-title="${escAttr(product.title)}"
                           data-price="${priceDisplay}"
                           data-image="${image?.url || ''}"
                           data-url="${SITE_URL}/shop/products/${product.handle}/"
@@ -542,8 +546,8 @@ function generateProductPage(product) {
                       data-variant-gid="${v.id}"
                       data-price="${vPrice}"
                       data-image="${variantImage}"
-                      title="${v.title}"
-                      aria-label="${v.title}"
+                      title="${escAttr(v.title)}"
+                      aria-label="${escAttr(v.title)}"
                       style="background:${colorHex};${colorHex === '#ffffff' ? 'border-color:#ddd;' : ''}"
                       ${!v.availableForSale ? 'disabled' : ''}>
                       ${!v.availableForSale ? '<span class="swatch-cross"></span>' : ''}
@@ -562,7 +566,7 @@ function generateProductPage(product) {
 
   const thumbnails = hasVariantImages
     ? variantsWithImages.map(v => `
-        <img src="${v.image.url}" alt="${v.title}"
+        <img src="${v.image.url}" alt="${escAttr(v.title)}"
              class="thumbnail${v.id === firstAvailable.id ? ' active' : ''}"
              data-variant-gid="${v.id}"
              data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
@@ -570,7 +574,7 @@ function generateProductPage(product) {
              loading="lazy">`).join('')
     : images.length > 1
       ? images.map((img, i) => `
-          <img src="${img.url}" alt="${img.altText || product.title}"
+          <img src="${img.url}" alt="${escAttr(img.altText || product.title)}"
                class="thumbnail${i === 0 ? ' active' : ''}" loading="lazy">`).join('')
       : '';
   const showThumbnails = thumbnails.length > 0;
@@ -581,8 +585,8 @@ function generateProductPage(product) {
 <html lang="en">
 <head>
     ${headHtml(base, shopBase, {
-      title: `${product.title} – LayerWeaver`,
-      description: product.description.slice(0, 160),
+      title: `${escAttr(product.title)} – LayerWeaver`,
+      description: escAttr(product.description.slice(0, 160)),
       ogImage: mainImage?.url,
       ogUrl: `${SITE_URL}/shop/products/${product.handle}/`,
       structuredData,
@@ -601,7 +605,7 @@ function generateProductPage(product) {
                 <div class="product-images">
                     <div class="main-image-wrap">
                         ${mainImage
-                          ? `<img id="main-image" src="${mainImage.url}" alt="${mainImage.altText || product.title}">`
+                          ? `<img id="main-image" src="${mainImage.url}" alt="${escAttr(mainImage.altText || product.title)}">`
                           : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                         }
                     </div>
@@ -637,7 +641,7 @@ function generateProductPage(product) {
                         </button>`}
                         <button class="wishlist-btn btn-secondary wishlist-page-btn"
                                 data-handle="${product.handle}"
-                                data-title="${product.title}"
+                                data-title="${escAttr(product.title)}"
                                 data-price="${isContactOnly(product) ? '' : price}"
                                 data-image="${mainImage?.url || ''}"
                                 data-url="${SITE_URL}/shop/products/${product.handle}/"
