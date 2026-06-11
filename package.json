@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build-shop": "node scripts/build-shop.js"
+    "build-shop": "node scripts/build-shop.js",
+    "serve": "npx http-server . -p 8080 -c-1 --cors"
   },
   "engines": {
     "node": ">=18"

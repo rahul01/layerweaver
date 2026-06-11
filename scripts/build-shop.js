@@ -193,7 +193,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'GT-NC682MJG');
+      if (location.hostname === 'www.layerweaver.com') gtag('config', 'GT-NC682MJG');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title>
@@ -214,21 +214,24 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
-        import { getPerformance } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js";
-        const app = initializeApp({
-            apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
-            authDomain: "layerweaver.firebaseapp.com",
-            projectId: "layerweaver",
-            storageBucket: "layerweaver.firebasestorage.app",
-            messagingSenderId: "1056344018064",
-            appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
-            measurementId: "G-00DMH9PYCG"
-        });
-        const analytics = getAnalytics(app);
-        getPerformance(app);
-        window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
+        window.LW_LOG_EVENT = () => {};
+        if (location.hostname === 'www.layerweaver.com') {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
+            const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js");
+            const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
+            const app = initializeApp({
+                apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+                authDomain: "layerweaver.firebaseapp.com",
+                projectId: "layerweaver",
+                storageBucket: "layerweaver.firebasestorage.app",
+                messagingSenderId: "1056344018064",
+                appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+                measurementId: "G-00DMH9PYCG"
+            });
+            const analytics = getAnalytics(app);
+            getPerformance(app);
+            window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
+        }
     </script>`;
 }
 
@@ -274,7 +277,7 @@ function footerHtml(base) {
                     <a href="${base}workshop/">Workshops</a>
                     <a href="${base}#about">About</a>
                     <a href="${base}connect/">Contact Us</a>
-                    <a href="${base}refund-policy/">Refund Policy</a>
+                    <a href="${base}return-and-exchange-policy/">Return and Exchange Policy</a>
                     <a href="${base}shipping-policy/">Shipping Policy</a>
                 </nav>
                 <div class="footer-right">
@@ -857,7 +860,7 @@ function generateAccountPage() {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'GT-NC682MJG');
+      if (location.hostname === 'www.layerweaver.com') gtag('config', 'GT-NC682MJG');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account – LayerWeaver</title>
@@ -866,21 +869,24 @@ function generateAccountPage() {
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
-        import { getPerformance } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js";
-        const app = initializeApp({
-            apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
-            authDomain: "layerweaver.firebaseapp.com",
-            projectId: "layerweaver",
-            storageBucket: "layerweaver.firebasestorage.app",
-            messagingSenderId: "1056344018064",
-            appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
-            measurementId: "G-00DMH9PYCG"
-        });
-        const analytics = getAnalytics(app);
-        getPerformance(app);
-        window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
+        window.LW_LOG_EVENT = () => {};
+        if (location.hostname === 'www.layerweaver.com') {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
+            const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js");
+            const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
+            const app = initializeApp({
+                apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+                authDomain: "layerweaver.firebaseapp.com",
+                projectId: "layerweaver",
+                storageBucket: "layerweaver.firebasestorage.app",
+                messagingSenderId: "1056344018064",
+                appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+                measurementId: "G-00DMH9PYCG"
+            });
+            const analytics = getAnalytics(app);
+            getPerformance(app);
+            window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
+        }
     </script>
 </head>
 <body>

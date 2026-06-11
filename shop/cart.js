@@ -151,23 +151,25 @@
         </button>
       </div>
       <div class="cart-body" id="cart-body"></div>
-      <div class="cart-footer" id="cart-footer" style="display:none">
-        <div id="shipping-progress" class="shipping-progress">
-          <div class="shipping-bar-track">
-            <div class="shipping-bar-fill" id="shipping-bar-fill"></div>
+      <div class="cart-footer" id="cart-footer">
+        <div id="cart-checkout-section" style="display:none">
+          <div id="shipping-progress" class="shipping-progress">
+            <div class="shipping-bar-track">
+              <div class="shipping-bar-fill" id="shipping-bar-fill"></div>
+            </div>
+            <p class="shipping-bar-msg" id="shipping-bar-msg"></p>
           </div>
-          <p class="shipping-bar-msg" id="shipping-bar-msg"></p>
+          <div class="cart-total">
+            <span>Total</span>
+            <span id="cart-total-price"></span>
+          </div>
+          <a id="cart-checkout-btn" class="btn-primary">
+            Checkout <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
-        <div class="cart-total">
-          <span>Total</span>
-          <span id="cart-total-price"></span>
-        </div>
-        <a id="cart-checkout-btn" class="btn-primary">
-          Checkout <i class="fa-solid fa-arrow-right"></i>
-        </a>
         <div class="cart-policy-links">
           <a href="${SITE_ROOT}shipping-policy/"><i class="fa-solid fa-truck-fast"></i> Shipping Policy</a>
-          <a href="${SITE_ROOT}refund-policy/"><i class="fa-solid fa-rotate-left"></i> Refund Policy</a>
+          <a href="${SITE_ROOT}return-and-exchange-policy/"><i class="fa-solid fa-rotate-left"></i> Return and Exchange Policy</a>
         </div>
       </div>`;
 
@@ -280,7 +282,6 @@
 
   function renderCart() {
     const body   = document.getElementById('cart-body');
-    const footer = document.getElementById('cart-footer');
     const total  = document.getElementById('cart-total-price');
     const chkBtn = document.getElementById('cart-checkout-btn');
     if (!body) return;
@@ -294,7 +295,8 @@
           <p>Your cart is empty</p>
           <a href="./" class="btn-primary">Browse Shop</a>
         </div>`;
-      if (footer) footer.style.display = 'none';
+      const checkoutSection = document.getElementById('cart-checkout-section');
+      if (checkoutSection) checkoutSection.style.display = 'none';
       return;
     }
 
@@ -354,7 +356,8 @@
     const costAmt = cart.cost.totalAmount;
     total.textContent = fmt(costAmt.amount, costAmt.currencyCode);
     chkBtn.href = cart.checkoutUrl;
-    footer.style.display = 'flex';
+    const checkoutSection = document.getElementById('cart-checkout-section');
+    if (checkoutSection) checkoutSection.style.display = 'contents';
     renderShippingBar();
   }
 
