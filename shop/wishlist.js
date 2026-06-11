@@ -162,7 +162,7 @@
         <div class="wishlist-empty">
           <i class="fa-regular fa-heart"></i>
           <p>Your wishlist is empty</p>
-          <a href="./" class="btn-primary">Browse Shop</a>
+          <a href="${SHOP_ROOT}" class="btn-primary">Browse Shop</a>
         </div>`;
       return;
     }
