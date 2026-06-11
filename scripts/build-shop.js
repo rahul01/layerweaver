@@ -101,6 +101,26 @@ async function fetchProducts() {
             images(first: 5) {
               edges { node { url altText } }
             }
+            media(first: 10) {
+              edges {
+                node {
+                  mediaContentType
+                  alt
+                  ... on Video {
+                    sources { url mimeType }
+                    previewImage { url }
+                  }
+                  ... on ExternalVideo {
+                    embeddedUrl
+                    host
+                    previewImage { url }
+                  }
+                  ... on MediaImage {
+                    image { url altText }
+                  }
+                }
+              }
+            }
             options {
               name
               optionValues { name swatch { color } }
@@ -564,7 +584,7 @@ function generateProductPage(product) {
       }).join('\n')
     : '';
 
-  const thumbnails = hasVariantImages
+  const imageThumbnails = hasVariantImages
     ? variantsWithImages.map(v => `
         <img src="${v.image.url}" alt="${escAttr(v.title)}"
              class="thumbnail${v.id === firstAvailable.id ? ' active' : ''}"
@@ -577,6 +597,32 @@ function generateProductPage(product) {
           <img src="${img.url}" alt="${escAttr(img.altText || product.title)}"
                class="thumbnail${i === 0 ? ' active' : ''}" loading="lazy">`).join('')
       : '';
+
+  const videoItems = (product.media?.edges || [])
+    .map(e => e.node)
+    .filter(m => m.mediaContentType === 'VIDEO' || m.mediaContentType === 'EXTERNAL_VIDEO');
+
+  const videoThumbnails = videoItems.map(v => {
+    const poster = v.previewImage?.url || '';
+    if (v.mediaContentType === 'VIDEO') {
+      const src = v.sources?.find(s => s.mimeType === 'video/mp4')?.url || v.sources?.[0]?.url || '';
+      return `<div class="thumbnail video-thumb"
+                   data-video-src="${escAttr(src)}"
+                   data-video-poster="${escAttr(poster)}">
+                 <img src="${escAttr(poster)}" alt="Video preview" loading="lazy">
+                 <span class="video-thumb-play"><i class="fa-solid fa-play"></i></span>
+             </div>`;
+    } else {
+      return `<div class="thumbnail video-thumb"
+                   data-embed-url="${escAttr(v.embeddedUrl || '')}"
+                   data-video-poster="${escAttr(poster)}">
+                 <img src="${escAttr(poster)}" alt="Video preview" loading="lazy">
+                 <span class="video-thumb-play"><i class="fa-solid fa-play"></i></span>
+             </div>`;
+    }
+  }).join('');
+
+  const thumbnails = imageThumbnails + videoThumbnails;
   const showThumbnails = thumbnails.length > 0;
 
   const waText = encodeURIComponent(`Hi! I'm interested in ${product.title}`);
@@ -608,6 +654,8 @@ function generateProductPage(product) {
                           ? `<img id="main-image" src="${mainImage.url}" alt="${escAttr(mainImage.altText || product.title)}">`
                           : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                         }
+                        <video id="main-video" style="display:none" autoplay muted loop playsinline controls></video>
+                        <iframe id="main-iframe" style="display:none" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
                     </div>
                     ${showThumbnails ? `<div class="thumbnails">${thumbnails}</div>` : ''}
                 </div>
@@ -667,7 +715,15 @@ function generateProductPage(product) {
     ${footerHtml(base)}
 
     <script>
-        const mainImg = document.getElementById('main-image');
+        const mainImg   = document.getElementById('main-image');
+        const mainVideo = document.getElementById('main-video');
+        const mainIframe = document.getElementById('main-iframe');
+
+        function showMainImage(src) {
+            if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
+            if (mainIframe) { mainIframe.src = ''; mainIframe.style.display = 'none'; }
+            if (mainImg) { mainImg.style.display = ''; if (src) mainImg.src = src; }
+        }
 
         function selectVariantBtn(btn) {
             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
@@ -678,9 +734,9 @@ function generateProductPage(product) {
             // Only swap the image when thumbnails are variant-linked;
             // color-swatch products share one image across variants and should not reset it.
             const hasVariantThumbs = !!document.querySelector('.thumbnail[data-variant-gid]');
-            if (mainImg && btn.dataset.image && hasVariantThumbs) {
-                mainImg.src = btn.dataset.image;
-                document.querySelectorAll('.thumbnail').forEach(t => {
+            if (btn.dataset.image && hasVariantThumbs) {
+                showMainImage(btn.dataset.image);
+                document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => {
                     t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
                 });
             }
@@ -690,20 +746,36 @@ function generateProductPage(product) {
             btn.addEventListener('click', () => selectVariantBtn(btn));
         });
 
-        // Thumbnail click — swap image and select variant if thumbnail is variant-linked
-        document.querySelectorAll('.thumbnail').forEach(thumb => {
+        // Thumbnail click — handles images and video thumbnails
+        document.querySelectorAll('.thumbnail, .video-thumb').forEach(thumb => {
             thumb.addEventListener('click', () => {
-                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
-                if (mainImg) mainImg.src = thumb.src;
-                if (thumb.dataset.variantGid) {
-                    const btn = document.querySelector(\`.variant-btn[data-variant-gid="\${thumb.dataset.variantGid}"]\`);
-                    if (btn) {
-                        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
-                        const label = document.getElementById('selected-variant-label');
-                        if (label) label.textContent = thumb.dataset.variantTitle || '';
+
+                if (thumb.dataset.videoSrc) {
+                    if (mainImg) mainImg.style.display = 'none';
+                    if (mainIframe) { mainIframe.src = ''; mainIframe.style.display = 'none'; }
+                    if (mainVideo) {
+                        mainVideo.src = thumb.dataset.videoSrc;
+                        mainVideo.poster = thumb.dataset.videoPoster || '';
+                        mainVideo.style.display = '';
+                        mainVideo.play();
+                    }
+                } else if (thumb.dataset.embedUrl) {
+                    if (mainImg) mainImg.style.display = 'none';
+                    if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
+                    if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
+                } else {
+                    showMainImage(thumb.src);
+                    if (thumb.dataset.variantGid) {
+                        const btn = document.querySelector(\`.variant-btn[data-variant-gid="\${thumb.dataset.variantGid}"]\`);
+                        if (btn) {
+                            document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
+                            const label = document.getElementById('selected-variant-label');
+                            if (label) label.textContent = thumb.dataset.variantTitle || '';
+                        }
                     }
                 }
             });

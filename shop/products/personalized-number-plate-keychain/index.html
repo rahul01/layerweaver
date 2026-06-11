@@ -24,7 +24,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1781191136643">
+    <link rel="stylesheet" href="../../shop.css?v=1781193849036">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -82,6 +82,8 @@
                 <div class="product-images">
                     <div class="main-image-wrap">
                         <img id="main-image" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Jun_5_2026_04_34_44_PM.png?v=1780657554" alt="Personalized Number plate keychain">
+                        <video id="main-video" style="display:none" autoplay muted loop playsinline controls></video>
+                        <iframe id="main-iframe" style="display:none" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
                     </div>
                     <div class="thumbnails">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Jun_5_2026_04_34_44_PM.png?v=1780657554" alt="Personalized Number plate keychain"
@@ -166,7 +168,15 @@
     </footer>
 
     <script>
-        const mainImg = document.getElementById('main-image');
+        const mainImg   = document.getElementById('main-image');
+        const mainVideo = document.getElementById('main-video');
+        const mainIframe = document.getElementById('main-iframe');
+
+        function showMainImage(src) {
+            if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
+            if (mainIframe) { mainIframe.src = ''; mainIframe.style.display = 'none'; }
+            if (mainImg) { mainImg.style.display = ''; if (src) mainImg.src = src; }
+        }
 
         function selectVariantBtn(btn) {
             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
@@ -177,9 +187,9 @@
             // Only swap the image when thumbnails are variant-linked;
             // color-swatch products share one image across variants and should not reset it.
             const hasVariantThumbs = !!document.querySelector('.thumbnail[data-variant-gid]');
-            if (mainImg && btn.dataset.image && hasVariantThumbs) {
-                mainImg.src = btn.dataset.image;
-                document.querySelectorAll('.thumbnail').forEach(t => {
+            if (btn.dataset.image && hasVariantThumbs) {
+                showMainImage(btn.dataset.image);
+                document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => {
                     t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
                 });
             }
@@ -189,20 +199,36 @@
             btn.addEventListener('click', () => selectVariantBtn(btn));
         });
 
-        // Thumbnail click — swap image and select variant if thumbnail is variant-linked
-        document.querySelectorAll('.thumbnail').forEach(thumb => {
+        // Thumbnail click — handles images and video thumbnails
+        document.querySelectorAll('.thumbnail, .video-thumb').forEach(thumb => {
             thumb.addEventListener('click', () => {
-                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
-                if (mainImg) mainImg.src = thumb.src;
-                if (thumb.dataset.variantGid) {
-                    const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
-                    if (btn) {
-                        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
-                        const label = document.getElementById('selected-variant-label');
-                        if (label) label.textContent = thumb.dataset.variantTitle || '';
+
+                if (thumb.dataset.videoSrc) {
+                    if (mainImg) mainImg.style.display = 'none';
+                    if (mainIframe) { mainIframe.src = ''; mainIframe.style.display = 'none'; }
+                    if (mainVideo) {
+                        mainVideo.src = thumb.dataset.videoSrc;
+                        mainVideo.poster = thumb.dataset.videoPoster || '';
+                        mainVideo.style.display = '';
+                        mainVideo.play();
+                    }
+                } else if (thumb.dataset.embedUrl) {
+                    if (mainImg) mainImg.style.display = 'none';
+                    if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
+                    if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
+                } else {
+                    showMainImage(thumb.src);
+                    if (thumb.dataset.variantGid) {
+                        const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
+                        if (btn) {
+                            document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
+                            const label = document.getElementById('selected-variant-label');
+                            if (label) label.textContent = thumb.dataset.variantTitle || '';
+                        }
                     }
                 }
             });
@@ -218,10 +244,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {};</script>
-    <script src="../../auth.js?v=1781191136643"></script>
-    <script src="../../cart.js?v=1781191136643"></script>
-    <script src="../../search.js?v=1781191136643"></script>
-    <script src="../../wishlist.js?v=1781191136643"></script>
+    <script src="../../auth.js?v=1781193849036"></script>
+    <script src="../../cart.js?v=1781193849036"></script>
+    <script src="../../search.js?v=1781193849036"></script>
+    <script src="../../wishlist.js?v=1781193849036"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
