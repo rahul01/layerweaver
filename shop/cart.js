@@ -101,6 +101,7 @@
   // ── State ─────────────────────────────────────────────────────────────────
 
   let cart = null;
+  let _cartReady = false;
 
   const KEY_QTY = 'lw_cart_qty';
   function saveCartId(id) { localStorage.setItem(KEY, id); }
@@ -280,8 +281,8 @@
     }
 
     // ── Speech bubble near cart icon ──
-    // Show while building toward goal, or at the exact unlock moment — not on subsequent adds.
-    if (!isUnlocked || !wasUnlocked) {
+    // Only show on user-triggered changes, not on initial page load.
+    if (_cartReady && (!isUnlocked || !wasUnlocked)) {
       showShippingBubble(pct, isUnlocked ? unlockMsg : pendingMsg, isUnlocked);
     }
   }
@@ -458,7 +459,7 @@
       if (cartId) {
         cart = await addLine(cartId, variantGid, qty, attributes);
         if (!cart) {
-          // Shopify returned null — cart expired or completed. Start a fresh cart.
+          // Shopify returned null - cart expired or completed. Start a fresh cart.
           localStorage.removeItem(KEY);
           cart = await createCart(variantGid, qty, attributes);
           saveCartId(cart.id);
@@ -696,7 +697,7 @@
       try {
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; } // cart explicitly gone on Shopify
-      } catch { /* network error — keep cart ID, will retry on next interaction */ }
+      } catch { /* network error - keep cart ID, will retry on next interaction */ }
     }
 
     updateBadge();
@@ -704,6 +705,7 @@
     updateCartBtns();
     wireProductPage();
     wireListingPage();
+    _cartReady = true;
 
     // Sync with server when auth is ready
     if (window.LW_AUTH) {

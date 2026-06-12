@@ -31,60 +31,91 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="module">
+        if (location.hostname === 'www.layerweaver.com') {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
+            const { getAnalytics } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js");
+            const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
+            const app = initializeApp({
+                apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+                authDomain: "layerweaver.firebaseapp.com",
+                projectId: "layerweaver",
+                storageBucket: "layerweaver.firebasestorage.app",
+                messagingSenderId: "1056344018064",
+                appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+                measurementId: "G-00DMH9PYCG"
+            });
+            getAnalytics(app);
+            getPerformance(app);
+        }
+    </script>
     <style>
-        .faq-hero {
-            background: var(--surface-alt, #f5f3ff);
-            border-bottom: 1px solid var(--border, #e8e0f5);
-            padding: 48px 0 36px;
+        .policy-hero {
+            background: linear-gradient(135deg, rgba(160, 131, 213, 0.08) 0%, rgba(239, 207, 32, 0.08) 100%);
+            padding: 100px 0 32px;
             text-align: center;
         }
-        .faq-hero h1 { margin: 0 0 8px; font-size: 2rem; }
-        .faq-hero p  { color: var(--text-light); margin: 0; }
-
-        .faq-list {
-            max-width: 760px;
-            margin: 48px auto 64px;
-            padding: 0 20px;
+        .policy-hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+            color: var(--dark);
+        }
+        .policy-hero p {
+            font-size: 1.1rem;
+            color: var(--gray-medium);
+        }
+        .policy-content {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 60px 24px 48px;
         }
         .faq-item {
-            border-bottom: 1px solid var(--border, #e8e0f5);
-            padding: 20px 0;
+            margin-bottom: 12px;
+            scroll-margin-top: 80px;
         }
-        .faq-item:first-child { border-top: 1px solid var(--border, #e8e0f5); }
-        .faq-question {
+        .faq-item summary {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
             list-style: none;
-            color: var(--dark);
-        }
-        .faq-question::-webkit-details-marker { display: none; }
-        .faq-question i {
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: var(--primary);
+            padding: 16px 20px;
+            background: #f7f4fd;
+            border-radius: 8px;
+            border-bottom: 2px solid #f0ecfa;
+            transition: background 0.15s;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary:hover { background: #efe9fa; }
+        .faq-item[open] summary {
+            border-radius: 8px 8px 0 0;
+            border-bottom-color: var(--primary);
+        }
+        .faq-item summary i {
             font-size: 0.85rem;
             flex-shrink: 0;
             transition: transform 0.2s;
         }
-        details[open] .faq-question i { transform: rotate(180deg); }
+        .faq-item[open] summary i { transform: rotate(180deg); }
         .faq-answer {
-            margin-top: 12px;
-            color: var(--text-light);
-            line-height: 1.7;
-            font-size: 0.95rem;
+            padding: 16px 20px 20px;
+            background: #f7f4fd;
+            border-radius: 0 0 8px 8px;
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.75;
+            margin: 0;
         }
         .faq-answer a {
             color: var(--primary);
             text-decoration: underline;
         }
-        .faq-cta {
-            text-align: center;
-            padding: 0 20px 64px;
-        }
-        .faq-cta p { color: var(--text-light); margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -111,57 +142,57 @@
         </div>
     </header>
 
-    <div class="faq-hero">
+    <section class="policy-hero">
         <div class="container">
             <h1>Frequently Asked Questions</h1>
             <p>Everything you need to know about ordering, shipping, and our products.</p>
         </div>
-    </div>
+    </section>
 
-    <div class="faq-list">
+    <div class="policy-content">
 
-        <details class="faq-item">
-            <summary class="faq-question">
+        <details class="faq-item" id="material">
+            <summary>
                 What material are your products made from?
                 <i class="fa-solid fa-chevron-down"></i>
             </summary>
             <p class="faq-answer">All our products are printed with PLA (Polylactic Acid), a plant-based, biodegradable plastic made from renewable resources like cornstarch. It's eco-friendly, non-toxic, and produces clean, detailed prints.</p>
         </details>
 
-        <details class="faq-item">
-            <summary class="faq-question">
+        <details class="faq-item" id="delivery">
+            <summary>
                 How long does delivery take?
                 <i class="fa-solid fa-chevron-down"></i>
             </summary>
             <p class="faq-answer">Orders within Pune are typically delivered in 3–5 business days. Orders to the rest of India take 5–8 business days. You'll receive tracking details once your order is dispatched. See our <a href="../shipping-policy/">Shipping Policy</a> for full details.</p>
         </details>
 
-        <details class="faq-item">
-            <summary class="faq-question">
+        <details class="faq-item" id="custom">
+            <summary>
                 Can I order a custom 3D print?
                 <i class="fa-solid fa-chevron-down"></i>
             </summary>
             <p class="faq-answer">Yes! We offer on-demand 3D printing for custom items. Visit our <a href="../services/on-demand/">On Demand Printing</a> page or message us on <a href="https://wa.me/917558783018" target="_blank" rel="noopener">WhatsApp</a> with your idea, reference images, or STL file and we'll provide a quote.</p>
         </details>
 
-        <details class="faq-item">
-            <summary class="faq-question">
+        <details class="faq-item" id="returns">
+            <summary>
                 What is your return and exchange policy?
                 <i class="fa-solid fa-chevron-down"></i>
             </summary>
             <p class="faq-answer">We accept returns and exchanges within 7 days of delivery for items that arrive damaged or defective. Custom or personalised orders are non-returnable. See our <a href="../return-and-exchange-policy/">Return and Exchange Policy</a> for full details.</p>
         </details>
 
-        <details class="faq-item">
-            <summary class="faq-question">
+        <details class="faq-item" id="shipping">
+            <summary>
                 Do you ship outside India?
                 <i class="fa-solid fa-chevron-down"></i>
             </summary>
             <p class="faq-answer">We currently ship within India only. Shipping is free on orders above ₹500. For orders below ₹500, a flat rate of ₹30 applies within Pune and ₹49 for the rest of India.</p>
         </details>
 
-        <details class="faq-item">
-            <summary class="faq-question">
+        <details class="faq-item" id="workshops">
+            <summary>
                 Do you offer 3D printing workshops?
                 <i class="fa-solid fa-chevron-down"></i>
             </summary>
@@ -170,12 +201,26 @@
 
     </div>
 
-    <div class="faq-cta">
-        <p>Still have a question?</p>
-        <a href="https://wa.me/917558783018" class="btn-primary" target="_blank" rel="noopener">
-            <i class="fa-brands fa-whatsapp"></i> Message Us on WhatsApp
-        </a>
-    </div>
+    <section class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Still Have a Question?</h2>
+                <p>We're happy to help - reach out any time.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-card whatsapp-card">
+                    <div class="contact-icon">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <h3>WhatsApp</h3>
+                    <p>Message us and we'll get back to you quickly</p>
+                    <a href="https://wa.me/917558783018" class="contact-link whatsapp-link" target="_blank" rel="noopener">
+                        <i class="fa-brands fa-whatsapp"></i> Message Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <footer>
         <div class="container">
@@ -211,5 +256,17 @@
     </footer>
 
     <script src="../script.js"></script>
+    <script>
+        function openAnchoredFaq(hash) {
+            if (!hash) return;
+            const el = document.querySelector(hash);
+            if (el && el.classList.contains('faq-item')) {
+                el.open = true;
+                el.querySelector('summary')?.focus();
+            }
+        }
+        openAnchoredFaq(location.hash);
+        window.addEventListener('hashchange', () => openAnchoredFaq(location.hash));
+    </script>
 </body>
 </html>

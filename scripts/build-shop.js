@@ -286,12 +286,13 @@ function shopHeaderHtml(base, shopBase) {
 function shopTrustStripHtml(base) {
   const items = [
     { href: `${base}shipping-policy/`,           icon: 'fa-truck-fast',       color: '#2196F3', label: 'Free Shipping Above ₹500' },
-    {                                              icon: 'fa-leaf',             color: '#4CAF50', label: 'Eco-Friendly &amp; Renewable PLA' },
+    { href: `${base}faq/#material`,                icon: 'fa-leaf',             color: '#4CAF50', label: 'Eco-Friendly &amp; Renewable PLA' },
     { href: `${base}connect/`,                   icon: 'fa-cube',             color: '#A083D5', label: '3D Printed in Pune' },
     {                                              icon: 'fa-credit-card',      color: '#FF9800', label: 'UPI · Cards · Net Banking' },
     { href: `${base}return-and-exchange-policy/`,icon: 'fa-rotate-left',      color: '#2196F3', label: 'Easy Returns &amp; Exchanges' },
     { href: `${base}workshop/`,                  icon: 'fa-chalkboard-user',  color: '#FF7043', label: '3D Printing Workshops for All Ages' },
     { href: `https://wa.me/917558783018`,        icon: 'fa-whatsapp',         color: '#25D366', label: 'Chat with Us on WhatsApp', target: '_blank', brand: true },
+    { href: `https://instagram.com/thelayerweaver`, icon: 'fa-instagram',      color: '#E1306C', label: 'Follow Us for Exciting Builds &amp; Offers', target: '_blank', brand: true },
     { href: `${base}#testimonials`,              icon: 'fa-star',             color: '#FFC107', label: 'Customer Reviews' },
     { href: `${base}services/on-demand/`,        icon: 'fa-pen-ruler',        color: '#A083D5', label: 'Custom Orders Welcome' },
   ];
@@ -309,7 +310,7 @@ function shopTrustStripHtml(base) {
     </div>`;
 }
 
-// Capitalises the first letter of each all-lowercase word — safe for "3D", "LED", "UNO" etc.
+// Capitalises the first letter of each all-lowercase word - safe for "3D", "LED", "UNO" etc.
 function toTitleCase(str) {
   return str.split(' ').map(word =>
     word === word.toLowerCase() ? word.charAt(0).toUpperCase() + word.slice(1) : word
@@ -566,7 +567,7 @@ function generateProductPage(product, collection) {
   const hasVariants     = variants.length > 1 || variants[0].title !== 'Default Title';
   const swatchMap       = buildSwatchMap(product);
   const allColors       = hasVariants && variants.every(v => swatchMap[v.title]);
-  // Only use variant-image mode when variants have 2+ distinct images —
+  // Only use variant-image mode when variants have 2+ distinct images -
   // color products often share the same image across all variants.
   const uniqueVariantImageUrls = new Set(variants.map(v => v.image?.url).filter(Boolean));
   const hasVariantImages = hasVariants && uniqueVariantImageUrls.size > 1;
@@ -810,7 +811,7 @@ function generateProductPage(product, collection) {
             btn.addEventListener('click', () => selectVariantBtn(btn));
         });
 
-        // Thumbnail click — handles images and video thumbnails
+        // Thumbnail click - handles images and video thumbnails
         document.querySelectorAll('.thumbnail, .video-thumb').forEach(thumb => {
             thumb.addEventListener('click', () => {
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => t.classList.remove('active'));
@@ -865,7 +866,7 @@ function generateProductPage(product, collection) {
 }
 
 // ── Collage banner (shared by shop index + collection pages) ─────────────────
-// images: array of { url, altText } — up to 5 used
+// images: array of { url, altText } - up to 5 used
 
 function collagebannerHtml(title, description, images) {
   const seen = new Set();
@@ -1005,6 +1006,10 @@ function generateAccountPage() {
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account – LayerWeaver</title>
+    <link rel="icon" href="${base}images/spider-fevicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="${base}images/spider-fevicon.svg">
+    <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="${base}styles.css">
     <link rel="stylesheet" href="${shopBase}shop.css?v=${BUILD_VER}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
