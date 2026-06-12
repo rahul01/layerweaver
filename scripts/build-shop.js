@@ -283,11 +283,28 @@ function shopHeaderHtml(base, shopBase) {
 }
 
 function shopTrustStripHtml(base) {
+  const items = [
+    { href: `${base}shipping-policy/`,           icon: 'fa-truck-fast',       color: '#2196F3', label: 'Free Shipping Above ₹500' },
+    {                                              icon: 'fa-leaf',             color: '#4CAF50', label: 'Eco-Friendly &amp; Renewable PLA' },
+    { href: `${base}connect/`,                   icon: 'fa-cube',             color: '#A083D5', label: '3D Printed in Pune' },
+    {                                              icon: 'fa-credit-card',      color: '#FF9800', label: 'UPI · Cards · Net Banking' },
+    { href: `${base}return-and-exchange-policy/`,icon: 'fa-rotate-left',      color: '#2196F3', label: 'Easy Returns &amp; Exchanges' },
+    { href: `${base}workshop/`,                  icon: 'fa-chalkboard-user',  color: '#FF7043', label: '3D Printing Workshops for All Ages' },
+    { href: `https://wa.me/917558783018`,        icon: 'fa-whatsapp',         color: '#25D366', label: 'Chat with Us on WhatsApp', target: '_blank', brand: true },
+    { href: `${base}#testimonials`,              icon: 'fa-star',             color: '#FFC107', label: 'Customer Reviews' },
+    { href: `${base}services/on-demand/`,        icon: 'fa-pen-ruler',        color: '#A083D5', label: 'Custom Orders Welcome' },
+  ];
+  const sep = `<span class="trust-sep">✦</span>`;
+  const row = items.map(({ href, icon, color, label, target, brand }) => {
+    const iconHtml = `<i class="${brand ? 'fa-brands' : 'fa-solid'} ${icon}" style="color:${color}"></i>`;
+    const inner = `${iconHtml} ${label}`;
+    return href
+      ? `<a class="trust-item" href="${href}"${target ? ` target="${target}" rel="noopener"` : ''}>${inner}</a>${sep}`
+      : `<span class="trust-item trust-item--muted">${inner}</span>${sep}`;
+  }).join('');
   return `
     <div class="shop-trust-strip">
-        <a href="${base}#about"><i class="fa-solid fa-store"></i> About Us</a>
-        <span class="shop-trust-divider">·</span>
-        <a href="${base}#testimonials"><i class="fa-solid fa-star"></i> Customer Feedback</a>
+        <div class="trust-marquee-track">${row}${row}</div>
     </div>`;
 }
 
