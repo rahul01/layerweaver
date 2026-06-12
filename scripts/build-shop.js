@@ -322,6 +322,10 @@ function footerHtml(base) {
                     <a href="${base}privacy-policy/">Privacy Policy</a>
                 </nav>
                 <div class="footer-right">
+                    <div class="footer-social">
+                        <a href="https://instagram.com/thelayerweaver" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://wa.me/917558783018" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
                     <p>&copy; 2026 <span class="brand-text-small">LayerWeaver</span>. All rights reserved.</p>
                 </div>
             </div>
@@ -1128,6 +1132,32 @@ async function main() {
   );
   fs.writeFileSync(indexPath, indexHtml);
   console.log('Updated index.html hero carousel');
+
+  // Generate sitemap.xml
+  const STATIC_URLS = [
+    { loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' },
+    { loc: `${SITE_URL}/shop/`, priority: '0.9', changefreq: 'daily' },
+    { loc: `${SITE_URL}/gallery/`, priority: '0.7', changefreq: 'weekly' },
+    { loc: `${SITE_URL}/workshop/`, priority: '0.7', changefreq: 'monthly' },
+    { loc: `${SITE_URL}/connect/`, priority: '0.6', changefreq: 'monthly' },
+    { loc: `${SITE_URL}/services/on-demand/`, priority: '0.6', changefreq: 'monthly' },
+    { loc: `${SITE_URL}/services/3d-design/`, priority: '0.6', changefreq: 'monthly' },
+    { loc: `${SITE_URL}/privacy-policy/`, priority: '0.3', changefreq: 'yearly' },
+    { loc: `${SITE_URL}/shipping-policy/`, priority: '0.3', changefreq: 'yearly' },
+    { loc: `${SITE_URL}/return-and-exchange-policy/`, priority: '0.3', changefreq: 'yearly' },
+  ];
+  const collectionUrls = collections.map(c => ({
+    loc: `${SITE_URL}/shop/collections/${c.handle}/`, priority: '0.8', changefreq: 'weekly',
+  }));
+  const productUrls = products.map(p => ({
+    loc: `${SITE_URL}/shop/products/${p.handle}/`, priority: '0.7', changefreq: 'monthly',
+  }));
+  const allUrls = [...STATIC_URLS, ...collectionUrls, ...productUrls];
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
+    allUrls.map(u => `  <url><loc>${u.loc}</loc><changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`).join('\n')
+  }\n</urlset>\n`;
+  fs.writeFileSync(path.join(__dirname, '..', 'sitemap.xml'), sitemapXml);
+  console.log('Generated sitemap.xml');
 
   console.log('Build complete.');
 }

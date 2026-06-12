@@ -19,25 +19,25 @@ legal exposure before a customer places their first order.
 
 ### To Do — Medium Priority
 
-- [ ] **M1. Add meta description + Open Graph tags to non-shop pages**
+- [x] **M1. Add meta description + Open Graph tags to non-shop pages**
   - Affected: `index.html`, `gallery/`, `workshop/`, `connect/`, `privacy-policy/`,
     `shipping-policy/`, `return-and-exchange-policy/`, `services/`
   - Shop pages already have these via `headHtml()` in build-shop.js
   - Add `<meta name="description">`, `<meta property="og:title">`, `og:description`,
     og:image, og:url to each page's `<head>`
 
-- [ ] **M2. Add robots.txt and sitemap.xml**
+- [x] **M2. Add robots.txt and sitemap.xml**
   - Neither file exists — crawlers get no guidance
   - `robots.txt`: allow all, point to sitemap
   - `sitemap.xml`: list all canonical URLs (homepage, shop, collections, products, policy pages, gallery, workshop, connect)
   - Can be generated as part of `npm run build-shop` or as a separate script
 
-- [ ] **M3. Add social links (Instagram + WhatsApp) to footer**
+- [x] **M3. Add social links (Instagram + WhatsApp) to footer**
   - Instagram and WhatsApp are only linked from the Connect page — not discoverable from the shop or other pages
   - Add icon links to `footerHtml()` in build-shop.js and to all manually-written footers
   - Existing handles: `instagram.com/thelayerweaver`, `wa.me/917558783018`
 
-- [ ] **M4. Add custom 404 page** (`404.html`)
+- [x] **M4. Add custom 404 page** (`404.html`)
   - No custom error page; broken links show a raw server error
   - Should have the site header, a friendly message, and a "Go to Shop" / "Go Home" CTA
 
@@ -61,6 +61,22 @@ legal exposure before a customer places their first order.
 - [ ] **L4. Web app manifest** (`manifest.json`)
   - No manifest — mobile "Add to Home Screen" gets no icon or app name
   - Link from all pages: `<link rel="manifest" href="/manifest.json">`
+
+- [ ] **L5. Show relevant testimonials on product pages and shop listing**
+  - Currently all feedback images are generic (no product tag); the homepage slider shows all 6
+  - Approach: tag each feedback image with the product(s) it mentions, then surface matched
+    testimonials on the relevant product page and collection listing card
+  - Implementation options:
+    1. **Static map in build-shop.js** — maintain a `TESTIMONIALS` map of
+       `{ handle: [feedbackN, ...] }` and inject matched images into the product page template
+    2. **Shopify metafields** — store testimonial references on each product in Shopify admin;
+       read via Storefront API at build time
+  - Option 1 is simpler and doesn't require Shopify changes; start there
+  - On product pages: show matched testimonials as a small "What customers say" strip above
+    the footer, falling back to the full slider if no match
+  - On listing cards: optionally show a star/quote badge if a testimonial exists for that product
+  - Prerequisite: **C1** (replace AI renders) — testimonials only add trust if the feedback
+    image clearly shows the actual product being reviewed
 
 ### To Do — Content / Shopify Admin
 
