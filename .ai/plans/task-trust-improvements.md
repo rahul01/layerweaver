@@ -90,17 +90,8 @@ legal exposure before a customer places their first order.
 
 These require action in Shopify admin (product handle + image changes), not code.
 
-- [ ] **C1. Replace AI-generated lead images with real product photos**
-  - All 6 products below still have AI renders as their primary image (verified Jun 2026):
-    | Product | Current lead image |
-    |---|---|
-    | `aquarium-cave` | ChatGPT image (Jun 11 2026) |
-    | `illuminated-sign-board` | ChatGPT image (May 26 2026) |
-    | `sweeping-sign-nameplate` | ChatGPT image (May 26 2026) |
-    | `tree-articulated-legs` | ChatGPT image (Apr 28 2026) |
-    | `personalized-number-plate-keychain` | ChatGPT image (Jun 5 2026) |
-    | `night-dragon` | Gemini generated image |
-  - Real photos significantly improve buyer trust vs AI renders
+- [x] **C1. Product images** — not an issue
+  - Images flagged as "AI-generated" were real product photos touched up/cleaned using ChatGPT and Gemini image tools. Filenames contain "ChatGPT"/"Gemini" because they were uploaded with original tool-export names. These are legitimate product photos.
 
 - [x] **C2. Fix product handle/slug errors in Shopify**
   - All 5 handles renamed in Shopify admin and rebuilt (Jun 2026):
