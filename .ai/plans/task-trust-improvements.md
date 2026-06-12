@@ -91,29 +91,29 @@ legal exposure before a customer places their first order.
 These require action in Shopify admin (product handle + image changes), not code.
 
 - [ ] **C1. Replace AI-generated lead images with real product photos**
-  - The following products have a ChatGPT or Gemini image as their primary/only photo:
+  - All 6 products below still have AI renders as their primary image (verified Jun 2026):
     | Product | Current lead image |
     |---|---|
-    | `aquarium-cave` | ChatGPT image |
-    | `illuminated-sign-board` | ChatGPT image |
-    | `sweeping-sign-nameplate` | ChatGPT image |
-    | `tree-articulated-legs` | ChatGPT image |
-    | `personalized-number-plate-keychain` | ChatGPT image |
+    | `aquarium-cave` | ChatGPT image (Jun 11 2026) |
+    | `illuminated-sign-board` | ChatGPT image (May 26 2026) |
+    | `sweeping-sign-nameplate` | ChatGPT image (May 26 2026) |
+    | `tree-articulated-legs` | ChatGPT image (Apr 28 2026) |
+    | `personalized-number-plate-keychain` | ChatGPT image (Jun 5 2026) |
     | `night-dragon` | Gemini generated image |
   - Real photos significantly improve buyer trust vs AI renders
 
-- [ ] **C2. Fix product handle/slug errors in Shopify**
-  - `cat-bookmark-copy` → rename to the actual product variant name (e.g. `cat-bookmark-standing`)
-    — "copy" is a Shopify duplicate artefact that leaked into the live URL
-  - `monsterra-keychain` → rename to `monstera-keychain` (typo; correct plant is "Monstera")
-    — inconsistent with `monstera-coaster-set` which is already correct
-  - `floating-ghost-lamp-with-balloon-3d-printed-led-tea-light-decor` → shorten
-    (e.g. `ghost-balloon-lamp`) — URL is excessively long
-  - `vases` → rename to something descriptive (e.g. `decorative-vases`)
-  - `panda` → rename to something descriptive (e.g. `panda-figurine`)
-  - **Note:** changing a handle changes the URL — set up Shopify URL redirects from old → new
-    so existing links and any indexed pages don't 404. After renaming, run `npm run build-shop`
-    to regenerate local pages.
+- [x] **C2. Fix product handle/slug errors in Shopify**
+  - All 5 handles renamed in Shopify admin and rebuilt (Jun 2026):
+    | Old handle | New handle |
+    |---|---|
+    | `cat-bookmark-copy` | `dog-bookmark` |
+    | `monsterra-keychain` | `monstera-keychain` |
+    | `floating-ghost-lamp-with-balloon-3d-printed-led-tea-light-decor` | `ghost-balloon-lamp` |
+    | `vases` | `decorative-vases` |
+    | `panda` | `panda-figurine` |
+  - HTML redirect pages created at all old URLs (meta refresh + JS, noindex)
+  - `shop/collage/index.html` updated to new handles
+  - Sitemap regenerated with new URLs only
 
 ## Notes
 
