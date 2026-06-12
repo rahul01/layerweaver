@@ -1,0 +1,12 @@
+{
+  "name": "LayerWeaver",
+  "short_name": "LayerWeaver",
+  "description": "3D printed gifts, décor, and toys from Pune, India.",
+  "start_url": "/shop/",
+  "display": "standalone",
+  "theme_color": "#A083D5",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/images/spider-fevicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

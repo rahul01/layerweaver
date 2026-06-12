@@ -229,6 +229,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     ${ogImage ? `<meta property="og:image" content="${ogImage}">` : ''}
     ${structuredData ? `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>` : ''}
     <link rel="icon" href="${base}images/spider-fevicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="${base}images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="${base}styles.css">
@@ -334,6 +335,7 @@ function footerHtml(base) {
                     <a href="${base}workshop/">Workshops</a>
                     <a href="${base}#about">About</a>
                     <a href="${base}connect/">Contact Us</a>
+                    <a href="${base}faq/">FAQ</a>
                     <a href="${base}return-and-exchange-policy/">Return and Exchange Policy</a>
                     <a href="${base}shipping-policy/">Shipping Policy</a>
                     <a href="${base}privacy-policy/">Privacy Policy</a>
@@ -554,7 +556,7 @@ ${productCards}
 // ── Product page (shop/products/[handle]/index.html) ──────────────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
-function generateProductPage(product) {
+function generateProductPage(product, collection) {
   const base     = '../../../';
   const shopBase = '../../';
 
@@ -578,20 +580,36 @@ function generateProductPage(product) {
     : images[0];
   const price         = formatPrice(firstAvailable.price.amount, firstAvailable.price.currencyCode);
 
+  const breadcrumbItems = [
+    { '@type': 'ListItem', position: 1, name: 'Home',  item: SITE_URL + '/' },
+    { '@type': 'ListItem', position: 2, name: 'Shop',  item: SITE_URL + '/shop/' },
+    ...(collection ? [{ '@type': 'ListItem', position: 3, name: collection.title, item: `${SITE_URL}/shop/collections/${collection.handle}/` },
+                      { '@type': 'ListItem', position: 4, name: toTitleCase(product.title), item: `${SITE_URL}/shop/products/${product.handle}/` }]
+                   : [{ '@type': 'ListItem', position: 3, name: toTitleCase(product.title), item: `${SITE_URL}/shop/products/${product.handle}/` }]),
+  ];
+
   const structuredData = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: toTitleCase(product.title),
-    description: product.description,
-    image: images.map(i => i.url),
-    brand: { '@type': 'Brand', name: 'LayerWeaver' },
-    offers: variants.map(v => ({
-      '@type': 'Offer',
-      price: parseFloat(v.price.amount).toFixed(2),
-      priceCurrency: v.price.currencyCode,
-      availability: v.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: `${SITE_URL}/shop/products/${product.handle}/`,
-    })),
+    '@graph': [
+      {
+        '@type': 'Product',
+        name: toTitleCase(product.title),
+        description: product.description,
+        image: images.map(i => i.url),
+        brand: { '@type': 'Brand', name: 'LayerWeaver' },
+        offers: variants.map(v => ({
+          '@type': 'Offer',
+          price: parseFloat(v.price.amount).toFixed(2),
+          priceCurrency: v.price.currencyCode,
+          availability: v.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          url: `${SITE_URL}/shop/products/${product.handle}/`,
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbItems,
+      },
+    ],
   };
 
   const variantButtons = hasVariants
@@ -684,8 +702,13 @@ function generateProductPage(product) {
 
     <section class="product-page">
         <div class="container">
-            <nav class="breadcrumb">
-                <a href="${shopBase}">Shop</a> <span>/</span> <span>${product.title}</span>
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="${base}">Home</a>
+                <span>›</span>
+                <a href="${shopBase}">Shop</a>
+                ${collection ? `<span>›</span><a href="${shopBase}collections/${collection.handle}/">${collection.title}</a>` : ''}
+                <span>›</span>
+                <span>${toTitleCase(product.title)}</span>
             </nav>
 
             <div class="product-layout">
@@ -1112,10 +1135,20 @@ async function main() {
     console.log(`Generated shop/collections/${collection.handle}/index.html`);
   }
 
+  // Map each product handle to its first collection (for breadcrumbs)
+  const productCollectionMap = {};
+  for (const collection of collections) {
+    for (const product of collection.products) {
+      if (!productCollectionMap[product.handle]) {
+        productCollectionMap[product.handle] = collection;
+      }
+    }
+  }
+
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);
     fs.mkdirSync(productDir, { recursive: true });
-    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product));
+    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle]));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
 
@@ -1157,6 +1190,7 @@ async function main() {
     { loc: `${SITE_URL}/gallery/`, priority: '0.7', changefreq: 'weekly' },
     { loc: `${SITE_URL}/workshop/`, priority: '0.7', changefreq: 'monthly' },
     { loc: `${SITE_URL}/connect/`, priority: '0.6', changefreq: 'monthly' },
+    { loc: `${SITE_URL}/faq/`, priority: '0.6', changefreq: 'monthly' },
     { loc: `${SITE_URL}/services/on-demand/`, priority: '0.6', changefreq: 'monthly' },
     { loc: `${SITE_URL}/services/3d-design/`, priority: '0.6', changefreq: 'monthly' },
     { loc: `${SITE_URL}/privacy-policy/`, priority: '0.3', changefreq: 'yearly' },
