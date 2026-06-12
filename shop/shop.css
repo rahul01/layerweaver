@@ -523,7 +523,7 @@
 
 /* ------- Product Page ------- */
 .product-page {
-    padding: 100px 0 80px;
+    padding: 20px 0 80px;
 }
 
 .breadcrumb {
@@ -1278,6 +1278,20 @@
     gap: 8px;
 }
 
+.cart-payment-note {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #999;
+    margin: 8px 0 4px;
+    font-family: var(--font-primary);
+}
+
+.cart-payment-note i {
+    font-size: 0.7rem;
+    margin-right: 3px;
+    color: #4caf50;
+}
+
 .cart-policy-links {
     display: flex;
     justify-content: center;
@@ -1639,7 +1653,7 @@
 
 /* ------- Account Page ------- */
 .account-page {
-    padding-top: 100px;
+    padding-top: 20px;
     padding-bottom: 60px;
     min-height: 70vh;
 }
@@ -1675,6 +1689,14 @@
 
 .account-state h2 { margin: 0; }
 .account-state p  { color: #666; margin: 0; }
+
+.account-signin-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
 .account-hero {
     display: flex;
@@ -2065,4 +2087,28 @@
 
 @media (max-width: 500px) {
     .search-input::placeholder { font-size: 0.78rem; }
+}
+
+.shop-trust-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 7px 16px;
+    background: var(--surface-alt, #f5f3ff);
+    border-bottom: 1px solid var(--border, #e8e0f5);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+.shop-trust-strip a {
+    color: var(--primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.shop-trust-strip a:hover { text-decoration: underline; }
+.shop-trust-divider {
+    color: var(--gray-medium, #999);
+    font-weight: 400;
 }

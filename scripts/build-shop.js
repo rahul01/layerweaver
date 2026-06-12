@@ -282,6 +282,22 @@ function shopHeaderHtml(base, shopBase) {
     </header>`;
 }
 
+function shopTrustStripHtml(base) {
+  return `
+    <div class="shop-trust-strip">
+        <a href="${base}#about"><i class="fa-solid fa-store"></i> About Us</a>
+        <span class="shop-trust-divider">·</span>
+        <a href="${base}#testimonials"><i class="fa-solid fa-star"></i> Customer Feedback</a>
+    </div>`;
+}
+
+// Capitalises the first letter of each all-lowercase word — safe for "3D", "LED", "UNO" etc.
+function toTitleCase(str) {
+  return str.split(' ').map(word =>
+    word === word.toLowerCase() ? word.charAt(0).toUpperCase() + word.slice(1) : word
+  ).join(' ');
+}
+
 function footerHtml(base) {
   return `
     <footer>
@@ -291,7 +307,7 @@ function footerHtml(base) {
                     <img src="${base}images/layerweaver-logo-white.svg" alt="LayerWeaver Logo" class="logo">
                     <div class="footer-text">
                         <h2>LayerWeaver</h2>
-                        <p>Affordable 3D Printing Solutions for Everyone</p>
+                        <p>Affordable 3D Printing Solutions · Pune, India</p>
                     </div>
                 </div>
                 <nav class="footer-nav">
@@ -303,9 +319,10 @@ function footerHtml(base) {
                     <a href="${base}connect/">Contact Us</a>
                     <a href="${base}return-and-exchange-policy/">Return and Exchange Policy</a>
                     <a href="${base}shipping-policy/">Shipping Policy</a>
+                    <a href="${base}privacy-policy/">Privacy Policy</a>
                 </nav>
                 <div class="footer-right">
-                    <p>&copy; 2025 <span class="brand-text-small">LayerWeaver</span>. All rights reserved.</p>
+                    <p>&copy; 2026 <span class="brand-text-small">LayerWeaver</span>. All rights reserved.</p>
                 </div>
             </div>
         </div>
@@ -383,7 +400,7 @@ function productCardHtml(product, productsBase) {
                   </button>
               </div>
               <div class="product-card-info">
-                  <h3>${product.title}</h3>
+                  <h3>${toTitleCase(product.title)}</h3>
                   ${isContactOnly(product) ? '' : `<p class="product-price">${priceDisplay}</p>`}
               </div>
           </a>
@@ -482,6 +499,7 @@ function generateShopIndex(products, collections) {
 <body>
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
+    ${shopTrustStripHtml(base)}
 
     <section class="collection-topbar">
         <div class="container">
@@ -542,7 +560,7 @@ function generateProductPage(product) {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.title,
+    name: toTitleCase(product.title),
     description: product.description,
     image: images.map(i => i.url),
     brand: { '@type': 'Brand', name: 'LayerWeaver' },
@@ -631,7 +649,7 @@ function generateProductPage(product) {
 <html lang="en">
 <head>
     ${headHtml(base, shopBase, {
-      title: `${escAttr(product.title)} – LayerWeaver`,
+      title: `${escAttr(toTitleCase(product.title))} – LayerWeaver`,
       description: escAttr(product.description.slice(0, 160)),
       ogImage: mainImage?.url,
       ogUrl: `${SITE_URL}/shop/products/${product.handle}/`,
@@ -640,6 +658,8 @@ function generateProductPage(product) {
 </head>
 <body>
     ${shopHeaderHtml(base, shopBase)}
+    <div class="header-spacer"></div>
+    ${shopTrustStripHtml(base)}
 
     <section class="product-page">
         <div class="container">
@@ -661,7 +681,7 @@ function generateProductPage(product) {
                 </div>
 
                 <div class="product-details">
-                    <h1>${product.title}</h1>
+                    <h1>${toTitleCase(product.title)}</h1>
                     ${isContactOnly(product) ? '' : `<p class="product-price" id="product-price">${price}</p>`}
 
                     ${hasVariants ? `
@@ -890,6 +910,7 @@ function generateCollectionPage(collection, collections) {
 <body>
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
+    ${shopTrustStripHtml(base)}
 
     <section class="collection-topbar">
         <div class="container">
@@ -967,6 +988,8 @@ function generateAccountPage() {
 </head>
 <body>
     ${shopHeaderHtml(base, shopBase)}
+    <div class="header-spacer"></div>
+    ${shopTrustStripHtml(base)}
 
     <main class="account-page container">
         <div id="account-loading" class="account-state">
@@ -978,9 +1001,14 @@ function generateAccountPage() {
             <i class="fa-regular fa-user"></i>
             <h2>Sign in to view your account</h2>
             <p>Access your order history and manage your wishlist across devices.</p>
-            <button id="account-signin-btn" class="btn-primary">
-                <i class="fa-solid fa-right-to-bracket"></i> Sign In
-            </button>
+            <div class="account-signin-actions">
+                <a href="${shopBase}" class="btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Shop
+                </a>
+                <button id="account-signin-btn" class="btn-primary">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </button>
+            </div>
         </div>
 
         <div id="account-content" style="display:none">
