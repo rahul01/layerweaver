@@ -209,23 +209,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!el) return;
 
         const href = el.href || '';
-        const label = (el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 80);
+        const label = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80);
         const page = location.pathname;
 
-        if (href.includes('wa.me')) {
-            gtag('event', 'whatsapp_click', { page, label });
-        } else if (href.includes('instagram.com')) {
-            gtag('event', 'instagram_click', { page, label });
-        } else if (el.closest('.shop-trust-strip')) {
-            gtag('event', 'trust_strip_click', { label, page });
-        } else if (el.closest('.footer-nav')) {
-            gtag('event', 'footer_nav_click', { label, destination: href });
-        } else if (el.closest('.nav-links, .shop-nav')) {
-            gtag('event', 'nav_click', { label, destination: href });
-        } else if (el.closest('.workshop-cta, .enroll-cta') || /enroll|register|book/i.test(label)) {
-            gtag('event', 'enroll_click', { label, page });
-        } else if (el.classList.contains('btn-primary') || el.classList.contains('btn-secondary')) {
-            gtag('event', 'cta_click', { label, destination: href, page });
-        }
+        let type = null;
+
+        if (href.includes('wa.me'))                                                   type = 'whatsapp';
+        else if (href.includes('instagram.com'))                                      type = 'instagram';
+        else if (el.closest('.shop-trust-strip'))                                     type = 'trust_strip';
+        else if (el.closest('.footer-nav'))                                           type = 'footer_nav';
+        else if (el.closest('.nav-links, .shop-nav'))                                 type = 'nav';
+        else if (el.closest('.workshop-cta, .enroll-cta') || /enroll|register|book/i.test(label)) type = 'enroll';
+        else if (el.classList.contains('btn-primary') || el.classList.contains('btn-secondary'))   type = 'cta';
+
+        if (type) gtag('event', 'click', { type, label, page });
     });
 });
