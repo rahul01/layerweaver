@@ -203,6 +203,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Universal click tracking via event delegation
+    function getClickSection(el) {
+        const map = [
+            ['.shop-trust-strip',   'trust_strip'],
+            ['#cart-drawer',        'cart_drawer'],
+            ['.product-actions',    'product_actions'],
+            ['.product-hero',       'product_hero'],
+            ['.faq-item',           'faq'],
+            ['.contact-card',       'contact_card'],
+            ['.contact',            'contact'],
+            ['.course-card',        'course_card'],
+            ['.workshop-hero',      'workshop_hero'],
+            ['#testimonials',       'testimonials'],
+            ['#about',              'about'],
+            ['#hero',               'hero'],
+            ['.hero',               'hero'],
+            ['.footer-nav',         'footer'],
+            ['footer',              'footer'],
+            ['header',              'header'],
+            ['main',                'main'],
+        ];
+        for (const [selector, name] of map) {
+            if (el.closest(selector)) return name;
+        }
+        return 'page';
+    }
+
     document.addEventListener('click', function(e) {
         if (typeof gtag !== 'function') return;
         const el = e.target.closest('a, button');
@@ -211,17 +237,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const href = el.href || '';
         const label = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80);
         const page = location.pathname;
+        const section = getClickSection(el);
 
         let type = null;
 
-        if (href.includes('wa.me'))                                                   type = 'whatsapp';
-        else if (href.includes('instagram.com'))                                      type = 'instagram';
-        else if (el.closest('.shop-trust-strip'))                                     type = 'trust_strip';
-        else if (el.closest('.footer-nav'))                                           type = 'footer_nav';
-        else if (el.closest('.nav-links, .shop-nav'))                                 type = 'nav';
+        if (href.includes('wa.me'))                                                                type = 'whatsapp';
+        else if (href.includes('instagram.com'))                                                   type = 'instagram';
+        else if (el.closest('.shop-trust-strip'))                                                  type = 'trust_strip';
+        else if (el.closest('.footer-nav'))                                                        type = 'footer_nav';
+        else if (el.closest('.nav-links, .shop-nav'))                                              type = 'nav';
         else if (el.closest('.workshop-cta, .enroll-cta') || /enroll|register|book/i.test(label)) type = 'enroll';
         else if (el.classList.contains('btn-primary') || el.classList.contains('btn-secondary'))   type = 'cta';
 
-        if (type) gtag('event', 'click', { type, label, page });
+        if (type) gtag('event', 'click', { type, label, page, section });
     });
 });
