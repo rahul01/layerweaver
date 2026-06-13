@@ -129,6 +129,7 @@
 
         /* ── COPY BAND ── */
         .copy-band {
+            position: relative;
             background: var(--secondary);
             padding: 44px 64px 50px;
             display: flex;
@@ -136,6 +137,14 @@
             justify-content: space-between;
             gap: 32px;
             flex-shrink: 0;
+        }
+
+        .copy-band::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--primary);
         }
 
         .copy-left { flex: 1; }
@@ -185,6 +194,19 @@
             padding: 10px 26px;
             border-radius: 100px;
             letter-spacing: 0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .shipping-badge {
+            background: var(--primary);
+            color: var(--light);
+            font-family: var(--font-primary);
+            font-size: 16px;
+            font-weight: 700;
+            padding: 9px 22px;
+            border-radius: 100px;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
             white-space: nowrap;
         }
@@ -271,6 +293,7 @@
             .headline { font-size: min(80px, 7.4vw); }
             .sub { font-size: min(23px, 2.1vw); }
             .badge { font-size: min(18px, 1.67vw); padding: min(10px, 0.9vw) min(26px, 2.4vw); }
+            .shipping-badge { font-size: min(16px, 1.48vw); padding: min(9px, 0.83vw) min(22px, 2.04vw); }
             .cta-btn { font-size: min(24px, 2.2vw); padding: min(22px, 2vw) min(46px, 4.3vw); }
             .url { font-size: min(16px, 1.5vw); }
             .render-label { font-size: min(18px, 1.67vw); }
@@ -308,7 +331,7 @@
                 <img class="brand-logo"
                      src="../../images/layerweaver-logo-white.svg"
                      alt="LayerWeaver">
-                <span class="brand-name">LayerWeaver</span>
+                <span class="brand-name">LayerWeaver.com</span>
             </div>
             <span class="tag">3D Printed</span>
         </div>
@@ -321,8 +344,9 @@
             </div>
             <div class="copy-right">
                 <span class="badge">Fully Customizable</span>
+                <span class="shipping-badge">Free Shipping on ₹500+</span>
                 <button class="cta-btn">Order Yours →</button>
-                <span class="url">layerweaver.com/shop</span>
+                <span class="url">LayerWeaver.com/shop</span>
             </div>
         </div>
     </div>

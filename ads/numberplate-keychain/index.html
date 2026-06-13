@@ -58,7 +58,7 @@
         /* Product image: natural size, rotated 30°, no clipping */
         .bg-img {
             position: absolute;
-            top: 50%;
+            top: 35%;
             left: 50%;
             width: 145%;
             height: auto;
@@ -196,31 +196,33 @@
             flex-shrink: 0;
         }
 
-        .price-block {
-            text-align: right;
+        .price-badge {
+            background: var(--light);
+            color: var(--dark);
+            font-family: var(--font-primary);
+            font-size: 30px;
+            font-weight: 800;
+            padding: 12px 32px;
+            border-radius: 100px;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
         }
 
-        .price-label {
+        .shipping-badge {
+            background: var(--primary);
+            color: var(--light);
             font-family: var(--font-primary);
-            font-size: 18px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.50);
-            letter-spacing: 0.08em;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 9px 22px;
+            border-radius: 100px;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .price {
-            font-family: var(--font-primary);
-            font-size: 64px;
-            font-weight: 900;
-            color: var(--secondary);
-            line-height: 1;
+            white-space: nowrap;
         }
 
         .cta-btn {
-            background: var(--primary);
+            background: var(--dark);
             color: var(--light);
             font-family: var(--font-primary);
             font-size: 26px;
@@ -231,7 +233,6 @@
             cursor: pointer;
             letter-spacing: 0.04em;
             white-space: nowrap;
-            box-shadow: 0 8px 32px rgba(160,131,213,0.4);
         }
 
         .url {
@@ -255,15 +256,15 @@
             .eyebrow { font-size: min(26px, 2.4vw); }
             .headline { font-size: min(92px, 8.5vw); }
             .sub { font-size: min(28px, 2.6vw); }
-            .price { font-size: min(64px, 5.9vw); }
-            .price-label { font-size: min(18px, 1.7vw); }
+            .price-badge { font-size: min(30px, 2.78vw); padding: min(12px, 1.1vw) min(32px, 2.96vw); }
+            .shipping-badge { font-size: min(16px, 1.48vw); padding: min(9px, 0.83vw) min(22px, 2.04vw); }
             .cta-btn { font-size: min(26px, 2.4vw); padding: min(26px, 2.4vw) min(52px, 4.8vw); }
             .url { font-size: min(18px, 1.7vw); }
         }
     </style>
 </head>
 <body>
-    <p class="ad-label">Instagram Ad - 1080 × 1080 px</p>
+    <p class="ad-label">Instagram Ad - Number Plate Keychain - 1080 × 1080 px</p>
 
     <div class="ad">
         <img class="bg-img"
@@ -278,7 +279,7 @@
                 <img class="brand-logo"
                      src="../../images/layerweaver-logo-white.svg"
                      alt="LayerWeaver">
-                <span class="brand-name">LayerWeaver</span>
+                <span class="brand-name">LayerWeaver.com</span>
             </div>
             <span class="tag">3D Printed</span>
         </div>
@@ -290,12 +291,10 @@
                 
             </div>
             <div class="cta-col">
-                <div class="price-block">
-                    <span class="price-label">Starting at</span>
-                    <span class="price">₹149</span>
-                </div>
+                <span class="price-badge">Just ₹149</span>
+                <span class="shipping-badge">Free Shipping on ₹500+</span>
                 <button class="cta-btn">Shop Now →</button>
-                <span class="url">layerweaver.com/shop</span>
+                <span class="url">LayerWeaver.com/shop</span>
             </div>
         </div>
     </div>
