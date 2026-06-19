@@ -29,6 +29,12 @@
     return code === 'INR' ? `₹${n.toFixed(0)}` : `${code} ${n.toFixed(2)}`;
   }
 
+  function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   async function gql(query, variables = {}) {
     const res = await fetch(API, {
       method: 'POST',
@@ -80,14 +86,18 @@
     return data.cart;
   }
 
-  async function addLine(cartId, variantId, qty, attributes = []) {
-    const line = { merchandiseId: variantId, quantity: qty };
-    if (attributes.length) line.attributes = attributes;
+  async function addLines(cartId, lines) {
     const data = await gql(`
       mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
         cartLinesAdd(cartId: $cartId, lines: $lines) { cart { ${CART_FIELDS} } }
-      }`, { cartId, lines: [line] });
+      }`, { cartId, lines });
     return data.cartLinesAdd.cart;
+  }
+
+  async function addLine(cartId, variantId, qty, attributes = []) {
+    const line = { merchandiseId: variantId, quantity: qty };
+    if (attributes.length) line.attributes = attributes;
+    return addLines(cartId, [line]);
   }
 
   async function updateLine(cartId, lineId, qty) {
@@ -135,8 +145,10 @@
     )?.node || null;
   }
 
+  let _qtCache = null, _qtCacheCart = null;
   function getQualifyingTotal() {
     if (!cart) return 0;
+    if (_qtCacheCart === cart) return _qtCache;
     let sum = 0;
     for (const edge of cart.lines.edges) {
       const line = edge.node;
@@ -145,6 +157,8 @@
         sum += parseFloat(line.merchandise.price.amount || 0) * line.quantity;
       }
     }
+    _qtCacheCart = cart;
+    _qtCache = sum;
     return sum;
   }
 
@@ -174,11 +188,7 @@
         cart = await applyDiscountCode(cart.id, []);
         changed = true;
       }
-      if (changed) {
-        updateBadge();
-        renderCart();
-        updateCartBtns();
-      }
+      if (changed) refreshUI();
     } catch (err) {
       console.error('[Cart] Gift reconcile failed:', err);
     } finally {
@@ -278,6 +288,31 @@
         currency:  cart?.cost?.totalAmount?.currencyCode || '',
         num_items: cart?.totalQuantity || 0,
       });
+    });
+
+    let _drawerBusy = false;
+    document.getElementById('cart-body').addEventListener('click', async (e) => {
+      if (_drawerBusy) return;
+      const btn = e.target.closest('.qty-dec, .qty-inc, .remove-btn');
+      if (!btn) return;
+      _drawerBusy = true;
+      setDrawerLoading(true);
+      try {
+        const lineId = btn.dataset.lineId;
+        if (btn.classList.contains('remove-btn') || btn.classList.contains('qty-dec')) {
+          const newQty = btn.classList.contains('remove-btn') ? 0 : parseInt(btn.dataset.qty) - 1;
+          if (newQty <= 0) {
+            await handleRemoveLine(lineId);
+          } else {
+            await handleUpdateLine(lineId, newQty);
+          }
+        } else {
+          await handleUpdateLine(lineId, parseInt(btn.dataset.qty) + 1);
+        }
+      } finally {
+        _drawerBusy = false;
+        setDrawerLoading(false);
+      }
     });
   }
 
@@ -385,7 +420,11 @@
     const chkBtn = document.getElementById('cart-checkout-btn');
     if (!body) return;
 
-    const lines = cart ? cart.lines.edges.map(e => e.node) : [];
+    const lines = cart ? cart.lines.edges.map(e => e.node).sort((a, b) => {
+      const aGift = a.attributes?.some(x => x.key === GIFT_ATTR_KEY && x.value === GIFT_ATTR_VALUE);
+      const bGift = b.attributes?.some(x => x.key === GIFT_ATTR_KEY && x.value === GIFT_ATTR_VALUE);
+      return bGift - aGift;
+    }) : [];
 
     if (!cart || lines.length === 0) {
       body.innerHTML = `
@@ -403,16 +442,16 @@
       const v     = line.merchandise;
       const isGift = line.attributes?.some(a => a.key === GIFT_ATTR_KEY && a.value === GIFT_ATTR_VALUE);
       const price = isGift ? 'FREE' : fmt(v.price.amount, v.price.currencyCode);
-      const img   = v.image ? `<img src="${v.image.url}" alt="${v.image.altText || v.product.title}">` : '';
+      const img   = v.image ? `<img src="${v.image.url}" alt="${esc(v.image.altText || v.product.title)}">` : '';
       const swatchHex = (window.LW_SWATCHES?.[v.product.handle]?.[v.title]);
       const swatchDot = swatchHex
         ? `<span class="line-variant-swatch" style="background:${swatchHex}${swatchHex === '#ffffff' ? ';border-color:#ddd' : ''}"></span>`
         : '';
       const variantLabel = v.title !== 'Default Title'
-        ? `<span class="line-variant">${swatchDot}${v.title}</span>`
+        ? `<span class="line-variant">${swatchDot}${esc(v.title)}</span>`
         : '';
       const customAttrs = line.attributes?.filter(a => a.value && a.key !== GIFT_ATTR_KEY)
-        .map(a => `<span class="line-attr"><em>${a.key}:</em> ${a.value}</span>`).join('') || '';
+        .map(a => `<span class="line-attr"><em>${esc(a.key)}:</em> ${esc(a.value)}</span>`).join('') || '';
       const giftBadge = isGift ? '<span class="line-gift-badge">🎁 Free Gift</span>' : '';
       const qtyControls = isGift ? `<div class="line-qty"><span class="line-gift-label">Gift</span></div>` : `
           <div class="line-qty">
@@ -428,7 +467,7 @@
           <a class="cart-line-link" href="${SHOP_ROOT}products/${v.product.handle}/">
             <div class="line-image">${img}</div>
             <div class="line-info">
-              <p class="line-title">${v.product.title}</p>
+              <p class="line-title">${esc(v.product.title)}</p>
               ${giftBadge}
               ${variantLabel}
               ${customAttrs}
@@ -438,23 +477,6 @@
           ${qtyControls}
         </div>`;
     }).join('');
-
-    // Quantity / remove events
-    body.querySelectorAll('.qty-dec').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const newQty = parseInt(btn.dataset.qty) - 1;
-        await handleUpdateLine(btn.dataset.lineId, newQty);
-      });
-    });
-    body.querySelectorAll('.qty-inc').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const newQty = parseInt(btn.dataset.qty) + 1;
-        await handleUpdateLine(btn.dataset.lineId, newQty);
-      });
-    });
-    body.querySelectorAll('.remove-btn').forEach(btn => {
-      btn.addEventListener('click', () => handleRemoveLine(btn.dataset.lineId));
-    });
 
     // Footer
     const costAmt = cart.cost.totalAmount;
@@ -531,12 +553,46 @@
     }
   }
 
+  function refreshUI() { updateBadge(); renderCart(); updateCartBtns(); }
+
   // ── Handlers ──────────────────────────────────────────────────────────────
+
+  async function addToCartCore(variantGid, qty = 1, attributes = []) {
+    const prevLineCount = cart?.lines?.edges?.length || 0;
+    const cartId = loadCartId();
+    if (cartId) {
+      cart = await addLine(cartId, variantGid, qty, attributes);
+      if (!cart) {
+        localStorage.removeItem(KEY);
+        cart = await createCart(variantGid, qty, attributes);
+        saveCartId(cart.id);
+        syncCartIdToServer(cart.id);
+      }
+    } else {
+      cart = await createCart(variantGid, qty, attributes);
+      saveCartId(cart.id);
+      syncCartIdToServer(cart.id);
+    }
+    refreshUI();
+    reconcileGift();
+    if (prevLineCount === 0 && (cart?.lines?.edges?.length || 0) > 0) {
+      spawnPageConfetti();
+    }
+    const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
+    if (newLine) {
+      window.LW_LOG_EVENT?.('add_to_cart', {
+        item_name:  newLine.merchandise.product.title,
+        item_id:    newLine.merchandise.product.handle,
+        value:      parseFloat(newLine.merchandise.price.amount),
+        currency:   newLine.merchandise.price.currencyCode,
+        cart_total: parseFloat(cart?.cost?.totalAmount?.amount || 0),
+      });
+    }
+  }
 
   async function handleAddToCart(variantGid, qty = 1) {
     const btn = document.getElementById('add-to-cart-btn');
 
-    // Collect personalization if this product requires it
     const attributes = [];
     if (btn?.dataset.personalized) {
       const input = document.getElementById('custom-text');
@@ -551,39 +607,8 @@
     }
 
     setAddBtnLoading(btn, true);
-    const prevLineCount = cart?.lines?.edges?.length || 0;
     try {
-      const cartId = loadCartId();
-      if (cartId) {
-        cart = await addLine(cartId, variantGid, qty, attributes);
-        if (!cart) {
-          localStorage.removeItem(KEY);
-          cart = await createCart(variantGid, qty, attributes);
-          saveCartId(cart.id);
-          syncCartIdToServer(cart.id);
-        }
-      } else {
-        cart = await createCart(variantGid, qty, attributes);
-        saveCartId(cart.id);
-        syncCartIdToServer(cart.id);
-      }
-      updateBadge();
-      renderCart();
-      updateCartBtns();
-      reconcileGift();
-      if (prevLineCount === 0 && (cart?.lines?.edges?.length || 0) > 0) {
-        spawnPageConfetti();
-      }
-      const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
-      if (newLine) {
-        window.LW_LOG_EVENT?.('add_to_cart', {
-          item_name:  newLine.merchandise.product.title,
-          item_id:    newLine.merchandise.product.handle,
-          value:      parseFloat(newLine.merchandise.price.amount),
-          currency:   newLine.merchandise.price.currencyCode,
-          cart_total: parseFloat(cart?.cost?.totalAmount?.amount || 0),
-        });
-      }
+      await addToCartCore(variantGid, qty, attributes);
     } catch (err) {
       console.error('Add to cart failed:', err);
       alert('Could not add to cart. Please try again.');
@@ -594,35 +619,21 @@
 
   async function handleUpdateLine(lineId, newQty) {
     if (newQty <= 0) return handleRemoveLine(lineId);
-    setDrawerLoading(true);
-    try {
-      cart = await updateLine(cart.id, lineId, newQty);
-      updateBadge();
-      renderCart();
-      updateCartBtns();
-      reconcileGift();
-    } finally {
-      setDrawerLoading(false);
-    }
+    cart = await updateLine(cart.id, lineId, newQty);
+    refreshUI();
+    reconcileGift();
   }
 
   async function handleRemoveLine(lineId) {
     const line = cart?.lines.edges.find(e => e.node.id === lineId)?.node;
-    setDrawerLoading(true);
-    try {
-      cart = await removeLine(cart.id, lineId);
-      updateBadge();
-      renderCart();
-      updateCartBtns();
-      reconcileGift();
-      if (line) {
-        window.LW_LOG_EVENT?.('remove_from_cart', {
-          item_name: line.merchandise.product.title,
-          item_id:   line.merchandise.product.handle,
-        });
-      }
-    } finally {
-      setDrawerLoading(false);
+    cart = await removeLine(cart.id, lineId);
+    refreshUI();
+    reconcileGift();
+    if (line) {
+      window.LW_LOG_EVENT?.('remove_from_cart', {
+        item_name: line.merchandise.product.title,
+        item_id:   line.merchandise.product.handle,
+      });
     }
   }
 
@@ -671,39 +682,8 @@
         if (!variantGid) return;
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding…';
-        const prevCount = cart?.lines?.edges?.length || 0;
         try {
-          const cartId = loadCartId();
-          if (cartId) {
-            cart = await addLine(cartId, variantGid, 1);
-            if (!cart) {
-              localStorage.removeItem(KEY);
-              cart = await createCart(variantGid, 1);
-              saveCartId(cart.id);
-              syncCartIdToServer(cart.id);
-            }
-          } else {
-            cart = await createCart(variantGid, 1);
-            saveCartId(cart.id);
-            syncCartIdToServer(cart.id);
-          }
-          updateBadge();
-          renderCart();
-          updateCartBtns();
-          reconcileGift();
-          if (prevCount === 0 && (cart?.lines?.edges?.length || 0) > 0) {
-            spawnPageConfetti();
-          }
-          const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
-          if (newLine) {
-            window.LW_LOG_EVENT?.('add_to_cart', {
-              item_name:  newLine.merchandise.product.title,
-              item_id:    newLine.merchandise.product.handle,
-              value:      parseFloat(newLine.merchandise.price.amount),
-              currency:   newLine.merchandise.price.currencyCode,
-              cart_total: parseFloat(cart?.cost?.totalAmount?.amount || 0),
-            });
-          }
+          await addToCartCore(variantGid);
         } catch (err) {
           console.error('Add to cart failed:', err);
           alert('Could not add to cart. Please try again.');
@@ -767,20 +747,18 @@
           if (localCartId && localCartId !== serverCartId) {
             try {
               const localCart = await fetchCart(localCartId);
-              if (localCart) {
-                for (const edge of localCart.lines.edges) {
-                  const v = edge.node.merchandise;
-                  serverCart && await addLine(serverCartId, v.id, edge.node.quantity)
-                    .then(c => { cart = c; }).catch(() => {});
-                }
+              if (localCart && localCart.lines.edges.length > 0) {
+                const linesToMerge = localCart.lines.edges.map(e => ({
+                  merchandiseId: e.node.merchandise.id,
+                  quantity: e.node.quantity,
+                }));
+                cart = await addLines(serverCartId, linesToMerge);
               }
             } catch { /* local cart gone - ignore */ }
           }
           saveCartId(serverCartId);
           cart = await fetchCart(serverCartId);
-          updateBadge();
-          renderCart();
-          updateCartBtns();
+          refreshUI();
         } else if (localCartId) {
           syncCartIdToServer(localCartId);
         }
@@ -808,24 +786,8 @@
       } catch { /* network error - keep cart ID, will retry on next interaction */ }
     }
 
-    _giftBusy = true;
-    try {
-      const qt = getQualifyingTotal();
-      const gl = getGiftLine();
-      if (qt >= FREE_GIFT_MIN && !gl) {
-        cart = await addLine(cart.id, FREE_GIFT_VARIANT, 1, [{ key: GIFT_ATTR_KEY, value: GIFT_ATTR_VALUE }]);
-        cart = await applyDiscountCode(cart.id, [FREE_GIFT_CODE]);
-      } else if (qt >= FREE_GIFT_MIN && gl && !cart.discountCodes?.some(c => c.code === FREE_GIFT_CODE)) {
-        cart = await applyDiscountCode(cart.id, [FREE_GIFT_CODE]);
-      } else if (qt < FREE_GIFT_MIN && gl) {
-        cart = await removeLine(cart.id, gl.id);
-        cart = await applyDiscountCode(cart.id, []);
-      }
-    } catch (err) { console.error('[Cart] Init gift reconcile failed:', err); }
-    finally { _giftBusy = false; }
-    updateBadge();
-    renderCart();
-    updateCartBtns();
+    await reconcileGift();
+    refreshUI();
     wireProductPage();
     wireListingPage();
     _cartReady = true;
@@ -856,9 +818,7 @@
     } else {
       cart = null;
     }
-    updateBadge();
-    renderCart();
-    updateCartBtns();
+    refreshUI();
     reconcileGift();
   });
 })();
