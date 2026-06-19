@@ -118,18 +118,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // Header scroll effect
     const header = document.querySelector('header');
     if (header) {
+        const isShop = header.classList.contains('shop-header');
+        const paddingTarget = isShop ? header.querySelector('.container') : header;
         const collectionTopbar = document.querySelector('.collection-topbar');
+        const spacer = document.querySelector('.header-spacer');
+        const announcementBar = document.querySelector('.announcement-bar');
+        if (announcementBar) {
+            header.style.top = announcementBar.offsetHeight + 'px';
+        }
+        function syncHeaderLayout() {
+            if (announcementBar) header.style.top = announcementBar.offsetHeight + 'px';
+            if (!spacer && !collectionTopbar) return;
+            var h = header.offsetHeight + header.getBoundingClientRect().top;
+            if (spacer) spacer.style.height = h + 'px';
+            if (collectionTopbar) collectionTopbar.style.top = h + 'px';
+        }
         window.addEventListener('scroll', function() {
             if (window.scrollY > 100) {
-                header.style.padding = '10px 0';
+                paddingTarget.style.paddingTop = '10px';
+                paddingTarget.style.paddingBottom = '10px';
                 header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-                if (collectionTopbar) collectionTopbar.style.top = '70px';
             } else {
-                header.style.padding = '15px 0';
+                paddingTarget.style.paddingTop = '15px';
+                paddingTarget.style.paddingBottom = '15px';
                 header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-                if (collectionTopbar) collectionTopbar.style.top = '80px';
             }
+            syncHeaderLayout();
         });
+        syncHeaderLayout();
+        window.addEventListener('resize', syncHeaderLayout);
     }
     
     // Gallery items (simplified version without filtering)

@@ -4,13 +4,18 @@
   "private": true,
   "scripts": {
     "build-shop": "node scripts/build-shop.js",
-    "serve": "npx http-server . -p 8080 -c-1 --cors"
+    "serve": "npx http-server . -p 8080 -c-1 --cors",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test": "vitest run && playwright test"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "playwright": "^1.60.0",
-    "puppeteer-core": "^24.40.0"
+    "puppeteer-core": "^24.40.0",
+    "vitest": "^4.1.9"
   }
 }

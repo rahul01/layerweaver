@@ -65,6 +65,7 @@ async function fetchCollections() {
     products: e.node.products.edges.map(pe => pe.node),
   }));
 
+  const HIDDEN_COLLECTIONS = ['all-products'];
   const ORDER = [
     'lamps-and-decor',
     'toys-games-and-desk-buddies',
@@ -83,7 +84,7 @@ async function fetchCollections() {
     return ai - bi;
   });
 
-  return collections;
+  return collections.filter(c => !HIDDEN_COLLECTIONS.includes(c.handle));
 }
 
 async function fetchProducts() {
@@ -170,7 +171,7 @@ function getNumericId(gid) {
 }
 
 function escAttr(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return String(str).replace(/—/g, '-').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // Build a title→hex map from Shopify's swatch data for a product
@@ -187,6 +188,7 @@ function buildSwatchMap(product) {
 function sanitizeDescriptionHtml(html) {
   if (!html) return '';
   return html
+    .replace(/—/g, '-')
     .replace(/<meta[^>]*>/gi, '')           // strip <meta> tags Shopify injects
     .replace(/\s*data-[\w-]+="[^"]*"/g, '') // strip data-* attributes
     .replace(/\s*style="[^"]*"/g, '');      // strip inline style attributes
@@ -260,6 +262,15 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     </script>`;
 }
 
+function announcementBarHtml() {
+  return `
+    <div class="announcement-bar">
+        <a href="/shop/">
+            <span class="announcement-bar__full">LayerWeaver turns 6 months! <strong>Free Shipping</strong> on all orders + Free Cat Cable Clip on orders above ₹299! Offer lasts till 1st July!</span><span class="announcement-bar__short"><span class="announcement-bar__marquee"><span class="announcement-bar__item"><strong>Free Shipping</strong> on all orders + Free Cat Cable Clip on ₹299+!</span><span class="announcement-bar__sep">·</span><span class="announcement-bar__item">Offer lasts till 1st July!</span><span class="announcement-bar__sep">·</span><span class="announcement-bar__item"><strong>Free Shipping</strong> on all orders + Free Cat Cable Clip on ₹299+!</span><span class="announcement-bar__sep">·</span><span class="announcement-bar__item">Offer lasts till 1st July!</span><span class="announcement-bar__sep">·</span></span></span>
+        </a>
+    </div>`;
+}
+
 function shopHeaderHtml(base, shopBase) {
   return `
     <header class="shop-header">
@@ -280,21 +291,20 @@ function shopHeaderHtml(base, shopBase) {
                 <!-- cart.js injects cart icon here -->
             </nav>
         </div>
+        ${shopTrustStripHtml(base)}
     </header>`;
 }
 
 function shopTrustStripHtml(base) {
   const items = [
-    { href: `${base}shipping-policy/`,           icon: 'fa-truck-fast',       color: '#2196F3', label: 'Free Shipping Above ₹500' },
     { href: `${base}faq/#material`,                icon: 'fa-leaf',             color: '#4CAF50', label: 'Eco-Friendly &amp; Renewable PLA' },
-    { href: `${base}connect/`,                   icon: 'fa-cube',             color: '#A083D5', label: '3D Printed in Pune' },
-    {                                              icon: 'fa-credit-card',      color: '#FF9800', label: 'UPI · Cards · Net Banking' },
     { href: `${base}return-and-exchange-policy/`,icon: 'fa-rotate-left',      color: '#2196F3', label: 'Easy Returns &amp; Exchanges' },
     { href: `${base}workshop/`,                  icon: 'fa-chalkboard-user',  color: '#FF7043', label: '3D Printing Workshops for All Ages' },
     { href: `https://wa.me/917558783018`,        icon: 'fa-whatsapp',         color: '#25D366', label: 'Chat with Us on WhatsApp', target: '_blank', brand: true },
     { href: `https://instagram.com/thelayerweaver`, icon: 'fa-instagram',      color: '#E1306C', label: 'Follow Us for Exciting Builds &amp; Offers', target: '_blank', brand: true },
     { href: `${base}#testimonials`,              icon: 'fa-star',             color: '#FFC107', label: 'Customer Reviews' },
     { href: `${base}services/on-demand/`,        icon: 'fa-pen-ruler',        color: '#A083D5', label: 'Custom Orders Welcome' },
+    {                                              icon: 'fa-gift',             color: '#e67e22', label: 'Free Cat Cable Clip on ₹299+' },
   ];
   const sep = `<span class="trust-sep">✦</span>`;
   const row = items.map(({ href, icon, color, label, target, brand }) => {
@@ -302,7 +312,7 @@ function shopTrustStripHtml(base) {
     const inner = `${iconHtml} ${label}`;
     return href
       ? `<a class="trust-item" href="${href}"${target ? ` target="${target}" rel="noopener"` : ''}>${inner}</a>${sep}`
-      : `<span class="trust-item trust-item--muted">${inner}</span>${sep}`;
+      : `<span class="trust-item trust-item--muted" style="color:${color}">${inner}</span>${sep}`;
   }).join('');
   return `
     <div class="shop-trust-strip">
@@ -515,15 +525,15 @@ function generateShopIndex(products, collections) {
 <head>
     ${headHtml(base, shopBase, {
       title: 'Shop – LayerWeaver 3D Printed Products',
-      description: 'Browse and buy unique 3D printed products from LayerWeaver – affordable, handcrafted, and shipped to you.',
+      description: 'Celebrating 6 months of LayerWeaver! Free shipping on every order - no minimum. Browse unique 3D printed gifts, decor, and toys.',
       ogUrl: `${SITE_URL}/shop/`,
       ogImage: products[0]?.images.edges[0]?.node.url,
     })}
 </head>
-<body>
+<body class="has-announcement">
+    ${announcementBarHtml()}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
-    ${shopTrustStripHtml(base)}
 
     <section class="collection-topbar">
         <div class="container">
@@ -595,7 +605,7 @@ function generateProductPage(product, collection) {
       {
         '@type': 'Product',
         name: toTitleCase(product.title),
-        description: product.description,
+        description: product.description.replace(/—/g, '-'),
         image: images.map(i => i.url),
         brand: { '@type': 'Brand', name: 'LayerWeaver' },
         offers: variants.map(v => ({
@@ -696,10 +706,10 @@ function generateProductPage(product, collection) {
       structuredData,
     })}
 </head>
-<body>
+<body class="has-announcement">
+    ${announcementBarHtml()}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
-    ${shopTrustStripHtml(base)}
 
     <section class="product-page">
         <div class="container">
@@ -952,10 +962,10 @@ function generateCollectionPage(collection, collections) {
       ogUrl: `${SITE_URL}/shop/collections/${collection.handle}/`,
     })}
 </head>
-<body>
+<body class="has-announcement">
+    ${announcementBarHtml()}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
-    ${shopTrustStripHtml(base)}
 
     <section class="collection-topbar">
         <div class="container">
@@ -1035,10 +1045,10 @@ function generateAccountPage() {
         }
     </script>
 </head>
-<body>
+<body class="has-announcement">
+    ${announcementBarHtml()}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
-    ${shopTrustStripHtml(base)}
 
     <main class="account-page container">
         <div id="account-loading" class="account-state">
