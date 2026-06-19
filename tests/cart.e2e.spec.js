@@ -305,6 +305,25 @@ test.describe('Gift reconciliation', () => {
     expect(clipLines.some(l => l.isGift && l.price === 'FREE')).toBeTruthy();
     expect(clipLines.some(l => !l.isGift)).toBeTruthy();
   });
+
+  test('gift line appears first in cart drawer', async ({ page }) => {
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && getComputedStyle(badge).display !== 'none';
+    }, { timeout: 10_000 });
+    await openDrawer(page);
+    await page.click('.qty-inc');
+    await page.waitForFunction(() => {
+      const giftLines = document.querySelectorAll('.cart-line--gift');
+      const body = document.getElementById('cart-body');
+      return giftLines.length >= 1 && body && body.style.opacity !== '0.5';
+    }, { timeout: 15_000 });
+
+    const lines = await getDrawerLines(page);
+    expect(lines.length).toBeGreaterThanOrEqual(2);
+    expect(lines[0].isGift).toBeTruthy();
+  });
 });
 
 // ── Gift progress bar ───────────────────────────────────────────────────────
