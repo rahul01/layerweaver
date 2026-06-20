@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6 Months Reel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #A083D5;
+            --secondary: #EFCF20;
+            --dark: #000000;
+            --light: #FFFFFF;
+            --font-primary: 'Montserrat', sans-serif;
+            --font-brand: 'Science Gothic', sans-serif;
+            --cycle: 12s;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        .reel {
+            width: 1080px;
+            height: 1920px;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            font-family: var(--font-primary);
+        }
+
+        /* Grid layout - matches story ad */
+        .collage {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            bottom: 420px;
+            display: grid;
+            grid-template-columns: 1fr 0.7fr;
+            grid-template-rows: 1.3fr 0.7fr;
+            gap: 4px;
+        }
+
+        .cell {
+            position: relative;
+            overflow: hidden;
+        }
+        .cell-tall { grid-row: 1 / 3; }
+        .cell-wide { grid-column: 1 / 3; }
+
+        /* Each cell has stacked images that cycle */
+        .cell img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+        }
+        .cell img:first-child { opacity: 1; }
+
+        /* 4-image cycle: hard cuts, show 25% each */
+        @keyframes img-cycle-a {
+            0%, 24.9%  { opacity: 1; }
+            25%, 99.9% { opacity: 0; }
+            100%       { opacity: 1; }
+        }
+        @keyframes img-cycle-b {
+            0%, 24.9%  { opacity: 0; }
+            25%, 49.9% { opacity: 1; }
+            50%, 100%  { opacity: 0; }
+        }
+        @keyframes img-cycle-c {
+            0%, 49.9%  { opacity: 0; }
+            50%, 74.9% { opacity: 1; }
+            75%, 100%  { opacity: 0; }
+        }
+        @keyframes img-cycle-d {
+            0%, 74.9%  { opacity: 0; }
+            75%, 99.9% { opacity: 1; }
+            100%       { opacity: 0; }
+        }
+
+        .cell img:nth-child(1) { animation: img-cycle-a var(--cycle) step-end infinite; }
+        .cell img:nth-child(2) { animation: img-cycle-b var(--cycle) step-end infinite; }
+        .cell img:nth-child(3) { animation: img-cycle-c var(--cycle) step-end infinite; }
+        .cell img:nth-child(4) { animation: img-cycle-d var(--cycle) step-end infinite; }
+
+        /* Stagger each cell so they don't all switch at once */
+        .cell:nth-child(1) img { animation-delay: 0s; }
+        .cell:nth-child(2) img { animation-delay: -1.5s; }
+        .cell:nth-child(3) img { animation-delay: -3s; }
+        .cell:nth-child(4) img { animation-delay: -4.5s; }
+        .cell:nth-child(5) img { animation-delay: -0.7s; }
+        .cell:nth-child(6) img { animation-delay: -2.2s; }
+
+        /* Dark overlay */
+        .cell::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* Top bar */
+        .top-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 10;
+            padding: 56px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+            padding-bottom: 80px;
+        }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand-logo { height: 44px; width: auto; }
+        .brand-name {
+            font-family: var(--font-brand);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--light);
+            letter-spacing: 0.04em;
+        }
+        .milestone-badge {
+            background: var(--secondary);
+            color: var(--dark);
+            font-size: 16px;
+            font-weight: 800;
+            padding: 8px 20px;
+            border-radius: 100px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        /* Center overlay */
+        .center-overlay {
+            position: absolute;
+            top: 32%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            text-align: center;
+        }
+        .overlay-pre {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--light);
+            letter-spacing: 0.08em;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.6);
+            margin-bottom: -10px;
+        }
+        .big-num {
+            font-size: 300px;
+            font-weight: 900;
+            color: var(--secondary);
+            line-height: 0.85;
+            text-shadow: 0 8px 80px rgba(0,0,0,0.6), 0 2px 10px rgba(0,0,0,0.4);
+        }
+        .months-label {
+            font-size: 72px;
+            font-weight: 800;
+            color: var(--light);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.6);
+            margin-top: -8px;
+        }
+
+        /* Bottom section */
+        .bottom-section {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            z-index: 10;
+            background: var(--primary);
+            padding: 56px 48px 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+        }
+        .bottom-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: var(--secondary);
+        }
+        .bottom-thankyou {
+            font-size: 24px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .bottom-headline {
+            font-size: 68px;
+            font-weight: 900;
+            color: var(--light);
+            line-height: 0.95;
+        }
+        .bottom-sub {
+            font-size: 30px;
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+        }
+        .offer-pill {
+            background: var(--secondary);
+            color: var(--dark);
+            font-size: 28px;
+            font-weight: 800;
+            padding: 12px 28px;
+            border-radius: 100px;
+        }
+        .cta-btn {
+            background: var(--light);
+            color: var(--dark);
+            font-family: var(--font-primary);
+            font-size: 32px;
+            font-weight: 700;
+            padding: 24px 60px;
+            border-radius: 100px;
+        }
+        .bottom-url-big {
+            font-family: var(--font-brand);
+            font-size: 30px;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.04em;
+        }
+        .bottom-date {
+            font-size: 26px;
+            color: rgba(255,255,255,0.45);
+            font-weight: 600;
+        }
+
+        @media (max-width: 1180px) {
+            .reel { width: min(1080px, 92vw); height: min(1920px, 163vw); }
+        }
+    </style>
+</head>
+<body style="background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;">
+
+<div class="reel" id="reel">
+    <div class="collage">
+        <!-- Cell 1: tall left -->
+        <div class="cell cell-tall">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Product_Jun_9_2026_12_40_29_PM.png?v=1780989063" alt="Ghost Lamp">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_44_26_PM.png?v=1777371560" alt="Pineapple">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_May_2_2026_02_50_27_PM.png?v=1777713732" alt="Tulip">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_09_45PM.png?v=1777374131" alt="T-Rex Skeleton">
+        </div>
+        <!-- Cell 2: top right -->
+        <div class="cell">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/white-cat-figurine-cleaned-up.png?v=1777898401" alt="Cat Cable Clip">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_29_54PM.png?v=1777374131" alt="T-Rex">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Apr_28_2026_07_22_45_PM.png?v=1777384378" alt="Tree">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173101183198_3.jpg?v=1776050908" alt="Octopus">
+        </div>
+        <!-- Cell 3: mid right -->
+        <div class="cell">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Apr_28_2026_04_40_42_PM.png?v=1777374657" alt="Hoodie Pen Pot">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_May_3_2026_08_15_35_PM.png?v=1777819604" alt="Bird Ocarina">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_42_38_PM.png?v=1777371560" alt="Pumpkin">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Jun_5_2026_04_34_44_PM.png?v=1780657554" alt="Numberplate Keychain">
+        </div>
+        <!-- Cell 4: wide middle -->
+        <div class="cell cell-wide">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173101183198_3.jpg?v=1776050908" alt="Octopus">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_21PM.png?v=1777377646" alt="Cone Fidget">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_07_12_13_PM.png?v=1777383841" alt="Zigizigi">
+            <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_55PM.png?v=1777385918" alt="Orca">
+        </div>
+    </div>
+
+    <div class="top-bar">
+        <div class="brand">
+            <img class="brand-logo" src="../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+            <span class="brand-name">LayerWeaver</span>
+        </div>
+        <span class="milestone-badge">6 Months</span>
+    </div>
+
+    <div class="center-overlay">
+        <div class="overlay-pre">LayerWeaver Turns</div>
+        <div class="big-num">6</div>
+        <div class="months-label">Months</div>
+    </div>
+
+    <div class="bottom-section">
+        <p class="bottom-thankyou">Celebrating 6 Months</p>
+        <h2 class="bottom-headline">Free Shipping<br>On Every Order!</h2>
+        <p class="bottom-sub">No minimum - sitewide celebration!</p>
+        <span class="cta-btn">Shop Now</span>
+        <span class="bottom-url-big">layerweaver.com/shop</span>
+        <span class="bottom-date">Offer lasts till 1st July</span>
+    </div>
+</div>
+
+</body>
+</html>
