@@ -2043,6 +2043,7 @@
 }
 
 .search-input::placeholder { color: var(--gray-medium); }
+.search-input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
 
 .search-clear {
     display: none;
