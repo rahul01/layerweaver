@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weekend Workshop Flyer – May/June 2026</title>
+<title>Weekend Workshop July Flyer - LayerWeaver</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,7 +27,6 @@
     position: relative;
   }
 
-  /* ── TOP BAND ── */
   .top-band {
     background: #0d0d1a;
     padding: 18px 48px;
@@ -62,7 +61,6 @@
     border-radius: 20px;
   }
 
-  /* ── HERO ── */
   .hero {
     background: #EFCF20;
     padding: 40px 48px 36px;
@@ -129,7 +127,6 @@
     border-radius: 20px;
   }
 
-  /* ── WEEKEND CARDS ── */
   .weekends-section {
     padding: 36px 48px;
     background: #fff;
@@ -142,16 +139,12 @@
     color: #A083D5;
     margin-bottom: 16px;
   }
-  .weekends-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
 
   .weekend-card {
     border: 2px solid #0d0d1a;
     border-radius: 14px;
     overflow: hidden;
+    max-width: 360px;
   }
   .weekend-card .wc-header {
     background: #0d0d1a;
@@ -160,7 +153,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  .weekend-card .wc-header .wc-batch {
+  .weekend-card .wc-header .wc-label {
     font-size: 0.6rem;
     font-weight: 800;
     letter-spacing: 3px;
@@ -204,11 +197,6 @@
     color: #0d0d1a;
     line-height: 1;
   }
-  .wc-day .day-full {
-    font-size: 0.7rem;
-    color: #888;
-    font-weight: 600;
-  }
   .wc-day-divider {
     height: 1px;
     background: #f0f0f0;
@@ -219,16 +207,8 @@
     font-size: 0.7rem;
     color: #666;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .wc-time::before {
-    content: '⏱';
-    font-size: 0.75rem;
   }
 
-  /* ── SCHEDULE ── */
   .schedule-section {
     background: #f8f7fc;
     padding: 32px 48px;
@@ -284,7 +264,6 @@
     font-family: 'Open Sans', sans-serif;
   }
 
-  /* ── OUTCOMES ── */
   .outcomes-section {
     padding: 32px 48px;
     background: #fff;
@@ -316,13 +295,12 @@
     margin-top: 1px;
   }
   .outcome-check::after {
-    content: '✓';
+    content: '\2713';
     color: #fff;
     font-size: 0.6rem;
     font-weight: 900;
   }
 
-  /* ── FOOTER ── */
   .footer-section {
     background: #0d0d1a;
     padding: 24px 48px;
@@ -345,6 +323,25 @@
   }
   .fi-row strong {
     color: rgba(255,255,255,0.9);
+  }
+  .footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .fee {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #EFCF20;
+    letter-spacing: -0.5px;
+  }
+  .fee span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0;
   }
   .cta-button {
     background: #EFCF20;
@@ -371,91 +368,51 @@
 <body>
 <div class="poster">
 
-  <!-- TOP BAND -->
   <div class="top-band">
     <div class="logo-row">
-      <img src="../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+      <img src="../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
       <span>LayerWeaver</span>
     </div>
-    <span class="adults-tag">For Adults · No Experience Needed</span>
+    <span class="adults-tag">For Adults - No Experience Needed</span>
   </div>
 
-  <!-- HERO -->
   <div class="hero">
-    <p class="hero-kicker">✦ One Weekend. Real Skills. ✦</p>
+    <p class="hero-kicker">&#10022; One Weekend. Real Skills. &#10022;</p>
     <h1 class="hero-title">Weekend<br><span>Workshop</span></h1>
-    <p class="hero-sub">A focused crash course in 3D printing - go from complete beginner to operating a printer, designing objects, and fixing problems. All in one weekend.</p>
+    <p class="hero-sub">A focused crash course in 3D printing - go from complete beginner to operating a printer, designing objects, and fixing problems. All in one weekend. Max 3 students per batch.</p>
     <div class="hero-pills">
       <span class="hero-pill">6 Hours Total</span>
-      <span class="hero-pill">2 Sessions × 3 Hours</span>
       <span class="hero-pill">Sat + Sun</span>
+      <span class="hero-pill">4 PM - 7 PM</span>
+      <span class="hero-pill">Max 3 Per Batch</span>
       <span class="hero-pill">100% Hands-On</span>
     </div>
   </div>
 
-  <!-- WEEKEND DATES -->
   <div class="weekends-section">
-    <div class="weekends-label">Upcoming Batches</div>
-    <div class="weekends-grid">
-
-      <div class="weekend-card">
-        <div class="wc-header">
-          <span class="wc-batch">Batch 1</span>
-          <span class="wc-spots">3 Seats Only</span>
-        </div>
-        <div class="wc-body">
-          <div class="wc-days">
-            <div class="wc-day">
-              <span class="day-label">SAT</span>
-              <div>
-                <div class="day-date">30 May</div>
-                <div class="day-full">Saturday, 2026</div>
-              </div>
-            </div>
-            <div class="wc-day-divider"></div>
-            <div class="wc-day">
-              <span class="day-label">SUN</span>
-              <div>
-                <div class="day-date">31 May</div>
-                <div class="day-full">Sunday, 2026</div>
-              </div>
-            </div>
-          </div>
-          <div class="wc-time">3 hours each day</div>
-        </div>
+    <div class="weekends-label">July Batch</div>
+    <div class="weekend-card">
+      <div class="wc-header">
+        <span class="wc-label">First Weekend of July</span>
+        <span class="wc-spots">3 Seats Only</span>
       </div>
-
-      <div class="weekend-card">
-        <div class="wc-header">
-          <span class="wc-batch">Batch 2</span>
-          <span class="wc-spots">3 Seats Only</span>
-        </div>
-        <div class="wc-body">
-          <div class="wc-days">
-            <div class="wc-day">
-              <span class="day-label">SAT</span>
-              <div>
-                <div class="day-date">6 June</div>
-                <div class="day-full">Saturday, 2026</div>
-              </div>
-            </div>
-            <div class="wc-day-divider"></div>
-            <div class="wc-day">
-              <span class="day-label">SUN</span>
-              <div>
-                <div class="day-date">7 June</div>
-                <div class="day-full">Sunday, 2026</div>
-              </div>
-            </div>
+      <div class="wc-body">
+        <div class="wc-days">
+          <div class="wc-day">
+            <span class="day-label">SAT</span>
+            <div><div class="day-date">4 July</div></div>
           </div>
-          <div class="wc-time">3 hours each day</div>
+          <div class="wc-day-divider"></div>
+          <div class="wc-day">
+            <span class="day-label">SUN</span>
+            <div><div class="day-date">5 July</div></div>
+          </div>
         </div>
+        <div class="wc-time">4:00 PM - 7:00 PM each day</div>
       </div>
-
     </div>
   </div>
 
-  <!-- SCHEDULE -->
   <div class="schedule-section">
     <div class="section-label">What Happens Each Day</div>
     <div class="schedule-grid">
@@ -476,7 +433,6 @@
     </div>
   </div>
 
-  <!-- OUTCOMES -->
   <div class="outcomes-section">
     <div class="section-label">What You'll Walk Away With</div>
     <div class="outcomes-grid">
@@ -507,14 +463,16 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="footer-section">
     <div class="footer-info">
-      <div class="fi-row">📍 <strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
-      <div class="fi-row">🌐 www.layerweaver.com/workshop/</div>
-      <div class="fi-row">📞 9405616775</div>
+      <div class="fi-row">&#128205; <strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
+      <div class="fi-row">&#127760; www.layerweaver.com/workshop/</div>
+      <div class="fi-row">&#128222; 9405616775</div>
     </div>
-    <a href="https://www.layerweaver.com/enroll/" class="cta-button">Register Now →</a>
+    <div class="footer-right">
+      <div class="fee">&#8377;4,500 <span>for both sessions</span></div>
+      <a href="https://www.layerweaver.com/enroll-adult/" class="cta-button">Register Now &#8594;</a>
+    </div>
   </div>
 
 </div>

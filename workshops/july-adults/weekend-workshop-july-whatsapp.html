@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weekend Workshop July - WhatsApp Flyer</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 600px;
+    font-family: 'Montserrat', sans-serif;
+    background: #fff;
+  }
+
+  .card {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .hero {
+    background: #EFCF20;
+    padding: 24px 28px 22px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; right: -50px;
+    width: 180px; height: 180px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 50%;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: 40px;
+    width: 240px; height: 240px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 50%;
+  }
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: rgba(0,0,0,0.45);
+    text-transform: uppercase;
+  }
+  .adults-tag {
+    background: #0d0d1a;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .eyebrow {
+    position: relative;
+    z-index: 1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: rgba(0,0,0,0.45);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  h1 {
+    position: relative;
+    z-index: 1;
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: #0d0d1a;
+  }
+  h1 span { color: #A083D5; }
+  .tagline {
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: rgba(0,0,0,0.6);
+    font-weight: 500;
+    line-height: 1.4;
+    max-width: 380px;
+  }
+  .pills {
+    position: relative;
+    z-index: 1;
+    margin-top: 12px;
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    background: rgba(0,0,0,0.1);
+    color: #0d0d1a;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .weekends {
+    padding: 18px 28px;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #A083D5;
+    margin-bottom: 12px;
+  }
+  .wcard {
+    border: 2px solid #0d0d1a;
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 280px;
+  }
+  .wcard-head {
+    background: #0d0d1a;
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .wcard-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+  .wcard-spots {
+    background: #EFCF20;
+    color: #0d0d1a;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 8px;
+  }
+  .wcard-body {
+    padding: 10px 14px;
+  }
+  .day-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+  }
+  .day-row + .day-row {
+    border-top: 1px solid #f0f0f0;
+  }
+  .day-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #A083D5;
+    width: 24px;
+    flex-shrink: 0;
+  }
+  .day-date {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #0d0d1a;
+    line-height: 1;
+  }
+  .wcard-time {
+    margin-top: 8px;
+    font-size: 0.68rem;
+    color: #666;
+    font-weight: 600;
+  }
+
+  .schedule {
+    background: #f8f7fc;
+    padding: 16px 28px;
+    border-top: 1px solid #ede9f7;
+    flex-shrink: 0;
+  }
+  .sched-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .sched-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .sday-dot {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+  .sday-dot.sat { background: #A083D5; color: #fff; }
+  .sday-dot.sun { background: #EFCF20; color: #0d0d1a; }
+  .sched-text strong {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0d0d1a;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .sched-text span {
+    font-size: 0.76rem;
+    color: #888;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .outcomes {
+    padding: 14px 28px 20px;
+    background: #fff;
+  }
+  .outcomes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .oc {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: #333;
+    font-weight: 500;
+  }
+  .oc::before {
+    content: '\2713';
+    width: 16px; height: 16px;
+    background: #A083D5;
+    color: #fff;
+    font-size: 0.55rem;
+    font-weight: 900;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    background: #0d0d1a;
+    padding: 14px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .finfo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .finfo div {
+    font-size: 0.74rem;
+    color: rgba(255,255,255,0.55);
+  }
+  .finfo div strong { color: rgba(255,255,255,0.9); }
+  .footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .fee {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #EFCF20;
+  }
+  .fee span {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+  }
+  .cta {
+    background: #EFCF20;
+    color: #0d0d1a;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="hero">
+    <div class="hero-top">
+      <span class="brand">LayerWeaver</span>
+      <span class="adults-tag">Adults - No Exp. Needed</span>
+    </div>
+    <p class="eyebrow">One Weekend. Real Skills.</p>
+    <h1>Weekend<br><span>Workshop</span></h1>
+    <p class="tagline">A focused 3D printing crash course - go from zero to operating a printer and designing your own objects. Max 3 per batch.</p>
+    <div class="pills">
+      <span class="pill">6 Hours</span>
+      <span class="pill">4 PM - 7 PM</span>
+      <span class="pill">Max 3 Per Batch</span>
+      <span class="pill">100% Hands-On</span>
+    </div>
+  </div>
+
+  <div class="weekends">
+    <div class="section-label">July Batch</div>
+    <div class="wcard">
+      <div class="wcard-head">
+        <span class="wcard-label">First Weekend</span>
+        <span class="wcard-spots">3 Seats</span>
+      </div>
+      <div class="wcard-body">
+        <div class="day-row">
+          <span class="day-label">SAT</span>
+          <div class="day-date">4 July</div>
+        </div>
+        <div class="day-row">
+          <span class="day-label">SUN</span>
+          <div class="day-date">5 July</div>
+        </div>
+        <div class="wcard-time">4:00 PM - 7:00 PM each day</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="schedule">
+    <div class="section-label">What Happens Each Day</div>
+    <div class="sched-row">
+      <div class="sched-item">
+        <div class="sday-dot sat">SAT</div>
+        <div class="sched-text">
+          <strong>Your First Print</strong>
+          <span>Set up the printer, prepare a design, watch it print live</span>
+        </div>
+      </div>
+      <div class="sched-item">
+        <div class="sday-dot sun">SUN</div>
+        <div class="sched-text">
+          <strong>Design It Yourself</strong>
+          <span>Model from scratch, print it, fix problems on your own</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="outcomes">
+    <div class="section-label">You Will Walk Away Able To</div>
+    <div class="outcomes-grid">
+      <div class="oc">Operate a 3D printer</div>
+      <div class="oc">Design simple objects</div>
+      <div class="oc">Print ready-made files</div>
+      <div class="oc">Fix common failures</div>
+      <div class="oc">Pick the right filament</div>
+      <div class="oc">Decide if it is right for you</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="finfo">
+      <div><strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
+      <div>layerweaver.com/workshop/ · 9405616775</div>
+    </div>
+    <div class="footer-right">
+      <div class="fee">&#8377;4,500 <span>for both sessions</span></div>
+      <a class="cta" href="#">Register Now</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

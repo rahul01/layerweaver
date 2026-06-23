@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Weekend Course Flyer – LayerWeaver</title>
+<title>Kids Weekend Course July Flyer - LayerWeaver</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: #0f1a0f;
+    background: #1a1400;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -25,22 +25,20 @@
     border-radius: 16px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 0 60px rgba(74,222,128,0.15), 0 0 120px rgba(160,131,213,0.1);
+    box-shadow: 0 0 60px rgba(239,207,32,0.15), 0 0 120px rgba(160,131,213,0.1);
   }
 
-  /* Grid background */
   .grid-bg {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 440px;
     background-image:
-      linear-gradient(rgba(74,222,128,0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(74,222,128,0.06) 1px, transparent 1px);
+      linear-gradient(rgba(239,207,32,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(239,207,32,0.06) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
   }
 
-  /* Radial glow */
   .glow {
     position: absolute;
     top: -80px;
@@ -48,11 +46,10 @@
     transform: translateX(-50%);
     width: 600px;
     height: 500px;
-    background: radial-gradient(ellipse at center, rgba(74,222,128,0.1) 0%, rgba(160,131,213,0.08) 40%, transparent 70%);
+    background: radial-gradient(ellipse at center, rgba(239,207,32,0.1) 0%, rgba(160,131,213,0.08) 40%, transparent 70%);
     pointer-events: none;
   }
 
-  /* ── HEADER ── */
   .header {
     position: relative;
     padding: 40px 48px 0;
@@ -85,8 +82,8 @@
     align-items: center;
   }
   .badge-kids {
-    background: #4ade80;
-    color: #052e16;
+    background: #EFCF20;
+    color: #3a3000;
     font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 2px;
@@ -95,9 +92,9 @@
     text-transform: uppercase;
   }
   .badge-age {
-    background: rgba(74,222,128,0.12);
-    border: 1px solid rgba(74,222,128,0.35);
-    color: #4ade80;
+    background: rgba(239,207,32,0.12);
+    border: 1px solid rgba(239,207,32,0.35);
+    color: #EFCF20;
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 1px;
@@ -106,7 +103,6 @@
     text-transform: uppercase;
   }
 
-  /* ── HERO ── */
   .hero {
     position: relative;
     padding: 32px 48px 0;
@@ -117,7 +113,7 @@
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 4px;
-    color: #4ade80;
+    color: #EFCF20;
     text-transform: uppercase;
     margin-bottom: 12px;
   }
@@ -136,7 +132,7 @@
   }
 
   .hero-title .line2 {
-    color: #4ade80;
+    color: #EFCF20;
     display: block;
   }
 
@@ -145,11 +141,10 @@
     font-size: 1rem;
     color: rgba(255,255,255,0.65);
     font-weight: 500;
-    max-width: 440px;
+    max-width: 480px;
     line-height: 1.5;
   }
 
-  /* ── 3 WEEKENDS ── */
   .weekends-section {
     position: relative;
     z-index: 2;
@@ -161,7 +156,7 @@
     font-weight: 800;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: #4ade80;
+    color: #EFCF20;
     margin-bottom: 14px;
   }
 
@@ -201,7 +196,7 @@
     border-radius: 50%;
     background: rgba(160,131,213,0.5);
   }
-  .wk-dot.filled { background: #A083D5; }
+  .wk-dot.filled { background: #EFCF20; }
 
   .weekend-card .wk-body {
     padding: 14px 16px;
@@ -221,7 +216,7 @@
     font-weight: 800;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #4ade80;
+    color: #EFCF20;
     width: 24px;
     flex-shrink: 0;
   }
@@ -231,40 +226,26 @@
     color: rgba(255,255,255,0.85);
     line-height: 1.2;
   }
-  .wk-day-sub {
-    font-size: 0.62rem;
-    color: rgba(255,255,255,0.4);
-    font-weight: 500;
-  }
   .wk-divider {
     height: 1px;
     background: rgba(255,255,255,0.06);
     margin: 2px 0;
   }
-  .wk-session {
+  .wk-time {
     margin-top: 10px;
     font-size: 0.65rem;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.5);
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .wk-session::before {
-    content: '⏱';
-    font-size: 0.7rem;
   }
 
-  /* ── DIVIDER ── */
   .divider {
     margin: 32px 48px;
     height: 1px;
-    background: linear-gradient(to right, transparent, rgba(74,222,128,0.4), rgba(160,131,213,0.4), transparent);
+    background: linear-gradient(to right, transparent, rgba(239,207,32,0.4), rgba(160,131,213,0.4), transparent);
     position: relative;
     z-index: 2;
   }
 
-  /* ── CONTENT GRID ── */
   .content-grid {
     position: relative;
     z-index: 2;
@@ -279,7 +260,7 @@
     font-weight: 800;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #4ade80;
+    color: #EFCF20;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -289,7 +270,7 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(74,222,128,0.2);
+    background: rgba(239,207,32,0.2);
   }
 
   .content-block ul {
@@ -308,20 +289,19 @@
     line-height: 1.4;
   }
   .content-block ul li::before {
-    content: '▸';
+    content: '\25B8';
     color: #A083D5;
     font-size: 0.7rem;
     flex-shrink: 0;
     margin-top: 2px;
   }
 
-  /* ── SESSIONS STRIP ── */
   .sessions-strip {
     position: relative;
     z-index: 2;
     margin: 28px 48px 0;
-    background: rgba(74,222,128,0.07);
-    border: 1px solid rgba(74,222,128,0.2);
+    background: rgba(239,207,32,0.07);
+    border: 1px solid rgba(239,207,32,0.2);
     border-radius: 12px;
     padding: 18px 24px;
     display: flex;
@@ -340,7 +320,7 @@
     font-weight: 900;
     line-height: 1;
   }
-  .stat-big.green { color: #4ade80; }
+  .stat-big.yellow { color: #EFCF20; }
   .stat-big.purple { color: #A083D5; }
   .stat-label {
     font-size: 0.55rem;
@@ -389,13 +369,12 @@
     text-align: center;
   }
 
-  /* ── FOOTER ── */
   .footer-section {
     position: relative;
     z-index: 2;
     margin: 28px 0 0;
     background: rgba(255,255,255,0.03);
-    border-top: 1px solid rgba(74,222,128,0.15);
+    border-top: 1px solid rgba(239,207,32,0.15);
     padding: 24px 48px;
     display: flex;
     justify-content: space-between;
@@ -419,9 +398,29 @@
     color: rgba(255,255,255,0.9);
   }
 
+  .footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .fee {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #EFCF20;
+    letter-spacing: -0.5px;
+  }
+  .fee span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0;
+  }
+
   .cta-button {
-    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-    color: #052e16;
+    background: linear-gradient(135deg, #EFCF20 0%, #d4b81c 100%);
+    color: #3a3000;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.9rem;
     font-weight: 800;
@@ -431,7 +430,7 @@
     border-radius: 50px;
     text-decoration: none;
     white-space: nowrap;
-    box-shadow: 0 4px 24px rgba(74,222,128,0.3);
+    box-shadow: 0 4px 24px rgba(239,207,32,0.3);
     display: inline-block;
   }
 
@@ -446,10 +445,9 @@
   <div class="grid-bg"></div>
   <div class="glow"></div>
 
-  <!-- HEADER -->
   <div class="header">
     <div class="logo-area">
-      <img src="../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+      <img src="../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
       <span class="logo-name">LayerWeaver</span>
     </div>
     <div class="header-tags">
@@ -458,17 +456,15 @@
     </div>
   </div>
 
-  <!-- HERO -->
   <div class="hero">
-    <p class="hero-eyebrow">✦ 3 Weekends · 6 Sessions · Hands-On ✦</p>
+    <p class="hero-eyebrow">&#10022; 3 Weekends · 6 Sessions · Hands-On &#10022;</p>
     <h1 class="hero-title">
       3D <span class="accent">Printing</span><br>
       <span class="line2">For Beginners</span>
     </h1>
-    <p class="hero-sub">Design, print, and take home real 3D objects. A fun, hands-on course spread across three weekends - perfect for curious kids who love making things.</p>
+    <p class="hero-sub">Design, print, and take home real 3D objects. A fun, hands-on course spread across three weekends. Max 3 students per batch - personal attention guaranteed.</p>
   </div>
 
-  <!-- 3 WEEKENDS -->
   <div class="weekends-section">
     <div class="weekends-label">3-Weekend Structure</div>
     <div class="weekends-row">
@@ -486,21 +482,15 @@
           <div class="wk-days">
             <div class="wk-day">
               <span class="wk-day-label">SAT</span>
-              <div>
-                <div class="wk-day-info">6 June</div>
-                <div class="wk-day-sub">Saturday, 2026</div>
-              </div>
+              <div><div class="wk-day-info">4 July</div></div>
             </div>
             <div class="wk-divider"></div>
             <div class="wk-day">
               <span class="wk-day-label">SUN</span>
-              <div>
-                <div class="wk-day-info">7 June</div>
-                <div class="wk-day-sub">Sunday, 2026</div>
-              </div>
+              <div><div class="wk-day-info">5 July</div></div>
             </div>
           </div>
-          <div class="wk-session">2 hrs each session</div>
+          <div class="wk-time">10:00 AM - 12:00 PM</div>
         </div>
       </div>
 
@@ -517,21 +507,15 @@
           <div class="wk-days">
             <div class="wk-day">
               <span class="wk-day-label">SAT</span>
-              <div>
-                <div class="wk-day-info">13 June</div>
-                <div class="wk-day-sub">Saturday, 2026</div>
-              </div>
+              <div><div class="wk-day-info">11 July</div></div>
             </div>
             <div class="wk-divider"></div>
             <div class="wk-day">
               <span class="wk-day-label">SUN</span>
-              <div>
-                <div class="wk-day-info">14 June</div>
-                <div class="wk-day-sub">Sunday, 2026</div>
-              </div>
+              <div><div class="wk-day-info">12 July</div></div>
             </div>
           </div>
-          <div class="wk-session">2 hrs each session</div>
+          <div class="wk-time">10:00 AM - 12:00 PM</div>
         </div>
       </div>
 
@@ -548,21 +532,15 @@
           <div class="wk-days">
             <div class="wk-day">
               <span class="wk-day-label">SAT</span>
-              <div>
-                <div class="wk-day-info">20 June</div>
-                <div class="wk-day-sub">Saturday, 2026</div>
-              </div>
+              <div><div class="wk-day-info">18 July</div></div>
             </div>
             <div class="wk-divider"></div>
             <div class="wk-day">
               <span class="wk-day-label">SUN</span>
-              <div>
-                <div class="wk-day-info">21 June</div>
-                <div class="wk-day-sub">Sunday, 2026</div>
-              </div>
+              <div><div class="wk-day-info">19 July</div></div>
             </div>
           </div>
-          <div class="wk-session">2 hrs each session</div>
+          <div class="wk-time">10:00 AM - 12:00 PM</div>
         </div>
       </div>
 
@@ -571,7 +549,6 @@
 
   <div class="divider"></div>
 
-  <!-- CONTENT GRID -->
   <div class="content-grid">
     <div class="content-block">
       <h4>What Kids Will Learn</h4>
@@ -597,10 +574,9 @@
     </div>
   </div>
 
-  <!-- SESSIONS STRIP -->
   <div class="sessions-strip">
     <div class="stat-group">
-      <div class="stat-big green">3</div>
+      <div class="stat-big yellow">3</div>
       <div class="stat-label">Weekends</div>
     </div>
     <div class="stat-divider"></div>
@@ -610,37 +586,39 @@
     </div>
     <div class="stat-divider"></div>
     <div class="stat-group">
-      <div class="stat-big green">12</div>
+      <div class="stat-big yellow">12</div>
       <div class="stat-label">Total Hours</div>
     </div>
     <div class="sessions-desc">
-      <strong>Sat + Sun each weekend</strong> for 3 consecutive weekends.<br>
-      Small batches mean <strong>personal attention</strong> - not a classroom lecture.
+      <strong>Sat + Sun each weekend</strong>, 10 AM - 12 PM.<br>
+      Max <strong>3 students per batch</strong> - not a classroom lecture.
     </div>
     <div class="pill-row">
       <div class="pill">100% Practical</div>
-      <div class="pill">Personal Attention</div>
+      <div class="pill">Max 3 Per Batch</div>
       <div class="pill">Take Home Prints</div>
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="footer-section">
     <div class="footer-info">
       <div class="fi-row">
-        <span>📍</span>
+        <span>&#128205;</span>
         <span><strong>C-701 Orchid Towers</strong>, Baner Road, Pune</span>
       </div>
       <div class="fi-row">
-        <span>🌐</span>
+        <span>&#127760;</span>
         <span>www.layerweaver.com/workshop/</span>
       </div>
       <div class="fi-row">
-        <span>📞</span>
+        <span>&#128222;</span>
         <span>9405616775</span>
       </div>
     </div>
-    <a href="https://www.layerweaver.com/enroll/" class="cta-button">Register Now →</a>
+    <div class="footer-right">
+      <div class="fee">&#8377;6,000 <span>for all 6 sessions</span></div>
+      <a href="https://www.layerweaver.com/enroll/" class="cta-button">Register Now &#8594;</a>
+    </div>
   </div>
 </div>
 </body>
