@@ -221,6 +221,22 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
       gtag('js', new Date());
       if (location.hostname === 'www.layerweaver.com') gtag('config', 'GT-NC682MJG');
     </script>
+    <!-- Meta Pixel Code -->
+    <script>
+    if (location.hostname === 'www.layerweaver.com') {
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1677071140197155');
+    fbq('track', 'PageView');
+    }
+    </script>
+    <!-- End Meta Pixel Code -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title>
     <meta name="description" content="${description}">
@@ -863,6 +879,13 @@ function generateProductPage(product, collection) {
                 price:     ${parseFloat(firstAvailable.price.amount).toFixed(2)},
                 currency:  ${JSON.stringify(firstAvailable.price.currencyCode)},
             });
+            if (typeof fbq === 'function') fbq('track', 'ViewContent', {
+                content_name: ${JSON.stringify(product.title)},
+                content_ids:  [${JSON.stringify(getNumericId(product.id))}],
+                content_type: 'product',
+                value:        ${parseFloat(firstAvailable.price.amount).toFixed(2)},
+                currency:     ${JSON.stringify(firstAvailable.price.currencyCode)},
+            });
         });
     </script>
     ${swatchDataScript([product])}
@@ -1014,6 +1037,22 @@ function generateAccountPage() {
       gtag('js', new Date());
       if (location.hostname === 'www.layerweaver.com') gtag('config', 'GT-NC682MJG');
     </script>
+    <!-- Meta Pixel Code -->
+    <script>
+    if (location.hostname === 'www.layerweaver.com') {
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1677071140197155');
+    fbq('track', 'PageView');
+    }
+    </script>
+    <!-- End Meta Pixel Code -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account – LayerWeaver</title>
     <link rel="icon" href="${base}images/spider-fevicon.svg" type="image/svg+xml">

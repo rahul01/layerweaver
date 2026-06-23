@@ -288,6 +288,13 @@
         currency:  cart?.cost?.totalAmount?.currencyCode || '',
         num_items: cart?.totalQuantity || 0,
       });
+      if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
+        value:        parseFloat(cart?.cost?.totalAmount?.amount || 0),
+        currency:     cart?.cost?.totalAmount?.currencyCode || 'INR',
+        num_items:    cart?.totalQuantity || 0,
+        content_ids:  (cart?.lines?.edges || []).map(e => e.node.merchandise.id.split('/').pop()),
+        content_type: 'product',
+      });
     });
 
     let _drawerBusy = false;
@@ -586,6 +593,13 @@
         value:      parseFloat(newLine.merchandise.price.amount),
         currency:   newLine.merchandise.price.currencyCode,
         cart_total: parseFloat(cart?.cost?.totalAmount?.amount || 0),
+      });
+      if (typeof fbq === 'function') fbq('track', 'AddToCart', {
+        content_name: newLine.merchandise.product.title,
+        content_ids:  [newLine.merchandise.id.split('/').pop()],
+        content_type: 'product',
+        value:        parseFloat(newLine.merchandise.price.amount),
+        currency:     newLine.merchandise.price.currencyCode,
       });
     }
   }
