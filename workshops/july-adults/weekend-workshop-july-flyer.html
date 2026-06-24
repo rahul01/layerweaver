@@ -27,6 +27,7 @@
     position: relative;
   }
 
+  /* ── TOP BAND ── */
   .top-band {
     background: #0d0d1a;
     padding: 18px 48px;
@@ -61,64 +62,82 @@
     border-radius: 20px;
   }
 
+  /* ── HERO ── */
   .hero {
-    background: #EFCF20;
-    padding: 40px 48px 36px;
+    background: #0d0d1a;
+    padding: 44px 48px 38px;
     position: relative;
     overflow: hidden;
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -40px; right: -40px;
-    width: 200px; height: 200px;
-    background: rgba(0,0,0,0.05);
-    border-radius: 50%;
   }
   .hero::before {
     content: '';
     position: absolute;
-    top: -60px; right: 60px;
-    width: 300px; height: 300px;
-    background: rgba(0,0,0,0.04);
-    border-radius: 50%;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(160,131,213,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(160,131,213,0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 360px; height: 360px;
+    background: radial-gradient(ellipse, rgba(239,207,32,0.15) 0%, rgba(160,131,213,0.08) 50%, transparent 70%);
+    pointer-events: none;
   }
 
   .hero-kicker {
+    position: relative;
+    z-index: 1;
     font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: rgba(0,0,0,0.5);
-    margin-bottom: 10px;
+    color: #EFCF20;
+    margin-bottom: 12px;
   }
   .hero-title {
-    font-size: 3.4rem;
+    position: relative;
+    z-index: 1;
+    font-size: 3.6rem;
     font-weight: 900;
     line-height: 1;
-    color: #0d0d1a;
+    color: #ffffff;
     text-transform: uppercase;
+    letter-spacing: -1px;
   }
-  .hero-title span {
+  .hero-title .accent {
     color: #A083D5;
   }
+  .hero-title .line2 {
+    color: #EFCF20;
+    display: block;
+    font-size: 2.8rem;
+  }
   .hero-sub {
-    margin-top: 14px;
+    position: relative;
+    z-index: 1;
+    margin-top: 16px;
     font-size: 0.95rem;
-    color: rgba(0,0,0,0.65);
+    color: rgba(255,255,255,0.6);
     font-weight: 500;
     max-width: 480px;
     line-height: 1.5;
   }
   .hero-pills {
+    position: relative;
+    z-index: 1;
     margin-top: 18px;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
   }
   .hero-pill {
-    background: rgba(0,0,0,0.1);
-    color: #0d0d1a;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 1px;
@@ -127,88 +146,75 @@
     border-radius: 20px;
   }
 
-  .weekends-section {
-    padding: 36px 48px;
+  /* ── DATES ── */
+  .dates-section {
+    padding: 28px 48px;
     background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 24px;
   }
-  .weekends-label {
+  .dates-label {
     font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: #A083D5;
-    margin-bottom: 16px;
+    flex-shrink: 0;
   }
-
-  .weekend-card {
-    border: 2px solid #0d0d1a;
-    border-radius: 14px;
-    overflow: hidden;
-    max-width: 360px;
-  }
-  .weekend-card .wc-header {
-    background: #0d0d1a;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .weekend-card .wc-header .wc-label {
-    font-size: 0.6rem;
-    font-weight: 800;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-  }
-  .weekend-card .wc-header .wc-spots {
-    background: #EFCF20;
-    color: #0d0d1a;
-    font-size: 0.6rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    padding: 3px 10px;
-    border-radius: 10px;
-  }
-  .weekend-card .wc-body {
-    padding: 16px 20px;
-  }
-  .weekend-card .wc-days {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .wc-day {
+  .dates-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 20px;
   }
-  .wc-day .day-label {
+  .date-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .date-item .day-label {
     font-size: 0.6rem;
     font-weight: 800;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: #A083D5;
-    width: 26px;
-    flex-shrink: 0;
   }
-  .wc-day .day-date {
+  .date-item .day-date {
     font-size: 1.4rem;
     font-weight: 900;
     color: #0d0d1a;
     line-height: 1;
   }
-  .wc-day-divider {
-    height: 1px;
-    background: #f0f0f0;
-    margin: 2px 0;
+  .dates-sep {
+    width: 1px;
+    height: 28px;
+    background: #e0e0e0;
   }
-  .wc-time {
-    margin-top: 10px;
+  .dates-time {
     font-size: 0.7rem;
     color: #666;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dates-time::before {
+    content: '⏱';
+    font-size: 0.75rem;
+  }
+  .dates-spots {
+    margin-left: auto;
+    background: #EFCF20;
+    color: #0d0d1a;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    flex-shrink: 0;
   }
 
+  /* ── SCHEDULE ── */
   .schedule-section {
     background: #f8f7fc;
     padding: 32px 48px;
@@ -264,6 +270,7 @@
     font-family: 'Open Sans', sans-serif;
   }
 
+  /* ── OUTCOMES ── */
   .outcomes-section {
     padding: 32px 48px;
     background: #fff;
@@ -301,6 +308,35 @@
     font-weight: 900;
   }
 
+  /* ── DISCOUNT STRIP ── */
+  .discount-strip {
+    background: #A083D5;
+    padding: 16px 48px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .discount-icon {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .discount-text {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.4;
+  }
+  .discount-text strong {
+    color: #EFCF20;
+  }
+
+  /* ── FOOTER ── */
   .footer-section {
     background: #0d0d1a;
     padding: 24px 48px;
@@ -373,44 +409,39 @@
       <img src="../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
       <span>LayerWeaver</span>
     </div>
-    <span class="adults-tag">For Adults - No Experience Needed</span>
+    <span class="adults-tag">For Adults · No Experience Needed</span>
   </div>
 
   <div class="hero">
-    <p class="hero-kicker">&#10022; One Weekend. Real Skills. &#10022;</p>
-    <h1 class="hero-title">Weekend<br><span>Workshop</span></h1>
-    <p class="hero-sub">A focused crash course in 3D printing - go from complete beginner to operating a printer, designing objects, and fixing problems. All in one weekend. Max 3 students per batch.</p>
+    <p class="hero-kicker">✦ One Weekend. Real Skills. ✦</p>
+    <h1 class="hero-title">
+      3D <span class="accent">Printing</span>
+      <span class="line2">Weekend Workshop</span>
+    </h1>
+    <p class="hero-sub">Go from complete beginner to operating a printer, designing objects, and fixing problems - all in one weekend.</p>
     <div class="hero-pills">
       <span class="hero-pill">6 Hours Total</span>
-      <span class="hero-pill">Sat + Sun</span>
-      <span class="hero-pill">4 PM - 7 PM</span>
+      <span class="hero-pill">2 Sessions × 3 Hours</span>
       <span class="hero-pill">Max 3 Per Batch</span>
       <span class="hero-pill">100% Hands-On</span>
     </div>
   </div>
 
-  <div class="weekends-section">
-    <div class="weekends-label">July Batch</div>
-    <div class="weekend-card">
-      <div class="wc-header">
-        <span class="wc-label">First Weekend of July</span>
-        <span class="wc-spots">3 Seats Only</span>
+  <div class="dates-section">
+    <div class="dates-label">July Batch</div>
+    <div class="dates-row">
+      <div class="date-item">
+        <span class="day-label">SAT</span>
+        <span class="day-date">4 July</span>
       </div>
-      <div class="wc-body">
-        <div class="wc-days">
-          <div class="wc-day">
-            <span class="day-label">SAT</span>
-            <div><div class="day-date">4 July</div></div>
-          </div>
-          <div class="wc-day-divider"></div>
-          <div class="wc-day">
-            <span class="day-label">SUN</span>
-            <div><div class="day-date">5 July</div></div>
-          </div>
-        </div>
-        <div class="wc-time">4:00 PM - 7:00 PM each day</div>
+      <div class="dates-sep"></div>
+      <div class="date-item">
+        <span class="day-label">SUN</span>
+        <span class="day-date">5 July</span>
       </div>
     </div>
+    <div class="dates-time">4:00 PM - 7:00 PM each day</div>
+    <span class="dates-spots">3 Seats Only</span>
   </div>
 
   <div class="schedule-section">
@@ -463,15 +494,20 @@
     </div>
   </div>
 
+  <div class="discount-strip">
+    <div class="discount-icon">🖨</div>
+    <div class="discount-text">Workshop students get an <strong>exclusive discount</strong> towards their first 3D printer</div>
+  </div>
+
   <div class="footer-section">
     <div class="footer-info">
-      <div class="fi-row">&#128205; <strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
-      <div class="fi-row">&#127760; www.layerweaver.com/workshop/</div>
-      <div class="fi-row">&#128222; 9405616775</div>
+      <div class="fi-row">📍 <strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
+      <div class="fi-row">🌐 www.layerweaver.com/workshop/</div>
+      <div class="fi-row">📞 9405616775</div>
     </div>
     <div class="footer-right">
-      <div class="fee">&#8377;4,500 <span>for both sessions</span></div>
-      <a href="https://www.layerweaver.com/enroll-adult/" class="cta-button">Register Now &#8594;</a>
+      <div class="fee">₹4,500 <span>for both sessions</span></div>
+      <a href="https://www.layerweaver.com/enroll-adult/" class="cta-button">Register Now →</a>
     </div>
   </div>
 

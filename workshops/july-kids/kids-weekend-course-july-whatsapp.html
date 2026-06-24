@@ -225,6 +225,32 @@
     flex-shrink: 0;
   }
 
+  .discount-strip {
+    position: relative;
+    z-index: 2;
+    margin: 0 28px;
+    background: rgba(160,131,213,0.15);
+    border: 1px solid rgba(160,131,213,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .discount-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+  .discount-text {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.3;
+  }
+  .discount-text strong {
+    color: #EFCF20;
+  }
+
   .footer {
     position: relative;
     z-index: 2;
@@ -346,14 +372,19 @@
     <div class="bullet">Take home what you make</div>
   </div>
 
+  <div class="discount-strip">
+    <span class="discount-icon">🖨</span>
+    <div class="discount-text">Students get an <strong>exclusive discount</strong> towards their first 3D printer</div>
+  </div>
+
   <div class="footer">
     <div class="contact">
       <div><strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
       <div>layerweaver.com/workshop/ · 9405616775</div>
     </div>
     <div class="footer-right">
-      <div class="fee">&#8377;6,000 <span>for all 6 sessions</span></div>
-      <a class="cta" href="#">Register Now</a>
+      <div class="fee">₹6,000 <span>for all 6 sessions</span></div>
+      <a class="cta" href="https://www.layerweaver.com/enroll/">Register Now</a>
     </div>
   </div>
 

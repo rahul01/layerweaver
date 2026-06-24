@@ -369,6 +369,32 @@
     text-align: center;
   }
 
+  .discount-strip {
+    position: relative;
+    z-index: 2;
+    margin: 24px 48px 0;
+    background: rgba(160,131,213,0.15);
+    border: 1px solid rgba(160,131,213,0.3);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .discount-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .discount-text {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.4;
+  }
+  .discount-text strong {
+    color: #EFCF20;
+  }
+
   .footer-section {
     position: relative;
     z-index: 2;
@@ -600,24 +626,29 @@
     </div>
   </div>
 
+  <div class="discount-strip">
+    <span class="discount-icon">🖨</span>
+    <div class="discount-text">Workshop students get an <strong>exclusive discount</strong> towards their first 3D printer</div>
+  </div>
+
   <div class="footer-section">
     <div class="footer-info">
       <div class="fi-row">
-        <span>&#128205;</span>
+        <span>📍</span>
         <span><strong>C-701 Orchid Towers</strong>, Baner Road, Pune</span>
       </div>
       <div class="fi-row">
-        <span>&#127760;</span>
+        <span>🌐</span>
         <span>www.layerweaver.com/workshop/</span>
       </div>
       <div class="fi-row">
-        <span>&#128222;</span>
+        <span>📞</span>
         <span>9405616775</span>
       </div>
     </div>
     <div class="footer-right">
-      <div class="fee">&#8377;6,000 <span>for all 6 sessions</span></div>
-      <a href="https://www.layerweaver.com/enroll/" class="cta-button">Register Now &#8594;</a>
+      <div class="fee">₹6,000 <span>for all 6 sessions</span></div>
+      <a href="https://www.layerweaver.com/enroll/" class="cta-button">Register Now →</a>
     </div>
   </div>
 </div>

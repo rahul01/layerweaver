@@ -21,33 +21,35 @@
   }
 
   .hero {
-    background: #EFCF20;
+    background: #0d0d1a;
     padding: 24px 28px 22px;
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
   }
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -50px; right: -50px;
-    width: 180px; height: 180px;
-    background: rgba(0,0,0,0.06);
-    border-radius: 50%;
-  }
   .hero::before {
     content: '';
     position: absolute;
-    top: -60px; right: 40px;
-    width: 240px; height: 240px;
-    background: rgba(0,0,0,0.04);
-    border-radius: 50%;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(160,131,213,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(160,131,213,0.07) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -50px; right: -30px;
+    width: 300px; height: 300px;
+    background: radial-gradient(ellipse, rgba(239,207,32,0.15) 0%, rgba(160,131,213,0.08) 50%, transparent 70%);
+    pointer-events: none;
   }
   .hero-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     position: relative;
     z-index: 1;
   }
@@ -55,12 +57,13 @@
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 3px;
-    color: rgba(0,0,0,0.45);
+    color: #A083D5;
     text-transform: uppercase;
   }
   .adults-tag {
-    background: #0d0d1a;
-    color: #fff;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.85);
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 2px;
@@ -71,10 +74,10 @@
   .eyebrow {
     position: relative;
     z-index: 1;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 4px;
-    color: rgba(0,0,0,0.45);
+    color: #EFCF20;
     text-transform: uppercase;
     margin-bottom: 6px;
   }
@@ -85,15 +88,20 @@
     font-weight: 900;
     line-height: 0.95;
     text-transform: uppercase;
-    color: #0d0d1a;
+    color: #fff;
   }
-  h1 span { color: #A083D5; }
+  h1 .accent { color: #A083D5; }
+  h1 .line2 {
+    color: #EFCF20;
+    display: block;
+    font-size: 2.2rem;
+  }
   .tagline {
     position: relative;
     z-index: 1;
     margin-top: 10px;
-    font-size: 0.88rem;
-    color: rgba(0,0,0,0.6);
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.55);
     font-weight: 500;
     line-height: 1.4;
     max-width: 380px;
@@ -107,8 +115,9 @@
     flex-wrap: wrap;
   }
   .pill {
-    background: rgba(0,0,0,0.1);
-    color: #0d0d1a;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 1px;
@@ -117,8 +126,8 @@
     border-radius: 20px;
   }
 
-  .weekends {
-    padding: 18px 28px;
+  .dates {
+    padding: 14px 28px;
     background: #fff;
     flex-shrink: 0;
   }
@@ -128,68 +137,57 @@
     letter-spacing: 4px;
     text-transform: uppercase;
     color: #A083D5;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
-  .wcard {
-    border: 2px solid #0d0d1a;
-    border-radius: 12px;
-    overflow: hidden;
-    max-width: 280px;
-  }
-  .wcard-head {
-    background: #0d0d1a;
-    padding: 8px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .wcard-label {
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.45);
-  }
-  .wcard-spots {
-    background: #EFCF20;
-    color: #0d0d1a;
-    font-size: 0.68rem;
-    font-weight: 800;
-    padding: 2px 8px;
-    border-radius: 8px;
-  }
-  .wcard-body {
-    padding: 10px 14px;
-  }
-  .day-row {
+  .dates-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 4px 0;
+    gap: 16px;
   }
-  .day-row + .day-row {
-    border-top: 1px solid #f0f0f0;
+  .date-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .day-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: #A083D5;
-    width: 24px;
-    flex-shrink: 0;
   }
   .day-date {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 900;
     color: #0d0d1a;
     line-height: 1;
   }
-  .wcard-time {
-    margin-top: 8px;
-    font-size: 0.68rem;
+  .dates-sep {
+    width: 1px;
+    height: 22px;
+    background: #e0e0e0;
+  }
+  .dates-spots {
+    background: #EFCF20;
+    color: #0d0d1a;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 14px;
+    margin-left: auto;
+  }
+  .dates-time {
+    margin-top: 6px;
+    font-size: 0.65rem;
     color: #666;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dates-time::before {
+    content: '⏱';
+    font-size: 0.65rem;
   }
 
   .schedule {
@@ -266,6 +264,28 @@
     flex-shrink: 0;
   }
 
+  .discount-strip {
+    background: #A083D5;
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .discount-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+  .discount-text {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+  .discount-text strong {
+    color: #EFCF20;
+  }
+
   .footer {
     background: #0d0d1a;
     padding: 14px 28px;
@@ -326,8 +346,8 @@
       <span class="adults-tag">Adults - No Exp. Needed</span>
     </div>
     <p class="eyebrow">One Weekend. Real Skills.</p>
-    <h1>Weekend<br><span>Workshop</span></h1>
-    <p class="tagline">A focused 3D printing crash course - go from zero to operating a printer and designing your own objects. Max 3 per batch.</p>
+    <h1>3D <span class="accent">Printing</span><span class="line2">Weekend Workshop</span></h1>
+    <p class="tagline">Go from zero to operating a printer and designing your own objects - all in one weekend.</p>
     <div class="pills">
       <span class="pill">6 Hours</span>
       <span class="pill">4 PM - 7 PM</span>
@@ -336,25 +356,21 @@
     </div>
   </div>
 
-  <div class="weekends">
+  <div class="dates">
     <div class="section-label">July Batch</div>
-    <div class="wcard">
-      <div class="wcard-head">
-        <span class="wcard-label">First Weekend</span>
-        <span class="wcard-spots">3 Seats</span>
+    <div class="dates-row">
+      <div class="date-item">
+        <span class="day-label">SAT</span>
+        <span class="day-date">4 July</span>
       </div>
-      <div class="wcard-body">
-        <div class="day-row">
-          <span class="day-label">SAT</span>
-          <div class="day-date">4 July</div>
-        </div>
-        <div class="day-row">
-          <span class="day-label">SUN</span>
-          <div class="day-date">5 July</div>
-        </div>
-        <div class="wcard-time">4:00 PM - 7:00 PM each day</div>
+      <div class="dates-sep"></div>
+      <div class="date-item">
+        <span class="day-label">SUN</span>
+        <span class="day-date">5 July</span>
       </div>
+      <span class="dates-spots">3 Seats Only</span>
     </div>
+    <div class="dates-time">4:00 PM - 7:00 PM each day</div>
   </div>
 
   <div class="schedule">
@@ -389,14 +405,19 @@
     </div>
   </div>
 
+  <div class="discount-strip">
+    <span class="discount-icon">🖨</span>
+    <div class="discount-text">Students get an <strong>exclusive discount</strong> towards their first 3D printer</div>
+  </div>
+
   <div class="footer">
     <div class="finfo">
       <div><strong>C-701 Orchid Towers</strong>, Baner Road, Pune</div>
       <div>layerweaver.com/workshop/ · 9405616775</div>
     </div>
     <div class="footer-right">
-      <div class="fee">&#8377;4,500 <span>for both sessions</span></div>
-      <a class="cta" href="#">Register Now</a>
+      <div class="fee">₹4,500 <span>for both sessions</span></div>
+      <a class="cta" href="https://www.layerweaver.com/enroll-adult/">Register Now</a>
     </div>
   </div>
 
