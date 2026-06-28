@@ -68,6 +68,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Share buttons
+    document.querySelectorAll('.course-share-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const card = btn.closest('.course-card');
+            const id = card.id;
+            const url = `https://www.layerweaver.com/workshop/${id ? '#' + id : ''}`;
+            const title = card.querySelector('h3').textContent.trim();
+
+            if (navigator.share) {
+                navigator.share({ title, url }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    btn.classList.add('copied');
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.textContent = 'Share';
+                    }, 2000);
+                });
+            }
+        });
+    });
+
     // Hash-based deep link: expand the target card, collapse others
     const hash = window.location.hash.slice(1);
     if (hash) {
