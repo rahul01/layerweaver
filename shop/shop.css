@@ -380,6 +380,20 @@
     margin: 0;
 }
 
+.product-price.custom-price {
+    color: #888;
+}
+
+.indicative-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
 .product-card-actions {
     padding: 0 16px 16px;
     display: flex;
@@ -396,6 +410,7 @@
 .product-card-actions .listing-add-to-cart,
 .product-card-actions .listing-buy-now,
 .product-card-actions .listing-personalize-btn,
+.product-card-actions .listing-whatsapp-btn,
 .product-card-actions .listing-choose-link {
     flex: 1 1 120px;
     display: flex;
@@ -422,13 +437,15 @@
     color: var(--dark);
 }
 
-.listing-personalize-btn {
+.listing-personalize-btn,
+.listing-whatsapp-btn {
     background-color: #FFD814;
     color: var(--dark);
     text-decoration: none;
 }
 
-.listing-personalize-btn:hover {
+.listing-personalize-btn:hover,
+.listing-whatsapp-btn:hover {
     background-color: #F7CA00;
     color: var(--dark);
 }
@@ -1715,6 +1732,7 @@
     .product-card-actions .listing-add-to-cart,
     .product-card-actions .listing-buy-now,
     .product-card-actions .listing-personalize-btn,
+    .product-card-actions .listing-whatsapp-btn,
     .product-card-actions .listing-choose-link {
         font-size: 0.7rem;
         min-height: 32px;

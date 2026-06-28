@@ -206,6 +206,11 @@ function isContactOnly(product) {
     parseFloat(product.priceRange.minVariantPrice.amount) <= 1;
 }
 
+// Products tagged 'custom_price' show their Shopify price as indicative only.
+function isCustomPrice(product) {
+  return product.tags.includes('custom_price');
+}
+
 // ── HTML partials (all paths relative to site root via `base`) ────────────────
 // base:     path from this file back to site root  (e.g. '../' or '../../../')
 // shopBase: path from this file back to shop/       (e.g. './'  or '../../')
@@ -451,7 +456,7 @@ function productCardHtml(product, productsBase) {
               </div>
               <div class="product-card-info">
                   <h3>${toTitleCase(product.title)}</h3>
-                  ${isContactOnly(product) ? '' : `<p class="product-price">${priceDisplay}</p>`}
+                  ${isContactOnly(product) ? '' : `<p class="product-price${isCustomPrice(product) ? ' custom-price' : ''}">${priceDisplay}${isCustomPrice(product) ? '<span class="indicative-label">Final price varies with customization</span>' : ''}</p>`}
               </div>
           </a>
           ${available
@@ -462,12 +467,16 @@ function productCardHtml(product, productsBase) {
                         ? `<a href="${productsBase}${product.handle}/" class="listing-personalize-btn">
                                <i class="fa-solid fa-pen-nib"></i> Personalize
                            </a>`
-                        : needsProductPage
-                          ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>`
-                          : `<button class="listing-add-to-cart"
-                               data-variant-gid="${firstVariant.id}">
-                               Add to Cart
-                           </button>`
+                        : isCustomPrice(product)
+                          ? `<a href="https://wa.me/917558783018?text=I'm interested in ${encodeURIComponent(product.title)}" class="listing-whatsapp-btn" target="_blank">
+                                 <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
+                             </a>`
+                          : needsProductPage
+                            ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>`
+                            : `<button class="listing-add-to-cart"
+                                 data-variant-gid="${firstVariant.id}">
+                                 Add to Cart
+                             </button>`
                       }
                   </div>
               </div>`
@@ -753,7 +762,7 @@ function generateProductPage(product, collection) {
 
                 <div class="product-details">
                     <h1>${toTitleCase(product.title)}</h1>
-                    ${isContactOnly(product) ? '' : `<p class="product-price" id="product-price">${price}</p>`}
+                    ${isContactOnly(product) ? '' : `<p class="product-price${isCustomPrice(product) ? ' custom-price' : ''}" id="product-price">${price}${isCustomPrice(product) ? '<span class="indicative-label">Final price varies with customization</span>' : ''}</p>`}
 
                     ${hasVariants ? `
                     <div class="variants-section">
@@ -763,7 +772,7 @@ function generateProductPage(product, collection) {
                         </div>
                     </div>` : ''}
 
-                    ${product.tags.includes('personalized') && !isContactOnly(product) ? `
+                    ${product.tags.includes('personalized') ? `
                     <div class="personalization-field">
                         <label for="custom-text">Personalization <span class="required">*</span></label>
                         <input type="text" id="custom-text" maxlength="20" placeholder="Enter the text to be printed">
@@ -771,7 +780,7 @@ function generateProductPage(product, collection) {
                     </div>` : ''}
 
                     <div class="product-actions">
-                        ${isContactOnly(product) ? '' : `
+                        ${isContactOnly(product) || isCustomPrice(product) ? '' : `
                         <button id="add-to-cart-btn"
                                 class="btn-primary add-to-cart-btn"
                                 data-variant-gid="${firstAvailable.id}"
@@ -790,7 +799,7 @@ function generateProductPage(product, collection) {
                         <a href="https://wa.me/917558783018?text=${waText}"
                            class="btn-secondary whatsapp-btn"
                            target="_blank">
-                            <i class="fa-brands fa-whatsapp"></i> ${isContactOnly(product) ? 'Request on WhatsApp' : 'Ask on WhatsApp'}
+                            <i class="fa-brands fa-whatsapp"></i> ${isContactOnly(product) || isCustomPrice(product) ? 'Order on WhatsApp' : 'Ask on WhatsApp'}
                         </a>
                     </div>
 
@@ -871,6 +880,19 @@ function generateProductPage(product, collection) {
                 }
             });
         });
+
+        (function() {
+            const waBtn = document.querySelector('.whatsapp-btn');
+            const customTextInput = document.getElementById('custom-text');
+            if (!waBtn || !customTextInput) return;
+            const baseText = ${JSON.stringify(`Hi! I'm interested in ${product.title}`)};
+            function updateWaLink() {
+                const val = customTextInput.value.trim();
+                const msg = val ? baseText + '. Custom text: "' + val + '"' : baseText;
+                waBtn.href = 'https://wa.me/917558783018?text=' + encodeURIComponent(msg);
+            }
+            customTextInput.addEventListener('input', updateWaLink);
+        })();
 
         document.addEventListener('DOMContentLoaded', () => {
             window.LW_LOG_EVENT?.('view_item', {
