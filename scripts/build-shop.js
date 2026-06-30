@@ -10,6 +10,8 @@ const path = require('path');
 
 const SHOPIFY_DOMAIN = 'shop.layerweaver.com';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '7f0eafeb115e99a4a917e044a1fb4125';
+const JUDGEME_TOKEN = process.env.JUDGEME_API_TOKEN || 'M5panqMnpzylTb1J_mlo8-ZDHpE';
+const JUDGEME_SHOP = 'shop.layerweaver.com';
 const SITE_URL = 'https://www.layerweaver.com';
 const BUILD_VER = Date.now();
 
@@ -168,6 +170,63 @@ async function fetchProducts() {
 
 function getNumericId(gid) {
   return gid.split('/').pop();
+}
+
+async function fetchAllReviews(products) {
+  if (!JUDGEME_TOKEN) {
+    console.log('  Skipping reviews (no JUDGEME_API_TOKEN set)');
+    return {};
+  }
+  console.log('Fetching reviews from Judge.me...');
+  const map = {};
+  const BATCH = 5;
+  for (let i = 0; i < products.length; i += BATCH) {
+    const batch = products.slice(i, i + BATCH);
+    await Promise.all(batch.map(async (product) => {
+      try {
+        const id = getNumericId(product.id);
+        const url = `https://judge.me/api/v1/reviews?api_token=${JUDGEME_TOKEN}&shop_domain=${JUDGEME_SHOP}&product_id=${id}&per_page=50&page=1`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const data = await res.json();
+        const reviews = data.reviews || [];
+        if (!reviews.length) return;
+        const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+        map[product.handle] = {
+          rating: avgRating,
+          count: reviews.length,
+          reviews: reviews.slice(0, 6),
+        };
+      } catch {}
+    }));
+  }
+  console.log(`  Got reviews for ${Object.keys(map).length} product(s)`);
+  return map;
+}
+
+function starsHtml(rating, count, size = 'sm') {
+  if (!count) return '';
+  const pct = (rating / 5 * 100).toFixed(1);
+  return `<div class="product-stars product-stars--${size}">
+    <span class="stars-visual" style="--pct:${pct}%"></span>
+    <span class="review-count">${rating.toFixed(1)} (${count})</span>
+  </div>`;
+}
+
+function reviewCardHtml(review) {
+  const date = new Date(review.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' });
+  const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+  const name = escAttr(review.reviewer?.name || 'Customer');
+  return `<div class="review-card">
+    <div class="review-header">
+      <span class="review-stars">${stars}</span>
+      <span class="review-author">${name}</span>
+      ${review.verified_buyer ? '<span class="review-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>' : ''}
+      <span class="review-date">${date}</span>
+    </div>
+    ${review.title ? `<p class="review-title">${escAttr(review.title)}</p>` : ''}
+    ${review.body ? `<p class="review-body">${escAttr(review.body)}</p>` : ''}
+  </div>`;
 }
 
 function escAttr(str) {
@@ -401,7 +460,7 @@ function swatchDataScript(products) {
 //   shop/index.html           → 'products/'
 //   shop/collections/*/       → '../../products/'
 
-function productCardHtml(product, productsBase) {
+function productCardHtml(product, productsBase, reviewData = null) {
   const minPrice    = formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
   const maxPrice    = formatPrice(product.priceRange.maxVariantPrice.amount, product.priceRange.maxVariantPrice.currencyCode);
   const priceDisplay = product.priceRange.minVariantPrice.amount === product.priceRange.maxVariantPrice.amount
@@ -456,6 +515,7 @@ function productCardHtml(product, productsBase) {
               </div>
               <div class="product-card-info">
                   <h3>${toTitleCase(product.title)}</h3>
+                  ${reviewData?.count ? starsHtml(reviewData.rating, reviewData.count) : ''}
                   ${isContactOnly(product) ? '' : `<p class="product-price${isCustomPrice(product) ? ' custom-price' : ''}">${priceDisplay}${isCustomPrice(product) ? '<span class="indicative-label">Final price varies with customization</span>' : ''}</p>`}
               </div>
           </a>
@@ -530,11 +590,11 @@ function collectionNavHtml(collections, shopBase, activeHandle = null) {
 // ── Shop index (shop/index.html) ──────────────────────────────────────────────
 // depth from root: 1  →  base = '../'   shopBase = './'
 
-function generateShopIndex(products, collections) {
+function generateShopIndex(products, collections, reviewsMap = {}) {
   const base     = '../';
   const shopBase = './';
 
-  const productCards = products.map(p => productCardHtml(p, 'products/')).join('\n');
+  const productCards = products.map(p => productCardHtml(p, 'products/', reviewsMap[p.handle])).join('\n');
 
   // Pick the first product image from each collection for the "All" banner
   const BANNER_EXCLUDE = ['cone-fidget'];
@@ -592,7 +652,7 @@ ${productCards}
 // ── Product page (shop/products/[handle]/index.html) ──────────────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
-function generateProductPage(product, collection) {
+function generateProductPage(product, collection, reviewData = null) {
   const base     = '../../../';
   const shopBase = '../../';
 
@@ -633,6 +693,13 @@ function generateProductPage(product, collection) {
         description: product.description.replace(/—/g, '-'),
         image: images.map(i => i.url),
         brand: { '@type': 'Brand', name: 'LayerWeaver' },
+        ...(reviewData?.count ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: reviewData.rating.toFixed(1),
+            reviewCount: String(reviewData.count),
+          },
+        } : {}),
         offers: variants.map(v => ({
           '@type': 'Offer',
           price: parseFloat(v.price.amount).toFixed(2),
@@ -762,6 +829,7 @@ function generateProductPage(product, collection) {
 
                 <div class="product-details">
                     <h1>${toTitleCase(product.title)}</h1>
+                    ${reviewData?.count ? starsHtml(reviewData.rating, reviewData.count, 'lg') : ''}
                     ${isContactOnly(product) ? '' : `<p class="product-price${isCustomPrice(product) ? ' custom-price' : ''}" id="product-price">${price}${isCustomPrice(product) ? '<span class="indicative-label">Final price varies with customization</span>' : ''}</p>`}
 
                     ${hasVariants ? `
@@ -810,6 +878,17 @@ function generateProductPage(product, collection) {
                 </div>
             </div>
         </div>
+
+        ${reviewData?.reviews?.length ? `
+        <div class="reviews-section">
+            <h3>Customer Reviews</h3>
+            <div class="reviews-aggregate">
+                ${starsHtml(reviewData.rating, reviewData.count, 'lg')}
+            </div>
+            <div class="reviews-list">
+                ${reviewData.reviews.map(reviewCardHtml).join('\n')}
+            </div>
+        </div>` : ''}
     </section>
 
     ${footerHtml(base)}
@@ -984,11 +1063,11 @@ function heroCarouselSlidesHtml(collections) {
 // ── Collection page (shop/collections/[handle]/index.html) ───────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
-function generateCollectionPage(collection, collections) {
+function generateCollectionPage(collection, collections, reviewsMap = {}) {
   const base     = '../../../';
   const shopBase = '../../';
 
-  const productCards = collection.products.map(p => productCardHtml(p, '../../products/')).join('\n');
+  const productCards = collection.products.map(p => productCardHtml(p, '../../products/', reviewsMap[p.handle])).join('\n');
 
   const BANNER_EXCLUDE = ['cone-fidget'];
   const bannerImages = collection.products
@@ -1179,13 +1258,15 @@ async function main() {
   const collections = await fetchCollections();
   console.log(`Found ${collections.length} collection(s)`);
 
+  const reviewsMap = await fetchAllReviews(products);
+
   const shopDir        = path.join(__dirname, '..', 'shop');
   const productsDir    = path.join(shopDir, 'products');
   const collectionsDir = path.join(shopDir, 'collections');
   fs.mkdirSync(productsDir, { recursive: true });
   fs.mkdirSync(collectionsDir, { recursive: true });
 
-  fs.writeFileSync(path.join(shopDir, 'index.html'), generateShopIndex(products, collections));
+  fs.writeFileSync(path.join(shopDir, 'index.html'), generateShopIndex(products, collections, reviewsMap));
   console.log('Generated shop/index.html');
 
   const searchIndex = products.map(p => ({
@@ -1207,7 +1288,7 @@ async function main() {
   for (const collection of collections) {
     const collectionDir = path.join(collectionsDir, collection.handle);
     fs.mkdirSync(collectionDir, { recursive: true });
-    fs.writeFileSync(path.join(collectionDir, 'index.html'), generateCollectionPage(collection, collections));
+    fs.writeFileSync(path.join(collectionDir, 'index.html'), generateCollectionPage(collection, collections, reviewsMap));
     console.log(`Generated shop/collections/${collection.handle}/index.html`);
   }
 
@@ -1224,7 +1305,7 @@ async function main() {
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);
     fs.mkdirSync(productDir, { recursive: true });
-    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle]));
+    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle]));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
 

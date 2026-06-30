@@ -2242,6 +2242,138 @@
     to   { transform: translateX(-50%); }
 }
 
+/* ── Reviews ─────────────────────────────────────────────────────────────── */
+
+.product-stars {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.product-stars--lg {
+    margin-bottom: 12px;
+}
+
+.stars-visual {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+}
+
+.stars-visual::before {
+    content: '★★★★★';
+    color: #ddd;
+    font-size: 1rem;
+    letter-spacing: 2px;
+}
+
+.stars-visual::after {
+    content: '★★★★★';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #FFC107;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    overflow: hidden;
+    width: var(--pct, 0%);
+    white-space: nowrap;
+}
+
+.product-stars--lg .stars-visual::before,
+.product-stars--lg .stars-visual::after {
+    font-size: 1.25rem;
+}
+
+.review-count {
+    font-size: 0.8rem;
+    color: #888;
+    font-family: var(--font-primary);
+}
+
+.product-stars--lg .review-count {
+    font-size: 0.95rem;
+}
+
+.reviews-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--gray);
+}
+
+.reviews-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+}
+
+.reviews-aggregate {
+    margin-bottom: 24px;
+}
+
+.reviews-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.review-card {
+    background: #fafafa;
+    border: 1px solid var(--gray);
+    border-radius: 10px;
+    padding: 16px 18px;
+}
+
+.review-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.review-stars {
+    color: #FFC107;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+}
+
+.review-author {
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--dark);
+}
+
+.review-verified {
+    font-size: 0.75rem;
+    color: #4CAF50;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.review-date {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-left: auto;
+}
+
+.review-title {
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0 0 4px;
+    color: var(--dark);
+}
+
+.review-body {
+    font-size: 0.875rem;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
 /* 6-Month Campaign overrides */
 body.has-announcement .shop-header {
     top: 38px;
