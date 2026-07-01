@@ -28,7 +28,7 @@
 - **Files:** `shop/index.html`, all product pages, all collection pages
 - **What:** Moved inside `<header>` element so it stays fixed with the header on scroll
 - **Text change:** "Free Shipping Above ₹500" changed to "Free Shipping on All Orders"
-- **New item:** "Free Cat Cable Clip on ₹200+" added to marquee (orange #e67e22)
+- **New item:** "Free Cat Cable Clip on ₹299+" added to marquee (orange #e67e22)
 
 ### 4. Shipping Policy Page
 - **File:** `shipping-policy/index.html`
@@ -81,24 +81,41 @@
 - **File:** `scripts/build-shop.js`
 - **What:** Updated `shopHeaderHtml()` to include trust strip inside header, added `announcementBarHtml()` function
 - **Generated pages:** All shop/product/collection pages now include the campaign elements
-- **Trust strip:** "Free Shipping on All Orders" + "Free Cat Cable Clip on ₹200+" in marquee
+- **Trust strip:** "Free Shipping on All Orders" + "Free Cat Cable Clip on ₹299+" in marquee
 
 ---
 
 ## How to Revert (End of Campaign)
 
 1. **Remove announcement bar HTML** from all pages (or remove `body.has-announcement` class)
-2. **Revert `FREE_SHIPPING_MIN`** to `500` in `shop/cart.js`
+2. **Set `FREE_SHIPPING_MIN`** to `299` in `shop/cart.js` (new permanent threshold, not a revert to the old ₹500 value - matches `FREE_GIFT_MIN`)
 3. **Remove gift progress** (`FREE_GIFT_MIN`, `FREE_GIFT_NAME`, gift bar HTML/CSS/JS) from `shop/cart.js` and `shop/shop.css`
-4. **Revert shipping policy** and **FAQ** text to standard rates
-5. **Revert trust strip** text to "Free Shipping Above ₹500", remove gift item
-6. **Revert `.btn-primary`** color from yellow back to purple in `styles.css`
-7. **Remove** `.cart-free-shipping-banner` from cart drawer
-8. **Remove** `.fab-shop` HTML from `index.html` and CSS from `styles.css`
-9. **Remove** logo `::after` sticker, `.announcement-bar` styles, and `@keyframes announcement-marquee` from `styles.css`
-10. **Revert `scripts/build-shop.js`** - remove `announcementBarHtml()`, move trust strip back outside header, revert text
-11. **Run `npm run build-shop`** to regenerate all shop pages
-12. **Revert OG meta** on shop page
+4. **Restore the shipping progress bar** in the cart drawer - the gift bar removed in step 3 was the only progress UI, and it goes away with the gift, but shipping now has a real ₹299 threshold worth showing progress toward. Bring back the pre-campaign `#shipping-progress` implementation (last present at commit `2cfbaf49`, before `aec49f93`): `#shipping-progress`/`#shipping-bar-fill`/`#shipping-bar-msg` in the drawer HTML, `renderShippingBar()` computing `pct`/unlock message off `FREE_SHIPPING_MIN` (now 299) and `cart.cost.totalAmount`, and the `#shipping-bubble` speech bubble near the cart icon. The `.shipping-progress` CSS class already exists unused in `shop/shop.css:1162`.
+   - **Confetti trigger changes too:** remove the current "first item added" confetti trigger in `handleAddItem` (`shop/cart.js:585-587`, `if (prevLineCount === 0 && ... > 0) spawnPageConfetti()`). Instead, restore the pre-campaign behavior where `spawnPageConfetti()` fires from inside `renderShippingBar()` when the qualifying total crosses `FREE_SHIPPING_MIN` (₹299) - i.e. `isUnlocked && !wasUnlocked`, guarded by a `sessionStorage.lw_shipping_unlocked` flag (same one-shot-per-session pattern the gift bar used with `lw_gift_unlocked`, just renamed back). Confetti now means "you've unlocked free shipping," not "you added your first item."
+5. **Update shipping policy** and **FAQ** text - remove the celebration-specific sentence entirely (not just swap the ₹ value), leaving only the ₹299 rate:
+   - `shipping-policy/index.html:233-234` - two separate `<p>` tags. Delete the celebration paragraph (line 233: "6-Month Celebration: We're offering free shipping on all orders - no minimum!..."). Keep only the rates paragraph (line 234), rewritten as: "Free shipping on orders above ₹299. For orders below ₹299, shipping is a flat ₹30 within Pune and ₹49 for the rest of India."
+   - `faq/index.html:217` - currently one merged sentence ("We currently ship within India only. To celebrate 6 months of LayerWeaver, shipping is free on all orders - no minimum! Standard rates apply after the celebration: free shipping above ₹500, flat ₹30 within Pune and ₹49 for the rest of India."). Rewrite to: "We currently ship within India only. Shipping is free on orders above ₹299, flat ₹30 within Pune and ₹49 for the rest of India."
+6. **Revert trust strip** text to "Free Shipping Above ₹299", remove gift item - note this lives entirely in `shopHeaderHtml()` in `scripts/build-shop.js:387` (not hand-edited in `shop/index.html` or any product/collection page - those are all generated output). This is really the same edit as step 11; do it there and let step 12's rebuild propagate it.
+7. **Revert button colors** from yellow back to purple in `styles.css` - three separate selector groups were changed (see commit `52ac59a4` for exact values), not just `.btn-primary`:
+   - `.btn-primary` - `background-color`/`color` (base and `:hover` state, including the hover `box-shadow`)
+   - `.nav-links a.btn-primary` - `color` override
+   - `.hero-shop-btn` - `background-color`, `:hover` `background-color`/`color`, and `box-shadow` (both states)
+8. **Remove** `.cart-free-shipping-banner` from cart drawer
+9. **Remove** `.fab-shop` HTML from `index.html` and CSS from `styles.css`
+10. **Remove** logo `::after` sticker, `.announcement-bar` styles, and `@keyframes announcement-marquee` from `styles.css`
+11. **Revert `scripts/build-shop.js`** - remove `announcementBarHtml()`, move trust strip back outside header, revert text
+12. **Revert OG meta** on shop page - same generated-file situation as step 6: the `description` field is set in `scripts/build-shop.js:613` ("Celebrating 6 months of LayerWeaver! Free shipping on every order - no minimum...") and rendered into `og:description` via the template at line 308. Edit it there, not in `shop/index.html` directly.
+13. **Run `npm run build-shop`** to regenerate all shop pages (does this last, once steps 6/11/12 have all landed in `scripts/build-shop.js`)
+
+---
+
+## Shopify Admin Cleanup Checklist (manual, not code)
+
+Not covered by the code revert steps above - do these separately in Shopify Admin once the free gift is retired:
+
+- [ ] Deactivate (or delete) the `FREEGIFT299` discount code
+- [ ] Remove/hide the `all-products` collection that was created solely to support the `FREEGIFT299` discount conditions (currently excluded from the site via `HIDDEN_COLLECTIONS` in `build-shop.js` - if the collection is deleted, also remove it from that list)
+- [ ] Confirm the Cat Cable Clip product itself is left untouched (it's a real sellable product, only the auto-gift/discount mechanism goes away)
 
 ---
 
