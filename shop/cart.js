@@ -57,6 +57,7 @@
       }}
     }
     cost { totalAmount { amount currencyCode } }
+    discountCodes { code applicable }
   `;
 
   // ── API calls ─────────────────────────────────────────────────────────────
@@ -108,24 +109,31 @@
     return data.cartLinesRemove.cart;
   }
 
-  // One-time cleanup for carts that still hold the free-gift line item from the
-  // retired 6-month campaign (added server-side, so removing the client code
-  // doesn't remove it from the cart).
+  // One-time cleanup for carts that still hold the free-gift line item and/or
+  // discount code from the retired 6-month campaign (added server-side, so
+  // removing the client code doesn't remove it from the cart). Checked
+  // independently rather than inferring the discount from the line's presence,
+  // so a cart with the code but no line (or vice versa) still gets cleaned up.
   async function cleanupLegacyGiftLine() {
     if (!cart) return;
     const giftLine = cart.lines.edges.find(e =>
       e.node.attributes?.some(a => a.key === '_gift' && a.value === 'FREEGIFT299')
     )?.node;
-    if (!giftLine) return;
+    const hasLegacyDiscount = () => cart.discountCodes?.some(c => c.code === 'FREEGIFT299');
+    if (!giftLine && !hasLegacyDiscount()) return;
     try {
-      cart = await removeLine(cart.id, giftLine.id);
-      const data = await gql(`
-        mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
-          cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
-            cart { ${CART_FIELDS} }
-          }
-        }`, { cartId: cart.id, discountCodes: [] });
-      if (data?.cartDiscountCodesUpdate?.cart) cart = data.cartDiscountCodesUpdate.cart;
+      if (giftLine) {
+        cart = await removeLine(cart.id, giftLine.id);
+      }
+      if (hasLegacyDiscount()) {
+        const data = await gql(`
+          mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+            cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+              cart { ${CART_FIELDS} }
+            }
+          }`, { cartId: cart.id, discountCodes: [] });
+        if (data?.cartDiscountCodesUpdate?.cart) cart = data.cartDiscountCodesUpdate.cart;
+      }
     } catch (err) {
       console.warn('[Cart] Legacy gift line cleanup failed:', err);
     }

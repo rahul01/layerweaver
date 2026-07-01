@@ -297,6 +297,65 @@ test.describe('Legacy gift-line cleanup', () => {
     expect(lines.length).toBe(1);
     expect(lines[0].title).toBe('Articulated Octopus');
   });
+
+  test('clears a lingering discount code even without a gift line', async ({ page }) => {
+    // Simulates a cart where the FREEGIFT299 code survived without the tagged
+    // line (e.g. the line was removed through some other path) - cleanup must
+    // not rely solely on the line's presence to decide to clear the code.
+    const octopusVariant = await page.getAttribute('#add-to-cart-btn', 'data-variant-gid');
+    const cartId = await page.evaluate(async (variantGid) => {
+      const DOMAIN = 'shop.layerweaver.com';
+      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
+      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
+      const createRes = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `mutation cartCreate($input: CartInput!) {
+            cartCreate(input: $input) { cart { id } }
+          }`,
+          variables: { input: { lines: [{ merchandiseId: variantGid, quantity: 1 }] } },
+        }),
+      });
+      const { data } = await createRes.json();
+      const cartId = data.cartCreate.cart.id;
+
+      await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+            cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) { cart { id } }
+          }`,
+          variables: { cartId, discountCodes: ['FREEGIFT299'] },
+        }),
+      });
+      return cartId;
+    }, octopusVariant);
+
+    await page.evaluate((id) => localStorage.setItem('lw_cart_id', id), cartId);
+    await page.reload();
+    await waitForCartReady(page);
+    await page.waitForTimeout(1_500); // let cleanup's discount-clear mutation settle
+
+    const discountCodes = await page.evaluate(async (id) => {
+      const DOMAIN = 'shop.layerweaver.com';
+      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
+      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `query getCart($id: ID!) { cart(id: $id) { discountCodes { code } } }`,
+          variables: { id },
+        }),
+      });
+      const { data } = await res.json();
+      return data.cart.discountCodes;
+    }, cartId);
+
+    expect(discountCodes).toEqual([]);
+  });
 });
 
 // ── Cart persistence ────────────────────────────────────────────────────────
