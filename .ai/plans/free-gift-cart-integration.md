@@ -1,9 +1,10 @@
 # Free Gift Cart Integration - FREEGIFT299
 
-> **Status: Retired.** This feature was removed as part of the 6-month campaign
-> revert (commit `209c6513`, 2026-07-02) - see `.ai/plans/6-month-campaign.md`.
-> Kept here for historical reference only; nothing below reflects the current
-> `shop/cart.js`.
+> **Status: Active again.** Briefly retired (commit `209c6513`, 2026-07-02),
+> then restored the same day when the campaign was extended to 5th July after
+> a technical issue - see `.ai/plans/6-month-campaign.md` for the full story.
+> This document accurately describes the current `shop/cart.js` gift-line
+> behavior again.
 
 ## Overview
 Automatically add a free Cat Cable Clip to the cart and apply the `FREEGIFT299` discount code when the cart subtotal reaches ₹299. The discount is configured in Shopify Admin - the frontend needs to handle adding the gift item and applying/removing the code.
