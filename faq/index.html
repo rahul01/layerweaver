@@ -34,7 +34,7 @@
     <meta property="og:description" content="Answers to common questions about LayerWeaver's 3D printed products, shipping, returns, custom orders, and workshops.">
     <meta property="og:url" content="https://www.layerweaver.com/faq/">
     <meta property="og:type" content="website">
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What material are your products made from?","acceptedAnswer":{"@type":"Answer","text":"All our products are printed with PLA (Polylactic Acid), a plant-based, biodegradable plastic made from renewable resources like cornstarch. It's eco-friendly, non-toxic, and produces clean, detailed prints."}},{"@type":"Question","name":"How long does delivery take?","acceptedAnswer":{"@type":"Answer","text":"Orders within Pune are typically delivered in 1-2 business days. Orders to the rest of India take 2-5 business days. You'll receive tracking details once your order is dispatched."}},{"@type":"Question","name":"Can I order a custom 3D print?","acceptedAnswer":{"@type":"Answer","text":"Yes! We offer on-demand 3D printing for custom items. Visit our On Demand Printing page or message us on WhatsApp at +91 75587 83018 with your idea, reference images, or STL file and we'll provide a quote."}},{"@type":"Question","name":"What is your return and exchange policy?","acceptedAnswer":{"@type":"Answer","text":"We accept returns and exchanges within 7 days of delivery for items that arrive damaged or defective. Custom or personalised orders are non-returnable. See our Return and Exchange Policy page for full details."}},{"@type":"Question","name":"Do you ship outside India?","acceptedAnswer":{"@type":"Answer","text":"We currently ship within India only. Shipping is free on orders above ₹299. For orders below ₹299, a flat rate of ₹30 applies within Pune and ₹49 for the rest of India."}},{"@type":"Question","name":"Do you offer 3D printing workshops?","acceptedAnswer":{"@type":"Answer","text":"Yes! We run 3D printing workshops for kids and adults in Pune. Sessions cover 3D design basics and hands-on printing. Visit our Workshops page to see upcoming sessions and enrol."}}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What material are your products made from?","acceptedAnswer":{"@type":"Answer","text":"All our products are printed with PLA (Polylactic Acid), a plant-based, biodegradable plastic made from renewable resources like cornstarch. It's eco-friendly, non-toxic, and produces clean, detailed prints."}},{"@type":"Question","name":"How long does delivery take?","acceptedAnswer":{"@type":"Answer","text":"Orders within Pune are typically delivered in 1-2 business days. Orders to the rest of India take 2-5 business days. You'll receive tracking details once your order is dispatched."}},{"@type":"Question","name":"Can I order a custom 3D print?","acceptedAnswer":{"@type":"Answer","text":"Yes! We offer on-demand 3D printing for custom items. Visit our On Demand Printing page or message us on WhatsApp at +91 75587 83018 with your idea, reference images, or STL file and we'll provide a quote."}},{"@type":"Question","name":"What is your return and exchange policy?","acceptedAnswer":{"@type":"Answer","text":"We accept returns and exchanges within 7 days of delivery for items that arrive damaged or defective. Custom or personalised orders are non-returnable. See our Return and Exchange Policy page for full details."}},{"@type":"Question","name":"Do you ship outside India?","acceptedAnswer":{"@type":"Answer","text":"We currently ship within India only. Shipping is free on orders above ₹500. For orders below ₹500, a flat rate of ₹30 applies within Pune and ₹49 for the rest of India."}},{"@type":"Question","name":"Do you offer 3D printing workshops?","acceptedAnswer":{"@type":"Answer","text":"Yes! We run 3D printing workshops for kids and adults in Pune. Sessions cover 3D design basics and hands-on printing. Visit our Workshops page to see upcoming sessions and enrol."}}]}</script>
 
     <!-- Favicon -->
     <link rel="icon" href="../images/spider-fevicon.svg" type="image/svg+xml">
@@ -70,6 +70,10 @@
         .policy-hero {
             background: linear-gradient(135deg, rgba(160, 131, 213, 0.08) 0%, rgba(239, 207, 32, 0.08) 100%);
             padding: 100px 0 32px;
+        }
+        body.has-announcement .policy-hero {
+            padding-top: 138px;
+            text-align: center;
         }
         .policy-hero h1 {
             font-size: 2.8rem;
@@ -134,7 +138,13 @@
         }
     </style>
 </head>
-<body>
+<body class="has-announcement">
+    <div class="announcement-bar">
+        <a href="/shop/">
+            
+<span class="announcement-bar__full">LayerWeaver turns 6 months! <strong>Free Shipping</strong> on all orders + Free Cat Cable Clip on orders above ₹299! Offer lasts till 1st July!</span><span class="announcement-bar__short"><span class="announcement-bar__marquee"><span class="announcement-bar__item"><strong>Free Shipping</strong> on all orders + Free Cat Cable Clip on ₹299+!</span><span class="announcement-bar__sep">·</span><span class="announcement-bar__item">Offer lasts till 1st July!</span><span class="announcement-bar__sep">·</span><span class="announcement-bar__item"><strong>Free Shipping</strong> on all orders + Free Cat Cable Clip on ₹299+!</span><span class="announcement-bar__sep">·</span><span class="announcement-bar__item">Offer lasts till 1st July!</span><span class="announcement-bar__sep">·</span></span></span>
+        </a>
+    </div>
     <header>
         <div class="container">
             <a href="../" class="logo-container logo-link">
@@ -204,7 +214,7 @@
                 Do you ship outside India?
                 <i class="fa-solid fa-chevron-down"></i>
             </summary>
-            <p class="faq-answer">We currently ship within India only. Shipping is free on orders above ₹299, flat ₹30 within Pune and ₹49 for the rest of India.</p>
+            <p class="faq-answer">We currently ship within India only. To celebrate 6 months of LayerWeaver, shipping is free on all orders - no minimum! Standard rates apply after the celebration: free shipping above ₹500, flat ₹30 within Pune and ₹49 for the rest of India.</p>
         </details>
 
         <details class="faq-item" id="workshops">

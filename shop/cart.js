@@ -7,7 +7,14 @@
   const TOKEN             = '7f0eafeb115e99a4a917e044a1fb4125';
   const API               = `https://${DOMAIN}/api/2025-01/graphql.json`;
   const KEY               = 'lw_cart_id';
-  const FREE_SHIPPING_MIN = 299;
+  const FREE_SHIPPING_MIN = 0; // 6-month celebration: free shipping on all orders
+  const FREE_GIFT_MIN     = 299;
+  const FREE_GIFT_NAME    = 'Cat Cable Clip';
+  const FREE_GIFT_HANDLE  = 'cat-cable-clip';
+  const FREE_GIFT_VARIANT = 'gid://shopify/ProductVariant/48173905576158';
+  const FREE_GIFT_CODE    = 'FREEGIFT299';
+  const GIFT_ATTR_KEY     = '_gift';
+  const GIFT_ATTR_VALUE   = 'FREEGIFT299';
 
   // Derive the path to shop/ root from the current page URL
   const path     = window.location.pathname;
@@ -109,33 +116,83 @@
     return data.cartLinesRemove.cart;
   }
 
-  // One-time cleanup for carts that still hold the free-gift line item and/or
-  // discount code from the retired 6-month campaign (added server-side, so
-  // removing the client code doesn't remove it from the cart). Checked
-  // independently rather than inferring the discount from the line's presence,
-  // so a cart with the code but no line (or vice versa) still gets cleaned up.
-  async function cleanupLegacyGiftLine() {
-    if (!cart) return;
-    const giftLine = cart.lines.edges.find(e =>
-      e.node.attributes?.some(a => a.key === '_gift' && a.value === 'FREEGIFT299')
-    )?.node;
-    const hasLegacyDiscount = () => cart.discountCodes?.some(c => c.code === 'FREEGIFT299');
-    if (!giftLine && !hasLegacyDiscount()) return;
+  async function applyDiscountCode(cartId, codes) {
+    const data = await gql(`
+      mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+        cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+          cart { ${CART_FIELDS} }
+          userErrors { field message }
+        }
+      }`, { cartId, discountCodes: codes });
+    const result = data.cartDiscountCodesUpdate;
+    if (result.userErrors?.length) {
+      console.error('[Cart] Discount code error:', result.userErrors);
+    }
+    const appliedCart = result.cart;
+    if (codes.length && appliedCart?.discountCodes) {
+      const applied = appliedCart.discountCodes.find(c => c.code === codes[0]);
+      if (applied && !applied.applicable) {
+        console.warn('[Cart] Discount code not applicable:', applied);
+      }
+    }
+    return appliedCart;
+  }
+
+  function getGiftLine() {
+    if (!cart) return null;
+    return cart.lines.edges.find(e =>
+      e.node.attributes?.some(a => a.key === GIFT_ATTR_KEY && a.value === GIFT_ATTR_VALUE)
+    )?.node || null;
+  }
+
+  let _qtCache = null, _qtCacheCart = null;
+  function getQualifyingTotal() {
+    if (!cart) return 0;
+    if (_qtCacheCart === cart) return _qtCache;
+    let sum = 0;
+    for (const edge of cart.lines.edges) {
+      const line = edge.node;
+      const isGift = line.attributes?.some(a => a.key === GIFT_ATTR_KEY && a.value === GIFT_ATTR_VALUE);
+      if (!isGift) {
+        sum += parseFloat(line.merchandise.price.amount || 0) * line.quantity;
+      }
+    }
+    _qtCacheCart = cart;
+    _qtCache = sum;
+    return sum;
+  }
+
+  let _giftBusy = false;
+  async function reconcileGift() {
+    if (_giftBusy || !cart) return;
+    _giftBusy = true;
     try {
-      if (giftLine) {
+      const qualifyingTotal = getQualifyingTotal();
+      const giftLine = getGiftLine();
+      const shouldHaveGift = qualifyingTotal >= FREE_GIFT_MIN;
+      console.log('[Gift] qualifying:', qualifyingTotal, 'shouldHaveGift:', shouldHaveGift, 'hasGiftLine:', !!giftLine);
+
+      let changed = false;
+      if (shouldHaveGift && !giftLine) {
+        cart = await addLine(cart.id, FREE_GIFT_VARIANT, 1, [{ key: GIFT_ATTR_KEY, value: GIFT_ATTR_VALUE }]);
+        cart = await applyDiscountCode(cart.id, [FREE_GIFT_CODE]);
+        changed = true;
+      } else if (shouldHaveGift && giftLine) {
+        const hasCodes = cart.discountCodes?.some(c => c.code === FREE_GIFT_CODE);
+        if (!hasCodes) {
+          cart = await applyDiscountCode(cart.id, [FREE_GIFT_CODE]);
+          changed = true;
+        }
+      } else if (!shouldHaveGift && giftLine) {
         cart = await removeLine(cart.id, giftLine.id);
+        cart = await applyDiscountCode(cart.id, []);
+        changed = true;
       }
-      if (hasLegacyDiscount()) {
-        const data = await gql(`
-          mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
-            cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
-              cart { ${CART_FIELDS} }
-            }
-          }`, { cartId: cart.id, discountCodes: [] });
-        if (data?.cartDiscountCodesUpdate?.cart) cart = data.cartDiscountCodesUpdate.cart;
-      }
+      if (changed) refreshUI();
     } catch (err) {
-      console.warn('[Cart] Legacy gift line cleanup failed:', err);
+      console.error('[Cart] Gift reconcile failed:', err);
+    } finally {
+      _giftBusy = false;
     }
   }
 
@@ -192,14 +249,15 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
+      <div class="cart-free-shipping-banner"><i class="fa-solid fa-truck-fast"></i> Free shipping on all orders!</div>
       <div class="cart-body" id="cart-body"></div>
       <div class="cart-footer" id="cart-footer">
         <div id="cart-checkout-section" style="display:none">
-          <div id="shipping-progress" class="shipping-progress">
-            <div class="shipping-bar-track">
-              <div class="shipping-bar-fill" id="shipping-bar-fill"></div>
+          <div id="gift-progress" class="gift-progress">
+            <div class="gift-bar-track">
+              <div class="gift-bar-fill" id="gift-bar-fill"></div>
             </div>
-            <p class="shipping-bar-msg" id="shipping-bar-msg"></p>
+            <p class="gift-progress-msg" id="gift-progress-msg"></p>
           </div>
           <div class="cart-total">
             <span>Total</span>
@@ -326,38 +384,41 @@
   }
 
   function renderShippingBar() {
-    const total       = parseFloat(cart?.cost?.totalAmount?.amount || 0);
-    const isUnlocked  = total >= FREE_SHIPPING_MIN;
-    const pct         = Math.min((total / FREE_SHIPPING_MIN) * 100, 100);
-    const unlockMsg   = '🎉 Free shipping unlocked!';
-    const pendingMsg  = `🚚 Add ₹${(FREE_SHIPPING_MIN - total).toFixed(0)} more for free shipping`;
-    const wasUnlocked = sessionStorage.getItem('lw_shipping_unlocked') === 'true';
+    const qualifyingTotal = getQualifyingTotal();
+    const giftUnlocked = qualifyingTotal >= FREE_GIFT_MIN;
+    const giftPct      = FREE_GIFT_MIN > 0 ? Math.min((qualifyingTotal / FREE_GIFT_MIN) * 100, 100) : 100;
+    const wasGiftUnlocked = sessionStorage.getItem('lw_gift_unlocked') === 'true';
 
-    // ── Cart drawer bar ──
-    const progressEl = document.getElementById('shipping-progress');
-    const fill       = document.getElementById('shipping-bar-fill');
-    const msg        = document.getElementById('shipping-bar-msg');
-    if (fill && msg && progressEl) {
-      fill.style.width = pct + '%';
-      if (isUnlocked) {
-        msg.textContent = unlockMsg;
-        progressEl.classList.add('shipping-unlocked');
-        if (!wasUnlocked) {
-          sessionStorage.setItem('lw_shipping_unlocked', 'true');
+    // ── Free gift progress bar ──
+    const giftEl   = document.getElementById('gift-progress');
+    const giftFill = document.getElementById('gift-bar-fill');
+    const giftMsg  = document.getElementById('gift-progress-msg');
+    if (giftEl && giftFill && giftMsg) {
+      giftFill.style.width = giftPct + '%';
+      if (giftUnlocked) {
+        giftMsg.textContent = '🎁 Free ' + FREE_GIFT_NAME + ' included!';
+        giftEl.classList.add('gift-unlocked');
+        if (!wasGiftUnlocked) {
+          sessionStorage.setItem('lw_gift_unlocked', 'true');
           spawnPageConfetti();
         }
+      } else if (qualifyingTotal > 0) {
+        giftMsg.textContent = '🎁 Add ₹' + (FREE_GIFT_MIN - qualifyingTotal).toFixed(0) + ' more for a free ' + FREE_GIFT_NAME + '!';
+        giftEl.classList.remove('gift-unlocked');
+        sessionStorage.removeItem('lw_gift_unlocked');
       } else {
-        msg.textContent = pendingMsg;
-        progressEl.classList.remove('shipping-unlocked');
-        sessionStorage.removeItem('lw_shipping_unlocked');
+        giftMsg.textContent = '🎁 Free ' + FREE_GIFT_NAME + ' on orders above ₹' + FREE_GIFT_MIN + '!';
+        giftEl.classList.remove('gift-unlocked');
+        sessionStorage.removeItem('lw_gift_unlocked');
       }
     }
 
     // ── Speech bubble near cart icon ──
-    // Only show on user-triggered changes, not on initial page load.
-    if (_cartReady && (!isUnlocked || !wasUnlocked)) {
-      showShippingBubble(pct, isUnlocked ? unlockMsg : pendingMsg, isUnlocked);
+    const giftBubbleMsg = giftUnlocked ? '🎁 Free ' + FREE_GIFT_NAME + ' included!' : '🎁 Add ₹' + Math.max(0, FREE_GIFT_MIN - qualifyingTotal).toFixed(0) + ' more for a free gift!';
+    if (_cartReady && (!giftUnlocked || !wasGiftUnlocked)) {
+      showShippingBubble(giftPct, giftBubbleMsg, giftUnlocked);
     }
+
   }
 
   function renderCart() {
@@ -366,7 +427,11 @@
     const chkBtn = document.getElementById('cart-checkout-btn');
     if (!body) return;
 
-    const lines = cart ? cart.lines.edges.map(e => e.node) : [];
+    const lines = cart ? cart.lines.edges.map(e => e.node).sort((a, b) => {
+      const aGift = a.attributes?.some(x => x.key === GIFT_ATTR_KEY && x.value === GIFT_ATTR_VALUE);
+      const bGift = b.attributes?.some(x => x.key === GIFT_ATTR_KEY && x.value === GIFT_ATTR_VALUE);
+      return bGift - aGift;
+    }) : [];
 
     if (!cart || lines.length === 0) {
       body.innerHTML = `
@@ -382,7 +447,8 @@
 
     body.innerHTML = lines.map(line => {
       const v     = line.merchandise;
-      const price = fmt(v.price.amount, v.price.currencyCode);
+      const isGift = line.attributes?.some(a => a.key === GIFT_ATTR_KEY && a.value === GIFT_ATTR_VALUE);
+      const price = isGift ? 'FREE' : fmt(v.price.amount, v.price.currencyCode);
       const img   = v.image ? `<img src="${v.image.url}" alt="${esc(v.image.altText || v.product.title)}">` : '';
       const swatchHex = (window.LW_SWATCHES?.[v.product.handle]?.[v.title]);
       const swatchDot = swatchHex
@@ -391,19 +457,10 @@
       const variantLabel = v.title !== 'Default Title'
         ? `<span class="line-variant">${swatchDot}${esc(v.title)}</span>`
         : '';
-      const customAttrs = line.attributes?.filter(a => a.value)
+      const customAttrs = line.attributes?.filter(a => a.value && a.key !== GIFT_ATTR_KEY)
         .map(a => `<span class="line-attr"><em>${esc(a.key)}:</em> ${esc(a.value)}</span>`).join('') || '';
-      return `
-        <div class="cart-line" data-line-id="${line.id}">
-          <a class="cart-line-link" href="${SHOP_ROOT}products/${v.product.handle}/">
-            <div class="line-image">${img}</div>
-            <div class="line-info">
-              <p class="line-title">${esc(v.product.title)}</p>
-              ${variantLabel}
-              ${customAttrs}
-              <p class="line-price">${price}</p>
-            </div>
-          </a>
+      const giftBadge = isGift ? '<span class="line-gift-badge">🎁 Free Gift</span>' : '';
+      const qtyControls = isGift ? `<div class="line-qty"><span class="line-gift-label">Gift</span></div>` : `
           <div class="line-qty">
             <button class="qty-btn qty-dec" data-line-id="${line.id}" data-qty="${line.quantity}">−</button>
             <span>${line.quantity}</span>
@@ -411,13 +468,26 @@
             <button class="remove-btn" data-line-id="${line.id}" aria-label="Remove">
               <i class="fa-solid fa-trash"></i>
             </button>
-          </div>
+          </div>`;
+      return `
+        <div class="cart-line${isGift ? ' cart-line--gift' : ''}" data-line-id="${line.id}">
+          <a class="cart-line-link" href="${SHOP_ROOT}products/${v.product.handle}/">
+            <div class="line-image">${img}</div>
+            <div class="line-info">
+              <p class="line-title">${esc(v.product.title)}</p>
+              ${giftBadge}
+              ${variantLabel}
+              ${customAttrs}
+              <p class="line-price${isGift ? ' line-price--free' : ''}">${price}</p>
+            </div>
+          </a>
+          ${qtyControls}
         </div>`;
     }).join('');
 
     // Footer
     const costAmt = cart.cost.totalAmount;
-    total.textContent = fmt(costAmt.amount, costAmt.currencyCode);
+    total.textContent = fmt(getQualifyingTotal(), costAmt.currencyCode);
     chkBtn.href = cart.checkoutUrl;
     const checkoutSection = document.getElementById('cart-checkout-section');
     if (checkoutSection) checkoutSection.style.display = 'contents';
@@ -495,6 +565,7 @@
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   async function addToCartCore(variantGid, qty = 1, attributes = []) {
+    const prevLineCount = cart?.lines?.edges?.length || 0;
     const cartId = loadCartId();
     if (cartId) {
       cart = await addLine(cartId, variantGid, qty, attributes);
@@ -510,6 +581,10 @@
       syncCartIdToServer(cart.id);
     }
     refreshUI();
+    reconcileGift();
+    if (prevLineCount === 0 && (cart?.lines?.edges?.length || 0) > 0) {
+      spawnPageConfetti();
+    }
     const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
     if (newLine) {
       window.LW_LOG_EVENT?.('add_to_cart', {
@@ -560,12 +635,14 @@
     if (newQty <= 0) return handleRemoveLine(lineId);
     cart = await updateLine(cart.id, lineId, newQty);
     refreshUI();
+    reconcileGift();
   }
 
   async function handleRemoveLine(lineId) {
     const line = cart?.lines.edges.find(e => e.node.id === lineId)?.node;
     cart = await removeLine(cart.id, lineId);
     refreshUI();
+    reconcileGift();
     if (line) {
       window.LW_LOG_EVENT?.('remove_from_cart', {
         item_name: line.merchandise.product.title,
@@ -720,10 +797,10 @@
       try {
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; } // cart explicitly gone on Shopify
-        else await cleanupLegacyGiftLine();
       } catch { /* network error - keep cart ID, will retry on next interaction */ }
     }
 
+    await reconcileGift();
     refreshUI();
     wireProductPage();
     wireListingPage();
@@ -751,12 +828,12 @@
       try {
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; }
-        else await cleanupLegacyGiftLine();
       } catch {}
     } else {
       cart = null;
     }
     refreshUI();
+    reconcileGift();
   });
 })();
 
