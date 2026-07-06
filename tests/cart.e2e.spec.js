@@ -10,7 +10,7 @@ async function clearCart(page) {
   await page.evaluate(() => {
     localStorage.removeItem('lw_cart_id');
     localStorage.removeItem('lw_cart_qty');
-    sessionStorage.removeItem('lw_gift_unlocked');
+    sessionStorage.removeItem('lw_shipping_unlocked');
   });
 }
 
@@ -28,7 +28,6 @@ async function getDrawerLines(page) {
     lines.map(l => ({
       title: l.querySelector('.line-title')?.textContent?.trim(),
       price: l.querySelector('.line-price')?.textContent?.trim(),
-      isGift: l.classList.contains('cart-line--gift'),
       qty: l.querySelector('.line-qty span')?.textContent?.trim(),
     }))
   );
@@ -98,28 +97,19 @@ test.describe('Cart basics', () => {
     }, { timeout: 10_000 });
     await openDrawer(page);
 
-    // Increment to 2 - this triggers gift (199*2=398 >= 299), badge will reach 3
     await page.click('.qty-inc');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
-      return badge && parseInt(badge.textContent) >= 2;
-    }, { timeout: 10_000 });
-    // Wait for gift reconciliation to settle
-    await page.waitForFunction(() => {
-      const body = document.getElementById('cart-body');
-      return body && body.style.opacity !== '0.5';
+      return badge && badge.textContent === '2';
     }, { timeout: 10_000 });
 
-    // Decrement back to 1 - gift should be removed (199 < 299)
     await page.click('.qty-dec');
-    // Badge will go from 3 -> 1 (1 octopus, gift removed)
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
-      const body = document.getElementById('cart-body');
-      return badge && parseInt(badge.textContent) <= 2 && body && body.style.opacity !== '0.5';
-    }, { timeout: 15_000 });
+      return badge && badge.textContent === '1';
+    }, { timeout: 10_000 });
 
-    const qty = await page.$eval('.cart-line:not(.cart-line--gift) .line-qty span', el => el.textContent.trim());
+    const qty = await page.$eval('.cart-line .line-qty span', el => el.textContent.trim());
     expect(qty).toBe('1');
   });
 
@@ -194,141 +184,9 @@ test.describe('Personalized products', () => {
   });
 });
 
-// ── Gift auto-add / remove ──────────────────────────────────────────────────
+// ── Shipping progress bar ────────────────────────────────────────────────────
 
-test.describe('Gift reconciliation', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto(PRODUCT_OCTOPUS);
-    await clearCart(page);
-    await page.reload();
-    await waitForCartReady(page);
-  });
-
-  test('gift auto-adds when qualifying total >= 299', async ({ page }) => {
-    // Octopus is 199 - add 2 to cross 299
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && getComputedStyle(badge).display !== 'none';
-    }, { timeout: 10_000 });
-    await openDrawer(page);
-
-    await page.click('.qty-inc');
-    // Wait for gift to auto-add (qualifying total = 398, badge should be 3: 2 octopus + 1 gift)
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && parseInt(badge.textContent) >= 3;
-    }, { timeout: 15_000 });
-
-    const lines = await getDrawerLines(page);
-    const giftLine = lines.find(l => l.isGift);
-    expect(giftLine).toBeTruthy();
-    expect(giftLine.price).toBe('FREE');
-  });
-
-  test('gift auto-removes when below 299', async ({ page }) => {
-    // Add 2 octopus to trigger gift
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '1';
-    }, { timeout: 10_000 });
-    await openDrawer(page);
-
-    await page.click('.qty-inc');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && parseInt(badge.textContent) >= 3;
-    }, { timeout: 15_000 });
-
-    // Now decrement back to 1 (199 < 299) - gift should be removed
-    await page.click('.qty-dec');
-    await page.waitForFunction(() => {
-      const lines = document.querySelectorAll('.cart-line--gift');
-      return lines.length === 0;
-    }, { timeout: 15_000 });
-
-    const lines = await getDrawerLines(page);
-    expect(lines.find(l => l.isGift)).toBeFalsy();
-  });
-
-  test('user-added clip and auto-gift are separate lines', async ({ page }) => {
-    // Add 2 octopus (199*2 = 398, above 299) so gift triggers
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && getComputedStyle(badge).display !== 'none';
-    }, { timeout: 10_000 });
-    await openDrawer(page);
-    await page.click('.qty-inc');
-    // Wait for gift to appear and cart to settle
-    await page.waitForFunction(() => {
-      const giftLines = document.querySelectorAll('.cart-line--gift');
-      const body = document.getElementById('cart-body');
-      return giftLines.length >= 1 && body && body.style.opacity !== '0.5';
-    }, { timeout: 15_000 });
-
-    // Add a user clip directly via the Storefront API (same as clicking add-to-cart on clip page)
-    const clipVariant = 'gid://shopify/ProductVariant/48173905576158';
-    await page.evaluate(async (variantGid) => {
-      const DOMAIN = 'shop.layerweaver.com';
-      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
-      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
-      const cartId = localStorage.getItem('lw_cart_id');
-      const res = await fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
-        body: JSON.stringify({
-          query: `mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
-            cartLinesAdd(cartId: $cartId, lines: $lines) { cart { id totalQuantity } }
-          }`,
-          variables: { cartId, lines: [{ merchandiseId: variantGid, quantity: 1 }] },
-        }),
-      });
-      return res.json();
-    }, clipVariant);
-
-    // Reload to pick up the updated cart
-    await page.reload();
-    await waitForCartReady(page);
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && parseInt(badge.textContent) >= 4;
-    }, { timeout: 15_000 });
-
-    await openDrawer(page);
-    await page.waitForTimeout(500);
-    const lines = await getDrawerLines(page);
-    const clipLines = lines.filter(l => l.title?.toLowerCase().includes('cable clip'));
-    // Should have 2 clip lines: one paid (user-added), one gift (auto-added)
-    expect(clipLines.length).toBe(2);
-    expect(clipLines.some(l => l.isGift && l.price === 'FREE')).toBeTruthy();
-    expect(clipLines.some(l => !l.isGift)).toBeTruthy();
-  });
-
-  test('gift line appears first in cart drawer', async ({ page }) => {
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && getComputedStyle(badge).display !== 'none';
-    }, { timeout: 10_000 });
-    await openDrawer(page);
-    await page.click('.qty-inc');
-    await page.waitForFunction(() => {
-      const giftLines = document.querySelectorAll('.cart-line--gift');
-      const body = document.getElementById('cart-body');
-      return giftLines.length >= 1 && body && body.style.opacity !== '0.5';
-    }, { timeout: 15_000 });
-
-    const lines = await getDrawerLines(page);
-    expect(lines.length).toBeGreaterThanOrEqual(2);
-    expect(lines[0].isGift).toBeTruthy();
-  });
-});
-
-// ── Gift progress bar ───────────────────────────────────────────────────────
-
-test.describe('Gift progress bar', () => {
+test.describe('Shipping progress bar', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(PRODUCT_OCTOPUS);
     await clearCart(page);
@@ -337,18 +195,20 @@ test.describe('Gift progress bar', () => {
   });
 
   test('shows amount needed below threshold', async ({ page }) => {
+    // Octopus is 199, below the 299 free-shipping threshold
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
       return badge && badge.textContent === '1';
     }, { timeout: 10_000 });
     await openDrawer(page);
-    const msg = await page.textContent('#gift-progress-msg');
+    const msg = await page.textContent('#shipping-bar-msg');
     expect(msg).toContain('Add');
     expect(msg).toContain('more');
   });
 
-  test('shows included message at/above threshold', async ({ page }) => {
+  test('shows unlocked message at/above threshold', async ({ page }) => {
+    // 2x octopus = 398, above the 299 threshold
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
@@ -358,11 +218,143 @@ test.describe('Gift progress bar', () => {
 
     await page.click('.qty-inc');
     await page.waitForFunction(() => {
-      const msg = document.getElementById('gift-progress-msg');
-      return msg && msg.textContent.includes('included');
+      const msg = document.getElementById('shipping-bar-msg');
+      return msg && msg.textContent.includes('unlocked');
     }, { timeout: 15_000 });
-    const msg = await page.textContent('#gift-progress-msg');
-    expect(msg).toContain('included');
+    const msg = await page.textContent('#shipping-bar-msg');
+    expect(msg).toContain('unlocked');
+  });
+});
+
+// ── Legacy gift-line cleanup ─────────────────────────────────────────────────
+// Regression coverage for cleanupLegacyGiftLine(): carts left over from the
+// retired 6-month campaign may still hold a real Shopify line item tagged
+// _gift/FREEGIFT299. cart.js no longer knows about the gift feature, so this
+// verifies the one-time cleanup on cart load actually strips that line
+// server-side rather than just hiding it in the UI.
+
+test.describe('Legacy gift-line cleanup', () => {
+  const GIFT_VARIANT = 'gid://shopify/ProductVariant/48173905576158'; // Cat Cable Clip
+
+  async function createLegacyGiftCart(page, extraLines = []) {
+    return page.evaluate(async ({ giftVariant, extraLines }) => {
+      const DOMAIN = 'shop.layerweaver.com';
+      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
+      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
+      const lines = [
+        { merchandiseId: giftVariant, quantity: 1, attributes: [{ key: '_gift', value: 'FREEGIFT299' }] },
+        ...extraLines,
+      ];
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `mutation cartCreate($input: CartInput!) {
+            cartCreate(input: $input) { cart { id totalQuantity } }
+          }`,
+          variables: { input: { lines } },
+        }),
+      });
+      const json = await res.json();
+      return json.data.cartCreate.cart;
+    }, { giftVariant: GIFT_VARIANT, extraLines });
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto(PRODUCT_OCTOPUS);
+    await clearCart(page);
+  });
+
+  test('strips the only line and settles to empty cart', async ({ page }) => {
+    const cart = await createLegacyGiftCart(page);
+    await page.evaluate((id) => localStorage.setItem('lw_cart_id', id), cart.id);
+    await page.reload();
+    await waitForCartReady(page);
+
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && (badge.textContent === '0' || getComputedStyle(badge).display === 'none');
+    }, { timeout: 15_000 });
+
+    await openDrawer(page);
+    await expect(page.locator('.cart-empty')).toBeVisible();
+  });
+
+  test('removes gift line but keeps other items in the cart', async ({ page }) => {
+    const octopusVariant = await page.getAttribute('#add-to-cart-btn', 'data-variant-gid');
+    const cart = await createLegacyGiftCart(page, [{ merchandiseId: octopusVariant, quantity: 1 }]);
+    await page.evaluate((id) => localStorage.setItem('lw_cart_id', id), cart.id);
+    await page.reload();
+    await waitForCartReady(page);
+
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && badge.textContent === '1';
+    }, { timeout: 15_000 });
+
+    await openDrawer(page);
+    const lines = await getDrawerLines(page);
+    expect(lines.length).toBe(1);
+    expect(lines[0].title).toBe('Articulated Octopus');
+  });
+
+  test('clears a lingering discount code even without a gift line', async ({ page }) => {
+    // Simulates a cart where the FREEGIFT299 code survived without the tagged
+    // line (e.g. the line was removed through some other path) - cleanup must
+    // not rely solely on the line's presence to decide to clear the code.
+    const octopusVariant = await page.getAttribute('#add-to-cart-btn', 'data-variant-gid');
+    const cartId = await page.evaluate(async (variantGid) => {
+      const DOMAIN = 'shop.layerweaver.com';
+      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
+      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
+      const createRes = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `mutation cartCreate($input: CartInput!) {
+            cartCreate(input: $input) { cart { id } }
+          }`,
+          variables: { input: { lines: [{ merchandiseId: variantGid, quantity: 1 }] } },
+        }),
+      });
+      const { data } = await createRes.json();
+      const cartId = data.cartCreate.cart.id;
+
+      await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+            cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) { cart { id } }
+          }`,
+          variables: { cartId, discountCodes: ['FREEGIFT299'] },
+        }),
+      });
+      return cartId;
+    }, octopusVariant);
+
+    await page.evaluate((id) => localStorage.setItem('lw_cart_id', id), cartId);
+    await page.reload();
+    await waitForCartReady(page);
+    await page.waitForTimeout(1_500); // let cleanup's discount-clear mutation settle
+
+    const discountCodes = await page.evaluate(async (id) => {
+      const DOMAIN = 'shop.layerweaver.com';
+      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
+      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `query getCart($id: ID!) { cart(id: $id) { discountCodes { code } } }`,
+          variables: { id },
+        }),
+      });
+      const { data } = await res.json();
+      return data.cart.discountCodes;
+    }, cartId);
+
+    expect(discountCodes).toEqual([]);
   });
 });
 
@@ -434,9 +426,14 @@ test.describe('Drawer UI', () => {
     expect(href).toContain('layerweaver.com');
   });
 
-  test('free shipping banner visible', async ({ page }) => {
+  test('shipping progress bar visible', async ({ page }) => {
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && badge.textContent === '1';
+    }, { timeout: 10_000 });
     await openDrawer(page);
-    await expect(page.locator('.cart-free-shipping-banner')).toContainText('Free shipping');
+    await expect(page.locator('#shipping-progress')).toBeVisible();
   });
 });
 

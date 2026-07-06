@@ -1,10 +1,12 @@
 # Free Gift Cart Integration - FREEGIFT299
 
-> **Status: Active again.** Briefly retired (commit `209c6513`, 2026-07-02),
-> then restored the same day when the campaign was extended to 5th July after
-> a technical issue - see `.ai/plans/6-month-campaign.md` for the full story.
-> This document accurately describes the current `shop/cart.js` gift-line
-> behavior again.
+> **Status: Retired for good (2026-07-06).** Briefly retired once before
+> (commit `209c6513`, 2026-07-02), then restored the same day when the
+> campaign was extended to 5th July after a technical issue, then retired
+> again on 2026-07-06 once that extended window truly ended - see
+> `.ai/plans/6-month-campaign.md` for the full story. Kept here for
+> historical reference only; nothing below reflects the current
+> `shop/cart.js`, which has no gift-line logic anymore.
 
 ## Overview
 Automatically add a free Cat Cable Clip to the cart and apply the `FREEGIFT299` discount code when the cart subtotal reaches ₹299. The discount is configured in Shopify Admin - the frontend needs to handle adding the gift item and applying/removing the code.
@@ -167,10 +169,13 @@ function getQualifyingTotal() {
   its own, not just one via the other.
 - Reverted in `75e15d52` when the campaign was restored the same day (it
   would've fought the then-active campaign by stripping real customers'
-  gifts). **Not currently present in `shop/cart.js`** (confirmed absent
-  2026-07-06) - needs to be re-added, using `9dd03d90`'s hardened version
-  rather than rewriting from scratch, whenever this campaign is next reverted
-  for good.
+  gifts).
+- **Re-added for good on 2026-07-06** (step 14 of the final revert), using
+  `9dd03d90`'s hardened version rather than rewriting from scratch. `cart.js`
+  now has no other gift-line logic left - `cleanupLegacyGiftLine()` is the
+  only surviving trace of this feature, there purely to clean up any carts
+  that still hold a leftover gift line or discount code from the 20 June - 5
+  July run.
 
 ### Drift between this doc and the current implementation (checked 2026-07-06)
 - The `getQualifyingTotal()` code sample above is the original, unoptimized

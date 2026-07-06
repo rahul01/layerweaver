@@ -1,12 +1,13 @@
 # 6-Month Celebration Campaign - Change Summary
 
-> **Status: Active again, extended to 5th July.** The campaign was reverted on
-> 2026-07-02 (commit `209c6513`), then restored the same day (commits `75e15d52`,
-> `78a7370b`) after a technical issue caused users to miss the last day of the
-> original window - see "Extension Notes" below. The "How to Revert" section
-> further down is accurate again and should be re-run once the campaign truly
-> ends on 5th July; ignore its "✅ DONE" / checked-off state, that refers to the
-> now-superseded 2026-07-02 revert.
+> **Status: Reverted for good.** The campaign was briefly reverted on 2026-07-02
+> (commit `209c6513`), then restored the same day (commits `75e15d52`, `78a7370b`)
+> after a technical issue caused users to miss the last day of the original
+> window, extending the end date to 5th July - see "Extension Notes" below. It
+> was reverted again on 2026-07-06, once the extended window truly ended, this
+> time to stay. All 14 steps in "How to Revert" below were executed as written
+> (including the footnoted additions found during re-verification); see "Revert
+> Execution Notes (2026-07-06)" for what happened during this run.
 
 ## Campaign Overview
 - **Occasion:** 6 months of LayerWeaver
@@ -93,39 +94,71 @@
 
 ---
 
-## How to Revert (End of Campaign) — ⏳ pending again, re-run when the campaign truly ends on 5th July
+## How to Revert (End of Campaign) — ✅ DONE (executed 2026-07-06)
 
-This ran once (commit `209c6513`, 2026-07-02) and every step below worked as
-written. It was then itself reverted (commits `75e15d52`/`78a7370b`) to restore
-the campaign through the new 5th July end date - see "Extension Notes" below.
-Checkboxes reset to unchecked; this is the accurate to-do list for the *next*
-revert. Steps 5 and 7 have footnotes below from lessons learned executing this
-the first time - still valid.
+This ran once (commit `209c6513`, 2026-07-02), was itself reverted
+(commits `75e15d52`/`78a7370b`) to restore the campaign through the extended
+5th July end date, and ran again for good on 2026-07-06 once that window
+closed - see "Extension Notes" and "Revert Execution Notes (2026-07-06)"
+below. All 14 steps landed, including the footnoted additions found during
+the 2026-07-06 re-verification pass.
 
-1. [ ] **Remove announcement bar HTML** from all pages (or remove `body.has-announcement` class)
+1. [x] **Remove announcement bar HTML** from all pages (or remove `body.has-announcement` class)
    - **Scope note (found re-verifying this session, 2026-07-06):** `build-shop.js` only regenerates the ~48 `shop/*` pages (fixed automatically by step 13's rebuild). The other 14 pages - `index.html`, `404.html`, `connect/`, `enroll/`, `enroll-adult/`, `faq/`, `gallery/`, `privacy-policy/`, `return-and-exchange-policy/`, `services/3d-design/`, `services/on-demand/`, `shipping-policy/`, `terms-of-service/`, `workshop/` - hardcode the `<div class="announcement-bar">...</div>` block and `<body class="has-announcement">` by hand, with no shared include system. Confirmed the block is byte-identical across all 14 (only the `<a href="shop/">` vs `<a href="/shop/">` prefix differs by nesting depth) - script the removal across these 14 files rather than editing by hand, to avoid missing one.
    - **Related cleanup found the same session:** 7 of those 14 pages (`enroll/index.html:50`, `enroll-adult/index.html:50`, and `body.has-announcement .policy-hero` in `faq/`, `privacy-policy/`, `return-and-exchange-policy/`, `shipping-policy/`, `terms-of-service/` around line 71-74) carry their own inline `<style>` block with `body.has-announcement` rules, separate from the global `styles.css` covered in step 10. Once the body class is removed these become dead CSS - delete them in the same pass.
    - **Checked and ruled out:** `script.js`'s header-offset sync (`document.querySelector('.announcement-bar')`, lines 125-130) is already null-guarded (`if (announcementBar) ...`) - degrades gracefully, no action needed.
-2. [ ] **Set `FREE_SHIPPING_MIN`** to `299` in `shop/cart.js` (new permanent threshold, not a revert to the old ₹500 value - matches `FREE_GIFT_MIN`)
-3. [ ] **Remove gift progress** (`FREE_GIFT_MIN`, `FREE_GIFT_NAME`, gift bar HTML/CSS/JS) from `shop/cart.js` and `shop/shop.css`
-4. [ ] **Restore the shipping progress bar** in the cart drawer - the gift bar removed in step 3 was the only progress UI, and it goes away with the gift, but shipping now has a real ₹299 threshold worth showing progress toward. Bring back the pre-campaign `#shipping-progress` implementation (last present at commit `2cfbaf49`, before `aec49f93`): `#shipping-progress`/`#shipping-bar-fill`/`#shipping-bar-msg` in the drawer HTML, `renderShippingBar()` computing `pct`/unlock message off `FREE_SHIPPING_MIN` (now 299) and `cart.cost.totalAmount`, and the `#shipping-bubble` speech bubble near the cart icon. The `.shipping-progress` CSS class already exists unused in `shop/shop.css:1162`.
+2. [x] **Set `FREE_SHIPPING_MIN`** to `299` in `shop/cart.js` (new permanent threshold, not a revert to the old ₹500 value - matches `FREE_GIFT_MIN`)
+3. [x] **Remove gift progress** (`FREE_GIFT_MIN`, `FREE_GIFT_NAME`, gift bar HTML/CSS/JS) from `shop/cart.js` and `shop/shop.css`
+4. [x] **Restore the shipping progress bar** in the cart drawer - the gift bar removed in step 3 was the only progress UI, and it goes away with the gift, but shipping now has a real ₹299 threshold worth showing progress toward. Bring back the pre-campaign `#shipping-progress` implementation (last present at commit `2cfbaf49`, before `aec49f93`): `#shipping-progress`/`#shipping-bar-fill`/`#shipping-bar-msg` in the drawer HTML, `renderShippingBar()` computing `pct`/unlock message off `FREE_SHIPPING_MIN` (now 299) and `cart.cost.totalAmount`, and the `#shipping-bubble` speech bubble near the cart icon. The `.shipping-progress` CSS class already exists unused in `shop/shop.css:1162`.
    - **Confetti trigger changes too:** remove the current "first item added" confetti trigger in `handleAddItem` (`shop/cart.js:585-587`, `if (prevLineCount === 0 && ... > 0) spawnPageConfetti()`). Instead, restore the pre-campaign behavior where `spawnPageConfetti()` fires from inside `renderShippingBar()` when the qualifying total crosses `FREE_SHIPPING_MIN` (₹299) - i.e. `isUnlocked && !wasUnlocked`, guarded by a `sessionStorage.lw_shipping_unlocked` flag (same one-shot-per-session pattern the gift bar used with `lw_gift_unlocked`, just renamed back). Confetti now means "you've unlocked free shipping," not "you added your first item."
-5. [ ] **Update shipping policy** and **FAQ** text - remove the celebration-specific sentence entirely (not just swap the ₹ value), leaving only the ₹299 rate:
+5. [x] **Update shipping policy** and **FAQ** text - remove the celebration-specific sentence entirely (not just swap the ₹ value), leaving only the ₹299 rate:
    - `shipping-policy/index.html:233-234` - two separate `<p>` tags. Delete the celebration paragraph (line 233: "6-Month Celebration: We're offering free shipping on all orders - no minimum!..."). Keep only the rates paragraph (line 234), rewritten as: "Free shipping on orders above ₹299. For orders below ₹299, shipping is a flat ₹30 within Pune and ₹49 for the rest of India."
    - `faq/index.html:217` - currently one merged sentence ("We currently ship within India only. To celebrate 6 months of LayerWeaver, shipping is free on all orders - no minimum! Standard rates apply after the celebration: free shipping above ₹500, flat ₹30 within Pune and ₹49 for the rest of India."). Rewrite to: "We currently ship within India only. Shipping is free on orders above ₹299, flat ₹30 within Pune and ₹49 for the rest of India." **Lesson from the first run:** also check the FAQPage JSON-LD schema block a few lines up in the same file - it duplicates this sentence with the same stale ₹500 copy and is easy to miss since it's not visible on the page.
-6. [ ] **Revert trust strip** text to "Free Shipping Above ₹299", remove gift item - note this lives entirely in `shopHeaderHtml()` in `scripts/build-shop.js:387` (not hand-edited in `shop/index.html` or any product/collection page - those are all generated output). This is really the same edit as step 11; do it there and let step 12's rebuild propagate it.
-7. [ ] **Revert button colors** from yellow back to purple in `styles.css` - three separate selector groups were changed (see commit `52ac59a4` for exact values), not just `.btn-primary`:
+6. [x] **Revert trust strip** text to "Free Shipping Above ₹299", remove gift item - note this lives entirely in `shopHeaderHtml()` in `scripts/build-shop.js:387` (not hand-edited in `shop/index.html` or any product/collection page - those are all generated output). This is really the same edit as step 11; do it there and let step 12's rebuild propagate it.
+7. [x] **Revert button colors** from yellow back to purple in `styles.css` - three separate selector groups were changed (see commit `52ac59a4` for exact values), not just `.btn-primary`:
    - `.btn-primary` - `background-color`/`color` (base and `:hover` state, including the hover `box-shadow`)
    - `.nav-links a.btn-primary` - `color` override
    - `.hero-shop-btn` - `background-color`, `:hover` `background-color`/`color`, and `box-shadow` (both states)
    - **Lesson from the first run:** leave `.hero-left .hero-shop-btn` alone - it's a pre-existing yellow mobile override that predates the campaign (confirmed via `git show 2cfbaf49:styles.css`), not part of the campaign's color change. Don't revert it.
-8. [ ] **Remove** `.cart-free-shipping-banner` from cart drawer
-9. [ ] **Remove** `.fab-shop` HTML from `index.html` and CSS from `styles.css`
-10. [ ] **Remove** logo `::after` sticker, `.announcement-bar` styles, and `@keyframes announcement-marquee` from `styles.css`
-11. [ ] **Revert `scripts/build-shop.js`** - remove `announcementBarHtml()`, move trust strip back outside header, revert text
-12. [ ] **Revert OG meta** on shop page - same generated-file situation as step 6: the `description` field is set in `scripts/build-shop.js:613` ("Celebrating 6 months of LayerWeaver! Free shipping on every order - no minimum...") and rendered into `og:description` via the template at line 308. Edit it there, not in `shop/index.html` directly.
-13. [ ] **Run `npm run build-shop`** to regenerate all shop pages (does this last, once steps 6/11/12 have all landed in `scripts/build-shop.js`)
-14. [ ] **Re-add the legacy gift-line cleanup** - `cleanupLegacyGiftLine()` in `shop/cart.js` (removed when the campaign was restored on 2026-07-02, see "Extension Notes"). Any customer cart that picks up a gift line during this 20 June - 5 July run needs the same server-side cleanup once the feature retires for good. Check `git log --all --oneline -- shop/cart.js` for the `9dd03d90` / `75e15d52` commits to pull the implementation back rather than rewriting it - it also independently checks for a lingering `FREEGIFT299` discount code, not just the tagged line (see that commit's message for why).
+8. [x] **Remove** `.cart-free-shipping-banner` from cart drawer
+9. [x] **Remove** `.fab-shop` HTML from `index.html` and CSS from `styles.css`
+10. [x] **Remove** logo `::after` sticker, `.announcement-bar` styles, and `@keyframes announcement-marquee` from `styles.css`
+11. [x] **Revert `scripts/build-shop.js`** - remove `announcementBarHtml()`, move trust strip back outside header, revert text
+12. [x] **Revert OG meta** on shop page - same generated-file situation as step 6: the `description` field is set in `scripts/build-shop.js:613` ("Celebrating 6 months of LayerWeaver! Free shipping on every order - no minimum...") and rendered into `og:description` via the template at line 308. Edit it there, not in `shop/index.html` directly.
+13. [x] **Run `npm run build-shop`** to regenerate all shop pages (does this last, once steps 6/11/12 have all landed in `scripts/build-shop.js`)
+14. [x] **Re-add the legacy gift-line cleanup** - `cleanupLegacyGiftLine()` in `shop/cart.js` (removed when the campaign was restored on 2026-07-02, see "Extension Notes"). Any customer cart that picks up a gift line during this 20 June - 5 July run needs the same server-side cleanup once the feature retires for good. Check `git log --all --oneline -- shop/cart.js` for the `9dd03d90` / `75e15d52` commits to pull the implementation back rather than rewriting it - it also independently checks for a lingering `FREEGIFT299` discount code, not just the tagged line (see that commit's message for why).
+
+---
+
+## Revert Execution Notes (2026-07-06)
+
+Executed by applying the `209c6513` diff against the then-current (5th-July,
+campaign-active) tree via `git apply --3way`, resolving the resulting
+conflicts by hand (all were pure "1st July" vs "5th July" text / cache-busting
+version-string collisions, not logic conflicts), then layering `9dd03d90`'s
+hardened `cleanupLegacyGiftLine()` on top per step 14, and finally running
+`npm run build-shop` to regenerate all ~48 generated `shop/*` pages fresh from
+the reverted `scripts/build-shop.js` template.
+
+- **`shop/collage/index.html`** also carries the announcement bar hand-authored
+  (not generated by `build-shop.js`, and not in this doc's original 14-page
+  list) - needed the same manual strip as the other non-generated pages. First
+  surfaced during the 2026-07-02 run (see `f854f309`'s commit message); still
+  applies here since the file didn't change shape since then.
+- **Test suite**: added the hardened-cleanup e2e test from `9dd03d90`
+  ("clears a lingering discount code even without a gift line") to
+  `tests/cart.e2e.spec.js`, on top of the `209c6513` test diff, since step 14
+  uses the hardened cleanup rather than the original. Full suite passing:
+  11/11 unit, 26/26 e2e.
+- **Unrelated commits landed between the two revert runs** (`4df4bd4e` removing
+  a broken CI workflow, `20b3b282` rebuilding shop for a Ghost Balloon Lamp
+  description change) touched none of the hand-maintained files this revert
+  edits directly - only generated `shop/*` pages, which get overwritten by
+  step 13's rebuild regardless. No interaction with the revert.
+- **Shopify Admin**: see "Shopify Admin Cleanup Checklist" below - partially
+  done. `FREEGIFT299` had already self-expired (Shopify enforced its own
+  `endsAt`); the `all-products` collection unpublish/delete is blocked by the
+  connected MCP server's safety policy and needs to be done manually.
 
 ---
 
@@ -195,13 +228,13 @@ Checked each against `main` on 2026-07-06 - both still hold:
 
 ---
 
-## Shopify Admin Cleanup Checklist (manual, not code) — do this only once the campaign actually ends (5th July)
+## Shopify Admin Cleanup Checklist (manual, not code) — checked 2026-07-06, one item still needs manual action
 
-Not covered by the code revert steps above - do these separately in Shopify Admin once the free gift is retired for good:
+Not covered by the code revert steps above - checked in Shopify Admin once the free gift retired for good:
 
-- [ ] Deactivate (or delete) the `FREEGIFT299` discount code
-- [ ] Remove/hide the `all-products` collection that was created solely to support the `FREEGIFT299` discount conditions (currently excluded from the site via `HIDDEN_COLLECTIONS` in `build-shop.js` - if the collection is deleted, also remove it from that list)
-- [ ] Confirm the Cat Cable Clip product itself is left untouched (it's a real sellable product, only the auto-gift/discount mechanism goes away)
+- [x] Deactivate (or delete) the `FREEGIFT299` discount code - already `EXPIRED` on its own (it's a Buy-X-Get-Y discount with `endsAt: 2026-07-05T18:29:59Z`, matching the campaign end date), no action needed
+- [ ] Remove/hide the `all-products` collection that was created solely to support the `FREEGIFT299` discount conditions - **still published** to Online Store and other sales channels in Shopify Admin (confirmed via API); already excluded from the static site's own nav/build via `HIDDEN_COLLECTIONS` in `build-shop.js`, but still reachable directly at `/collections/all-products`. Unpublishing/deleting it is blocked by the connected Shopify MCP server's safety policy (destructive-action guardrail) - do this manually in Shopify Admin (Collections → All Products → Sales channels) if you want it fully gone.
+- [x] Confirm the Cat Cable Clip product itself is left untouched - confirmed still `ACTIVE`, ₹99, unchanged. Unrelated finding: its variant inventory is at **-46** (oversold, likely from the free-gift auto-add depleting stock) - not part of this revert's scope, flagged separately.
 
 ---
 
