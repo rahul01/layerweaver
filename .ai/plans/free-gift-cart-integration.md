@@ -153,3 +153,37 @@ function getQualifyingTotal() {
 - Required creating an "all-products" collection in Shopify for the discount conditions
 - The `all-products` collection is hidden from the site via `HIDDEN_COLLECTIONS` in `build-shop.js`
 - Cat Cable Clip variant GID: `gid://shopify/ProductVariant/48173905576158`
+
+### `cleanupLegacyGiftLine()` history (added 2026-07-06)
+- Introduced in `209c6513` (the 2026-07-02 sunset revert) as a one-time
+  cleanup so returning customers whose carts still held the gift line item
+  after `FREEGIFT299` was deactivated wouldn't get stuck with a broken,
+  chargeable line.
+- Hardened in `9dd03d90` the same day: the original only cleared the leftover
+  discount code as a *side effect* of finding the tagged gift line, so a cart
+  with the code attached but no line would keep it forever. The fix added
+  `discountCodes` back to `CART_FIELDS` and checks it as an *independent*
+  condition - either the tagged line or the leftover code triggers cleanup on
+  its own, not just one via the other.
+- Reverted in `75e15d52` when the campaign was restored the same day (it
+  would've fought the then-active campaign by stripping real customers'
+  gifts). **Not currently present in `shop/cart.js`** (confirmed absent
+  2026-07-06) - needs to be re-added, using `9dd03d90`'s hardened version
+  rather than rewriting from scratch, whenever this campaign is next reverted
+  for good.
+
+### Drift between this doc and the current implementation (checked 2026-07-06)
+- The `getQualifyingTotal()` code sample above is the original, unoptimized
+  version. The actual `shop/cart.js` implementation memoizes it via
+  `_qtCache`/`_qtCacheCart` keyed on cart-reference identity (added by the
+  cart.js optimization pass, see `.ai/plans/cart-js-optimization.md`) - not a
+  bug, just means this doc's sample is stale relative to the shipped code.
+- A `getGiftLine()` helper exists in `shop/cart.js` (used by `reconcileGift()`
+  to find the tagged line) but isn't mentioned in the Architecture section
+  above.
+- A stray debug `console.log('[Gift] qualifying:', ...)` is live inside
+  `reconcileGift()` in the current code, firing on every cart update for every
+  visitor. Not documented anywhere and not intentional - strip it if/when this
+  logic is touched again (it gets deleted anyway once the campaign is
+  reverted, since `reconcileGift()` goes away entirely, but don't let it get
+  copy-pasted back in on a future reactivation).

@@ -103,6 +103,9 @@ revert. Steps 5 and 7 have footnotes below from lessons learned executing this
 the first time - still valid.
 
 1. [ ] **Remove announcement bar HTML** from all pages (or remove `body.has-announcement` class)
+   - **Scope note (found re-verifying this session, 2026-07-06):** `build-shop.js` only regenerates the ~48 `shop/*` pages (fixed automatically by step 13's rebuild). The other 14 pages - `index.html`, `404.html`, `connect/`, `enroll/`, `enroll-adult/`, `faq/`, `gallery/`, `privacy-policy/`, `return-and-exchange-policy/`, `services/3d-design/`, `services/on-demand/`, `shipping-policy/`, `terms-of-service/`, `workshop/` - hardcode the `<div class="announcement-bar">...</div>` block and `<body class="has-announcement">` by hand, with no shared include system. Confirmed the block is byte-identical across all 14 (only the `<a href="shop/">` vs `<a href="/shop/">` prefix differs by nesting depth) - script the removal across these 14 files rather than editing by hand, to avoid missing one.
+   - **Related cleanup found the same session:** 7 of those 14 pages (`enroll/index.html:50`, `enroll-adult/index.html:50`, and `body.has-announcement .policy-hero` in `faq/`, `privacy-policy/`, `return-and-exchange-policy/`, `shipping-policy/`, `terms-of-service/` around line 71-74) carry their own inline `<style>` block with `body.has-announcement` rules, separate from the global `styles.css` covered in step 10. Once the body class is removed these become dead CSS - delete them in the same pass.
+   - **Checked and ruled out:** `script.js`'s header-offset sync (`document.querySelector('.announcement-bar')`, lines 125-130) is already null-guarded (`if (announcementBar) ...`) - degrades gracefully, no action needed.
 2. [ ] **Set `FREE_SHIPPING_MIN`** to `299` in `shop/cart.js` (new permanent threshold, not a revert to the old ₹500 value - matches `FREE_GIFT_MIN`)
 3. [ ] **Remove gift progress** (`FREE_GIFT_MIN`, `FREE_GIFT_NAME`, gift bar HTML/CSS/JS) from `shop/cart.js` and `shop/shop.css`
 4. [ ] **Restore the shipping progress bar** in the cart drawer - the gift bar removed in step 3 was the only progress UI, and it goes away with the gift, but shipping now has a real ₹299 threshold worth showing progress toward. Bring back the pre-campaign `#shipping-progress` implementation (last present at commit `2cfbaf49`, before `aec49f93`): `#shipping-progress`/`#shipping-bar-fill`/`#shipping-bar-msg` in the drawer HTML, `renderShippingBar()` computing `pct`/unlock message off `FREE_SHIPPING_MIN` (now 299) and `cart.cost.totalAmount`, and the `#shipping-bubble` speech bubble near the cart icon. The `.shipping-progress` CSS class already exists unused in `shop/shop.css:1162`.
@@ -145,6 +148,50 @@ than let the campaign end early on a broken note.
 **Confirmed before restoring:** Shopify Admin was untouched at the time of extension - `FREEGIFT299` was still active and the `all-products` collection still existed, so there was no bait-and-switch risk in bringing the gift-line code back live.
 
 **Copy decision:** extension is presented with no explanation ("Offer lasts till 5th July!" - same pattern as before, just the date). Deliberately not mentioning the technical issue publicly.
+
+---
+
+## Elements deliberately kept, not part of the revert (found 2026-07-06)
+
+- **Free shipping threshold stays permanently at ₹299** (never reverts to the
+  pre-campaign ₹500) - already this doc's explicit intent via step 2, restated
+  here for clarity.
+- **`script.js` dynamic header-offset sync and the scroll-padding fix**
+  (section 11 above) - general robustness fixes bundled into the campaign
+  work, not campaign-specific content. Correctly absent from the revert list;
+  no action needed.
+- **Mobile hero "Shop Now" button reorder** (`styles.css:475`,
+  `.hero-left .hero-shop-btn { order: -1; width: 100%; ... }` inside the
+  mobile media query) - confirmed via `git show 2cfbaf49:styles.css` that this
+  did NOT exist pre-campaign (introduced in `aec49f93`). Was absent from the
+  revert list with no explanation either way. **Decision: keep it
+  permanently** - it's a mobile UX improvement (primary CTA surfaces first)
+  independent of the campaign's promotional content. Leave `styles.css:475`
+  as-is when executing the revert.
+
+## Unrelated changes bundled into the original campaign commit (aec49f93)
+
+The original campaign commit's message lists a few things swept in alongside
+the campaign that never made it into this doc's "Changes Made" summary above.
+Checked each against `main` on 2026-07-06 - both still hold:
+
+- **Em dashes removed from product descriptions** - confirmed still applied
+  (zero product pages contain em dashes). Permanent content fix, unrelated to
+  the campaign, nothing to do on revert.
+- **FAQ link added to privacy policy footer** - confirmed still present
+  (`privacy-policy/index.html:289`). Permanent nav fix, unrelated to the
+  campaign, nothing to do on revert.
+- **Product handle redirect stubs deleted** - `shop/products/panda/`,
+  `shop/products/vases/`, `shop/products/monsterra-keychain/index.html`
+  (misspelled duplicate) were removed in the same commit - confirmed still
+  gone. Each was a `<meta http-equiv="refresh">` redirect to the
+  correctly-named current product (`panda-figurine`, `decorative-vases`,
+  `monstera-keychain`). Unrelated to the campaign and not part of this
+  revert's scope, but flagged separately: if old bookmarks/backlinks/search
+  results still point to the old `/shop/products/panda/`-style URLs,
+  visitors now hit a 404 instead of being redirected. Worth a deliberate
+  decision of its own at some point, since it was never actually decided on -
+  just silently bundled into a campaign commit.
 
 ---
 
