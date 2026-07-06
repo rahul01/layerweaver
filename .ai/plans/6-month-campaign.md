@@ -148,8 +148,18 @@ the reverted `scripts/build-shop.js` template.
 - **Test suite**: added the hardened-cleanup e2e test from `9dd03d90`
   ("clears a lingering discount code even without a gift line") to
   `tests/cart.e2e.spec.js`, on top of the `209c6513` test diff, since step 14
-  uses the hardened cleanup rather than the original. Full suite passing:
-  11/11 unit, 26/26 e2e.
+  uses the hardened cleanup rather than the original.
+- **Follow-up coverage pass (same day)**: a coverage review after the revert
+  landed found two gaps specific to the reverted behavior and closed them -
+  extracted the ₹299 threshold math out of `renderShippingBar()` into a pure
+  `shippingProgress(total, min)` helper in `shop/cart-utils.js` (5 new unit
+  tests: below-threshold, remaining-amount rounding, exact-threshold unlock,
+  100%-cap above threshold, zero-total), and added two e2e tests -
+  "confetti fires on crossing the threshold, not on the first item added"
+  (direct regression guard for this revert's confetti-trigger change) and
+  "decrement from qty 1 via qty-dec button removes the line" (the
+  `handleUpdateLine` → `handleRemoveLine` path, distinct from the explicit
+  remove button). Full suite passing: 16/16 unit, 28/28 e2e.
 - **Unrelated commits landed between the two revert runs** (`4df4bd4e` removing
   a broken CI workflow, `20b3b282` rebuilding shop for a Ghost Balloon Lamp
   description change) touched none of the hand-maintained files this revert

@@ -1,5 +1,11 @@
 # Gift-with-Purchase Campaign Playbook (generic)
 
+> **Status: Complete.** Written 2026-07-06 after the `FREEGIFT299` campaign's
+> final revert (see `.ai/plans/6-month-campaign.md`). This is a reference doc,
+> not a task list - "done" means the retrospective is finished and captured,
+> not that there's a next campaign pending. Reuse it whenever the next
+> threshold-based gift promotion is planned.
+
 A reusable, product-agnostic reference for launching or retiring *any* future
 threshold-based gift-with-purchase promotion (e.g. "free gift on orders above
 ₹X"), extracted from what the `FREEGIFT299` campaign (Cat Cable Clip, ₹299

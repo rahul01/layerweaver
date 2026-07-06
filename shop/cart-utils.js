@@ -15,3 +15,13 @@ export function cartQtyMap(edges) {
   edges.forEach(e => { map[e.node.merchandise.id] = e.node.quantity; });
   return map;
 }
+
+// Mirrors the shipping-bar math in shop/cart.js's renderShippingBar().
+export function shippingProgress(total, min) {
+  const isUnlocked = total >= min;
+  const pct = Math.min((total / min) * 100, 100);
+  const message = isUnlocked
+    ? '🎉 Free shipping unlocked!'
+    : `🚚 Add ₹${(min - total).toFixed(0)} more for free shipping`;
+  return { isUnlocked, pct, message };
+}

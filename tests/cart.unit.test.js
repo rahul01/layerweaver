@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -80,5 +80,44 @@ describe('cartQtyMap', () => {
       makeLine('v2', 149, 1),
     ];
     expect(cartQtyMap(edges)).toEqual({ v1: 2, v2: 1 });
+  });
+});
+
+// ── shippingProgress ──────────────────────────────────────────────────────────
+// Covers the ₹299 free-shipping threshold math restored by the 6-month
+// campaign revert (shop/cart.js renderShippingBar).
+
+describe('shippingProgress', () => {
+  it('reports locked with partial progress below the threshold', () => {
+    const result = shippingProgress(150, 299);
+    expect(result.isUnlocked).toBe(false);
+    expect(result.pct).toBeCloseTo((150 / 299) * 100);
+    expect(result.message).toBe('🚚 Add ₹149 more for free shipping');
+  });
+
+  it('rounds the remaining amount in the pending message', () => {
+    // 299 - 100.40 = 198.6, should round to 199
+    const result = shippingProgress(100.4, 299);
+    expect(result.message).toBe('🚚 Add ₹199 more for free shipping');
+  });
+
+  it('unlocks exactly at the threshold', () => {
+    const result = shippingProgress(299, 299);
+    expect(result.isUnlocked).toBe(true);
+    expect(result.pct).toBe(100);
+    expect(result.message).toBe('🎉 Free shipping unlocked!');
+  });
+
+  it('caps progress at 100% above the threshold', () => {
+    const result = shippingProgress(999, 299);
+    expect(result.isUnlocked).toBe(true);
+    expect(result.pct).toBe(100);
+  });
+
+  it('handles a zero total as fully locked', () => {
+    const result = shippingProgress(0, 299);
+    expect(result.isUnlocked).toBe(false);
+    expect(result.pct).toBe(0);
+    expect(result.message).toBe('🚚 Add ₹299 more for free shipping');
   });
 });

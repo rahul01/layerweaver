@@ -125,6 +125,21 @@ test.describe('Cart basics', () => {
     await expect(page.locator('.cart-empty')).toBeVisible({ timeout: 10_000 });
     expect(await getBadgeCount(page)).toBe(0);
   });
+
+  test('decrement from qty 1 via qty-dec button removes the line', async ({ page }) => {
+    // Distinct code path from the explicit remove-btn: handleUpdateLine's
+    // newQty <= 0 branch delegates to handleRemoveLine.
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && badge.textContent === '1';
+    }, { timeout: 10_000 });
+    await openDrawer(page);
+
+    await page.click('.qty-dec');
+    await expect(page.locator('.cart-empty')).toBeVisible({ timeout: 10_000 });
+    expect(await getBadgeCount(page)).toBe(0);
+  });
 });
 
 // ── Add to cart from listing page ───────────────────────────────────────────
@@ -223,6 +238,47 @@ test.describe('Shipping progress bar', () => {
     }, { timeout: 15_000 });
     const msg = await page.textContent('#shipping-bar-msg');
     expect(msg).toContain('unlocked');
+  });
+
+  // Regression coverage for the campaign revert: confetti now means "you've
+  // crossed the ₹299 free-shipping threshold," not "you added your first item."
+  test('confetti fires on crossing the threshold, not on the first item added', async ({ page }) => {
+    const countConfetti = () => page.evaluate(() =>
+      document.querySelectorAll('body > div[style*="z-index: 9999"]').length);
+
+    // 1x octopus (199) is below threshold - first item added, no confetti.
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && badge.textContent === '1';
+    }, { timeout: 10_000 });
+    await openDrawer(page);
+    await page.waitForTimeout(500);
+    expect(await countConfetti()).toBe(0);
+
+    // 2x octopus (398) crosses the threshold - confetti should fire now.
+    await page.click('.qty-inc');
+    await page.waitForFunction(() => {
+      const msg = document.getElementById('shipping-bar-msg');
+      return msg && msg.textContent.includes('unlocked');
+    }, { timeout: 15_000 });
+    await page.waitForFunction(() => document.querySelectorAll(
+      'body > div[style*="z-index: 9999"]').length > 0, { timeout: 2_000 });
+    expect(await countConfetti()).toBeGreaterThan(0);
+
+    // Let the first batch of confetti fully clear before the next action, so
+    // it can't be mistaken for a second (incorrect) firing below.
+    await page.waitForFunction(() => document.querySelectorAll(
+      'body > div[style*="z-index: 9999"]').length === 0, { timeout: 3_000 });
+
+    // 3x octopus (597) - already unlocked, crossing again shouldn't re-fire.
+    await page.click('.qty-inc');
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && badge.textContent === '3';
+    }, { timeout: 10_000 });
+    await page.waitForTimeout(500);
+    expect(await countConfetti()).toBe(0);
   });
 });
 
