@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHOP = '/shop/';
-const PRODUCT_OCTOPUS = '/shop/products/articulated-octopus/';   // 199
+const PRODUCT_OCTOPUS = '/shop/products/articulated-octopus/';   // 249
 const PRODUCT_KEYCHAIN = '/shop/products/personalized-number-plate-keychain/'; // 149, personalized
 const PRODUCT_CLIP = '/shop/products/cat-cable-clip/';           // 99
 const PRODUCT_BUTTERFLY = '/shop/products/butterfly-bookmark/';  // multi-variant
@@ -70,7 +70,7 @@ test.describe('Cart basics', () => {
     const lines = await getDrawerLines(page);
     const octopus = lines.find(l => l.title === 'Articulated Octopus');
     expect(octopus).toBeTruthy();
-    expect(octopus.price).toContain('199');
+    expect(octopus.price).toContain('249');
   });
 
   test('update quantity - increment', async ({ page }) => {
@@ -210,7 +210,7 @@ test.describe('Shipping progress bar', () => {
   });
 
   test('shows amount needed below threshold', async ({ page }) => {
-    // Octopus is 199, below the 299 free-shipping threshold
+    // Octopus is 249, below the 299 free-shipping threshold
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
@@ -223,7 +223,7 @@ test.describe('Shipping progress bar', () => {
   });
 
   test('shows unlocked message at/above threshold', async ({ page }) => {
-    // 2x octopus = 398, above the 299 threshold
+    // 2x octopus = 498, above the 299 threshold
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
@@ -246,7 +246,7 @@ test.describe('Shipping progress bar', () => {
     const countConfetti = () => page.evaluate(() =>
       document.querySelectorAll('body > div[style*="z-index: 9999"]').length);
 
-    // 1x octopus (199) is below threshold - first item added, no confetti.
+    // 1x octopus (249) is below threshold - first item added, no confetti.
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
@@ -256,7 +256,7 @@ test.describe('Shipping progress bar', () => {
     await page.waitForTimeout(500);
     expect(await countConfetti()).toBe(0);
 
-    // 2x octopus (398) crosses the threshold - confetti should fire now.
+    // 2x octopus (498) crosses the threshold - confetti should fire now.
     await page.click('.qty-inc');
     await page.waitForFunction(() => {
       const msg = document.getElementById('shipping-bar-msg');
@@ -271,7 +271,7 @@ test.describe('Shipping progress bar', () => {
     await page.waitForFunction(() => document.querySelectorAll(
       'body > div[style*="z-index: 9999"]').length === 0, { timeout: 3_000 });
 
-    // 3x octopus (597) - already unlocked, crossing again shouldn't re-fire.
+    // 3x octopus (747) - already unlocked, crossing again shouldn't re-fire.
     await page.click('.qty-inc');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
@@ -572,7 +572,7 @@ test.describe('Analytics events', () => {
     const events = await page.evaluate(() => window._testEvents);
     const addEvent = events.find(e => e.name === 'add_to_cart');
     expect(addEvent.params.item_name).toBe('Articulated Octopus');
-    expect(addEvent.params.value).toBe(199);
+    expect(addEvent.params.value).toBe(249);
     expect(addEvent.params.currency).toBe('INR');
   });
 
