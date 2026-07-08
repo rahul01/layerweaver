@@ -10,8 +10,8 @@ const path = require('path');
 
 const SHOPIFY_DOMAIN = 'shop.layerweaver.com';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '7f0eafeb115e99a4a917e044a1fb4125';
-const JUDGEME_TOKEN = process.env.JUDGEME_API_TOKEN || 'M5panqMnpzylTb1J_mlo8-ZDHpE';
-const JUDGEME_SHOP = 'shop.layerweaver.com';
+let JUDGEME_TOKEN = process.env.JUDGEME_API_TOKEN || '';
+const JUDGEME_SHOP = 'ntpjuk-fp.myshopify.com';
 const SITE_URL = 'https://www.layerweaver.com';
 const BUILD_VER = Date.now();
 
@@ -172,35 +172,69 @@ function getNumericId(gid) {
   return gid.split('/').pop();
 }
 
+async function promptForJudgemeToken() {
+  const readline = require('readline/promises');
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    return (await rl.question('Enter Judge.me private API token (leave blank to skip reviews): ')).trim();
+  } finally {
+    rl.close();
+  }
+}
+
 async function fetchAllReviews(products) {
+  if (!JUDGEME_TOKEN && process.stdin.isTTY) {
+    JUDGEME_TOKEN = await promptForJudgemeToken();
+  }
   if (!JUDGEME_TOKEN) {
-    console.log('  Skipping reviews (no JUDGEME_API_TOKEN set)');
+    console.warn('  ⚠️  WARNING: JUDGEME_API_TOKEN not set — skipping reviews, shop will build with no ratings/reviews.');
     return {};
   }
   console.log('Fetching reviews from Judge.me...');
+  // Judge.me's `external_id`/`product_id` query params on /reviews are not reliable
+  // filters (they're silently ignored, returning the unfiltered/paginated list), so
+  // instead fetch every review once and group client-side by product_external_id,
+  // which each review object reports correctly.
+  const byExternalId = {};
+  let page = 1;
+  const PER_PAGE = 100;
+  try {
+    while (true) {
+      const url = `https://judge.me/api/v1/reviews?api_token=${JUDGEME_TOKEN}&shop_domain=${JUDGEME_SHOP}&per_page=${PER_PAGE}&page=${page}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn(`  ⚠️  WARNING: Judge.me request failed: HTTP ${res.status} ${await res.text()}`);
+        return {};
+      }
+      const data = await res.json();
+      const reviews = data.reviews || [];
+      for (const r of reviews) {
+        if (r.published === false || r.hidden === true) continue;
+        (byExternalId[r.product_external_id] ||= []).push(r);
+      }
+      if (reviews.length < PER_PAGE) break;
+      page += 1;
+    }
+  } catch (err) {
+    console.warn(`  ⚠️  WARNING: Judge.me request failed: ${err.message}`);
+    return {};
+  }
+
   const map = {};
-  const BATCH = 5;
-  for (let i = 0; i < products.length; i += BATCH) {
-    const batch = products.slice(i, i + BATCH);
-    await Promise.all(batch.map(async (product) => {
-      try {
-        const id = getNumericId(product.id);
-        const url = `https://judge.me/api/v1/reviews?api_token=${JUDGEME_TOKEN}&shop_domain=${JUDGEME_SHOP}&product_id=${id}&per_page=50&page=1`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-        const data = await res.json();
-        const reviews = data.reviews || [];
-        if (!reviews.length) return;
-        const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
-        map[product.handle] = {
-          rating: avgRating,
-          count: reviews.length,
-          reviews: reviews.slice(0, 6),
-        };
-      } catch {}
-    }));
+  for (const product of products) {
+    const reviews = byExternalId[getNumericId(product.id)];
+    if (!reviews || !reviews.length) continue;
+    const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+    map[product.handle] = {
+      rating: avgRating,
+      count: reviews.length,
+      reviews: reviews.slice(0, 6),
+    };
   }
   console.log(`  Got reviews for ${Object.keys(map).length} product(s)`);
+  if (Object.keys(map).length === 0) {
+    console.warn('  ⚠️  WARNING: Judge.me returned 0 reviews for every product — check JUDGEME_API_TOKEN/JUDGEME_SHOP are correct.');
+  }
   return map;
 }
 
@@ -231,6 +265,14 @@ function reviewCardHtml(review) {
 
 function escAttr(str) {
   return String(str).replace(/—/g, '-').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Truncate to `max` chars without cutting a word in half, appending an ellipsis if shortened.
+function truncateWords(str, max) {
+  if (str.length <= max) return str;
+  const cut = str.slice(0, max);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[.,;:-]+$/, '') + '…';
 }
 
 // Build a title→hex map from Shopify's swatch data for a product
@@ -308,6 +350,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <meta property="og:description" content="${description}">
     <meta property="og:url" content="${ogUrl}">
     <meta property="og:type" content="website">
+    <link rel="canonical" href="${ogUrl}">
     ${ogImage ? `<meta property="og:image" content="${ogImage}">` : ''}
     ${structuredData ? `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>` : ''}
     <link rel="icon" href="${base}images/spider-fevicon.svg" type="image/svg+xml">
@@ -348,7 +391,7 @@ function shopHeaderHtml(base, shopBase) {
         <div class="container">
             <a href="${base}" class="logo-container logo-link">
                 <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
-                <h1>LayerWeaver</h1>
+                <span class="logo-text">LayerWeaver</span>
             </a>
             <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
                 <div class="search-bar">
@@ -782,7 +825,7 @@ function generateProductPage(product, collection, reviewData = null) {
 <head>
     ${headHtml(base, shopBase, {
       title: `${escAttr(toTitleCase(product.title))} – LayerWeaver`,
-      description: escAttr(product.description.slice(0, 160)),
+      description: escAttr(truncateWords(product.description, 160)),
       ogImage: mainImage?.url,
       ogUrl: `${SITE_URL}/shop/products/${product.handle}/`,
       structuredData,
@@ -870,6 +913,7 @@ function generateProductPage(product, collection, reviewData = null) {
         </div>
 
         ${reviewData?.reviews?.length ? `
+        <div class="container">
         <div class="reviews-section">
             <h3>Customer Reviews</h3>
             <div class="reviews-aggregate">
@@ -878,6 +922,7 @@ function generateProductPage(product, collection, reviewData = null) {
             <div class="reviews-list">
                 ${reviewData.reviews.map(reviewCardHtml).join('\n')}
             </div>
+        </div>
         </div>` : ''}
     </section>
 
@@ -1146,6 +1191,8 @@ function generateAccountPage() {
     <!-- End Meta Pixel Code -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account – LayerWeaver</title>
+    <meta name="robots" content="noindex">
+    <link rel="canonical" href="${SITE_URL}/shop/account/">
     <link rel="icon" href="${base}images/spider-fevicon.svg" type="image/svg+xml">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="${base}images/spider-fevicon.svg">

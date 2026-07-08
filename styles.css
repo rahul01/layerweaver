@@ -145,7 +145,7 @@ header .container {
     margin-right: 10px;
 }
 
-.logo-container h1 {
+.logo-container .logo-text {
     font-size: 1.5rem;
     margin: 0;
     font-weight: 700;
