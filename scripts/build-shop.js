@@ -391,7 +391,7 @@ function shopHeaderHtml(base, shopBase) {
         <div class="container">
             <a href="${base}" class="logo-container logo-link">
                 <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
-                <span class="logo-text">LayerWeaver</span>
+                <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
             </a>
             <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
                 <div class="search-bar">

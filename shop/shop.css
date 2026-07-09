@@ -25,9 +25,54 @@
     gap: 10px;
     text-decoration: none;
     color: inherit;
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
 }
 
 .logo-link:hover { opacity: 0.8; }
+
+.logo-link .logo {
+    flex-shrink: 0;
+    height: clamp(28px, 9vw, 50px);
+    width: auto;
+}
+
+.logo-link .logo-text {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: clamp(0.85rem, 4.2vw, 1.5rem);
+}
+
+/* Below this width the single-line wordmark starts truncating -
+   stack "Layer" / "Weaver" into two centered lines instead of cutting it off. */
+@media (max-width: 370px) {
+    .logo-link .logo-text {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        line-height: 1.05;
+        letter-spacing: -0.2px;
+    }
+
+    .logo-word {
+        display: block;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /* "Weaver" renders ~1.315x wider than "Layer" at equal font-size (measured),
+       so scale each word's size around that ratio - both end up the same width,
+       starting/ending at the same point instead of "Layer" looking narrower. */
+    .logo-word:first-child  { font-size: clamp(0.57rem, 3.44vw, 0.92rem); }
+    .logo-word:last-child   { font-size: clamp(0.44rem, 2.62vw, 0.7rem); }
+}
 
 .shop-header h1 {
     font-size: 1.4rem;
@@ -39,6 +84,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-shrink: 0;
 }
 
 .shop-nav-link {
