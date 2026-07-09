@@ -764,6 +764,13 @@
     color: var(--light);
 }
 
+/* .variant-btn:hover:not(:disabled) above has higher specificity than .active
+   alone, so without this it wins on hover and repaints the text purple - on a
+   purple .active background that makes the label invisible. */
+.variant-btn.active:hover:not(:disabled) {
+    color: var(--light);
+}
+
 .variant-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
