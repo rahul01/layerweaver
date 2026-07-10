@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge.me Review Links – LayerWeaver Team</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="../../images/spider-fevicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #1c1726; --paper: #faf9fc; --paper-raised: #ffffff;
+        --primary: #A083D5; --primary-ink: #5c3fa0; --accent: #EFCF20; --accent-ink: #8a7300;
+        --line: #e7e2f0; --muted: #756f87; --focus: #5c3fa0;
+        --shadow: 0 1px 2px rgba(28,23,38,0.04), 0 8px 24px rgba(28,23,38,0.06);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --ink: #f2eef9; --paper: #16121f; --paper-raised: #1f1a2b; --primary: #b39ce0; --primary-ink: #d9cdf0; --accent: #f0d84a; --accent-ink: #f0d84a; --line: #2f2941; --muted: #9992ac; --focus: #d9cdf0; --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4); }
+      }
+      :root[data-theme="dark"] { --ink: #f2eef9; --paper: #16121f; --paper-raised: #1f1a2b; --primary: #b39ce0; --primary-ink: #d9cdf0; --accent: #f0d84a; --accent-ink: #f0d84a; --line: #2f2941; --muted: #9992ac; --focus: #d9cdf0; --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4); }
+      :root[data-theme="light"] { --ink: #1c1726; --paper: #faf9fc; --paper-raised: #ffffff; --primary: #A083D5; --primary-ink: #5c3fa0; --accent: #EFCF20; --accent-ink: #8a7300; --line: #e7e2f0; --muted: #756f87; --focus: #5c3fa0; --shadow: 0 1px 2px rgba(28,23,38,0.04), 0 8px 24px rgba(28,23,38,0.06); }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Open Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 48px 28px 96px; }
+      .masthead { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+      .masthead__logo { width: 34px; height: 34px; flex-shrink: 0; }
+      .masthead h1 { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700; font-size: clamp(1.4rem, 2.4vw, 1.9rem); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+      .masthead__eyebrow { display: block; font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary-ink); margin-bottom: 2px; }
+      .subhead { color: var(--muted); font-size: 0.95rem; max-width: 60ch; margin: 14px 0 28px; line-height: 1.6; }
+      .toolbar { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; margin-bottom: 28px; }
+      .field { display: flex; flex-direction: column; gap: 6px; }
+      .field__label { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+      .field input { font-family: 'Open Sans', sans-serif; font-size: 0.88rem; color: var(--ink); background: var(--paper-raised); border: 1px solid var(--line); border-radius: 10px; padding: 10px 13px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+      .field input::placeholder { color: var(--muted); opacity: 0.7; }
+      .field input:focus-visible { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent); }
+      .empty-state { display: none; color: var(--muted); font-size: 0.9rem; padding: 40px 0; text-align: center; }
+      .empty-state.is-visible { display: block; }
+      @media (max-width: 620px) { .toolbar { grid-template-columns: 1fr; } }
+      .featured { display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 20px; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--paper-raised)) 0%, color-mix(in srgb, var(--primary) 10%, var(--paper-raised)) 100%); border: 1.5px solid var(--accent); border-radius: 14px; padding: 18px 22px; margin-bottom: 40px; box-shadow: var(--shadow); }
+      .featured__icon { width: 96px; height: 96px; border-radius: 10px; background: var(--paper-raised); display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); }
+      .featured__icon img { width: 60%; height: 60%; }
+      .featured__eyebrow { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 4px; }
+      .featured__title { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700; font-size: 1.15rem; margin: 0 0 8px; }
+      .featured code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.72rem; color: var(--muted); display: block; overflow-x: auto; white-space: nowrap; max-width: 100%; }
+      .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+      .card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); }
+      .card__img { width: 100%; height: 148px; object-fit: cover; display: block; background: var(--line); }
+      .card__body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+      .card__title { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.88rem; line-height: 1.35; margin: 0; text-wrap: balance; }
+      .card__link { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.66rem; color: var(--muted); background: var(--paper); border: 1px solid var(--line); padding: 6px 8px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+      .copy { margin-top: auto; display: inline-flex; align-items: center; justify-content: center; gap: 7px; background: var(--primary); color: #fff; border: none; border-radius: 50px; padding: 9px 14px; font-family: 'Open Sans', sans-serif; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+      .copy:hover { background: var(--primary-ink); }
+      .copy:active { transform: scale(0.97); }
+      .copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+      .copy__icon { width: 15px; height: 15px; }
+      .copy.is-copied { background: #3f9142; }
+      @media (prefers-reduced-motion: reduce) { .copy { transition: none; } }
+      @media (max-width: 560px) { .featured { grid-template-columns: 64px 1fr; } .featured__icon { width: 64px; height: 64px; } .featured button.copy { grid-column: 1 / -1; } }
+    </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <img class="masthead__logo" src="../../images/spider-fevicon.svg" alt="">
+      <div>
+        <span class="masthead__eyebrow">LayerWeaver · Internal tool</span>
+        <h1>Judge.me review links</h1>
+      </div>
+    </div>
+    <p class="subhead">One shareable "write a review" link per product, plus one for an overall store rating. Copy a link and send it to a customer after their order — no Judge.me login required on their end.</p>
+
+    <div class="toolbar">
+      <div class="field">
+        <label class="field__label" for="prefix">Message prefix (optional)</label>
+        <input type="text" id="prefix" placeholder="e.g. Hi! Thanks for your order — mind leaving a quick review?">
+      </div>
+      <div class="field">
+        <label class="field__label" for="search">Search products</label>
+        <input type="text" id="search" placeholder="Search by product name…">
+      </div>
+    </div>
+
+    <div class="featured">
+      <div class="featured__icon"><img src="../../images/spider-fevicon.svg" alt=""></div>
+      <div>
+        <p class="featured__eyebrow">Store-wide</p>
+        <p class="featured__title">Overall store rating</p>
+        <code>https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?store-review-only=true&amp;source=shareable-link</code>
+      </div>
+      <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?store-review-only=true&amp;source=shareable-link" aria-label="Copy store rating link">
+        <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="copy__label">Copy link</span>
+      </button>
+    </div>
+
+    <ul class="grid" id="grid">
+        <li class="card" data-title="ghost balloon lamp">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Product_Jun_9_2026_12_40_29_PM.png?v=1780989063&width=300" alt="Ghost balloon lamp" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Ghost Balloon Lamp</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9160685781214</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9160685781214" aria-label="Copy review link for Ghost balloon lamp">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="snail lamp">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173100363998_0.jpeg?v=1776050823&width=300" alt="snail lamp" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Snail Lamp</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100363998</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100363998" aria-label="Copy review link for snail lamp">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="cone fidget">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_21PM.png?v=1777377646&width=300" alt="Cone Fidget" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Cone Fidget</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100396766</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100396766" aria-label="Copy review link for Cone Fidget">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="cupcake clicker (one piece)">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_29_18PM.png?v=1777377647&width=300" alt="Cupcake Clicker (One piece)" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Cupcake Clicker (One Piece)</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100429534</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100429534" aria-label="Copy review link for Cupcake Clicker (One piece)">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="coffee mug clicker keychain">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_29_23PM.png?v=1777377646&width=300" alt="Coffee mug Clicker Keychain" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Coffee Mug Clicker Keychain</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100527838</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100527838" aria-label="Copy review link for Coffee mug Clicker Keychain">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="bunny keychain">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_45_43_PM.png?v=1777371559&width=300" alt="Bunny Keychain" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Bunny Keychain</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100560606</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100560606" aria-label="Copy review link for Bunny Keychain">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="panda figurine">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_07_33_08PM.png?v=1777385130&width=300" alt="Panda figurine" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Panda Figurine</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100626142</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100626142" aria-label="Copy review link for Panda figurine">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="hoodie pen pot">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Apr_28_2026_04_40_42_PM.png?v=1777374657&width=300" alt="Hoodie pen pot" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Hoodie Pen Pot</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100691678</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100691678" aria-label="Copy review link for Hoodie pen pot">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="bird ocarina">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_May_3_2026_08_15_35_PM.png?v=1777819604&width=300" alt="bird Ocarina" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Bird Ocarina</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100724446</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100724446" aria-label="Copy review link for bird Ocarina">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="tulip single flower">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_May_2_2026_02_50_27_PM.png?v=1777713732&width=300" alt="Tulip single Flower" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Tulip Single Flower</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100757214</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100757214" aria-label="Copy review link for Tulip single Flower">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="infinity cube">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_45_24PM.png?v=1777378631&width=300" alt="infinity Cube" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Infinity Cube</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100888286</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173100888286" aria-label="Copy review link for infinity Cube">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="orca">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_55PM.png?v=1777385918&width=300" alt="Orca" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Orca</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101150430</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101150430" aria-label="Copy review link for Orca">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="articulated octopus">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_9173101183198_3.jpg?v=1776050908&width=300" alt="Articulated Octopus" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Articulated Octopus</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101183198</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101183198" aria-label="Copy review link for Articulated Octopus">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="tree articulated legs">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Apr_28_2026_07_22_45_PM.png?v=1777384378&width=300" alt="Tree articulated legs" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Tree Articulated Legs</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101379806</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101379806" aria-label="Copy review link for Tree articulated legs">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="pumpkin articulated legs">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_42_38_PM.png?v=1777371560&width=300" alt="Pumpkin Articulated legs" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Pumpkin Articulated Legs</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101412574</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101412574" aria-label="Copy review link for Pumpkin Articulated legs">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="pineapple articulated legs">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_44_26_PM.png?v=1777371560&width=300" alt="Pineapple articulated legs" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Pineapple Articulated Legs</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101445342</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101445342" aria-label="Copy review link for Pineapple articulated legs">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="multi purpose dino box (pen holder, toothbrush holder)">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_29_54PM.png?v=1777374131&width=300" alt="Multi purpose Dino box (pen holder, toothbrush holder)" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Multi Purpose Dino Box (pen Holder, Toothbrush Holder)</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101609182</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101609182" aria-label="Copy review link for Multi purpose Dino box (pen holder, toothbrush holder)">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="kubone skull keychain">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_45_05PM.png?v=1777378631&width=300" alt="Kubone Skull Keychain" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Kubone Skull Keychain</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101707486</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101707486" aria-label="Copy review link for Kubone Skull Keychain">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="spiral connect 4">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Product_Image_Jul_9_2026_05_22_08_PM.png?v=1783598026&width=300" alt="spiral connect 4" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Spiral Connect 4</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101904094</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173101904094" aria-label="Copy review link for spiral connect 4">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="zigizigi fidget">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_07_12_13_PM.png?v=1777383841&width=300" alt="Zigizigi Fidget" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Zigizigi Fidget</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102067934</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102067934" aria-label="Copy review link for Zigizigi Fidget">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="t-rex skeleton">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_09_45PM.png?v=1777374131&width=300" alt="T-rex skeleton" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">T-rex Skeleton</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102231774</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102231774" aria-label="Copy review link for T-rex skeleton">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="personalized number plate keychain">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Jun_5_2026_04_34_44_PM.png?v=1780657554&width=300" alt="Personalized Number plate keychain" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Personalized Number Plate Keychain</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102297310</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102297310" aria-label="Copy review link for Personalized Number plate keychain">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="tetris balance game">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_07_11_33_PM.png?v=1777383841&width=300" alt="Tetris Balance game" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Tetris Balance Game</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102592222</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102592222" aria-label="Copy review link for Tetris Balance game">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="card game box">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/1dd1b3fd-5c47-4966-8680-8dcf2c377be8.jpg?v=1776001553&width=300" alt="card game box" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Card Game Box</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102657758</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9173102657758" aria-label="Copy review link for card game box">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="single key keyboard clicker">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_03_47_28PM.png?v=1777374131&width=300" alt="Single Key keyboard clicker" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Single Key Keyboard Clicker</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193531539678</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193531539678" aria-label="Copy review link for Single Key keyboard clicker">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="cat cable clip">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/white-cat-figurine-cleaned-up.png?v=1777898401&width=300" alt="cat cable clip" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Cat Cable Clip</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193534193886</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193534193886" aria-label="Copy review link for cat cable clip">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="butterfly bookmark">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_06_00_00_PM.png?v=1777379862&width=300" alt="Butterfly Bookmark" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Butterfly Bookmark</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193588621534</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193588621534" aria-label="Copy review link for Butterfly Bookmark">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="cat bookmark">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_06_00_13_PM.png?v=1777386040&width=300" alt="Cat Bookmark" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Cat Bookmark</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193591472350</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193591472350" aria-label="Copy review link for Cat Bookmark">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="dog bookmark">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_06_00_07_PM.png?v=1777386010&width=300" alt="Dog Bookmark" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Dog Bookmark</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193591636190</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193591636190" aria-label="Copy review link for Dog Bookmark">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="monstera keychain">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_05_28_50PM.png?v=1777377647&width=300" alt="Monstera Keychain" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Monstera Keychain</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193607069918</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9193607069918" aria-label="Copy review link for Monstera Keychain">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="monstera coaster set">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr30_2026_11_46_22PM.png?v=1777573041&width=300" alt="Monstera coaster set" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Monstera Coaster Set</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9196727173342</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9196727173342" aria-label="Copy review link for Monstera coaster set">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="night dragon">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Gemini_Generated_Image_7skqxm7skqxm7skq.png?v=1777609447&width=300" alt="Night Dragon" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Night Dragon</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9197213090014</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9197213090014" aria-label="Copy review link for Night Dragon">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="decorative vases">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_May_2_2026_01_41_22_PM.png?v=1777711643&width=300" alt="Decorative Vases" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Decorative Vases</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9197932839134</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9197932839134" aria-label="Copy review link for Decorative Vases">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="cactus headphone stand">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productMay14_2026_03_08_21PM.png?v=1778751538&width=300" alt="Cactus Headphone Stand" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Cactus Headphone Stand</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9215137579230</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9215137579230" aria-label="Copy review link for Cactus Headphone Stand">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="120mm (5&quot;) aquarium fan">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productMay17_2026_06_46_06PM.png?v=1779024007&width=300" alt="120mm (5&quot;) Aquarium fan" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">120mm (5&quot;) Aquarium Fan</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9220599677150</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9220599677150" aria-label="Copy review link for 120mm (5&quot;) Aquarium fan">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="sweeping sign - nameplate">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_May_26_2026_02_05_04_PM.png?v=1779784608&width=300" alt="Sweeping Sign - NamePlate" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Sweeping Sign - NamePlate</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9228430606558</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9228430606558" aria-label="Copy review link for Sweeping Sign - NamePlate">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="illuminated sign board">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_May_26_2026_02_06_09_PM.png?v=1779784609&width=300" alt="Illuminated sign board" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Illuminated Sign Board</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9228440699102</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9228440699102" aria-label="Copy review link for Illuminated sign board">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="aquarium feeding &amp; plant ring - 20cm">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productJun11_2026_07_38_33PM.png?v=1781187288&width=300" alt="Aquarium Feeding &amp; Plant Ring - 20cm" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Aquarium Feeding &amp; Plant Ring - 20cm</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9238688202974</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9238688202974" aria-label="Copy review link for Aquarium Feeding &amp; Plant Ring - 20cm">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="aquarium cave">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPTImageJun11_2026_08_26_45PM.png?v=1781190265&width=300" alt="Aquarium cave" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Aquarium Cave</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9238699245790</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9238699245790" aria-label="Copy review link for Aquarium cave">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="custom name keyring">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPTImageJun27_2026_09_45_16PM.png?v=1782650683&width=300" alt="Custom Name Keyring" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Custom Name Keyring</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9253401624798</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9253401624798" aria-label="Copy review link for Custom Name Keyring">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="die-cast car garage key hanger">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/car1.png?v=1782919131&width=300" alt="Die-cast car Garage key hanger" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">Die-cast Car Garage Key Hanger</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9258215243998</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9258215243998" aria-label="Copy review link for Die-cast car Garage key hanger">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+        <li class="card" data-title="wasd mechanical keycap keychain">
+          <img class="card__img" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productJul9_2026_10_53_40PM.png?v=1783618841&width=300" alt="WASD Mechanical Keycap Keychain" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">WASD Mechanical Keycap Keychain</p>
+            <code class="card__link">https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9264816849118</code>
+            <button class="copy" type="button" data-link="https://judge.me/product_reviews/f101c8b2-8f4d-4a3a-9acb-d51832084fe8/new?id=9264816849118" aria-label="Copy review link for WASD Mechanical Keycap Keychain">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>
+    </ul>
+    <p class="empty-state" id="emptyState">No products match "<span id="emptyStateQuery"></span>".</p>
+  </div>
+
+  <script>
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    const prefixInput = document.getElementById('prefix');
+    document.querySelectorAll('.copy').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const link = btn.getAttribute('data-link');
+        const prefix = prefixInput.value.trim();
+        const text = prefix ? prefix + ' ' + link : link;
+        try { await navigator.clipboard.writeText(text); } catch (e) { fallbackCopy(text); }
+        const label = btn.querySelector('.copy__label');
+        const original = label.textContent;
+        label.textContent = 'Copied';
+        btn.classList.add('is-copied');
+        setTimeout(() => { label.textContent = original; btn.classList.remove('is-copied'); }, 1400);
+      });
+    });
+    const searchInput = document.getElementById('search');
+    const grid = document.getElementById('grid');
+    const cardEls = Array.from(grid.querySelectorAll('.card'));
+    const emptyState = document.getElementById('emptyState');
+    const emptyStateQuery = document.getElementById('emptyStateQuery');
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cardEls.forEach(card => {
+        const match = !q || card.getAttribute('data-title').includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+      const showEmpty = q && visibleCount === 0;
+      emptyState.classList.toggle('is-visible', showEmpty);
+      grid.style.display = showEmpty ? 'none' : '';
+      if (showEmpty) emptyStateQuery.textContent = searchInput.value.trim();
+    });
+  </script>
+</body>
+</html>

@@ -12,6 +12,7 @@ const SHOPIFY_DOMAIN = 'shop.layerweaver.com';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '7f0eafeb115e99a4a917e044a1fb4125';
 let JUDGEME_TOKEN = process.env.JUDGEME_API_TOKEN || '';
 const JUDGEME_SHOP = 'ntpjuk-fp.myshopify.com';
+const JUDGEME_REVIEW_UUID = 'f101c8b2-8f4d-4a3a-9acb-d51832084fe8';
 const SITE_URL = 'https://www.layerweaver.com';
 const BUILD_VER = Date.now();
 
@@ -1284,6 +1285,180 @@ function generateAccountPage() {
 </html>`;
 }
 
+// ── Internal team tool: Judge.me "write a review" links ───────────────────────
+// depth from root: 2  →  base = '../../'
+// Not linked from any nav/sitemap - reachable only via direct URL.
+
+function generateTeamReviewLinksPage(products) {
+  const base = '../../';
+  const storeLink = `https://judge.me/product_reviews/${JUDGEME_REVIEW_UUID}/new?store-review-only=true&source=shareable-link`;
+
+  const cards = products.map(p => {
+    const numId = getNumericId(p.id);
+    const link = `https://judge.me/product_reviews/${JUDGEME_REVIEW_UUID}/new?id=${numId}`;
+    const img = p.images.edges[0]?.node.url ? p.images.edges[0].node.url + '&width=300' : '';
+    return `
+        <li class="card" data-title="${escAttr(p.title.toLowerCase())}">
+          <img class="card__img" src="${img}" alt="${escAttr(p.title)}" loading="lazy">
+          <div class="card__body">
+            <p class="card__title">${escAttr(toTitleCase(p.title))}</p>
+            <code class="card__link">${escAttr(link)}</code>
+            <button class="copy" type="button" data-link="${escAttr(link)}" aria-label="Copy review link for ${escAttr(p.title)}">
+              <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="copy__label">Copy link</span>
+            </button>
+          </div>
+        </li>`;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge.me Review Links – LayerWeaver Team</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="${base}images/spider-fevicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #1c1726; --paper: #faf9fc; --paper-raised: #ffffff;
+        --primary: #A083D5; --primary-ink: #5c3fa0; --accent: #EFCF20; --accent-ink: #8a7300;
+        --line: #e7e2f0; --muted: #756f87; --focus: #5c3fa0;
+        --shadow: 0 1px 2px rgba(28,23,38,0.04), 0 8px 24px rgba(28,23,38,0.06);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --ink: #f2eef9; --paper: #16121f; --paper-raised: #1f1a2b; --primary: #b39ce0; --primary-ink: #d9cdf0; --accent: #f0d84a; --accent-ink: #f0d84a; --line: #2f2941; --muted: #9992ac; --focus: #d9cdf0; --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4); }
+      }
+      :root[data-theme="dark"] { --ink: #f2eef9; --paper: #16121f; --paper-raised: #1f1a2b; --primary: #b39ce0; --primary-ink: #d9cdf0; --accent: #f0d84a; --accent-ink: #f0d84a; --line: #2f2941; --muted: #9992ac; --focus: #d9cdf0; --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4); }
+      :root[data-theme="light"] { --ink: #1c1726; --paper: #faf9fc; --paper-raised: #ffffff; --primary: #A083D5; --primary-ink: #5c3fa0; --accent: #EFCF20; --accent-ink: #8a7300; --line: #e7e2f0; --muted: #756f87; --focus: #5c3fa0; --shadow: 0 1px 2px rgba(28,23,38,0.04), 0 8px 24px rgba(28,23,38,0.06); }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Open Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 48px 28px 96px; }
+      .masthead { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+      .masthead__logo { width: 34px; height: 34px; flex-shrink: 0; }
+      .masthead h1 { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700; font-size: clamp(1.4rem, 2.4vw, 1.9rem); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+      .masthead__eyebrow { display: block; font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary-ink); margin-bottom: 2px; }
+      .subhead { color: var(--muted); font-size: 0.95rem; max-width: 60ch; margin: 14px 0 28px; line-height: 1.6; }
+      .toolbar { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; margin-bottom: 28px; }
+      .field { display: flex; flex-direction: column; gap: 6px; }
+      .field__label { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+      .field input { font-family: 'Open Sans', sans-serif; font-size: 0.88rem; color: var(--ink); background: var(--paper-raised); border: 1px solid var(--line); border-radius: 10px; padding: 10px 13px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+      .field input::placeholder { color: var(--muted); opacity: 0.7; }
+      .field input:focus-visible { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent); }
+      .empty-state { display: none; color: var(--muted); font-size: 0.9rem; padding: 40px 0; text-align: center; }
+      .empty-state.is-visible { display: block; }
+      @media (max-width: 620px) { .toolbar { grid-template-columns: 1fr; } }
+      .featured { display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 20px; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--paper-raised)) 0%, color-mix(in srgb, var(--primary) 10%, var(--paper-raised)) 100%); border: 1.5px solid var(--accent); border-radius: 14px; padding: 18px 22px; margin-bottom: 40px; box-shadow: var(--shadow); }
+      .featured__icon { width: 96px; height: 96px; border-radius: 10px; background: var(--paper-raised); display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); }
+      .featured__icon img { width: 60%; height: 60%; }
+      .featured__eyebrow { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 4px; }
+      .featured__title { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700; font-size: 1.15rem; margin: 0 0 8px; }
+      .featured code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.72rem; color: var(--muted); display: block; overflow-x: auto; white-space: nowrap; max-width: 100%; }
+      .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+      .card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); }
+      .card__img { width: 100%; height: 148px; object-fit: cover; display: block; background: var(--line); }
+      .card__body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+      .card__title { font-family: 'Montserrat', system-ui, sans-serif; font-weight: 600; font-size: 0.88rem; line-height: 1.35; margin: 0; text-wrap: balance; }
+      .card__link { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.66rem; color: var(--muted); background: var(--paper); border: 1px solid var(--line); padding: 6px 8px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+      .copy { margin-top: auto; display: inline-flex; align-items: center; justify-content: center; gap: 7px; background: var(--primary); color: #fff; border: none; border-radius: 50px; padding: 9px 14px; font-family: 'Open Sans', sans-serif; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+      .copy:hover { background: var(--primary-ink); }
+      .copy:active { transform: scale(0.97); }
+      .copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+      .copy__icon { width: 15px; height: 15px; }
+      .copy.is-copied { background: #3f9142; }
+      @media (prefers-reduced-motion: reduce) { .copy { transition: none; } }
+      @media (max-width: 560px) { .featured { grid-template-columns: 64px 1fr; } .featured__icon { width: 64px; height: 64px; } .featured button.copy { grid-column: 1 / -1; } }
+    </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <img class="masthead__logo" src="${base}images/spider-fevicon.svg" alt="">
+      <div>
+        <span class="masthead__eyebrow">LayerWeaver · Internal tool</span>
+        <h1>Judge.me review links</h1>
+      </div>
+    </div>
+    <p class="subhead">One shareable "write a review" link per product, plus one for an overall store rating. Copy a link and send it to a customer after their order — no Judge.me login required on their end.</p>
+
+    <div class="toolbar">
+      <div class="field">
+        <label class="field__label" for="prefix">Message prefix (optional)</label>
+        <input type="text" id="prefix" placeholder="e.g. Hi! Thanks for your order — mind leaving a quick review?">
+      </div>
+      <div class="field">
+        <label class="field__label" for="search">Search products</label>
+        <input type="text" id="search" placeholder="Search by product name…">
+      </div>
+    </div>
+
+    <div class="featured">
+      <div class="featured__icon"><img src="${base}images/spider-fevicon.svg" alt=""></div>
+      <div>
+        <p class="featured__eyebrow">Store-wide</p>
+        <p class="featured__title">Overall store rating</p>
+        <code>${escAttr(storeLink)}</code>
+      </div>
+      <button class="copy" type="button" data-link="${escAttr(storeLink)}" aria-label="Copy store rating link">
+        <svg viewBox="0 0 20 20" class="copy__icon" aria-hidden="true"><path d="M7 2.5h7A1.5 1.5 0 0 1 15.5 4v9M4 6.5h7A1.5 1.5 0 0 1 12.5 8v9A1.5 1.5 0 0 1 11 18.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="copy__label">Copy link</span>
+      </button>
+    </div>
+
+    <ul class="grid" id="grid">${cards}
+    </ul>
+    <p class="empty-state" id="emptyState">No products match "<span id="emptyStateQuery"></span>".</p>
+  </div>
+
+  <script>
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    const prefixInput = document.getElementById('prefix');
+    document.querySelectorAll('.copy').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const link = btn.getAttribute('data-link');
+        const prefix = prefixInput.value.trim();
+        const text = prefix ? prefix + ' ' + link : link;
+        try { await navigator.clipboard.writeText(text); } catch (e) { fallbackCopy(text); }
+        const label = btn.querySelector('.copy__label');
+        const original = label.textContent;
+        label.textContent = 'Copied';
+        btn.classList.add('is-copied');
+        setTimeout(() => { label.textContent = original; btn.classList.remove('is-copied'); }, 1400);
+      });
+    });
+    const searchInput = document.getElementById('search');
+    const grid = document.getElementById('grid');
+    const cardEls = Array.from(grid.querySelectorAll('.card'));
+    const emptyState = document.getElementById('emptyState');
+    const emptyStateQuery = document.getElementById('emptyStateQuery');
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+      cardEls.forEach(card => {
+        const match = !q || card.getAttribute('data-title').includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+      const showEmpty = q && visibleCount === 0;
+      emptyState.classList.toggle('is-visible', showEmpty);
+      grid.style.display = showEmpty ? 'none' : '';
+      if (showEmpty) emptyStateQuery.textContent = searchInput.value.trim();
+    });
+  </script>
+</body>
+</html>`;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -1321,6 +1496,11 @@ async function main() {
   fs.mkdirSync(accountDir, { recursive: true });
   fs.writeFileSync(path.join(accountDir, 'index.html'), generateAccountPage());
   console.log('Generated shop/account/index.html');
+
+  const teamReviewDir = path.join(__dirname, '..', 'team', 'review');
+  fs.mkdirSync(teamReviewDir, { recursive: true });
+  fs.writeFileSync(path.join(teamReviewDir, 'index.html'), generateTeamReviewLinksPage(products));
+  console.log('Generated team/review/index.html');
 
   for (const collection of collections) {
     const collectionDir = path.join(collectionsDir, collection.handle);
