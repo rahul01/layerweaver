@@ -20,6 +20,9 @@ Thumbs.db
 .classpath
 .factorypath
 
+# Environment variables
+.env
+
 # Build and temporary files
 node_modules/
 dist/

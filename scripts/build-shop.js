@@ -8,6 +8,19 @@
 const fs = require('fs');
 const path = require('path');
 
+// Load .env (if present) without adding a dotenv dependency.
+const envPath = path.join(__dirname, '..', '.env');
+if (fs.existsSync(envPath)) {
+  for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+    if (!match) continue;
+    const key = match[1];
+    let value = (match[2] || '').trim();
+    if (/^".*"$/.test(value) || /^'.*'$/.test(value)) value = value.slice(1, -1);
+    if (!(key in process.env)) process.env[key] = value;
+  }
+}
+
 const SHOPIFY_DOMAIN = 'shop.layerweaver.com';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '7f0eafeb115e99a4a917e044a1fb4125';
 let JUDGEME_TOKEN = process.env.JUDGEME_API_TOKEN || '';
