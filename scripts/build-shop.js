@@ -454,6 +454,13 @@ function toTitleCase(str) {
   ).join(' ');
 }
 
+// Combines product title with a per-image descriptor (variant name or Shopify
+// altText) so images aren't left with bare, non-descriptive alt text like "Red".
+function productImageAlt(product, descriptor) {
+  const title = toTitleCase(product.title);
+  return descriptor && descriptor !== product.title ? `${title} - ${descriptor}` : title;
+}
+
 function footerHtml(base) {
   return `
     <footer>
@@ -546,7 +553,7 @@ function productCardHtml(product, productsBase, reviewData = null) {
           <a href="${productsBase}${product.handle}/" class="product-card-link">
               <div class="product-image-wrap">
                   ${image
-                    ? `<img src="${image.url}" alt="${escAttr(image.altText || product.title)}" loading="lazy">`
+                    ? `<img src="${image.url}" alt="${escAttr(productImageAlt(product, image.altText))}" loading="lazy">`
                     : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                   }
                   ${!available ? '<span class="sold-out-badge">Sold Out</span>' : ''}
@@ -793,7 +800,7 @@ function generateProductPage(product, collection, reviewData = null) {
 
   const imageThumbnails = hasVariantImages
     ? variantsWithImages.map(v => `
-        <img src="${v.image.url}" alt="${escAttr(v.title)}"
+        <img src="${v.image.url}" alt="${escAttr(productImageAlt(product, v.title))}"
              class="thumbnail${v.id === firstAvailable.id ? ' active' : ''}"
              data-variant-gid="${v.id}"
              data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
@@ -801,7 +808,7 @@ function generateProductPage(product, collection, reviewData = null) {
              loading="lazy">`).join('')
     : images.length > 1
       ? images.map((img, i) => `
-          <img src="${img.url}" alt="${escAttr(img.altText || product.title)}"
+          <img src="${img.url}" alt="${escAttr(productImageAlt(product, img.altText))}"
                class="thumbnail${i === 0 ? ' active' : ''}" loading="lazy">`).join('')
       : '';
 
@@ -865,7 +872,7 @@ function generateProductPage(product, collection, reviewData = null) {
                 <div class="product-images">
                     <div class="main-image-wrap">
                         ${mainImage
-                          ? `<img id="main-image" src="${mainImage.url}" alt="${escAttr(mainImage.altText || product.title)}">`
+                          ? `<img id="main-image" src="${mainImage.url}" alt="${escAttr(productImageAlt(product, mainImage.altText))}">`
                           : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                         }
                         <video id="main-video" style="display:none" autoplay muted loop playsinline controls></video>
