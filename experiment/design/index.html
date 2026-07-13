@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Custom Name Keyring - Live Preview Prototype</title>
+<style>
+  html, body { height: 100%; }
+  body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
+  #controls { width: 300px; flex-shrink: 0; padding: 20px; box-sizing: border-box; border-right: 1px solid #ddd; overflow-y: auto; }
+  #controls h2 { margin-top: 0; }
+  #controls h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #999; margin: 20px 0 6px; }
+  #controls label { display: block; margin-top: 12px; font-size: 13px; color: #555; }
+  #controls input[type=text], #controls select { width: 100%; padding: 8px; font-size: 15px; box-sizing: border-box; }
+  #controls input[type=range] { width: 100%; }
+  #status { margin-top: 16px; font-size: 13px; color: #888; white-space: pre-wrap; }
+  #viewer { flex: 1; position: relative; }
+  #viewer canvas { display: block; }
+  .downloads { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .downloads a { display: inline-block; padding: 8px 14px; background: #A083D5; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; text-align: center; }
+  .downloads a.download-text { background: #6b5591; }
+  .downloads a.disabled { pointer-events: none; opacity: .4; }
+  .spinner { position:absolute; top:10px; left:10px; font-size:13px; color:#A083D5; }
+  .grid-legend { position:absolute; bottom:10px; left:10px; font-size:12px; color:#888; background:rgba(255,255,255,.8); padding:3px 8px; border-radius:4px; }
+  .color-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .color-swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+  .color-swatch.active { border-color: #333; }
+  .color-block { margin-top: 10px; }
+  .color-block-label { font-size: 12px; color: #777; margin-bottom: 4px; }
+  .hint { font-size: 11px; color: #aaa; margin-top: 4px; }
+  .range-row { display: flex; gap: 10px; }
+  .range-row > div { flex: 1; }
+  .generate-btn { width: 100%; margin-top: 20px; padding: 12px; font-size: 15px; font-weight: 600; background: #6b5591; color: white; border: none; border-radius: 6px; cursor: pointer; }
+  .generate-btn:hover { background: #5a4779; }
+  .generate-btn:disabled { opacity: .5; cursor: default; }
+
+  /* Phones/narrow viewports: stack viewer above controls instead of a fixed
+     300px sidebar eating most of the screen width. */
+  @media (max-width: 760px) {
+    body { flex-direction: column; height: 100dvh; }
+    #controls { width: 100%; max-height: 45vh; border-right: none; border-top: 1px solid #ddd; order: 2; padding: 16px; }
+    #viewer { flex: 1; min-height: 40vh; order: 1; }
+    .range-row { flex-direction: column; gap: 0; }
+    #controls input[type=text], #controls select { font-size: 16px; } /* avoid iOS auto-zoom on focus */
+  }
+</style>
+</head>
+<body>
+<div id="controls">
+  <h2>Name Keyring Customizer</h2>
+
+  <h3>Text</h3>
+  <label for="line1">Name (max 10 characters)</label>
+  <input type="text" id="line1" maxlength="10" value="Rahul">
+
+  <label for="font">Font</label>
+  <select id="font">
+    <option value="Liberation Sans:style=Bold">Sans (Bold)</option>
+    <option value="Liberation Sans">Sans</option>
+    <option value="Liberation Serif:style=Bold">Serif (Bold)</option>
+    <option value="Liberation Serif">Serif</option>
+    <option value="Liberation Mono:style=Bold">Mono (Bold)</option>
+    <option value="Pacifico" selected>Script (Pacifico)</option>
+  </select>
+
+  <label for="textsize">Text size (mm): <span id="textsize-val">9</span></label>
+  <input type="range" id="textsize" min="5" max="14" step="0.5" value="9">
+
+  <h3>Base plate</h3>
+  <label for="extension">Extension around text: <span id="extension-val">1.2</span>mm</label>
+  <input type="range" id="extension" min="0.6" max="3" step="0.2" value="1.2">
+  <p class="hint">The plate follows the outline of the text itself, extended outward by this margin - not a fixed rectangle/circle. Base thickness (2mm) and text height (1mm) are fixed.</p>
+
+  <h3>Keyring hole</h3>
+  <p class="hint">Position relative to the default (left edge, vertically centered). Matches the offset convention used in popular MakerWorld parametric keychains. Hole size is fixed at 3mm.</p>
+  <div class="range-row">
+    <div>
+      <label for="offsetx">X offset: <span id="offsetx-val">0</span>mm</label>
+      <input type="range" id="offsetx" min="-20" max="20" step="1" value="0">
+    </div>
+    <div>
+      <label for="offsety">Y offset: <span id="offsety-val">0</span>mm</label>
+      <input type="range" id="offsety" min="-20" max="20" step="1" value="0">
+    </div>
+  </div>
+
+  <h3>Filament colors</h3>
+  <p class="hint">Base and text are separate solids so each can be assigned its own AMS filament color, like the reference model.</p>
+  <div class="color-block">
+    <div class="color-block-label">Base plate</div>
+    <div class="color-row" id="baseColors">
+      <div class="color-swatch active" data-color="#A083D5" style="background:#A083D5"></div>
+      <div class="color-swatch" data-color="#F5F1FA" style="background:#F5F1FA"></div>
+      <div class="color-swatch" data-color="#222222" style="background:#222222"></div>
+      <div class="color-swatch" data-color="#E0555A" style="background:#E0555A"></div>
+      <div class="color-swatch" data-color="#4C8BF5" style="background:#4C8BF5"></div>
+      <div class="color-swatch" data-color="#F2C94C" style="background:#F2C94C"></div>
+    </div>
+  </div>
+  <div class="color-block">
+    <div class="color-block-label">Text</div>
+    <div class="color-row" id="textColors">
+      <div class="color-swatch" data-color="#A083D5" style="background:#A083D5"></div>
+      <div class="color-swatch active" data-color="#F5F1FA" style="background:#F5F1FA"></div>
+      <div class="color-swatch" data-color="#222222" style="background:#222222"></div>
+      <div class="color-swatch" data-color="#E0555A" style="background:#E0555A"></div>
+      <div class="color-swatch" data-color="#4C8BF5" style="background:#4C8BF5"></div>
+      <div class="color-swatch" data-color="#F2C94C" style="background:#F2C94C"></div>
+    </div>
+  </div>
+
+  <button id="generateBtn" class="generate-btn">Generate Model</button>
+  <div id="status">Loading OpenSCAD engine…</div>
+  <div class="downloads">
+    <a id="downloadBase" class="disabled" download="keyring-base.stl">Download Base STL</a>
+    <a id="downloadText" class="disabled" download="keyring-text.stl">Download Text STL</a>
+  </div>
+</div>
+<div id="viewer">
+  <div class="spinner" id="spinner"></div>
+  <div class="grid-legend">Grid: 10mm squares</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import OpenSCAD from './openscad-lib/openscad.js';
+import { addFonts } from './openscad-lib/openscad.fonts.js';
+
+const statusEl = document.getElementById('status');
+const line1Input = document.getElementById('line1');
+const fontSelect = document.getElementById('font');
+const textsizeInput = document.getElementById('textsize');
+const textsizeVal = document.getElementById('textsize-val');
+const extensionInput = document.getElementById('extension');
+const extensionVal = document.getElementById('extension-val');
+const offsetxInput = document.getElementById('offsetx');
+const offsetxVal = document.getElementById('offsetx-val');
+const offsetyInput = document.getElementById('offsety');
+const offsetyVal = document.getElementById('offsety-val');
+const baseColorsEl = document.getElementById('baseColors');
+const textColorsEl = document.getElementById('textColors');
+const downloadBaseLink = document.getElementById('downloadBase');
+const downloadTextLink = document.getElementById('downloadText');
+const spinner = document.getElementById('spinner');
+const generateBtn = document.getElementById('generateBtn');
+
+let currentBaseColor = 0xA083D5;
+let currentTextColor = 0xF5F1FA;
+
+function log(msg) { statusEl.textContent = msg; console.log(msg); }
+
+// ── three.js scene setup ──────────────────────────────────────────────
+const viewer = document.getElementById('viewer');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x3a3a3a);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+camera.position.set(0, -60, 60);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+viewer.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+// Studio-style lighting: soft ambient fill plus a strong key light from the
+// upper right to produce the glossy specular highlight seen on plastic
+// product renders (like the MakerWorld preview this is modeled after).
+scene.add(new THREE.HemisphereLight(0xffffff, 0x2a2a2a, 1.2));
+const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
+keyLight.position.set(40, 70, 55);
+scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xffffff, 0.8);
+fillLight.position.set(-40, -20, 30);
+scene.add(fillLight);
+
+// Grid sits under the model as a scale reference, 10mm per square (matches
+// a print bed grid), sized and repositioned to fit whatever is currently loaded.
+let gridHelper = null;
+function updateGrid(box) {
+  if (gridHelper) scene.remove(gridHelper);
+  const footprint = Math.max(box.max.x - box.min.x, box.max.z - box.min.z);
+  const size = Math.max(80, Math.ceil((footprint * 1.8) / 10) * 10);
+  gridHelper = new THREE.GridHelper(size, size / 10, 0x6b5591, 0x9a8bb5);
+  gridHelper.material.opacity = 0.85;
+  gridHelper.material.transparent = true;
+  const center = box.getCenter(new THREE.Vector3());
+  gridHelper.position.set(center.x, box.min.y - 0.05, center.z);
+  scene.add(gridHelper);
+}
+
+function resize() {
+  const w = viewer.clientWidth, h = viewer.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+window.addEventListener('resize', resize);
+resize();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// Glossy injection-plastic look (clearcoat over a semi-matte base), matching
+// the reference MakerWorld-style product render rather than a flat matte preview.
+function plasticMaterial(color) {
+  return new THREE.MeshPhysicalMaterial({
+    color,
+    metalness: 0.05,
+    roughness: 0.35,
+    clearcoat: 0.6,
+    clearcoatRoughness: 0.15,
+  });
+}
+
+let baseMesh = null;
+let textMesh = null;
+function showStls(baseBuffer, textBuffer) {
+  const loader = new STLLoader();
+
+  if (baseMesh) scene.remove(baseMesh);
+  if (textMesh) scene.remove(textMesh);
+
+  const baseGeom = loader.parse(baseBuffer);
+  baseGeom.computeVertexNormals();
+  baseMesh = new THREE.Mesh(baseGeom, plasticMaterial(currentBaseColor));
+
+  const textGeom = loader.parse(textBuffer);
+  textGeom.computeVertexNormals();
+  textMesh = new THREE.Mesh(textGeom, plasticMaterial(currentTextColor));
+
+  // Center both meshes together using the base's bounding box, so text stays aligned to it.
+  baseGeom.computeBoundingBox();
+  const offset = baseGeom.boundingBox.getCenter(new THREE.Vector3()).negate();
+  baseMesh.position.copy(offset);
+  textMesh.position.copy(offset);
+
+  baseMesh.rotation.x = -Math.PI / 2; // OpenSCAD Z-up -> three.js Y-up
+  textMesh.rotation.x = -Math.PI / 2;
+  scene.add(baseMesh);
+  scene.add(textMesh);
+
+  const box = new THREE.Box3().setFromObject(baseMesh).union(new THREE.Box3().setFromObject(textMesh));
+  updateGrid(box);
+  const size = box.getSize(new THREE.Vector3()).length();
+  const center = box.getCenter(new THREE.Vector3());
+  camera.position.copy(center).add(new THREE.Vector3(0, size * 0.75, size * 0.9));
+  controls.target.copy(center);
+  controls.update();
+}
+
+function recolor() {
+  if (baseMesh) baseMesh.material.color.setHex(currentBaseColor);
+  if (textMesh) textMesh.material.color.setHex(currentTextColor);
+}
+
+// ── OpenSCAD engine init ──────────────────────────────────────────────
+// A fresh instance is created per render: this WASM build's global/module
+// state does not reliably survive repeated callMain() invocations on the
+// same instance (observed as an opaque numeric exception on the 2nd call).
+let pacificoBytes = null;
+async function newEngine() {
+  const instance = await OpenSCAD({ noInitialRun: true });
+  addFonts(instance);
+  if (!pacificoBytes) {
+    pacificoBytes = new Uint8Array(await (await fetch('./openscad-lib/Pacifico-Regular.ttf')).arrayBuffer());
+  }
+  instance.FS.writeFile('/fonts/Pacifico-Regular.ttf', pacificoBytes);
+  return instance;
+}
+
+function scadEscape(str) {
+  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+// Fixed dimensions (not user-adjustable): hole opening diameter 3mm with a
+// 1.5mm wall, base plate thickness 2mm, raised text height 1mm, and a fillet
+// radius applied to concave corners where the hook meets the plate (and
+// wherever the text outline itself has inner corners).
+const HOLE_SIZE = 3;
+const HOLE_WALL = 1.5;
+const BASE_THICKNESS = 2;
+const TEXT_HEIGHT = 1;
+const FILLET_RADIUS = 0;
+
+// Shared geometry (text layout, hook position) computed identically for both
+// the base and text renders so the two solids line up when combined. The
+// base plate is not a fixed rectangle/circle - it's the offset (outward
+// margin) of the text glyphs themselves, so it follows the text's outline.
+function scadGeometryHeader(params) {
+  const { lines, font, textSize, extension, offsetX, offsetY, holeSize, holeWall, filletRadius } = params;
+  const linesArr = '[' + lines.map(l => `"${scadEscape(l)}"`).join(', ') + ']';
+  const holeRInner = holeSize / 2;
+  const holeROuter = holeRInner + holeWall;
+
+  return `
+$fn = 48;
+lines = ${linesArr};
+font = "${font}";
+text_size = ${textSize};
+extension = ${extension};
+offset_x = ${offsetX};
+offset_y = ${offsetY};
+hole_r_outer = ${holeROuter};
+hole_r_inner = ${holeRInner};
+fillet_r = ${filletRadius};
+
+line_h = text_size * 1.3;
+max_len = max([for (l = lines) len(l) == 0 ? 1 : len(l)]);
+content_w = max(26, max_len * text_size * 0.62);
+content_h = max(text_size * 1.15, len(lines) * line_h);
+
+module engraving() {
+  n = len(lines);
+  for (i = [0 : n - 1]) {
+    y_off = (n - 1) / 2 * line_h - i * line_h;
+    translate([content_w/2, content_h/2 + y_off])
+      text(lines[i], size = text_size, font = font, halign = "center", valign = "center");
+  }
+}
+
+// The plate outline: the text glyphs' union, grown outward by "extension" mm.
+// A cursive/connected font (e.g. the default Pacifico) keeps this as one
+// contiguous shape; a font with disconnected letters can leave gaps unless
+// extension is large enough to bridge them - that's inherent to this style.
+module base_outline() {
+  offset(delta = extension) engraving();
+}
+
+// Default hook position: left edge, vertically centered on the text block -
+// tucked in close so it reads as an integrated hole rather than a dangling
+// tab (matching the reference: a small hole at the left edge of the outline,
+// not a loop poking out above the text). offset_x/offset_y nudge it from there.
+//
+// The gap has to clear the base outline (roughly "extension" mm past the
+// glyphs) by enough that the *inner* hole doesn't land inside the solid
+// plate - otherwise union() with the base just fills the hole back in,
+// while still leaving enough overlap on the *outer* ring for a solid weld.
+module ring_tab() {
+  gap = extension + hole_r_inner + 0.4;
+  pos = [-gap + offset_x, content_h/2 + offset_y];
+  translate(pos) difference() {
+    circle(r = hole_r_outer);
+    circle(r = hole_r_inner);
+  }
+}
+
+// Rounds concave (inward-facing) corners without changing the overall size -
+// e.g. the notch where the hook's neck meets the plate, or where the offset
+// outline dips inward between letters. This is a "closing" morphological
+// operation: grow by fillet_r, then shrink back by fillet_r.
+module fillet_concave(r) {
+  offset(r = -r) offset(r = r) children();
+}
+`;
+}
+
+function buildBaseScad(params) {
+  return scadGeometryHeader(params) + `
+thickness = ${params.thickness};
+linear_extrude(height = thickness)
+  fillet_concave(fillet_r)
+    union() {
+      base_outline();
+      ring_tab();
+    }
+`;
+}
+
+function buildTextScad(params) {
+  // Text sits flush on top of the base plate, embedded slightly for adhesion.
+  return scadGeometryHeader(params) + `
+thickness = ${params.thickness};
+text_height = ${params.textHeight};
+embed = min(0.4, thickness * 0.2);
+translate([0, 0, thickness - embed])
+  linear_extrude(height = text_height + embed)
+    engraving();
+`;
+}
+
+async function renderOne(code, filename) {
+  const instance = await newEngine();
+  instance.FS.writeFile('/input.scad', code);
+  instance.callMain(['/input.scad', '-o', '/' + filename]);
+  const output = instance.FS.readFile('/' + filename);
+  return output.buffer.slice(output.byteOffset, output.byteOffset + output.byteLength);
+}
+
+async function render() {
+  spinner.textContent = 'Rendering…';
+  generateBtn.disabled = true;
+  downloadBaseLink.classList.add('disabled');
+  downloadTextLink.classList.add('disabled');
+  try {
+    const lines = [line1Input.value.trim() || 'Name'];
+    const params = {
+      lines,
+      font: fontSelect.value,
+      textSize: parseFloat(textsizeInput.value),
+      extension: parseFloat(extensionInput.value),
+      thickness: BASE_THICKNESS,
+      textHeight: TEXT_HEIGHT,
+      offsetX: parseFloat(offsetxInput.value),
+      offsetY: parseFloat(offsetyInput.value),
+      holeSize: HOLE_SIZE,
+      holeWall: HOLE_WALL,
+      filletRadius: FILLET_RADIUS,
+    };
+
+    const t0 = performance.now();
+    const baseBuffer = await renderOne(buildBaseScad(params), 'base.stl');
+    const textBuffer = await renderOne(buildTextScad(params), 'text.stl');
+    const elapsed = (performance.now() - t0).toFixed(0);
+
+    showStls(baseBuffer, textBuffer);
+
+    const safeName = (lines[0] || 'name').replace(/[^a-z0-9]/gi, '_');
+    downloadBaseLink.href = URL.createObjectURL(new Blob([baseBuffer], { type: 'application/octet-stream' }));
+    downloadBaseLink.download = `keyring-${safeName}-base.stl`;
+    downloadBaseLink.classList.remove('disabled');
+    downloadTextLink.href = URL.createObjectURL(new Blob([textBuffer], { type: 'application/octet-stream' }));
+    downloadTextLink.download = `keyring-${safeName}-text.stl`;
+    downloadTextLink.classList.remove('disabled');
+
+    log(`Rendered "${lines.join(' / ')}" in ${elapsed}ms. Base: ${(baseBuffer.byteLength/1024).toFixed(1)} KB, Text: ${(textBuffer.byteLength/1024).toFixed(1)} KB`);
+  } catch (e) {
+    log('Render failed: ' + (e?.message || e) + ' | name=' + e?.name + ' errno=' + e?.errno + ' code=' + e?.code);
+    console.error(e);
+  } finally {
+    spinner.textContent = '';
+    generateBtn.disabled = false;
+  }
+}
+
+// Sliders just update their displayed value live; no auto-render. The user
+// clicks "Generate Model" when ready, since re-rendering both STLs on every
+// keystroke/drag was wasteful and made the UI feel laggy.
+generateBtn.addEventListener('click', render);
+textsizeInput.addEventListener('input', () => { textsizeVal.textContent = textsizeInput.value; });
+extensionInput.addEventListener('input', () => { extensionVal.textContent = extensionInput.value; });
+offsetxInput.addEventListener('input', () => { offsetxVal.textContent = offsetxInput.value; });
+offsetyInput.addEventListener('input', () => { offsetyVal.textContent = offsetyInput.value; });
+
+function wireColorRow(el, setColor) {
+  el.addEventListener('click', (e) => {
+    const swatch = e.target.closest('.color-swatch');
+    if (!swatch) return;
+    el.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    swatch.classList.add('active');
+    setColor(parseInt(swatch.dataset.color.slice(1), 16));
+    recolor();
+  });
+}
+wireColorRow(baseColorsEl, (c) => currentBaseColor = c);
+wireColorRow(textColorsEl, (c) => currentTextColor = c);
+
+log('Ready.');
+render();
+</script>
+</body>
+</html>
