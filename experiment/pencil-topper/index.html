@@ -116,7 +116,7 @@ hole_r = ${holeR};
 hole_len = 400;
 offset_x = ${params.offsetX};
 offset_y = ${params.offsetY};
-hole_pos = [0, content_h * 0.35 + offset_x, ${params.thickness / 2} + offset_y];
+hole_pos = [0, content_h / 2 + offset_x, ${params.thickness / 2} + offset_y];
 
 module pencil_hole() {
   translate(hole_pos)
