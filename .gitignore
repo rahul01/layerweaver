@@ -32,3 +32,12 @@ compressed/
 *.tmp
 *.temp
 *.log
+test-results/
+
+# Claude Code local config
+.claude/
+
+# Misc local artifacts
+app-release/
+app-release.apk
+Screenshot*.png
