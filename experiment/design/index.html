@@ -10,43 +10,43 @@
 <div id="controls">
   <h2>Name Keyring Customizer</h2>
 
-  <h3>Text</h3>
-  <label for="line1">Name (max 10 characters)</label>
-  <input type="text" id="line1" maxlength="10" value="Rahul">
+  <label for="line1">Name (max 15 characters)</label>
+  <input type="text" id="line1" maxlength="15" value="Rahul">
 
   <label for="font">Font</label>
   <select id="font">
-    <option value="Liberation Sans:style=Bold">Sans (Bold)</option>
-    <option value="Liberation Sans">Sans</option>
-    <option value="Liberation Serif:style=Bold">Serif (Bold)</option>
-    <option value="Liberation Serif">Serif</option>
-    <option value="Liberation Mono:style=Bold">Mono (Bold)</option>
-    <option value="Pacifico" selected>Script (Pacifico)</option>
+    <option value="Pacifico" selected>Pacifico</option>
+    <option value="Comic Neue:style=Bold">Comic Neue (Bold)</option>
+    <option value="Kalam">Kalam (Devanagari)</option>
+    <option value="Anek Bangla:style=Regular">Anek Bangla</option>
+    <option value="Anek Gujarati:style=Regular">Anek Gujarati</option>
+    <option value="Anek Gurmukhi:style=Regular">Anek Gurmukhi</option>
+    <option value="Anek Kannada:style=Regular">Anek Kannada</option>
+    <option value="Anek Malayalam:style=Regular">Anek Malayalam</option>
+    <option value="Anek Odia:style=Regular">Anek Odia</option>
+    <option value="Anek Tamil:style=Regular">Anek Tamil</option>
+    <option value="Anek Telugu:style=Regular">Anek Telugu</option>
   </select>
 
-  <label for="textsize">Text size (mm): <span id="textsize-val">9</span></label>
-  <input type="range" id="textsize" min="5" max="14" step="0.5" value="9">
+  <label for="textsize">Text size (mm)</label>
+  <input type="number" id="textsize" min="5" max="14" step="0.5" value="9">
 
-  <h3>Base plate</h3>
-  <label for="extension">Extension around text: <span id="extension-val">1.2</span>mm</label>
-  <input type="range" id="extension" min="0.6" max="3" step="0.2" value="1.2">
-  <p class="hint">The plate follows the outline of the text itself, extended outward by this margin - not a fixed rectangle/circle. Base thickness (2mm) and text height (1mm) are fixed.</p>
+  <label for="extension">Plate margin around text (mm)</label>
+  <input type="number" id="extension" min="0.6" max="3" step="0.2" value="1.8">
 
   <h3>Keyring hole</h3>
-  <p class="hint">Position relative to the default (left edge, vertically centered). Matches the offset convention used in popular MakerWorld parametric keychains. Hole size is fixed at 3mm.</p>
   <div class="range-row">
     <div>
-      <label for="offsetx">X offset: <span id="offsetx-val">0</span>mm</label>
-      <input type="range" id="offsetx" min="-20" max="20" step="1" value="0">
+      <label for="offsetx">Hole horizontal offset (mm)</label>
+      <input type="number" id="offsetx" min="-20" max="20" step="1" value="0">
     </div>
     <div>
-      <label for="offsety">Y offset: <span id="offsety-val">0</span>mm</label>
-      <input type="range" id="offsety" min="-20" max="20" step="1" value="0">
+      <label for="offsety">Hole vertical offset (mm)</label>
+      <input type="number" id="offsety" min="-20" max="20" step="1" value="0">
     </div>
   </div>
 
-  <h3>Filament colors</h3>
-  <p class="hint">Base and text are separate solids so each can be assigned its own AMS filament color, like the reference model.</p>
+  <h3>Colors</h3>
   <div class="color-block">
     <div class="color-block-label">Base plate</div>
     <div class="color-row" id="baseColors">
@@ -72,14 +72,9 @@
 
   <button id="generateBtn" class="generate-btn">Generate Model</button>
   <div id="status">Loading OpenSCAD engine…</div>
-  <div class="downloads">
-    <a id="downloadBase" class="disabled" download="keyring-base.stl">Download Base STL</a>
-    <a id="downloadText" class="disabled" download="keyring-text.stl">Download Text STL</a>
-  </div>
 </div>
 <div id="viewer">
   <div class="spinner" id="spinner"></div>
-  <div class="grid-legend">Grid: 10mm squares</div>
 </div>
 
 <script type="importmap">
@@ -90,14 +85,15 @@
   }
 }
 </script>
+<script src="../shared/vendor/sanscript.js"></script>
 <script type="module">
-import { initCustomizer } from '../shared/customizer-engine.js';
+import { initCustomizer, SHARED_FONTS, wireTransliteratingNameInput } from '../shared/customizer-engine.js';
 import { textOutlineHeader } from '../shared/scad-text-outline.js';
 
-// Fixed dimensions (not user-adjustable): hole opening diameter 3mm with a
+// Fixed dimensions (not user-adjustable): hole opening diameter 2mm with a
 // 1.5mm wall, base plate thickness 2mm, raised text height 1mm, no fillet
 // (crisp corners, matching the reference model).
-const HOLE_SIZE = 3;
+const HOLE_SIZE = 2;
 const HOLE_WALL = 1.5;
 const BASE_THICKNESS = 2;
 const TEXT_HEIGHT = 1;
@@ -115,18 +111,19 @@ hole_r_outer = ${holeROuter};
 hole_r_inner = ${holeRInner};
 offset_x = ${params.offsetX};
 offset_y = ${params.offsetY};
+hole_pos = [-(extension + hole_r_inner + 0.4) + offset_x, content_h/2 + offset_y];
 
-// The gap has to clear the base outline (roughly "extension" mm past the
-// glyphs) by enough that the *inner* hole doesn't land inside the solid
-// plate - otherwise union() with the base just fills the hole back in,
-// while still leaving enough overlap on the *outer* ring for a solid weld.
-module ring_tab() {
-  gap = extension + hole_r_inner + 0.4;
-  pos = [-gap + offset_x, content_h/2 + offset_y];
-  translate(pos) difference() {
-    circle(r = hole_r_outer);
-    circle(r = hole_r_inner);
-  }
+// Just the ring's outer disc, no hole yet - the hole gets cut later, from
+// the combined base+ring shape (see buildBaseScad). Cutting it here first
+// and unioning afterwards was the bug: wherever the base outline's own
+// shape happened to reach into the hole's footprint, that union() silently
+// filled the hole back in, since union() never re-subtracts anything.
+module ring_outer() {
+  translate(hole_pos) circle(r = hole_r_outer);
+}
+
+module hole_cutout() {
+  translate(hole_pos) circle(r = hole_r_inner);
 }
 `;
 }
@@ -136,9 +133,12 @@ function buildBaseScad(params) {
 thickness = ${params.thickness};
 linear_extrude(height = thickness)
   fillet_concave(${FILLET_RADIUS})
-    union() {
-      base_outline();
-      ring_tab();
+    difference() {
+      union() {
+        base_outline();
+        ring_outer();
+      }
+      hole_cutout();
     }
 `;
 }
@@ -158,36 +158,60 @@ translate([0, 0, thickness - embed])
 const line1Input = document.getElementById('line1');
 const fontSelect = document.getElementById('font');
 const textsizeInput = document.getElementById('textsize');
-const textsizeVal = document.getElementById('textsize-val');
 const extensionInput = document.getElementById('extension');
-const extensionVal = document.getElementById('extension-val');
 const offsetxInput = document.getElementById('offsetx');
-const offsetxVal = document.getElementById('offsetx-val');
 const offsetyInput = document.getElementById('offsety');
-const offsetyVal = document.getElementById('offsety-val');
+const baseColorsEl = document.getElementById('baseColors');
+const textColorsEl = document.getElementById('textColors');
 
-textsizeInput.addEventListener('input', () => { textsizeVal.textContent = textsizeInput.value; });
-extensionInput.addEventListener('input', () => { extensionVal.textContent = extensionInput.value; });
-offsetxInput.addEventListener('input', () => { offsetxVal.textContent = offsetxInput.value; });
-offsetyInput.addEventListener('input', () => { offsetyVal.textContent = offsetyInput.value; });
+// Type phonetically in Latin (e.g. "rahul") and it's transliterated live
+// into whichever script the selected font uses (Kalam -> Devanagari, the
+// Anek fonts -> their matching Indian script).
+const nameTransliterator = wireTransliteratingNameInput({
+  inputEl: line1Input,
+  fontSelectEl: fontSelect,
+  maxLength: 15,
+});
+
+// Generation is fully deterministic - the same parameters always produce the
+// same STL - so an order never needs to store the file itself. Instead, the
+// finalized parameters get encoded into this page's own URL after every
+// render; that URL is the "recipe" you'd save as a single line-item property
+// and reopen later (e.g. at fulfillment time) to regenerate the exact model.
+function activeColorHex(rowEl) {
+  return rowEl.querySelector('.color-swatch.active')?.dataset.color.replace('#', '') || '';
+}
+function setActiveColor(rowEl, hex) {
+  if (!hex) return;
+  const swatch = rowEl.querySelector(`.color-swatch[data-color="#${hex.toUpperCase()}"]`);
+  if (!swatch) return;
+  rowEl.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  swatch.classList.add('active');
+}
+
+const qp = new URLSearchParams(location.search);
+if (qp.has('font')) fontSelect.value = qp.get('font');
+if (qp.has('name')) nameTransliterator.setValue(qp.get('name'));
+if (qp.has('textSize')) textsizeInput.value = qp.get('textSize');
+if (qp.has('extension')) extensionInput.value = qp.get('extension');
+if (qp.has('offsetX')) offsetxInput.value = qp.get('offsetX');
+if (qp.has('offsetY')) offsetyInput.value = qp.get('offsetY');
+setActiveColor(baseColorsEl, qp.get('baseColor'));
+setActiveColor(textColorsEl, qp.get('textColor'));
 
 initCustomizer({
   viewer: document.getElementById('viewer'),
   statusEl: document.getElementById('status'),
   spinnerEl: document.getElementById('spinner'),
   generateBtn: document.getElementById('generateBtn'),
-  fonts: [{ url: '../shared/openscad-lib/Pacifico-Regular.ttf', fsPath: '/fonts/Pacifico-Regular.ttf' }],
+  fonts: SHARED_FONTS,
   solids: [
-    { id: 'base', defaultColor: 0xA083D5, buildScad: buildBaseScad },
-    { id: 'text', defaultColor: 0xF5F1FA, buildScad: buildTextScad },
+    { id: 'base', defaultColor: qp.has('baseColor') ? parseInt(qp.get('baseColor'), 16) : 0xA083D5, buildScad: buildBaseScad },
+    { id: 'text', defaultColor: qp.has('textColor') ? parseInt(qp.get('textColor'), 16) : 0xF5F1FA, buildScad: buildTextScad },
   ],
   colorPickers: {
-    base: document.getElementById('baseColors'),
-    text: document.getElementById('textColors'),
-  },
-  downloadLinks: {
-    base: document.getElementById('downloadBase'),
-    text: document.getElementById('downloadText'),
+    base: baseColorsEl,
+    text: textColorsEl,
   },
   getParams() {
     const lines = [line1Input.value.trim() || 'Name'];
@@ -207,6 +231,19 @@ initCustomizer({
   },
   describe(params) {
     return `"${params.lines.join(' / ')}"`;
+  },
+  onRendered(params) {
+    const search = new URLSearchParams({
+      name: params.lines[0],
+      font: params.font,
+      textSize: params.textSize,
+      extension: params.extension,
+      offsetX: params.offsetX,
+      offsetY: params.offsetY,
+      baseColor: activeColorHex(baseColorsEl),
+      textColor: activeColorHex(textColorsEl),
+    });
+    history.replaceState(null, '', '?' + search.toString());
   },
 });
 </script>

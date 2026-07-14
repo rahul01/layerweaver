@@ -10,45 +10,43 @@
 <div id="controls">
   <h2>Pencil Topper Customizer</h2>
 
-  <h3>Text</h3>
-  <label for="line1">Name (max 10 characters)</label>
-  <input type="text" id="line1" maxlength="10" value="Surbhi">
+  <label for="line1">Name (max 15 characters)</label>
+  <input type="text" id="line1" maxlength="15" value="Surbhi">
 
   <label for="font">Font</label>
   <select id="font">
-    <option value="Liberation Sans:style=Bold" selected>Sans (Bold)</option>
-    <option value="Liberation Sans">Sans</option>
-    <option value="Liberation Serif:style=Bold">Serif (Bold)</option>
-    <option value="Liberation Serif">Serif</option>
-    <option value="Liberation Mono:style=Bold">Mono (Bold)</option>
-    <option value="Pacifico">Script (Pacifico)</option>
+    <option value="Comic Neue:style=Bold" selected>Comic Neue (Bold)</option>
+    <option value="Pacifico">Pacifico</option>
+    <option value="Kalam">Kalam (Devanagari)</option>
+    <option value="Anek Bangla:style=Regular">Anek Bangla</option>
+    <option value="Anek Gujarati:style=Regular">Anek Gujarati</option>
+    <option value="Anek Gurmukhi:style=Regular">Anek Gurmukhi</option>
+    <option value="Anek Kannada:style=Regular">Anek Kannada</option>
+    <option value="Anek Malayalam:style=Regular">Anek Malayalam</option>
+    <option value="Anek Odia:style=Regular">Anek Odia</option>
+    <option value="Anek Tamil:style=Regular">Anek Tamil</option>
+    <option value="Anek Telugu:style=Regular">Anek Telugu</option>
   </select>
 
-  <label for="textsize">Text size (mm): <span id="textsize-val">9</span></label>
-  <input type="range" id="textsize" min="5" max="14" step="0.5" value="9">
+  <label for="textsize">Text size (mm)</label>
+  <input type="number" id="textsize" min="5" max="16" step="0.5" value="12">
 
-  <h3>Base plate</h3>
-  <label for="extension">Extension around text: <span id="extension-val">1.2</span>mm</label>
-  <input type="range" id="extension" min="0.6" max="3" step="0.2" value="1.2">
-  <p class="hint">The plate follows the outline of the text itself, extended outward by this margin - not a fixed rectangle/circle. Base thickness (2mm) and text height (1mm) are fixed.</p>
+  <label for="extension">Plate margin around text (mm)</label>
+  <input type="number" id="extension" min="0.6" max="3" step="0.2" value="2.3">
 
-  <h3>Pencil socket</h3>
-  <p class="hint">A downward-opening socket the pencil pushes into - closed at the top by the base plate, so the pencil doesn't show through the letters. Fixed at 7.4mm inner / 12mm outer diameter (fits standard hex/round pencils).</p>
-  <label for="depth">Socket depth: <span id="depth-val">12</span>mm</label>
-  <input type="range" id="depth" min="8" max="18" step="1" value="12">
+  <h3>Pencil hole</h3>
   <div class="range-row">
     <div>
-      <label for="offsetx">X offset: <span id="offsetx-val">0</span>mm</label>
-      <input type="range" id="offsetx" min="-15" max="15" step="1" value="0">
+      <label for="offsetx">Hole position within letters (mm)</label>
+      <input type="number" id="offsetx" min="-3" max="3" step="0.5" value="0">
     </div>
     <div>
-      <label for="offsety">Y offset: <span id="offsety-val">0</span>mm</label>
-      <input type="range" id="offsety" min="-10" max="10" step="1" value="0">
+      <label for="offsety">Hole depth offset (mm)</label>
+      <input type="number" id="offsety" min="-2" max="2" step="0.5" value="0">
     </div>
   </div>
 
-  <h3>Filament colors</h3>
-  <p class="hint">Base and text are separate solids so each can be assigned its own AMS filament color, like the reference model.</p>
+  <h3>Colors</h3>
   <div class="color-block">
     <div class="color-block-label">Base plate</div>
     <div class="color-row" id="baseColors">
@@ -74,14 +72,9 @@
 
   <button id="generateBtn" class="generate-btn">Generate Model</button>
   <div id="status">Loading OpenSCAD engine…</div>
-  <div class="downloads">
-    <a id="downloadBase" class="disabled" download="pencil-topper-base.stl">Download Base STL</a>
-    <a id="downloadText" class="disabled" download="pencil-topper-text.stl">Download Text STL</a>
-  </div>
 </div>
 <div id="viewer">
   <div class="spinner" id="spinner"></div>
-  <div class="grid-legend">Grid: 10mm squares</div>
 </div>
 
 <script type="importmap">
@@ -92,49 +85,55 @@
   }
 }
 </script>
+<script src="../shared/vendor/sanscript.js"></script>
 <script type="module">
-import { initCustomizer } from '../shared/customizer-engine.js';
+import { initCustomizer, SHARED_FONTS, wireTransliteratingNameInput } from '../shared/customizer-engine.js';
 import { textOutlineHeader } from '../shared/scad-text-outline.js';
 
-// Fixed dimensions (not user-adjustable): base plate thickness 2mm, raised
-// text height 1mm, socket inner/outer diameter, no fillet (crisp corners,
-// consistent with the keychain product).
-const BASE_THICKNESS = 2;
-const TEXT_HEIGHT = 1;
-const SOCKET_INNER_D = 7.4;   // fits standard hex/round pencils via friction fit
-const SOCKET_OUTER_D = 12;
+// Fixed dimensions (not user-adjustable): base block thickness 12mm (thick
+// enough to grip a pencil by friction), raised text height 1.4mm, pencil hole
+// diameter, no fillet (crisp corners, consistent with the keychain product).
+// Matches the proportions of the reference MakerWorld pencil topper design.
+const BASE_THICKNESS = 12;
+const TEXT_HEIGHT = 1.4;
+const HOLE_DIAMETER = 7.8;   // fits standard hex/round pencils via friction fit
 const FILLET_RADIUS = 0;
 
-// Pencil-topper-specific attachment feature: a downward-opening tube the
-// pencil's end pushes into. It's closed at the top (z=0) by the base plate
-// itself, so the pencil isn't visible through the front of the design. This
-// is the only part of the geometry unique to this product - the text-outline
-// base and raised text are shared with every product on this customizer.
-function pencilSocketScad(params) {
+// Pencil-topper-specific attachment feature: a straight cylindrical hole
+// drilled along the X axis - the same direction the name reads - so the
+// pencil threads all the way through every letter, and the whole name stays
+// supported along the pencil's length instead of overhanging past it (which
+// is what happened when the hole ran only through one narrow slice of the
+// name). This needs a real 3D cylinder rotated onto the X axis and subtracted
+// from the already-extruded block, since a 2D-circle-then-extrude trick (like
+// the keyring hole) only works when the hole runs the same direction as the
+// extrusion. This is the only part of the geometry unique to this product -
+// the text-outline base and raised text are shared with every product here.
+function pencilHoleScad(params) {
+  const holeR = HOLE_DIAMETER / 2;
   return `
-socket_outer_r = ${SOCKET_OUTER_D / 2};
-socket_inner_r = ${SOCKET_INNER_D / 2};
-socket_depth = ${params.socketDepth};
+hole_r = ${holeR};
+hole_len = 400;
 offset_x = ${params.offsetX};
 offset_y = ${params.offsetY};
+hole_pos = [0, content_h * 0.35 + offset_x, ${params.thickness / 2} + offset_y];
 
-module pencil_socket() {
-  translate([content_w/2 + offset_x, content_h * 0.35 + offset_y, 0])
-    translate([0, 0, -socket_depth])
-      difference() {
-        cylinder(r = socket_outer_r, h = socket_depth, $fn = 48);
-        cylinder(r = socket_inner_r, h = socket_depth, $fn = 48);
-      }
+module pencil_hole() {
+  translate(hole_pos)
+    rotate([0, 90, 0])
+      cylinder(r = hole_r, h = hole_len, center = true, $fn = 64);
 }
 `;
 }
 
 function buildBaseScad(params) {
-  return textOutlineHeader(params) + pencilSocketScad(params) + `
+  return textOutlineHeader(params) + pencilHoleScad(params) + `
 thickness = ${params.thickness};
-union() {
-  linear_extrude(height = thickness) fillet_concave(${FILLET_RADIUS}) base_outline();
-  pencil_socket();
+difference() {
+  linear_extrude(height = thickness)
+    fillet_concave(${FILLET_RADIUS})
+      base_outline();
+  pencil_hole();
 }
 `;
 }
@@ -154,39 +153,61 @@ translate([0, 0, thickness - embed])
 const line1Input = document.getElementById('line1');
 const fontSelect = document.getElementById('font');
 const textsizeInput = document.getElementById('textsize');
-const textsizeVal = document.getElementById('textsize-val');
 const extensionInput = document.getElementById('extension');
-const extensionVal = document.getElementById('extension-val');
-const depthInput = document.getElementById('depth');
-const depthVal = document.getElementById('depth-val');
 const offsetxInput = document.getElementById('offsetx');
-const offsetxVal = document.getElementById('offsetx-val');
 const offsetyInput = document.getElementById('offsety');
-const offsetyVal = document.getElementById('offsety-val');
 
-textsizeInput.addEventListener('input', () => { textsizeVal.textContent = textsizeInput.value; });
-extensionInput.addEventListener('input', () => { extensionVal.textContent = extensionInput.value; });
-depthInput.addEventListener('input', () => { depthVal.textContent = depthInput.value; });
-offsetxInput.addEventListener('input', () => { offsetxVal.textContent = offsetxInput.value; });
-offsetyInput.addEventListener('input', () => { offsetyVal.textContent = offsetyInput.value; });
+const baseColorsEl = document.getElementById('baseColors');
+const textColorsEl = document.getElementById('textColors');
+
+// Type phonetically in Latin (e.g. "surbhi") and it's transliterated live
+// into whichever script the selected font uses (Kalam -> Devanagari, the
+// Anek fonts -> their matching Indian script).
+const nameTransliterator = wireTransliteratingNameInput({
+  inputEl: line1Input,
+  fontSelectEl: fontSelect,
+  maxLength: 15,
+});
+
+// Generation is fully deterministic - the same parameters always produce the
+// same STL - so an order never needs to store the file itself. Instead, the
+// finalized parameters get encoded into this page's own URL after every
+// render; that URL is the "recipe" you'd save as a single line-item property
+// and reopen later (e.g. at fulfillment time) to regenerate the exact model.
+function activeColorHex(rowEl) {
+  return rowEl.querySelector('.color-swatch.active')?.dataset.color.replace('#', '') || '';
+}
+function setActiveColor(rowEl, hex) {
+  if (!hex) return;
+  const swatch = rowEl.querySelector(`.color-swatch[data-color="#${hex.toUpperCase()}"]`);
+  if (!swatch) return;
+  rowEl.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  swatch.classList.add('active');
+}
+
+const qp = new URLSearchParams(location.search);
+if (qp.has('font')) fontSelect.value = qp.get('font');
+if (qp.has('name')) nameTransliterator.setValue(qp.get('name'));
+if (qp.has('textSize')) textsizeInput.value = qp.get('textSize');
+if (qp.has('extension')) extensionInput.value = qp.get('extension');
+if (qp.has('offsetX')) offsetxInput.value = qp.get('offsetX');
+if (qp.has('offsetY')) offsetyInput.value = qp.get('offsetY');
+setActiveColor(baseColorsEl, qp.get('baseColor'));
+setActiveColor(textColorsEl, qp.get('textColor'));
 
 initCustomizer({
   viewer: document.getElementById('viewer'),
   statusEl: document.getElementById('status'),
   spinnerEl: document.getElementById('spinner'),
   generateBtn: document.getElementById('generateBtn'),
-  fonts: [{ url: '../shared/openscad-lib/Pacifico-Regular.ttf', fsPath: '/fonts/Pacifico-Regular.ttf' }],
+  fonts: SHARED_FONTS,
   solids: [
-    { id: 'base', defaultColor: 0xE0555A, buildScad: buildBaseScad },
-    { id: 'text', defaultColor: 0xF5F1FA, buildScad: buildTextScad },
+    { id: 'base', defaultColor: qp.has('baseColor') ? parseInt(qp.get('baseColor'), 16) : 0xE0555A, buildScad: buildBaseScad },
+    { id: 'text', defaultColor: qp.has('textColor') ? parseInt(qp.get('textColor'), 16) : 0xF5F1FA, buildScad: buildTextScad },
   ],
   colorPickers: {
-    base: document.getElementById('baseColors'),
-    text: document.getElementById('textColors'),
-  },
-  downloadLinks: {
-    base: document.getElementById('downloadBase'),
-    text: document.getElementById('downloadText'),
+    base: baseColorsEl,
+    text: textColorsEl,
   },
   getParams() {
     const lines = [line1Input.value.trim() || 'Name'];
@@ -197,7 +218,6 @@ initCustomizer({
       extension: parseFloat(extensionInput.value),
       thickness: BASE_THICKNESS,
       textHeight: TEXT_HEIGHT,
-      socketDepth: parseFloat(depthInput.value),
       offsetX: parseFloat(offsetxInput.value),
       offsetY: parseFloat(offsetyInput.value),
     };
@@ -207,6 +227,19 @@ initCustomizer({
   },
   describe(params) {
     return `"${params.lines.join(' / ')}"`;
+  },
+  onRendered(params) {
+    const search = new URLSearchParams({
+      name: params.lines[0],
+      font: params.font,
+      textSize: params.textSize,
+      extension: params.extension,
+      offsetX: params.offsetX,
+      offsetY: params.offsetY,
+      baseColor: activeColorHex(baseColorsEl),
+      textColor: activeColorHex(textColorsEl),
+    });
+    history.replaceState(null, '', '?' + search.toString());
   },
 });
 </script>

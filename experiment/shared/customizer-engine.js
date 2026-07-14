@@ -4,6 +4,122 @@ import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import OpenSCAD from './openscad-lib/openscad.js';
 import { addFonts } from './openscad-lib/openscad.fonts.js';
 
+// Shared font set across every product page: Pacifico (script), Comic Neue
+// (bold, playful), Kalam for Devanagari, and the Anek series covering the
+// rest of the major Indian scripts. Each product page just picks its own
+// default selection from this same list rather than redefining it.
+export const SHARED_FONTS = [
+  { url: '../shared/openscad-lib/Pacifico-Regular.ttf', fsPath: '/fonts/Pacifico-Regular.ttf' },
+  { url: '../shared/openscad-lib/ComicNeue-Bold.ttf', fsPath: '/fonts/ComicNeue-Bold.ttf' },
+  { url: '../shared/openscad-lib/Kalam-Regular.ttf', fsPath: '/fonts/Kalam-Regular.ttf' },
+  { url: '../shared/openscad-lib/AnekBangla.ttf', fsPath: '/fonts/AnekBangla.ttf' },
+  { url: '../shared/openscad-lib/AnekGujarati.ttf', fsPath: '/fonts/AnekGujarati.ttf' },
+  { url: '../shared/openscad-lib/AnekGurmukhi.ttf', fsPath: '/fonts/AnekGurmukhi.ttf' },
+  { url: '../shared/openscad-lib/AnekKannada.ttf', fsPath: '/fonts/AnekKannada.ttf' },
+  { url: '../shared/openscad-lib/AnekMalayalam.ttf', fsPath: '/fonts/AnekMalayalam.ttf' },
+  { url: '../shared/openscad-lib/AnekOdia.ttf', fsPath: '/fonts/AnekOdia.ttf' },
+  { url: '../shared/openscad-lib/AnekTamil.ttf', fsPath: '/fonts/AnekTamil.ttf' },
+  { url: '../shared/openscad-lib/AnekTelugu.ttf', fsPath: '/fonts/AnekTelugu.ttf' },
+];
+
+// Maps a <select id="font"> option value to the Sanscript.js script key used
+// for phonetic transliteration, or null for fonts that are typed directly in
+// Latin (Pacifico, Comic Neue). Keys must match the SHARED_FONTS <option>
+// values exactly.
+const FONT_SCRIPTS = {
+  'Kalam': 'devanagari',
+  'Anek Bangla:style=Regular': 'bengali',
+  'Anek Gujarati:style=Regular': 'gujarati',
+  'Anek Gurmukhi:style=Regular': 'gurmukhi',
+  'Anek Kannada:style=Regular': 'kannada',
+  'Anek Malayalam:style=Regular': 'malayalam',
+  'Anek Odia:style=Regular': 'oriya',
+  'Anek Tamil:style=Regular': 'tamil',
+  'Anek Telugu:style=Regular': 'telugu',
+};
+
+export function scriptForFont(fontValue) {
+  return FONT_SCRIPTS[fontValue] || null;
+}
+
+// Wires a name <input> to transliterate phonetic Latin typing into whichever
+// Indian script the currently-selected font uses (e.g. typing "rahul" while
+// Kalam is selected shows "राहुल"), using Sanscript.js (loaded as a global
+// via <script src="vendor/sanscript.js">). The underlying phonetic text is
+// tracked separately from the input's displayed value, since the two only
+// match 1:1 for Latin fonts - that's what lets switching fonts re-render the
+// same typed name in a different script instead of losing what was typed.
+export function wireTransliteratingNameInput({ inputEl, fontSelectEl, maxLength }) {
+  let rawBuffer = inputEl.value;
+
+  function transliterate(text, script) {
+    if (!script || !window.Sanscript) return text;
+    return window.Sanscript.t(text, 'itrans', script);
+  }
+
+  function render() {
+    inputEl.value = transliterate(rawBuffer, scriptForFont(fontSelectEl.value));
+  }
+
+  function tryUpdate(nextRawBuffer) {
+    const script = scriptForFont(fontSelectEl.value);
+    const next = transliterate(nextRawBuffer, script);
+    if (next.length > maxLength) return; // over the limit - reject the keystroke
+    rawBuffer = nextRawBuffer;
+    inputEl.value = next;
+  }
+
+  inputEl.addEventListener('beforeinput', (e) => {
+    const script = scriptForFont(fontSelectEl.value);
+    if (!script) return; // Latin font: let the browser type normally
+    // A selection range can't be mapped back to a position in the raw
+    // phonetic buffer (the two texts have different lengths), so treat any
+    // edit that replaces a selection as starting fresh from the edit itself -
+    // this covers the common "select all, then type/delete" pattern.
+    const hasSelection = inputEl.selectionStart !== inputEl.selectionEnd;
+    if (hasSelection) rawBuffer = '';
+    if (e.inputType === 'insertText' || e.inputType === 'insertCompositionText') {
+      e.preventDefault();
+      tryUpdate(rawBuffer + (e.data || ''));
+    } else if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+      e.preventDefault();
+      tryUpdate(hasSelection ? '' : rawBuffer.slice(0, -1));
+    } else if (e.inputType === 'insertFromPaste') {
+      e.preventDefault(); // handled by the paste listener below
+    }
+  });
+
+  inputEl.addEventListener('paste', (e) => {
+    const script = scriptForFont(fontSelectEl.value);
+    if (!script) return;
+    e.preventDefault();
+    const hasSelection = inputEl.selectionStart !== inputEl.selectionEnd;
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    tryUpdate((hasSelection ? '' : rawBuffer) + pasted);
+  });
+
+  // Latin fonts: no interception, just keep the raw buffer mirroring what's
+  // typed so switching to a transliterating font later starts from the right
+  // phonetic text.
+  inputEl.addEventListener('input', () => {
+    if (!scriptForFont(fontSelectEl.value)) rawBuffer = inputEl.value;
+  });
+
+  fontSelectEl.addEventListener('change', render);
+  render();
+
+  return {
+    // Used when restoring a name from a recipe URL: reverse-transliterates
+    // back to a phonetic buffer (if the restored font is a script font) so
+    // further typing keeps working, then re-renders.
+    setValue(text) {
+      const script = scriptForFont(fontSelectEl.value);
+      rawBuffer = script && window.Sanscript ? window.Sanscript.t(text, script, 'itrans') : text;
+      render();
+    },
+  };
+}
+
 // Glossy injection-plastic look (clearcoat over a semi-matte base) - matches
 // studio-style product renders (e.g. MakerWorld previews) rather than a flat
 // matte preview.
@@ -14,22 +130,24 @@ function plasticMaterial(color) {
 }
 
 // Shared engine for every parametric-model product page: three.js viewer
-// (lighting, grid, orbit camera), OpenSCAD WASM rendering pipeline, color
-// swatches, and STL downloads. A product page only supplies its own SCAD
-// geometry (`solids`) and its own controls (`getParams`) - everything else
-// here is identical across products.
+// (lighting, grid, orbit camera), OpenSCAD WASM rendering pipeline, and
+// color swatches. A product page only supplies its own SCAD geometry
+// (`solids`) and its own controls (`getParams`) - everything else here is
+// identical across products. Rendered STLs aren't offered as a direct
+// download - use `getLastModel()` on the returned instance to retrieve the
+// buffers for attaching to an order once that integration exists.
 export async function initCustomizer({
   viewer, statusEl, spinnerEl, generateBtn,
   solids,              // [{ id, defaultColor, buildScad(params) }]
   getParams,           // () => params, read fresh from the DOM on each render
-  namePrefix,          // (params) => string, used for STL download filenames
-  describe,            // optional (params) => string, shown in the status log
-  downloadLinks = {},  // { [solidId]: <a> element }
+  namePrefix,          // (params) => string, used to label the generated STLs
+  describe,            // optional (params) => string, shown in the console log
+  onRendered,          // optional (params) => void, called after each successful render -
+                        // e.g. to encode params into the URL so the page becomes a
+                        // reconstructable "recipe" link an order can store
   colorPickers = {},   // { [solidId]: row element containing .color-swatch children }
   fonts = [],          // [{ url, fsPath }] extra font files to preload into the WASM FS
 }) {
-  function log(msg) { statusEl.textContent = msg; console.log(msg); }
-
   // ── three.js scene setup ──────────────────────────────────────────────
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x3a3a3a);
@@ -52,6 +170,14 @@ export async function initCustomizer({
   const fillLight = new THREE.DirectionalLight(0xffffff, 0.8);
   fillLight.position.set(-40, -20, 30);
   scene.add(fillLight);
+
+  // Legend shows the currently rendered model's real measured size (from its
+  // STL bounding box) plus the grid scale - not just a static "10mm" caption,
+  // so the customer can see actual dimensions rather than guess them from
+  // the grid alone.
+  const legendEl = document.createElement('div');
+  legendEl.className = 'grid-legend';
+  viewer.appendChild(legendEl);
 
   // Grid sits under the model as a scale reference, 10mm per square (matches
   // a print bed grid), resized and repositioned to fit whatever is loaded.
@@ -114,7 +240,14 @@ export async function initCustomizer({
       new THREE.Box3().setFromObject(meshes[solids[0].id])
     );
     updateGrid(box);
-    const size = box.getSize(new THREE.Vector3()).length();
+
+    // Box axes after the Z-up -> Y-up rotation: x/z are the flat footprint
+    // (length/width), y is the vertical thickness/height off the bed.
+    const dims = box.getSize(new THREE.Vector3());
+    legendEl.textContent =
+      `Model: ${dims.x.toFixed(1)} × ${dims.z.toFixed(1)} × ${dims.y.toFixed(1)} mm (L × W × H)  ·  Grid: 10mm squares`;
+
+    const size = dims.length();
     const center = box.getCenter(new THREE.Vector3());
     camera.position.copy(center).add(new THREE.Vector3(0, size * 0.75, size * 0.9));
     controls.target.copy(center);
@@ -161,10 +294,18 @@ export async function initCustomizer({
     return output.buffer.slice(output.byteOffset, output.byteOffset + output.byteLength);
   }
 
+  // The STL buffers from the most recent render, kept around in case
+  // something needs them without re-rendering (e.g. manual QA). Orders don't
+  // attach these directly - since generation is deterministic, the order
+  // instead stores the finalized parameters (see `onRendered` below), and
+  // the STL is regenerated from them whenever it's actually needed.
+  let lastBuffers = null;
+  let lastPrefix = null;
+
   async function render() {
+    statusEl.textContent = 'Generating your model…';
     spinnerEl.textContent = 'Rendering…';
     generateBtn.disabled = true;
-    Object.values(downloadLinks).forEach(a => a.classList.add('disabled'));
     try {
       const params = getParams();
       const buffers = {};
@@ -175,21 +316,17 @@ export async function initCustomizer({
       const elapsed = (performance.now() - t0).toFixed(0);
 
       showSolids(buffers);
+      lastBuffers = buffers;
+      lastPrefix = namePrefix(params);
 
-      const prefix = namePrefix(params);
-      for (const s of solids) {
-        const link = downloadLinks[s.id];
-        if (!link) continue;
-        link.href = URL.createObjectURL(new Blob([buffers[s.id]], { type: 'application/octet-stream' }));
-        link.download = `${prefix}-${s.id}.stl`;
-        link.classList.remove('disabled');
-      }
       const sizes = solids.map(s => `${s.id}: ${(buffers[s.id].byteLength / 1024).toFixed(1)} KB`).join(', ');
       const label = describe ? describe(params) + ' ' : '';
-      log(`Rendered ${label}in ${elapsed}ms. ${sizes}`);
+      console.log(`Rendered ${label}in ${elapsed}ms. ${sizes}`);
+      statusEl.textContent = 'Model ready.';
+      onRendered?.(params);
     } catch (e) {
-      log('Render failed: ' + (e?.message || e) + ' | name=' + e?.name + ' errno=' + e?.errno + ' code=' + e?.code);
-      console.error(e);
+      console.error('Render failed:', e);
+      statusEl.textContent = 'Something went wrong generating the model. Please try again.';
     } finally {
       spinnerEl.textContent = '';
       generateBtn.disabled = false;
@@ -199,5 +336,9 @@ export async function initCustomizer({
   generateBtn.addEventListener('click', render);
   render();
 
-  return { render, recolor };
+  return {
+    render,
+    recolor,
+    getLastModel: () => (lastBuffers ? { buffers: lastBuffers, prefix: lastPrefix } : null),
+  };
 }

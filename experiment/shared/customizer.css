@@ -9,12 +9,8 @@ body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
 #status { margin-top: 16px; font-size: 13px; color: #888; white-space: pre-wrap; }
 #viewer { flex: 1; position: relative; }
 #viewer canvas { display: block; }
-.downloads { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
-.downloads a { display: inline-block; padding: 8px 14px; background: #A083D5; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; text-align: center; }
-.downloads a.download-text { background: #6b5591; }
-.downloads a.disabled { pointer-events: none; opacity: .4; }
 .spinner { position:absolute; top:10px; left:10px; font-size:13px; color:#A083D5; }
-.grid-legend { position:absolute; bottom:10px; left:10px; font-size:12px; color:#888; background:rgba(255,255,255,.8); padding:3px 8px; border-radius:4px; }
+.grid-legend { position:absolute; bottom:16px; right:16px; font-size:14px; font-weight:600; color:#2a2a2a; background:rgba(255,255,255,.95); padding:8px 14px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.35); }
 .color-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .color-swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
 .color-swatch.active { border-color: #333; }
