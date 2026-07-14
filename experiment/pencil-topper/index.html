@@ -3,25 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Custom Name Keyring - Live Preview Prototype</title>
+<title>Personalized Pencil Topper - Live Preview Prototype</title>
 <link rel="stylesheet" href="../shared/customizer.css">
 </head>
 <body>
 <div id="controls">
-  <h2>Name Keyring Customizer</h2>
+  <h2>Pencil Topper Customizer</h2>
 
   <h3>Text</h3>
   <label for="line1">Name (max 10 characters)</label>
-  <input type="text" id="line1" maxlength="10" value="Rahul">
+  <input type="text" id="line1" maxlength="10" value="Surbhi">
 
   <label for="font">Font</label>
   <select id="font">
-    <option value="Liberation Sans:style=Bold">Sans (Bold)</option>
+    <option value="Liberation Sans:style=Bold" selected>Sans (Bold)</option>
     <option value="Liberation Sans">Sans</option>
     <option value="Liberation Serif:style=Bold">Serif (Bold)</option>
     <option value="Liberation Serif">Serif</option>
     <option value="Liberation Mono:style=Bold">Mono (Bold)</option>
-    <option value="Pacifico" selected>Script (Pacifico)</option>
+    <option value="Pacifico">Script (Pacifico)</option>
   </select>
 
   <label for="textsize">Text size (mm): <span id="textsize-val">9</span></label>
@@ -32,16 +32,18 @@
   <input type="range" id="extension" min="0.6" max="3" step="0.2" value="1.2">
   <p class="hint">The plate follows the outline of the text itself, extended outward by this margin - not a fixed rectangle/circle. Base thickness (2mm) and text height (1mm) are fixed.</p>
 
-  <h3>Keyring hole</h3>
-  <p class="hint">Position relative to the default (left edge, vertically centered). Matches the offset convention used in popular MakerWorld parametric keychains. Hole size is fixed at 3mm.</p>
+  <h3>Pencil socket</h3>
+  <p class="hint">A downward-opening socket the pencil pushes into - closed at the top by the base plate, so the pencil doesn't show through the letters. Fixed at 7.4mm inner / 12mm outer diameter (fits standard hex/round pencils).</p>
+  <label for="depth">Socket depth: <span id="depth-val">12</span>mm</label>
+  <input type="range" id="depth" min="8" max="18" step="1" value="12">
   <div class="range-row">
     <div>
       <label for="offsetx">X offset: <span id="offsetx-val">0</span>mm</label>
-      <input type="range" id="offsetx" min="-20" max="20" step="1" value="0">
+      <input type="range" id="offsetx" min="-15" max="15" step="1" value="0">
     </div>
     <div>
       <label for="offsety">Y offset: <span id="offsety-val">0</span>mm</label>
-      <input type="range" id="offsety" min="-20" max="20" step="1" value="0">
+      <input type="range" id="offsety" min="-10" max="10" step="1" value="0">
     </div>
   </div>
 
@@ -50,10 +52,10 @@
   <div class="color-block">
     <div class="color-block-label">Base plate</div>
     <div class="color-row" id="baseColors">
-      <div class="color-swatch active" data-color="#A083D5" style="background:#A083D5"></div>
+      <div class="color-swatch" data-color="#A083D5" style="background:#A083D5"></div>
       <div class="color-swatch" data-color="#F5F1FA" style="background:#F5F1FA"></div>
       <div class="color-swatch" data-color="#222222" style="background:#222222"></div>
-      <div class="color-swatch" data-color="#E0555A" style="background:#E0555A"></div>
+      <div class="color-swatch active" data-color="#E0555A" style="background:#E0555A"></div>
       <div class="color-swatch" data-color="#4C8BF5" style="background:#4C8BF5"></div>
       <div class="color-swatch" data-color="#F2C94C" style="background:#F2C94C"></div>
     </div>
@@ -73,8 +75,8 @@
   <button id="generateBtn" class="generate-btn">Generate Model</button>
   <div id="status">Loading OpenSCAD engine…</div>
   <div class="downloads">
-    <a id="downloadBase" class="disabled" download="keyring-base.stl">Download Base STL</a>
-    <a id="downloadText" class="disabled" download="keyring-text.stl">Download Text STL</a>
+    <a id="downloadBase" class="disabled" download="pencil-topper-base.stl">Download Base STL</a>
+    <a id="downloadText" class="disabled" download="pencil-topper-text.stl">Download Text STL</a>
   </div>
 </div>
 <div id="viewer">
@@ -94,52 +96,46 @@
 import { initCustomizer } from '../shared/customizer-engine.js';
 import { textOutlineHeader } from '../shared/scad-text-outline.js';
 
-// Fixed dimensions (not user-adjustable): hole opening diameter 3mm with a
-// 1.5mm wall, base plate thickness 2mm, raised text height 1mm, no fillet
-// (crisp corners, matching the reference model).
-const HOLE_SIZE = 3;
-const HOLE_WALL = 1.5;
+// Fixed dimensions (not user-adjustable): base plate thickness 2mm, raised
+// text height 1mm, socket inner/outer diameter, no fillet (crisp corners,
+// consistent with the keychain product).
 const BASE_THICKNESS = 2;
 const TEXT_HEIGHT = 1;
+const SOCKET_INNER_D = 7.4;   // fits standard hex/round pencils via friction fit
+const SOCKET_OUTER_D = 12;
 const FILLET_RADIUS = 0;
 
-// Keychain-specific attachment feature: a keyring hole at the left edge,
-// vertically centered, nudgeable via offset_x/offset_y. This is the only
-// part of the geometry that's unique to this product - the text-outline
+// Pencil-topper-specific attachment feature: a downward-opening tube the
+// pencil's end pushes into. It's closed at the top (z=0) by the base plate
+// itself, so the pencil isn't visible through the front of the design. This
+// is the only part of the geometry unique to this product - the text-outline
 // base and raised text are shared with every product on this customizer.
-function keyringHoleScad(params) {
-  const holeRInner = HOLE_SIZE / 2;
-  const holeROuter = holeRInner + HOLE_WALL;
+function pencilSocketScad(params) {
   return `
-hole_r_outer = ${holeROuter};
-hole_r_inner = ${holeRInner};
+socket_outer_r = ${SOCKET_OUTER_D / 2};
+socket_inner_r = ${SOCKET_INNER_D / 2};
+socket_depth = ${params.socketDepth};
 offset_x = ${params.offsetX};
 offset_y = ${params.offsetY};
 
-// The gap has to clear the base outline (roughly "extension" mm past the
-// glyphs) by enough that the *inner* hole doesn't land inside the solid
-// plate - otherwise union() with the base just fills the hole back in,
-// while still leaving enough overlap on the *outer* ring for a solid weld.
-module ring_tab() {
-  gap = extension + hole_r_inner + 0.4;
-  pos = [-gap + offset_x, content_h/2 + offset_y];
-  translate(pos) difference() {
-    circle(r = hole_r_outer);
-    circle(r = hole_r_inner);
-  }
+module pencil_socket() {
+  translate([content_w/2 + offset_x, content_h * 0.35 + offset_y, 0])
+    translate([0, 0, -socket_depth])
+      difference() {
+        cylinder(r = socket_outer_r, h = socket_depth, $fn = 48);
+        cylinder(r = socket_inner_r, h = socket_depth, $fn = 48);
+      }
 }
 `;
 }
 
 function buildBaseScad(params) {
-  return textOutlineHeader(params) + keyringHoleScad(params) + `
+  return textOutlineHeader(params) + pencilSocketScad(params) + `
 thickness = ${params.thickness};
-linear_extrude(height = thickness)
-  fillet_concave(${FILLET_RADIUS})
-    union() {
-      base_outline();
-      ring_tab();
-    }
+union() {
+  linear_extrude(height = thickness) fillet_concave(${FILLET_RADIUS}) base_outline();
+  pencil_socket();
+}
 `;
 }
 
@@ -161,6 +157,8 @@ const textsizeInput = document.getElementById('textsize');
 const textsizeVal = document.getElementById('textsize-val');
 const extensionInput = document.getElementById('extension');
 const extensionVal = document.getElementById('extension-val');
+const depthInput = document.getElementById('depth');
+const depthVal = document.getElementById('depth-val');
 const offsetxInput = document.getElementById('offsetx');
 const offsetxVal = document.getElementById('offsetx-val');
 const offsetyInput = document.getElementById('offsety');
@@ -168,6 +166,7 @@ const offsetyVal = document.getElementById('offsety-val');
 
 textsizeInput.addEventListener('input', () => { textsizeVal.textContent = textsizeInput.value; });
 extensionInput.addEventListener('input', () => { extensionVal.textContent = extensionInput.value; });
+depthInput.addEventListener('input', () => { depthVal.textContent = depthInput.value; });
 offsetxInput.addEventListener('input', () => { offsetxVal.textContent = offsetxInput.value; });
 offsetyInput.addEventListener('input', () => { offsetyVal.textContent = offsetyInput.value; });
 
@@ -178,7 +177,7 @@ initCustomizer({
   generateBtn: document.getElementById('generateBtn'),
   fonts: [{ url: '../shared/openscad-lib/Pacifico-Regular.ttf', fsPath: '/fonts/Pacifico-Regular.ttf' }],
   solids: [
-    { id: 'base', defaultColor: 0xA083D5, buildScad: buildBaseScad },
+    { id: 'base', defaultColor: 0xE0555A, buildScad: buildBaseScad },
     { id: 'text', defaultColor: 0xF5F1FA, buildScad: buildTextScad },
   ],
   colorPickers: {
@@ -198,12 +197,13 @@ initCustomizer({
       extension: parseFloat(extensionInput.value),
       thickness: BASE_THICKNESS,
       textHeight: TEXT_HEIGHT,
+      socketDepth: parseFloat(depthInput.value),
       offsetX: parseFloat(offsetxInput.value),
       offsetY: parseFloat(offsetyInput.value),
     };
   },
   namePrefix(params) {
-    return 'keyring-' + (params.lines[0] || 'name').replace(/[^a-z0-9]/gi, '_');
+    return 'pencil-topper-' + (params.lines[0] || 'name').replace(/[^a-z0-9]/gi, '_');
   },
   describe(params) {
     return `"${params.lines.join(' / ')}"`;

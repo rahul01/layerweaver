@@ -1,0 +1,38 @@
+html, body { height: 100%; }
+body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
+#controls { width: 300px; flex-shrink: 0; padding: 20px; box-sizing: border-box; border-right: 1px solid #ddd; overflow-y: auto; }
+#controls h2 { margin-top: 0; }
+#controls h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #999; margin: 20px 0 6px; }
+#controls label { display: block; margin-top: 12px; font-size: 13px; color: #555; }
+#controls input[type=text], #controls select { width: 100%; padding: 8px; font-size: 15px; box-sizing: border-box; }
+#controls input[type=range] { width: 100%; }
+#status { margin-top: 16px; font-size: 13px; color: #888; white-space: pre-wrap; }
+#viewer { flex: 1; position: relative; }
+#viewer canvas { display: block; }
+.downloads { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+.downloads a { display: inline-block; padding: 8px 14px; background: #A083D5; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; text-align: center; }
+.downloads a.download-text { background: #6b5591; }
+.downloads a.disabled { pointer-events: none; opacity: .4; }
+.spinner { position:absolute; top:10px; left:10px; font-size:13px; color:#A083D5; }
+.grid-legend { position:absolute; bottom:10px; left:10px; font-size:12px; color:#888; background:rgba(255,255,255,.8); padding:3px 8px; border-radius:4px; }
+.color-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.color-swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.color-swatch.active { border-color: #333; }
+.color-block { margin-top: 10px; }
+.color-block-label { font-size: 12px; color: #777; margin-bottom: 4px; }
+.hint { font-size: 11px; color: #aaa; margin-top: 4px; }
+.range-row { display: flex; gap: 10px; }
+.range-row > div { flex: 1; }
+.generate-btn { width: 100%; margin-top: 20px; padding: 12px; font-size: 15px; font-weight: 600; background: #6b5591; color: white; border: none; border-radius: 6px; cursor: pointer; }
+.generate-btn:hover { background: #5a4779; }
+.generate-btn:disabled { opacity: .5; cursor: default; }
+
+/* Phones/narrow viewports: stack viewer above controls instead of a fixed
+   300px sidebar eating most of the screen width. */
+@media (max-width: 760px) {
+  body { flex-direction: column; height: 100dvh; }
+  #controls { width: 100%; max-height: 45vh; border-right: none; border-top: 1px solid #ddd; order: 2; padding: 16px; }
+  #viewer { flex: 1; min-height: 40vh; order: 1; }
+  .range-row { flex-direction: column; gap: 0; }
+  #controls input[type=text], #controls select { font-size: 16px; } /* avoid iOS auto-zoom on focus */
+}
