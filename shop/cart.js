@@ -79,6 +79,46 @@
     return data.cart;
   }
 
+  // Line IDs only, deliberately not touching `merchandise` - a line whose
+  // variant Shopify can no longer resolve (e.g. after a color-variant swap
+  // in the admin) makes any query that expands that line's merchandise
+  // throw, and since CartLine/its edges are non-null in the schema, that
+  // failure doesn't just null out the one field - it propagates up and
+  // takes the *entire* cart query down with it. This query has nothing for
+  // a broken variant to break, so it reliably succeeds even when the cart
+  // holds a poisoned line, which is what makes recovery possible below.
+  async function fetchCartLineIds(cartId) {
+    const data = await gql(`
+      query getCartLineIds($id: ID!) { cart(id: $id) { id lines(first: 20) { edges { node { id } } } } }`,
+      { id: cartId });
+    return data.cart?.lines.edges.map(e => e.node.id) || [];
+  }
+
+  // Recovers a cart that fails to load because one (or more) of its lines
+  // references a variant that no longer exists in Shopify, without
+  // discarding lines that are still fine. There's no reliable way to know
+  // *which* line is bad from the failed query alone (see fetchCartLineIds
+  // above), so this removes one candidate at a time and retries the real
+  // fetch after each removal, stopping as soon as it succeeds - in the
+  // common case (a single bad line) that's one extra round trip, and it
+  // never touches a line that turns out to be fine.
+  async function recoverCart(cartId) {
+    let remaining;
+    try {
+      remaining = await fetchCartLineIds(cartId);
+    } catch {
+      return null; // cart itself is gone, not just a bad line - nothing to salvage
+    }
+    while (remaining.length) {
+      const lineId = remaining.shift();
+      await removeLine(cartId, lineId).catch(() => {});
+      try {
+        return await fetchCart(cartId);
+      } catch { /* still broken - try removing the next candidate */ }
+    }
+    return null;
+  }
+
   async function addLines(cartId, lines) {
     const data = await gql(`
       mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
@@ -497,7 +537,17 @@
   async function addToCartCore(variantGid, qty = 1, attributes = []) {
     const cartId = loadCartId();
     if (cartId) {
-      cart = await addLine(cartId, variantGid, qty, attributes);
+      try {
+        cart = await addLine(cartId, variantGid, qty, attributes);
+      } catch (err) {
+        // A line elsewhere in this cart likely references a variant that no
+        // longer exists (e.g. after swapping color variants in Shopify) -
+        // try to salvage the rest of the cart before giving up on it
+        // entirely. See recoverCart().
+        console.warn('[Cart] Add failed, attempting to recover the existing cart:', err);
+        const recovered = await recoverCart(cartId);
+        cart = recovered ? await addLine(cartId, variantGid, qty, attributes).catch(() => null) : null;
+      }
       if (!cart) {
         localStorage.removeItem(KEY);
         cart = await createCart(variantGid, qty, attributes);
@@ -721,7 +771,15 @@
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; } // cart explicitly gone on Shopify
         else await cleanupLegacyGiftLine();
-      } catch { /* network error - keep cart ID, will retry on next interaction */ }
+      } catch (err) {
+        // Could be a real network error, or a line in this cart referencing
+        // a variant Shopify can no longer resolve (see recoverCart). Try to
+        // salvage it so the badge/drawer reflect what's actually still
+        // there instead of quietly looking empty until the next add.
+        console.warn('[Cart] Restoring saved cart failed, attempting recovery:', err);
+        cart = await recoverCart(cartId).catch(() => null);
+        if (cart) await cleanupLegacyGiftLine();
+      }
     }
 
     refreshUI();
@@ -752,7 +810,10 @@
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; }
         else await cleanupLegacyGiftLine();
-      } catch {}
+      } catch {
+        cart = await recoverCart(cartId).catch(() => null);
+        if (cart) await cleanupLegacyGiftLine();
+      }
     } else {
       cart = null;
     }
