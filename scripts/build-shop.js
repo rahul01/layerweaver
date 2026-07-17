@@ -806,6 +806,11 @@ function generateProductPage(product, collection, reviewData = null) {
              data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
              data-variant-title="${v.title}"
              loading="lazy">`).join('')
+      // Also include product images not tied to any variant (lifestyle/detail shots) -
+      // otherwise they'd never render since variant images replace the gallery above.
+      + images.filter(img => !uniqueVariantImageUrls.has(img.url)).map(img => `
+          <img src="${img.url}" alt="${escAttr(productImageAlt(product, img.altText))}"
+               class="thumbnail" loading="lazy">`).join('')
     : images.length > 1
       ? images.map((img, i) => `
           <img src="${img.url}" alt="${escAttr(productImageAlt(product, img.altText))}"
