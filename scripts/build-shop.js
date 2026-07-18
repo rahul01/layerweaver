@@ -115,7 +115,7 @@ async function fetchProducts() {
               minVariantPrice { amount currencyCode }
               maxVariantPrice { amount currencyCode }
             }
-            images(first: 5) {
+            images(first: 20) {
               edges { node { url altText } }
             }
             media(first: 10) {
