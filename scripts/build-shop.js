@@ -32,7 +32,7 @@ const BUILD_VER = Date.now();
 
 const IMG_WIDTH_GRID = 500;
 const IMG_WIDTH_THUMB_RAIL = 300;
-const IMG_WIDTH_MAIN = 900;
+const IMG_WIDTH_MAIN = 1600;
 const IMG_WIDTH_BANNER = 800;
 const IMG_WIDTH_OG = 1200;
 
