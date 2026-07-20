@@ -29,6 +29,12 @@ const JUDGEME_REVIEW_UUID = 'f101c8b2-8f4d-4a3a-9acb-d51832084fe8';
 const SITE_URL = 'https://www.layerweaver.com';
 const BUILD_VER = Date.now();
 
+const IMG_WIDTH_GRID = 500;
+const IMG_WIDTH_THUMB_RAIL = 300;
+const IMG_WIDTH_MAIN = 900;
+const IMG_WIDTH_BANNER = 800;
+const IMG_WIDTH_OG = 1200;
+
 async function fetchCollections() {
   const query = `{
     collections(first: 20, sortKey: TITLE) {
@@ -275,6 +281,12 @@ function reviewCardHtml(review) {
     ${review.title ? `<p class="review-title">${escAttr(review.title)}</p>` : ''}
     ${review.body ? `<p class="review-body">${escAttr(review.body)}</p>` : ''}
   </div>`;
+}
+
+function resizedImageUrl(url, width) {
+  if (!url) return url;
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}width=${width}`;
 }
 
 function escAttr(str) {
@@ -559,7 +571,7 @@ function productCardHtml(product, productsBase, reviewData = null) {
           <a href="${productsBase}${product.handle}/" class="product-card-link">
               <div class="product-image-wrap">
                   ${image
-                    ? `<img src="${image.url}" alt="${escAttr(productImageAlt(product, image.altText))}" loading="lazy">`
+                    ? `<img src="${resizedImageUrl(image.url, IMG_WIDTH_GRID)}" alt="${escAttr(productImageAlt(product, image.altText))}" loading="lazy">`
                     : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                   }
                   ${!available ? '<span class="sold-out-badge">Sold Out</span>' : ''}
@@ -672,7 +684,7 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
       title: 'Shop – LayerWeaver 3D Printed Products',
       description: 'Browse and buy unique 3D printed products from LayerWeaver – affordable, handcrafted, and shipped to you.',
       ogUrl: `${SITE_URL}/shop/`,
-      ogImage: products[0]?.images.edges[0]?.node.url,
+      ogImage: resizedImageUrl(products[0]?.images.edges[0]?.node.url, IMG_WIDTH_OG),
     })}
 </head>
 <body>
@@ -806,7 +818,7 @@ function generateProductPage(product, collection, reviewData = null) {
 
   const imageThumbnails = hasVariantImages
     ? variantsWithImages.map(v => `
-        <img src="${v.image.url}" alt="${escAttr(productImageAlt(product, v.title))}"
+        <img src="${resizedImageUrl(v.image.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(productImageAlt(product, v.title))}"
              class="thumbnail${v.id === firstAvailable.id ? ' active' : ''}"
              data-variant-gid="${v.id}"
              data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
@@ -815,11 +827,11 @@ function generateProductPage(product, collection, reviewData = null) {
       // Also include product images not tied to any variant (lifestyle/detail shots) -
       // otherwise they'd never render since variant images replace the gallery above.
       + images.filter(img => !uniqueVariantImageUrls.has(img.url)).map(img => `
-          <img src="${img.url}" alt="${escAttr(productImageAlt(product, img.altText))}"
+          <img src="${resizedImageUrl(img.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(productImageAlt(product, img.altText))}"
                class="thumbnail" loading="lazy">`).join('')
     : images.length > 1
       ? images.map((img, i) => `
-          <img src="${img.url}" alt="${escAttr(productImageAlt(product, img.altText))}"
+          <img src="${resizedImageUrl(img.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(productImageAlt(product, img.altText))}"
                class="thumbnail${i === 0 ? ' active' : ''}" loading="lazy">`).join('')
       : '';
 
@@ -858,7 +870,7 @@ function generateProductPage(product, collection, reviewData = null) {
     ${headHtml(base, shopBase, {
       title: `${escAttr(toTitleCase(product.title))} – LayerWeaver`,
       description: escAttr(truncateWords(product.description, 150)),
-      ogImage: mainImage?.url,
+      ogImage: resizedImageUrl(mainImage?.url, IMG_WIDTH_OG),
       ogUrl: `${SITE_URL}/shop/products/${product.handle}/`,
       structuredData,
     })}
@@ -883,7 +895,7 @@ function generateProductPage(product, collection, reviewData = null) {
                 <div class="product-images">
                     <div class="main-image-wrap">
                         ${mainImage
-                          ? `<img id="main-image" src="${mainImage.url}" alt="${escAttr(productImageAlt(product, mainImage.altText))}">`
+                          ? `<img id="main-image" src="${resizedImageUrl(mainImage.url, IMG_WIDTH_MAIN)}" alt="${escAttr(productImageAlt(product, mainImage.altText))}">`
                           : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                         }
                         <video id="main-video" style="display:none" autoplay muted loop playsinline controls></video>
@@ -1076,7 +1088,7 @@ function collagebannerHtml(title, description, images) {
     .slice(0, 5);
   const cells = imgs.map(img => `
             <div class="banner-cell">
-                <img src="${img.url}" alt="${img.altText || title}" loading="lazy">
+                <img src="${resizedImageUrl(img.url, IMG_WIDTH_BANNER)}" alt="${img.altText || title}" loading="lazy">
             </div>`).join('');
   return `
     <div class="collection-banner">
@@ -1107,7 +1119,7 @@ function heroCarouselSlidesHtml(collections) {
 
     const cells = imgs.map(img => `
                         <div class="banner-cell">
-                            <img src="${img.url}" alt="${img.altText || collection.title}" loading="lazy">
+                            <img src="${resizedImageUrl(img.url, IMG_WIDTH_BANNER)}" alt="${img.altText || collection.title}" loading="lazy">
                         </div>`).join('');
 
     return `
@@ -1152,7 +1164,7 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
         collection.description || `Shop ${collection.title} – unique 3D printed products from LayerWeaver.`,
         150
       )),
-      ogImage: collection.image?.url,
+      ogImage: resizedImageUrl(collection.image?.url, IMG_WIDTH_OG),
       ogUrl: `${SITE_URL}/shop/collections/${collection.handle}/`,
     })}
 </head>
