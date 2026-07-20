@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -283,30 +284,6 @@ function reviewCardHtml(review) {
   </div>`;
 }
 
-function resizedImageUrl(url, width) {
-  if (!url) return url;
-  const sep = url.includes('?') ? '&' : '?';
-  return `${url}${sep}width=${width}`;
-}
-
-function escAttr(str) {
-  return String(str).replace(/—/g, '-').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-// Truncate to `max` chars without cutting a word in half, appending an ellipsis if shortened.
-function truncateWords(str, max) {
-  if (str.length <= max) return str;
-  const cut = str.slice(0, max);
-  const lastSpace = cut.lastIndexOf(' ');
-  let trimmed = (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[.,;:-]+$/, '');
-  let prev;
-  do {
-    prev = trimmed;
-    trimmed = trimmed.replace(/\s+(?:a|an|the|or|and|to|in|of|for)$/i, '');
-  } while (trimmed !== prev);
-  return trimmed + '…';
-}
-
 // Build a title→hex map from Shopify's swatch data for a product
 function buildSwatchMap(product) {
   const map = {};
@@ -347,15 +324,6 @@ function isCustomPrice(product) {
 // ── HTML partials (all paths relative to site root via `base`) ────────────────
 // base:     path from this file back to site root  (e.g. '../' or '../../../')
 // shopBase: path from this file back to shop/       (e.g. './'  or '../../')
-
-function fontAwesomeLinkHtml() {
-  const href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
-  const integrity = 'sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==';
-  const attrs = `integrity="${integrity}" crossorigin="anonymous" referrerpolicy="no-referrer"`;
-  return `
-    <link rel="preload" as="style" href="${href}" ${attrs} onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="${href}" ${attrs}></noscript>`;
-}
 
 function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structuredData }) {
   return `

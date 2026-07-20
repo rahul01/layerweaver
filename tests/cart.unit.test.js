@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -80,6 +80,55 @@ describe('cartQtyMap', () => {
       makeLine('v2', 149, 1),
     ];
     expect(cartQtyMap(edges)).toEqual({ v1: 2, v2: 1 });
+  });
+});
+
+// ── attributionCartAttributes ────────────────────────────────────────────────
+
+describe('attributionCartAttributes', () => {
+  it('returns an empty array when there is no captured attribution', () => {
+    expect(attributionCartAttributes(null)).toEqual([]);
+    expect(attributionCartAttributes(undefined)).toEqual([]);
+  });
+
+  it('maps a full attribution object to key/value cart attributes', () => {
+    const result = attributionCartAttributes({
+      source: 'google',
+      utm_medium: 'cpc',
+      utm_campaign: 'summer-sale',
+      referrer: 'https://google.com/search',
+      landingPage: '/shop/products/cat-cable-clip/',
+    });
+    expect(result).toEqual([
+      { key: 'Attribution Source', value: 'google' },
+      { key: 'Attribution Medium', value: 'cpc' },
+      { key: 'Attribution Campaign', value: 'summer-sale' },
+      { key: 'Landing Page', value: '/shop/products/cat-cable-clip/' },
+      { key: 'Referrer', value: 'https://google.com/search' },
+    ]);
+  });
+
+  it('omits keys for fields that were not captured', () => {
+    // Direct/on-site traffic: no UTM params, no external referrer.
+    const result = attributionCartAttributes({
+      source: 'direct',
+      referrer: '',
+      landingPage: '/',
+    });
+    expect(result).toEqual([
+      { key: 'Attribution Source', value: 'direct' },
+      { key: 'Landing Page', value: '/' },
+    ]);
+  });
+
+  it('drops a field entirely when its value is an empty string', () => {
+    const result = attributionCartAttributes({
+      source: '',
+      utm_medium: 'email',
+      landingPage: '/',
+    });
+    expect(result.find(a => a.key === 'Attribution Source')).toBeUndefined();
+    expect(result).toContainEqual({ key: 'Attribution Medium', value: 'email' });
   });
 });
 

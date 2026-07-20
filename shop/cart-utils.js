@@ -16,6 +16,20 @@ export function cartQtyMap(edges) {
   return map;
 }
 
+// Mirrors shop/cart.js's attributionCartAttributes(). Takes the parsed
+// lw_attribution object directly (cart.js does its own localStorage read/parse).
+export function attributionCartAttributes(attribution) {
+  if (!attribution) return [];
+  const map = {
+    'Attribution Source':   attribution.source,
+    'Attribution Medium':   attribution.utm_medium,
+    'Attribution Campaign': attribution.utm_campaign,
+    'Landing Page':         attribution.landingPage,
+    'Referrer':             attribution.referrer,
+  };
+  return Object.entries(map).filter(([, v]) => v).map(([key, value]) => ({ key, value }));
+}
+
 // Mirrors the shipping-bar math in shop/cart.js's renderShippingBar().
 export function shippingProgress(total, min) {
   const isUnlocked = total >= min;

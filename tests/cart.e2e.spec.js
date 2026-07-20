@@ -612,6 +612,132 @@ test.describe('Analytics events', () => {
     const removeEvent = events.find(e => e.name === 'remove_from_cart');
     expect(removeEvent.params.item_name).toBe('Articulated Octopus');
   });
+
+  test('GA4 add_to_cart gtag event fires alongside the existing LW_LOG_EVENT/fbq calls', async ({ page }) => {
+    await page.evaluate(() => {
+      window._testGtagCalls = [];
+      window.gtag = (...args) => window._testGtagCalls.push(args);
+    });
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => {
+      return window._testGtagCalls?.some(args => args[0] === 'event' && args[1] === 'add_to_cart');
+    }, { timeout: 10_000 });
+    const calls = await page.evaluate(() => window._testGtagCalls);
+    const [, , params] = calls.find(args => args[1] === 'add_to_cart');
+    expect(params.currency).toBe('INR');
+    expect(params.value).toBe(249);
+    expect(params.items).toEqual([{
+      item_id: expect.any(String),
+      item_name: 'Articulated Octopus',
+      price: 249,
+      quantity: 1,
+    }]);
+  });
+
+  test('GA4 begin_checkout gtag event fires with cart line items', async ({ page }) => {
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && badge.textContent === '1';
+    }, { timeout: 10_000 });
+    await openDrawer(page);
+
+    // The checkout button is a real link to Shopify's checkout domain - add a
+    // second click listener that calls preventDefault() so the page doesn't
+    // actually navigate away before the first listener's tracking calls can
+    // be inspected. (Aborting the navigation's network request instead loads
+    // a chrome-error page and tears down window state just the same.)
+    await page.evaluate(() => {
+      document.getElementById('cart-checkout-btn').addEventListener('click', (e) => e.preventDefault());
+      window._testGtagCalls = [];
+      window.gtag = (...args) => window._testGtagCalls.push(args);
+    });
+    await page.click('#cart-checkout-btn');
+    await page.waitForFunction(() => {
+      return window._testGtagCalls?.some(args => args[0] === 'event' && args[1] === 'begin_checkout');
+    }, { timeout: 10_000 });
+    const calls = await page.evaluate(() => window._testGtagCalls);
+    const [, , params] = calls.find(args => args[1] === 'begin_checkout');
+    expect(params.currency).toBe('INR');
+    expect(params.value).toBe(249);
+    expect(params.items).toEqual([{
+      item_id: expect.any(String),
+      item_name: 'Articulated Octopus',
+      price: 249,
+      quantity: 1,
+    }]);
+  });
+});
+
+// ── Attribution capture ──────────────────────────────────────────────────────
+// script.js's captureAttribution() IIFE has no DOM dependency and runs on
+// every page load, so each test here treats its own first page.goto() as
+// the "landing" - a preceding plain navigation would itself count as a
+// first touch and mask what's under test (see first-touch persistence test).
+
+test.describe('Attribution capture', () => {
+  test('captures UTM params from the landing page into localStorage', async ({ page }) => {
+    await page.goto(`${PRODUCT_OCTOPUS}?utm_source=newsletter&utm_medium=email&utm_campaign=july-sale`);
+    await page.waitForFunction(() => localStorage.getItem('lw_attribution') !== null);
+    const attribution = await page.evaluate(() => JSON.parse(localStorage.getItem('lw_attribution')));
+    expect(attribution.source).toBe('newsletter');
+    expect(attribution.utm_medium).toBe('email');
+    expect(attribution.utm_campaign).toBe('july-sale');
+    expect(attribution.landingPage).toBe(PRODUCT_OCTOPUS);
+    expect(attribution.capturedAt).toEqual(expect.any(Number));
+  });
+
+  test('captures direct visits with source "direct" when there is no UTM or referrer', async ({ page }) => {
+    await page.goto(PRODUCT_OCTOPUS);
+    await page.waitForFunction(() => localStorage.getItem('lw_attribution') !== null);
+    const attribution = await page.evaluate(() => JSON.parse(localStorage.getItem('lw_attribution')));
+    expect(attribution.source).toBe('direct');
+    expect(attribution.referrer).toBe('');
+  });
+
+  test('first-touch attribution persists across a later visit with different UTM params', async ({ page }) => {
+    await page.goto(`${PRODUCT_OCTOPUS}?utm_source=newsletter&utm_medium=email`);
+    await page.waitForFunction(() => localStorage.getItem('lw_attribution') !== null);
+
+    await page.goto(`${SHOP}?utm_source=google&utm_medium=cpc`);
+    await page.waitForTimeout(200); // let captureAttribution's IIFE run and (not) write
+    const attribution = await page.evaluate(() => JSON.parse(localStorage.getItem('lw_attribution')));
+    expect(attribution.source).toBe('newsletter');
+    expect(attribution.utm_medium).toBe('email');
+  });
+
+  test('attaches captured attribution to the cart on first add-to-cart', async ({ page }) => {
+    await page.goto(`${PRODUCT_OCTOPUS}?utm_source=instagram&utm_medium=social`);
+    await waitForCartReady(page);
+
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => {
+      const badge = document.getElementById('cart-badge');
+      return badge && badge.textContent === '1';
+    }, { timeout: 10_000 });
+
+    const cartId = await page.evaluate(() => localStorage.getItem('lw_cart_id'));
+    const attributes = await page.evaluate(async (id) => {
+      const DOMAIN = 'shop.layerweaver.com';
+      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
+      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
+        body: JSON.stringify({
+          query: `query getCart($id: ID!) { cart(id: $id) { attributes { key value } } }`,
+          variables: { id },
+        }),
+      });
+      const { data } = await res.json();
+      return data.cart.attributes;
+    }, cartId);
+
+    const map = Object.fromEntries(attributes.map(a => [a.key, a.value]));
+    expect(map['Attribution Source']).toBe('instagram');
+    expect(map['Attribution Medium']).toBe('social');
+    expect(map['Landing Page']).toBe(PRODUCT_OCTOPUS);
+  });
 });
 
 // ── Edge cases ──────────────────────────────────────────────────────────────
