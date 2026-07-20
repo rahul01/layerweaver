@@ -348,6 +348,15 @@ function isCustomPrice(product) {
 // base:     path from this file back to site root  (e.g. '../' or '../../../')
 // shopBase: path from this file back to shop/       (e.g. './'  or '../../')
 
+function fontAwesomeLinkHtml() {
+  const href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
+  const integrity = 'sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==';
+  const attrs = `integrity="${integrity}" crossorigin="anonymous" referrerpolicy="no-referrer"`;
+  return `
+    <link rel="preload" as="style" href="${href}" ${attrs} onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="${href}" ${attrs}></noscript>`;
+}
+
 function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structuredData }) {
   return `
     <meta charset="UTF-8">
@@ -394,7 +403,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    ${fontAwesomeLinkHtml()}
     <script type="module">
         window.LW_LOG_EVENT = () => {};
         if (location.hostname === 'www.layerweaver.com') {
@@ -1247,7 +1256,7 @@ function generateAccountPage() {
     <link rel="stylesheet" href="${base}styles.css">
     <link rel="stylesheet" href="${shopBase}shop.css?v=${BUILD_VER}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    ${fontAwesomeLinkHtml()}
     <script type="module">
         window.LW_LOG_EVENT = () => {};
         if (location.hostname === 'www.layerweaver.com') {
