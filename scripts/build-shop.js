@@ -125,7 +125,7 @@ async function fetchProducts() {
             images(first: 20) {
               edges { node { url altText } }
             }
-            media(first: 10) {
+            media(first: 50) {
               edges {
                 node {
                   mediaContentType
