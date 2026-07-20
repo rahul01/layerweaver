@@ -1,5 +1,26 @@
 # LayerWeaver — Implementing the SEO & Sales Audit Fixes
 
+## Status: all 6 fixes shipped 2026-07-20
+
+| Fix | Commit | Notes |
+|---|---|---|
+| 2 — collection description escaping + truncation | `1e1bfd65` | shipped first, as planned |
+| 1 — CDN image resizing | `e891d974` | |
+| 3 — sitemap `<lastmod>` | `0dce3053` | rebuilt immediately after, per plan; no GraphQL typos |
+| 4 — Font Awesome preload | `203611aa` | combined buildshop+serve check run after 1–4 together |
+| 5 — GA4 ecommerce events | `16dcb8ea` | |
+| 6 — first-touch attribution | `01fbf39d` | verified end-to-end via headless Playwright before committing |
+
+Followed by two test-coverage passes, not in the original plan:
+- `99590a46` — extracted `resizedImageUrl`/`escAttr`/`truncateWords`/`fontAwesomeLinkHtml` out of `build-shop.js` into a new `scripts/build-shop-utils.js` so they're unit-testable without triggering the script's live Shopify fetch; mirrored `attributionCartAttributes` into `shop/cart-utils.js` (cart.js is a plain `<script>`, can't `import`); added GA4 event and attribution E2E coverage.
+- `5ecc0909` — Fix 3's sitemap logic was still inline and had no coverage; extracted `isoDateOnly()` + `buildSitemapXml()` into `build-shop-utils.js` too.
+
+77/77 tests passing (43 unit, 34 Playwright E2E) as of `5ecc0909`. Audit report artifact updated to match: https://claude.ai/code/artifact/33fbbaed-b2c7-4778-ae96-2ef5517748e2
+
+No deviations from the fixes as scoped below — the two follow-up commits only affected *how* the code was organized for testability, not the behavior described in each Fix section.
+
+---
+
 ## Context
 
 The audit of layerweaver.com (artifact published earlier) found six concrete technical fixes, all inside the static-site generator and the client-side cart. It also surfaced a handful of things that look like problems in the raw data but aren't — worth noting up front so they don't get chased as bugs:
@@ -18,6 +39,8 @@ Not covered here (manual/non-code, separate from this plan):
 ---
 
 ## Fix 1 — Resize product images via Shopify CDN, skip HTML width/height
+
+**Shipped in `e891d974`.** Implemented as planned; the width constants became named exports (`IMG_WIDTH_GRID`, `IMG_WIDTH_THUMB_RAIL`, `IMG_WIDTH_MAIN`, `IMG_WIDTH_BANNER`, `IMG_WIDTH_OG`) rather than inline literals. Line numbers below drifted from the plan by the time of execution (earlier edits in the same file), but all 9 named call sites were confirmed covered post-build via `grep -o 'width=[0-9]*"' | sort | uniq -c`, which showed all 5 width buckets present with the expected counts.
 
 `shop/shop.css` already sets `aspect-ratio: 1` on `.product-image-wrap` (line 365) and `.main-image-wrap` (line 631), and fixed `72×72px` on `.thumbnail` (line 655). Layout shift is already structurally prevented by CSS — the real problem is payload weight (1254×1254px, ~1.2MB PNGs) and LCP delay, not CLS. So this fix is CDN-resize-only; no GraphQL query change, no HTML width/height attributes.
 
@@ -50,6 +73,8 @@ Apply at these call sites only (all in `scripts/build-shop.js`):
 ---
 
 ## Fix 2 — Fix collection-description escaping bug + tighten truncation
+
+**Shipped in `1e1bfd65`.** Implemented exactly as planned.
 
 **Two issues, one function.** Product-page descriptions already do `escAttr(truncateWords(product.description, 160))` correctly (build-shop.js:854). Collection-page descriptions (build-shop.js:1145) use the raw string directly — **no `escAttr()`, no truncation** — meaning a Shopify collection description containing `"` or `<`/`>` can break the `<meta content="...">` attribute or inject markup into `<head>`. This is a correctness bug, not just an SEO nicety.
 
@@ -86,6 +111,8 @@ description: escAttr(truncateWords(
 
 ## Fix 3 — Add `<lastmod>` to sitemap.xml
 
+**Shipped in `0dce3053`.** Implemented as planned, rebuilt immediately after per the sequencing note below — no GraphQL typos surfaced. In the later test-coverage pass (`5ecc0909`) the date-slicing and XML-template logic below were further extracted into `isoDateOnly()` and `buildSitemapXml()` in `scripts/build-shop-utils.js`, since this was the one fix with no unit coverage; confirmed byte-identical `sitemap.xml` output before/after that extraction.
+
 The only fix touching GraphQL query shape — isolate and rebuild immediately after to catch typos early.
 
 Add `updatedAt` to both queries in `scripts/build-shop.js`:
@@ -115,6 +142,8 @@ allUrls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}
 
 ## Fix 4 — Make Font Awesome non-render-blocking
 
+**Shipped in `203611aa`.** Implemented exactly as planned, both call sites confirmed.
+
 New helper near `headHtml()` (~build-shop.js:330), used at both current call sites (line 379 in `headHtml()`, and line 1229 in `generateAccountPage()` which duplicates the head block inline):
 ```js
 function fontAwesomeLinkHtml() {
@@ -133,6 +162,8 @@ This is the standard preload-then-swap pattern — no icon subsetting or self-ho
 ---
 
 ## Fix 5 — Add GA4 ecommerce events
+
+**Shipped in `16dcb8ea`.** Implemented as planned. E2E coverage added later (`99590a46`) hit one real gotcha worth recording: the `begin_checkout` test originally tried to verify the tracking call by aborting the checkout link's navigation request via `page.route()` — but an aborted top-level navigation still loads a Chromium `chrome-error://` page, which tears down the JS state (`window._testGtagCalls`) being inspected. Fixed by adding a second `click` listener that calls `preventDefault()` instead, letting the original click handler's tracking calls fire without the page ever navigating away.
 
 The Meta Pixel is wired correctly — `fbq('track','AddToCart', ...)` (shop/cart.js:572) and `fbq('track','InitiateCheckout', ...)` (shop/cart.js:273) already fire on every add-to-cart and checkout click. What's missing: **no `gtag('event', 'add_to_cart', ...)` or `gtag('event', 'begin_checkout', ...)` exists anywhere in the repo**, so GA4's own ecommerce reports and any Google Ads audiences built on GA4 events are blind, even though `gtag` is loaded on every page and Firebase (`LW_LOG_EVENT`) already logs these events.
 
@@ -172,6 +203,8 @@ if (typeof gtag === 'function') gtag('event', 'begin_checkout', {
 ---
 
 ## Fix 6 — Capture first-touch attribution, attach to the Shopify cart
+
+**Shipped in `01fbf39d`.** Implemented as planned. Verified with a headless Playwright script before committing (UTM capture, persistence across a UTM-less reload, `cartCreate` request body carrying `input.attributes`), then given permanent E2E coverage in `99590a46` — including a first-touch semantics test confirming a *later* visit with different UTM params does **not** override the original capture within the 30-day window (the whole point of "first-touch," as opposed to "last-touch," attribution).
 
 Outbound clicks to WhatsApp/Instagram are already tracked (`script.js:269`, generic `gtag('event','click', ...)` fed by `href.includes('wa.me')`/`.includes('instagram.com')` detection at :261-262) — no new work needed there. The real reason 89 of 90 orders show blank/generic referrer: customers browse `www.layerweaver.com`, but `shop/cart.js:461` sends them to `cart.checkoutUrl` — a **different domain** (Shopify's checkout) — via a plain link navigation with no referrer/UTM preservation. Whatever channel brought them to the marketing site is invisible to Shopify by the time checkout happens.
 
@@ -250,14 +283,21 @@ Both call sites in `addToCartCore` that create a new cart funnel through `create
 
 ## Sequencing
 
-1. **Fix 2** (build-shop.js — escaping bug + truncation) — smallest, safest, good first commit.
-2. **Fix 1** (build-shop.js — image resizing) — independent of Fix 2.
-3. **Fix 3** (build-shop.js — GraphQL `updatedAt` + sitemap) — isolate since it's the one query-shape change; rebuild right after to catch typos.
-4. **Fix 4** (build-shop.js — Font Awesome preload) — wraps up all `build-shop.js` changes; run `buildshop` + `serve` once after 1-4 to verify all four together.
-5. **Fix 5** (shop/cart.js — GA4 events) — independent of 1-4.
-6. **Fix 6** (script.js + shop/cart.js) — last, since one manual add-to-cart/checkout cycle in `serve` can verify both Fix 5's and Fix 6's cart.js changes together.
+Followed exactly as planned:
+
+1. ✅ **Fix 2** (build-shop.js — escaping bug + truncation) — smallest, safest, good first commit. `1e1bfd65`
+2. ✅ **Fix 1** (build-shop.js — image resizing) — independent of Fix 2. `e891d974`
+3. ✅ **Fix 3** (build-shop.js — GraphQL `updatedAt` + sitemap) — isolated, rebuilt right after; no typos. `0dce3053`
+4. ✅ **Fix 4** (build-shop.js — Font Awesome preload) — wrapped up all `build-shop.js` changes; combined `buildshop` + `serve` check run after 1-4 together. `203611aa`
+5. ✅ **Fix 5** (shop/cart.js — GA4 events) — independent of 1-4. `16dcb8ea`
+6. ✅ **Fix 6** (script.js + shop/cart.js) — last; `npm test` run after both 5 and 6 landed to confirm no regression to the existing cart flows. `01fbf39d`
+7. ✅ Test coverage for all 6, added afterward, not originally planned as a separate step: `99590a46`, `5ecc0909`
 
 ## Files touched
 - `scripts/build-shop.js` (Fixes 1-4)
 - `shop/cart.js` (Fixes 5-6)
 - `script.js` (Fix 6)
+- `scripts/build-shop-utils.js` — new, added post-hoc for test coverage (not in original plan)
+- `shop/cart-utils.js` — extended post-hoc for test coverage (not in original plan)
+- `tests/build-shop.unit.test.js` — new
+- `tests/cart.unit.test.js`, `tests/cart.e2e.spec.js` — extended
