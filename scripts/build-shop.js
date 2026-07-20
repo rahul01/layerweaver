@@ -286,7 +286,13 @@ function truncateWords(str, max) {
   if (str.length <= max) return str;
   const cut = str.slice(0, max);
   const lastSpace = cut.lastIndexOf(' ');
-  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[.,;:-]+$/, '') + '…';
+  let trimmed = (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[.,;:-]+$/, '');
+  let prev;
+  do {
+    prev = trimmed;
+    trimmed = trimmed.replace(/\s+(?:a|an|the|or|and|to|in|of|for)$/i, '');
+  } while (trimmed !== prev);
+  return trimmed + '…';
 }
 
 // Build a title→hex map from Shopify's swatch data for a product
@@ -851,7 +857,7 @@ function generateProductPage(product, collection, reviewData = null) {
 <head>
     ${headHtml(base, shopBase, {
       title: `${escAttr(toTitleCase(product.title))} – LayerWeaver`,
-      description: escAttr(truncateWords(product.description, 160)),
+      description: escAttr(truncateWords(product.description, 150)),
       ogImage: mainImage?.url,
       ogUrl: `${SITE_URL}/shop/products/${product.handle}/`,
       structuredData,
@@ -1142,7 +1148,10 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
 <head>
     ${headHtml(base, shopBase, {
       title: `${collection.title} – LayerWeaver`,
-      description: collection.description || `Shop ${collection.title} – unique 3D printed products from LayerWeaver.`,
+      description: escAttr(truncateWords(
+        collection.description || `Shop ${collection.title} – unique 3D printed products from LayerWeaver.`,
+        150
+      )),
       ogImage: collection.image?.url,
       ogUrl: `${SITE_URL}/shop/collections/${collection.handle}/`,
     })}
