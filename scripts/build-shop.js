@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml } = require('./build-shop-utils');
+const { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -1596,16 +1596,14 @@ async function main() {
   ];
   const collectionUrls = collections.map(c => ({
     loc: `${SITE_URL}/shop/collections/${c.handle}/`, priority: '0.8', changefreq: 'weekly',
-    lastmod: c.updatedAt ? c.updatedAt.slice(0, 10) : null,
+    lastmod: isoDateOnly(c.updatedAt),
   }));
   const productUrls = products.map(p => ({
     loc: `${SITE_URL}/shop/products/${p.handle}/`, priority: '0.7', changefreq: 'monthly',
-    lastmod: p.updatedAt ? p.updatedAt.slice(0, 10) : null,
+    lastmod: isoDateOnly(p.updatedAt),
   }));
   const allUrls = [...STATIC_URLS, ...collectionUrls, ...productUrls];
-  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
-    allUrls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}<changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`).join('\n')
-  }\n</urlset>\n`;
+  const sitemapXml = buildSitemapXml(allUrls);
   fs.writeFileSync(path.join(__dirname, '..', 'sitemap.xml'), sitemapXml);
   console.log('Generated sitemap.xml');
 

@@ -38,4 +38,16 @@ function fontAwesomeLinkHtml() {
     <noscript><link rel="stylesheet" href="${href}" ${attrs}></noscript>`;
 }
 
-module.exports = { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml };
+// Shopify's updatedAt is a full ISO datetime; sitemap <lastmod> wants just the date.
+function isoDateOnly(isoString) {
+  return isoString ? isoString.slice(0, 10) : null;
+}
+
+function buildSitemapXml(urls) {
+  const entries = urls.map(u =>
+    `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}<changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`
+  ).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`;
+}
+
+module.exports = { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml };

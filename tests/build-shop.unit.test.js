@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -109,5 +109,56 @@ describe('fontAwesomeLinkHtml', () => {
   it('points at the same Font Awesome 6.5.1 CDN URL in both links', () => {
     const matches = html.match(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/6\.5\.1\/css\/all\.min\.css/g) || [];
     expect(matches).toHaveLength(2);
+  });
+});
+
+// ── isoDateOnly ────────────────────────────────────────────────────────────────
+
+describe('isoDateOnly', () => {
+  it('truncates a Shopify updatedAt datetime to just the date', () => {
+    expect(isoDateOnly('2026-07-19T14:32:07Z')).toBe('2026-07-19');
+  });
+
+  it('returns null for a missing updatedAt so callers can omit <lastmod>', () => {
+    expect(isoDateOnly(null)).toBeNull();
+    expect(isoDateOnly(undefined)).toBeNull();
+    expect(isoDateOnly('')).toBeNull();
+  });
+});
+
+// ── buildSitemapXml ───────────────────────────────────────────────────────────
+
+describe('buildSitemapXml', () => {
+  it('renders <lastmod> for URLs that have one', () => {
+    const xml = buildSitemapXml([
+      { loc: 'https://www.layerweaver.com/shop/products/cat-cable-clip/', priority: '0.7', changefreq: 'monthly', lastmod: '2026-07-19' },
+    ]);
+    expect(xml).toContain('<loc>https://www.layerweaver.com/shop/products/cat-cable-clip/</loc><lastmod>2026-07-19</lastmod>');
+  });
+
+  it('omits <lastmod> entirely for URLs without one, rather than emitting it empty', () => {
+    const xml = buildSitemapXml([
+      { loc: 'https://www.layerweaver.com/', priority: '1.0', changefreq: 'weekly', lastmod: null },
+    ]);
+    expect(xml).toContain('<loc>https://www.layerweaver.com/</loc><changefreq>weekly</changefreq>');
+    expect(xml).not.toContain('<lastmod>');
+  });
+
+  it('produces a well-formed sitemap document with one <url> per entry', () => {
+    const xml = buildSitemapXml([
+      { loc: 'https://www.layerweaver.com/', priority: '1.0', changefreq: 'weekly', lastmod: null },
+      { loc: 'https://www.layerweaver.com/shop/', priority: '0.9', changefreq: 'daily', lastmod: null },
+    ]);
+    expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n')).toBe(true);
+    expect(xml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+    expect(xml.match(/<url>/g)).toHaveLength(2);
+    expect(xml.trim().endsWith('</urlset>')).toBe(true);
+  });
+
+  it('carries priority and changefreq through unchanged', () => {
+    const xml = buildSitemapXml([
+      { loc: 'https://www.layerweaver.com/shop/collections/lamps-and-decor/', priority: '0.8', changefreq: 'weekly', lastmod: '2026-07-19' },
+    ]);
+    expect(xml).toContain('<changefreq>weekly</changefreq><priority>0.8</priority>');
   });
 });
