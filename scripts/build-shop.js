@@ -40,7 +40,7 @@ async function fetchCollections() {
     collections(first: 20, sortKey: TITLE) {
       edges {
         node {
-          handle title description
+          handle title description updatedAt
           image { url }
           products(first: 50) {
             edges {
@@ -116,7 +116,7 @@ async function fetchProducts() {
         pageInfo { hasNextPage endCursor }
         edges {
           node {
-            id title handle tags description descriptionHtml
+            id title handle tags description descriptionHtml updatedAt
             priceRange {
               minVariantPrice { amount currencyCode }
               maxVariantPrice { amount currencyCode }
@@ -1619,13 +1619,15 @@ async function main() {
   ];
   const collectionUrls = collections.map(c => ({
     loc: `${SITE_URL}/shop/collections/${c.handle}/`, priority: '0.8', changefreq: 'weekly',
+    lastmod: c.updatedAt ? c.updatedAt.slice(0, 10) : null,
   }));
   const productUrls = products.map(p => ({
     loc: `${SITE_URL}/shop/products/${p.handle}/`, priority: '0.7', changefreq: 'monthly',
+    lastmod: p.updatedAt ? p.updatedAt.slice(0, 10) : null,
   }));
   const allUrls = [...STATIC_URLS, ...collectionUrls, ...productUrls];
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
-    allUrls.map(u => `  <url><loc>${u.loc}</loc><changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`).join('\n')
+    allUrls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}<changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`).join('\n')
   }\n</urlset>\n`;
   fs.writeFileSync(path.join(__dirname, '..', 'sitemap.xml'), sitemapXml);
   console.log('Generated sitemap.xml');
