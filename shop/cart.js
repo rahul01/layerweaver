@@ -277,6 +277,16 @@
         content_ids:  (cart?.lines?.edges || []).map(e => e.node.merchandise.id.split('/').pop()),
         content_type: 'product',
       });
+      if (typeof gtag === 'function') gtag('event', 'begin_checkout', {
+        currency: cart?.cost?.totalAmount?.currencyCode || '',
+        value:    parseFloat(cart?.cost?.totalAmount?.amount || 0),
+        items: (cart?.lines?.edges || []).map(e => ({
+          item_id:   e.node.merchandise.id.split('/').pop(),
+          item_name: e.node.merchandise.product.title,
+          price:     parseFloat(e.node.merchandise.price.amount),
+          quantity:  e.node.quantity,
+        })),
+      });
     });
 
     let _drawerBusy = false;
@@ -575,6 +585,16 @@
         content_type: 'product',
         value:        parseFloat(newLine.merchandise.price.amount),
         currency:     newLine.merchandise.price.currencyCode,
+      });
+      if (typeof gtag === 'function') gtag('event', 'add_to_cart', {
+        currency: newLine.merchandise.price.currencyCode,
+        value:    parseFloat(newLine.merchandise.price.amount) * newLine.quantity,
+        items: [{
+          item_id:   newLine.merchandise.id.split('/').pop(),
+          item_name: newLine.merchandise.product.title,
+          price:     parseFloat(newLine.merchandise.price.amount),
+          quantity:  newLine.quantity,
+        }],
       });
     }
   }
