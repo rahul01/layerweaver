@@ -1,3 +1,34 @@
+(function captureAttribution() {
+  const KEY = 'lw_attribution';
+  const TTL_DAYS = 30;
+  try {
+    const existing = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (existing && (Date.now() - existing.capturedAt) < TTL_DAYS * 86400000) return;
+
+    const params = new URLSearchParams(location.search);
+    const utm = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(k => {
+      const v = params.get(k);
+      if (v) utm[k] = v;
+    });
+
+    const ref = document.referrer || '';
+    let refHost = '';
+    try { refHost = ref ? new URL(ref).hostname.replace(/^www\./, '') : ''; } catch {}
+    const isOwnDomain = refHost && refHost === location.hostname.replace(/^www\./, '');
+
+    if (!Object.keys(utm).length && (!ref || isOwnDomain) && existing) return;
+
+    localStorage.setItem(KEY, JSON.stringify({
+      source: utm.utm_source || (isOwnDomain ? '' : (refHost || 'direct')),
+      ...utm,
+      referrer: (!isOwnDomain && ref) ? ref : '',
+      landingPage: location.pathname,
+      capturedAt: Date.now(),
+    }));
+  } catch (e) { /* localStorage unavailable - best effort only */ }
+})();
+
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile navigation toggle

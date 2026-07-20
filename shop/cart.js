@@ -28,6 +28,20 @@
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  function attributionCartAttributes() {
+    let attribution;
+    try { attribution = JSON.parse(localStorage.getItem('lw_attribution') || 'null'); } catch { return []; }
+    if (!attribution) return [];
+    const map = {
+      'Attribution Source':   attribution.source,
+      'Attribution Medium':   attribution.utm_medium,
+      'Attribution Campaign': attribution.utm_campaign,
+      'Landing Page':         attribution.landingPage,
+      'Referrer':             attribution.referrer,
+    };
+    return Object.entries(map).filter(([, v]) => v).map(([key, value]) => ({ key, value }));
+  }
+
   async function gql(query, variables = {}) {
     const res = await fetch(API, {
       method: 'POST',
@@ -65,10 +79,13 @@
   async function createCart(variantId, qty, attributes = []) {
     const line = { merchandiseId: variantId, quantity: qty };
     if (attributes.length) line.attributes = attributes;
+    const input = { lines: [line] };
+    const attrAttrs = attributionCartAttributes();
+    if (attrAttrs.length) input.attributes = attrAttrs;
     const data = await gql(`
       mutation cartCreate($input: CartInput!) {
         cartCreate(input: $input) { cart { ${CART_FIELDS} } }
-      }`, { input: { lines: [line] } });
+      }`, { input });
     return data.cartCreate.cart;
   }
 
