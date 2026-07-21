@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1784642190629">
+    <link rel="stylesheet" href="../../shop.css?v=1784655343967">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -118,38 +118,43 @@
                     <div class="thumbnails">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-4.png?v=1783875070&width=300" alt="Tulip Single Flower - Pink"
              class="thumbnail active"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-4.png?v=1783875070&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190902141150"
              data-price="₹149"
              data-variant-title="Pink"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-5.png?v=1783875071&width=300" alt="Tulip Single Flower - Purple"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-5.png?v=1783875071&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190902173918"
              data-price="₹149"
              data-variant-title="Purple"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-3.png?v=1783875069&width=300" alt="Tulip Single Flower - Red"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-3.png?v=1783875069&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190902206686"
              data-price="₹149"
              data-variant-title="Red"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-6.png?v=1783875072&width=300" alt="Tulip Single Flower - Yellow"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-6.png?v=1783875072&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190902239454"
              data-price="₹149"
              data-variant-title="Yellow"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-7.png?v=1783875073&width=300" alt="Tulip Single Flower - White"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-7.png?v=1783875073&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190902272222"
              data-price="₹149"
              data-variant-title="White"
              loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-1.png?v=1783875067&width=300" alt="Tulip Single Flower"
-               class="thumbnail" loading="lazy">
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-1.png?v=1783875067&width=1600" loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-2.png?v=1783875068&width=300" alt="Tulip Single Flower"
-               class="thumbnail" loading="lazy"></div>
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-2.png?v=1783875068&width=1600" loading="lazy"></div>
                 </div>
 
                 <div class="product-details">
@@ -343,7 +348,7 @@
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
                         if (btn) {
@@ -388,10 +393,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"tulip-single-flower":{"Pink":"#ffc0cb","Purple":"#a54dcf","Red":"#f61f1f","Yellow":"#ffe500","White":"#ffffff"}};</script>
-    <script src="../../auth.js?v=1784642190629"></script>
-    <script src="../../cart.js?v=1784642190629"></script>
-    <script src="../../search.js?v=1784642190629"></script>
-    <script src="../../wishlist.js?v=1784642190629"></script>
+    <script src="../../auth.js?v=1784655343967"></script>
+    <script src="../../cart.js?v=1784655343967"></script>
+    <script src="../../search.js?v=1784655343967"></script>
+    <script src="../../wishlist.js?v=1784655343967"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

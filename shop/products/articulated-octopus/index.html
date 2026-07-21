@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1784642190629">
+    <link rel="stylesheet" href="../../shop.css?v=1784655343967">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -118,18 +118,21 @@
                     <div class="thumbnails">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-3.jpg?v=1783875087&width=300" alt="Articulated Octopus - Purple"
              class="thumbnail active"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-3.jpg?v=1783875087&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192086704350"
              data-price="₹249"
              data-variant-title="Purple"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-1.jpg?v=1783875085&width=300" alt="Articulated Octopus - Yellow"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-1.jpg?v=1783875085&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192086737118"
              data-price="₹249"
              data-variant-title="Yellow"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-2.png?v=1783875086&width=300" alt="Articulated Octopus - Pink"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-2.png?v=1783875086&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192086769886"
              data-price="₹249"
              data-variant-title="Pink"
@@ -304,7 +307,7 @@
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
                         if (btn) {
@@ -349,10 +352,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"articulated-octopus":{"Purple":"#a54dcf","Yellow":"#ffe500","Pink":"#ffc0cb"}};</script>
-    <script src="../../auth.js?v=1784642190629"></script>
-    <script src="../../cart.js?v=1784642190629"></script>
-    <script src="../../search.js?v=1784642190629"></script>
-    <script src="../../wishlist.js?v=1784642190629"></script>
+    <script src="../../auth.js?v=1784655343967"></script>
+    <script src="../../cart.js?v=1784655343967"></script>
+    <script src="../../search.js?v=1784655343967"></script>
+    <script src="../../wishlist.js?v=1784655343967"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

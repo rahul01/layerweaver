@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1784642190629">
+    <link rel="stylesheet" href="../../shop.css?v=1784655343967">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -118,48 +118,56 @@
                     <div class="thumbnails">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-5.png?v=1783875062&width=300" alt="Bird Ocarina - Pink"
              class="thumbnail active"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-5.png?v=1783875062&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086136094942"
              data-price="₹199"
              data-variant-title="Pink"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-2.png?v=1783875058&width=300" alt="Bird Ocarina - Blue"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-2.png?v=1783875058&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086135996638"
              data-price="₹199"
              data-variant-title="Blue"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-6.png?v=1783875063&width=300" alt="Bird Ocarina - Purple"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-6.png?v=1783875063&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086136127710"
              data-price="₹199"
              data-variant-title="Purple"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-8.png?v=1783875065&width=300" alt="Bird Ocarina - Yellow"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-8.png?v=1783875065&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086136193246"
              data-price="₹199"
              data-variant-title="Yellow"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-1.png?v=1783875057&width=300" alt="Bird Ocarina - Gold"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-1.png?v=1783875057&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086136226014"
              data-price="₹199"
              data-variant-title="Gold"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-4.png?v=1783875061&width=300" alt="Bird Ocarina - Orange"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-4.png?v=1783875061&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086136062174"
              data-price="₹199"
              data-variant-title="Orange"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-3.png?v=1783875060&width=300" alt="Bird Ocarina - Green"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-3.png?v=1783875060&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086136029406"
              data-price="₹199"
              data-variant-title="Green"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-7.png?v=1783875064&width=300" alt="Bird Ocarina - Red"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-7.png?v=1783875064&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086136160478"
              data-price="₹199"
              data-variant-title="Red"
@@ -389,7 +397,7 @@
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
                         if (btn) {
@@ -434,10 +442,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"bird-ocarina":{"Pink":"#ffc0cb","Blue":"#005bd3","Purple":"#a54dcf","Yellow":"#ffe500","Gold":"#d49a06","Orange":"#ff8a00","Green":"#05aa3d","Red":"#f61f1f"}};</script>
-    <script src="../../auth.js?v=1784642190629"></script>
-    <script src="../../cart.js?v=1784642190629"></script>
-    <script src="../../search.js?v=1784642190629"></script>
-    <script src="../../wishlist.js?v=1784642190629"></script>
+    <script src="../../auth.js?v=1784655343967"></script>
+    <script src="../../cart.js?v=1784655343967"></script>
+    <script src="../../search.js?v=1784655343967"></script>
+    <script src="../../wishlist.js?v=1784655343967"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

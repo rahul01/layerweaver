@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1784642190629">
+    <link rel="stylesheet" href="../../shop.css?v=1784655343967">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -118,46 +118,52 @@
                     <div class="thumbnails">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-7.png?v=1783875155&width=300" alt="Decorative Vases - Modern"
              class="thumbnail active"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-7.png?v=1783875155&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190865408222"
              data-price="₹499"
              data-variant-title="Modern"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-5.png?v=1783875153&width=300" alt="Decorative Vases - Venere"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-5.png?v=1783875153&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190865440990"
              data-price="₹399"
              data-variant-title="Venere"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-6.png?v=1783875154&width=300" alt="Decorative Vases - Dual Texture"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-6.png?v=1783875154&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190865473758"
              data-price="₹449"
              data-variant-title="Dual Texture"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-8.png?v=1783875156&width=300" alt="Decorative Vases - Anfo"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-8.png?v=1783875156&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190865506526"
              data-price="₹299"
              data-variant-title="Anfo"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-4.png?v=1783875152&width=300" alt="Decorative Vases - Vanta"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-4.png?v=1783875152&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190865539294"
              data-price="₹999"
              data-variant-title="Vanta"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-3.png?v=1783875151&width=300" alt="Decorative Vases - Net"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-3.png?v=1783875151&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48190865572062"
              data-price="₹799"
              data-variant-title="Net"
              loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-1.png?v=1783875149&width=300" alt="Decorative Vases"
-               class="thumbnail" loading="lazy">
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-1.png?v=1783875149&width=1600" loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-2.png?v=1783875150&width=300" alt="Decorative Vases"
-               class="thumbnail" loading="lazy">
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-2.png?v=1783875150&width=1600" loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-9.png?v=1783875157&width=300" alt="Decorative Vases"
-               class="thumbnail" loading="lazy"></div>
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/decorative-vases-9.png?v=1783875157&width=1600" loading="lazy"></div>
                 </div>
 
                 <div class="product-details">
@@ -344,7 +350,7 @@
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
                         if (btn) {
@@ -389,10 +395,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {};</script>
-    <script src="../../auth.js?v=1784642190629"></script>
-    <script src="../../cart.js?v=1784642190629"></script>
-    <script src="../../search.js?v=1784642190629"></script>
-    <script src="../../wishlist.js?v=1784642190629"></script>
+    <script src="../../auth.js?v=1784655343967"></script>
+    <script src="../../cart.js?v=1784655343967"></script>
+    <script src="../../search.js?v=1784655343967"></script>
+    <script src="../../wishlist.js?v=1784655343967"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

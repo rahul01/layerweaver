@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1784642190629">
+    <link rel="stylesheet" href="../../shop.css?v=1784655343967">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -118,54 +118,62 @@
                     <div class="thumbnails">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-3.png?v=1783875049&width=300" alt="Hoodie Pen Pot - Orange"
              class="thumbnail active"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-3.png?v=1783875049&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086151954654"
              data-price="₹549"
              data-variant-title="Orange"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-4.png?v=1783875050&width=300" alt="Hoodie Pen Pot - Pink"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-4.png?v=1783875050&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086151987422"
              data-price="₹549"
              data-variant-title="Pink"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-1.png?v=1783875047&width=300" alt="Hoodie Pen Pot - Purple"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-1.png?v=1783875047&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086152020190"
              data-price="₹549"
              data-variant-title="Purple"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-5.png?v=1783875051&width=300" alt="Hoodie Pen Pot - Red"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-5.png?v=1783875051&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086152052958"
              data-price="₹549"
              data-variant-title="Red"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-6.png?v=1783875052&width=300" alt="Hoodie Pen Pot - Blue"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-6.png?v=1783875052&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086152085726"
              data-price="₹549"
              data-variant-title="Blue"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-7.png?v=1783875053&width=300" alt="Hoodie Pen Pot - Yellow"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-7.png?v=1783875053&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086152118494"
              data-price="₹549"
              data-variant-title="Yellow"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-8.png?v=1783875055&width=300" alt="Hoodie Pen Pot - army green"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-8.png?v=1783875055&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48086152151262"
              data-price="₹549"
              data-variant-title="army green"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-9.png?v=1783875056&width=300" alt="Hoodie Pen Pot - White"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-9.png?v=1783875056&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192000721118"
              data-price="₹549"
              data-variant-title="White"
              loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-2.jpeg?v=1783875048&width=300" alt="Hoodie Pen Pot"
-               class="thumbnail" loading="lazy"></div>
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-2.jpeg?v=1783875048&width=1600" loading="lazy"></div>
                 </div>
 
                 <div class="product-details">
@@ -391,7 +399,7 @@
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
                         if (btn) {
@@ -436,10 +444,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"hoodie-pen-pot":{"Orange":"#ff8a00","Pink":"#ffc0cb","Purple":"#a54dcf","Red":"#f61f1f","Blue":"#005bd3","Yellow":"#ffe500","army green":"#4b5320","White":"#ffffff"}};</script>
-    <script src="../../auth.js?v=1784642190629"></script>
-    <script src="../../cart.js?v=1784642190629"></script>
-    <script src="../../search.js?v=1784642190629"></script>
-    <script src="../../wishlist.js?v=1784642190629"></script>
+    <script src="../../auth.js?v=1784655343967"></script>
+    <script src="../../cart.js?v=1784655343967"></script>
+    <script src="../../search.js?v=1784655343967"></script>
+    <script src="../../wishlist.js?v=1784655343967"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

@@ -797,6 +797,7 @@ function generateProductPage(product, collection, reviewData = null) {
     ? variantsWithImages.map(v => `
         <img src="${resizedImageUrl(v.image.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(productImageAlt(product, v.title))}"
              class="thumbnail${v.id === firstAvailable.id ? ' active' : ''}"
+             data-full-src="${resizedImageUrl(v.image.url, IMG_WIDTH_MAIN)}"
              data-variant-gid="${v.id}"
              data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
              data-variant-title="${v.title}"
@@ -805,11 +806,11 @@ function generateProductPage(product, collection, reviewData = null) {
       // otherwise they'd never render since variant images replace the gallery above.
       + images.filter(img => !uniqueVariantImageUrls.has(img.url)).map(img => `
           <img src="${resizedImageUrl(img.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(productImageAlt(product, img.altText))}"
-               class="thumbnail" loading="lazy">`).join('')
+               class="thumbnail" data-full-src="${resizedImageUrl(img.url, IMG_WIDTH_MAIN)}" loading="lazy">`).join('')
     : images.length > 1
       ? images.map((img, i) => `
           <img src="${resizedImageUrl(img.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(productImageAlt(product, img.altText))}"
-               class="thumbnail${i === 0 ? ' active' : ''}" loading="lazy">`).join('')
+               class="thumbnail${i === 0 ? ' active' : ''}" data-full-src="${resizedImageUrl(img.url, IMG_WIDTH_MAIN)}" loading="lazy">`).join('')
       : '';
 
   const videoItems = (product.media?.edges || [])
@@ -1001,7 +1002,7 @@ function generateProductPage(product, collection, reviewData = null) {
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(\`.variant-btn[data-variant-gid="\${thumb.dataset.variantGid}"]\`);
                         if (btn) {

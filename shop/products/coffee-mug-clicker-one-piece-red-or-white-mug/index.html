@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1784642190629">
+    <link rel="stylesheet" href="../../shop.css?v=1784655343967">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -118,32 +118,36 @@
                     <div class="thumbnails">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-6.png?v=1783875040&width=300" alt="Coffee Mug Clicker Keychain - Pink / whipped cream"
              class="thumbnail active"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-6.png?v=1783875040&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192319717598"
              data-price="₹199"
              data-variant-title="Pink / whipped cream"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-1.png?v=1783875034&width=300" alt="Coffee Mug Clicker Keychain - Pink / marshmello"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-1.png?v=1783875034&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192319750366"
              data-price="₹199"
              data-variant-title="Pink / marshmello"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-4.png?v=1783875038&width=300" alt="Coffee Mug Clicker Keychain - White / whipped cream"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-4.png?v=1783875038&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192319783134"
              data-price="₹199"
              data-variant-title="White / whipped cream"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-3.png?v=1783875036&width=300" alt="Coffee Mug Clicker Keychain - White / marshmello"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-3.png?v=1783875036&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48192319815902"
              data-price="₹199"
              data-variant-title="White / marshmello"
              loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-2.jpg?v=1783875035&width=300" alt="Coffee Mug Clicker Keychain"
-               class="thumbnail" loading="lazy">
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-2.jpg?v=1783875035&width=1600" loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-5.png?v=1783875039&width=300" alt="Coffee Mug Clicker Keychain - Pink Mug"
-               class="thumbnail" loading="lazy"></div>
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-5.png?v=1783875039&width=1600" loading="lazy"></div>
                 </div>
 
                 <div class="product-details">
@@ -314,7 +318,7 @@
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
                         if (btn) {
@@ -359,10 +363,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"coffee-mug-clicker-one-piece-red-or-white-mug":{"Pink":"#ffc0cb","White":"#ffffff"}};</script>
-    <script src="../../auth.js?v=1784642190629"></script>
-    <script src="../../cart.js?v=1784642190629"></script>
-    <script src="../../search.js?v=1784642190629"></script>
-    <script src="../../wishlist.js?v=1784642190629"></script>
+    <script src="../../auth.js?v=1784655343967"></script>
+    <script src="../../cart.js?v=1784655343967"></script>
+    <script src="../../search.js?v=1784655343967"></script>
+    <script src="../../wishlist.js?v=1784655343967"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

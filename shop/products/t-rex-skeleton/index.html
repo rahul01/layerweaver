@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1784642190629">
+    <link rel="stylesheet" href="../../shop.css?v=1784655343967">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -118,18 +118,20 @@
                     <div class="thumbnails">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bone_white_t_rex.png?v=1783880772&width=300" alt="T-rex Skeleton - bone white"
              class="thumbnail active"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bone_white_t_rex.png?v=1783880772&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48427637113054"
              data-price="₹249"
              data-variant-title="bone white"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_40_PM.png?v=1784534511&width=300" alt="T-rex Skeleton - ivory white"
              class="thumbnail"
+             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_40_PM.png?v=1784534511&width=1600"
              data-variant-gid="gid://shopify/ProductVariant/48427637145822"
              data-price="₹249"
              data-variant-title="ivory white"
              loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512&width=300" alt="T-rex Skeleton"
-               class="thumbnail" loading="lazy"></div>
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512&width=1600" loading="lazy"></div>
                 </div>
 
                 <div class="product-details">
@@ -291,7 +293,7 @@
                     if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
                     if (mainIframe) { mainIframe.src = thumb.dataset.embedUrl; mainIframe.style.display = ''; }
                 } else {
-                    showMainImage(thumb.src);
+                    showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
                         const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
                         if (btn) {
@@ -336,10 +338,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"t-rex-skeleton":{"bone white":"#dbd5c8","ivory white":"#f2ede0"}};</script>
-    <script src="../../auth.js?v=1784642190629"></script>
-    <script src="../../cart.js?v=1784642190629"></script>
-    <script src="../../search.js?v=1784642190629"></script>
-    <script src="../../wishlist.js?v=1784642190629"></script>
+    <script src="../../auth.js?v=1784655343967"></script>
+    <script src="../../cart.js?v=1784655343967"></script>
+    <script src="../../search.js?v=1784655343967"></script>
+    <script src="../../wishlist.js?v=1784655343967"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
