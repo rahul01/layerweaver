@@ -291,6 +291,7 @@ function reviewCardHtml(review, index = 0) {
   const date = new Date(review.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' });
   const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
   const name = escAttr(review.reviewer?.name || 'Customer');
+  const pictures = (review.pictures || []).filter(p => !p.hidden && p.urls?.compact);
   return `<div class="review-card${index >= 3 ? ' review-card--more' : ''}">
     <div class="review-header">
       <span class="review-stars">${stars}</span>
@@ -300,6 +301,9 @@ function reviewCardHtml(review, index = 0) {
     </div>
     ${review.title ? `<p class="review-title">${escAttr(review.title)}</p>` : ''}
     ${review.body ? `<p class="review-body">${escAttr(review.body)}</p>` : ''}
+    ${pictures.length ? `<div class="review-pictures">
+      ${pictures.map(p => `<img src="${escAttr(p.urls.compact)}" data-full="${escAttr(p.urls.original || p.urls.huge || p.urls.compact)}" alt="Customer photo from ${name}" loading="lazy">`).join('\n      ')}
+    </div>` : ''}
   </div>`;
 }
 
@@ -966,6 +970,11 @@ function generateProductPage(product, collection, reviewData = null) {
             ${reviewData.reviews.length > 3 ? `<button type="button" class="reviews-show-all" onclick="this.closest('.reviews-section').classList.add('reviews-section--expanded'); this.remove();">Show all ${reviewData.reviews.length} reviews</button>` : ''}
         </div>
         </div>` : ''}
+
+        <div id="review-lightbox" class="review-lightbox" onclick="closeReviewLightbox()">
+            <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
+            <img id="review-lightbox-img" src="" alt="Customer review photo" onclick="event.stopPropagation()">
+        </div>
     </section>
 
     ${footerHtml(base)}
@@ -974,6 +983,27 @@ function generateProductPage(product, collection, reviewData = null) {
         const mainImg   = document.getElementById('main-image');
         const mainVideo = document.getElementById('main-video');
         const mainIframe = document.getElementById('main-iframe');
+
+        function openReviewLightbox(src) {
+            const lightbox = document.getElementById('review-lightbox');
+            const img = document.getElementById('review-lightbox-img');
+            if (!lightbox || !img) return;
+            img.src = src;
+            lightbox.classList.add('review-lightbox--open');
+        }
+
+        function closeReviewLightbox() {
+            const lightbox = document.getElementById('review-lightbox');
+            if (lightbox) lightbox.classList.remove('review-lightbox--open');
+        }
+
+        document.querySelectorAll('.review-pictures img').forEach(img => {
+            img.addEventListener('click', () => openReviewLightbox(img.dataset.full));
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeReviewLightbox();
+        });
 
         function showMainImage(src) {
             if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }

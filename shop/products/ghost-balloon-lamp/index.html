@@ -42,7 +42,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1785254119341">
+    <link rel="stylesheet" href="../../shop.css?v=1785254889395">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -306,6 +306,10 @@
     </div>
     
     <p class="review-body">I love a bit of Halloween on my desk year round and this was the best addition. Loved their quick delivery and after sale service! The stand came broken and they literally replaced it within two days. Amazing work by the team!</p>
+    <div class="review-pictures">
+      <img src="https://review-images.judgeme.com/layerweaver-com/1785204825__1785204818874-8d45b373-6b7a-4eb3-ab4f-42__original.jpeg?quality=80&amp;width=160" data-full="https://review-images.judgeme.com/layerweaver-com/1785204825__1785204818874-8d45b373-6b7a-4eb3-ab4f-42__original.jpeg?quality=80&amp;width=1024" alt="Customer photo from Sindhu" loading="lazy">
+      <img src="https://review-images.judgeme.com/layerweaver-com/1785204828__1785204818875-img_0024__original.jpeg?quality=80&amp;width=160" data-full="https://review-images.judgeme.com/layerweaver-com/1785204828__1785204818875-img_0024__original.jpeg?quality=80&amp;width=1024" alt="Customer photo from Sindhu" loading="lazy">
+    </div>
   </div>
 <div class="review-card">
     <div class="review-header">
@@ -316,6 +320,7 @@
     </div>
     
     <p class="review-body">The ghost lamp is just soo beautiful ❤️ Never expected this quality 🤩</p>
+    
   </div>
 <div class="review-card">
     <div class="review-header">
@@ -326,6 +331,7 @@
     </div>
     
     <p class="review-body">Great design, good quality</p>
+    
   </div>
 <div class="review-card review-card--more">
     <div class="review-header">
@@ -336,6 +342,7 @@
     </div>
     
     <p class="review-body">The material quality did not meet my expectations, so I was disappointed with the product. However, I really appreciate the team for handling the return process, they were responsive, cooperative. Great customer service, even though the product itself wasn't satisfactory.</p>
+    
   </div>
 <div class="review-card review-card--more">
     <div class="review-header">
@@ -346,6 +353,7 @@
     </div>
     
     <p class="review-body">So cute and naughty looking ghost</p>
+    
   </div>
 <div class="review-card review-card--more">
     <div class="review-header">
@@ -356,6 +364,7 @@
     </div>
     
     <p class="review-body">Loved it a great build quality and detailing are superb</p>
+    
   </div>
 <div class="review-card review-card--more">
     <div class="review-header">
@@ -366,6 +375,7 @@
     </div>
     
     <p class="review-body">This is one of the cutest, boo-tiful addition to my collection. Amazing quality and great product</p>
+    
   </div>
 <div class="review-card review-card--more">
     <div class="review-header">
@@ -376,10 +386,16 @@
     </div>
     
     <p class="review-body">Cute lamp &amp; great quality</p>
+    
   </div>
             </div>
             <button type="button" class="reviews-show-all" onclick="this.closest('.reviews-section').classList.add('reviews-section--expanded'); this.remove();">Show all 8 reviews</button>
         </div>
+        </div>
+
+        <div id="review-lightbox" class="review-lightbox" onclick="closeReviewLightbox()">
+            <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
+            <img id="review-lightbox-img" src="" alt="Customer review photo" onclick="event.stopPropagation()">
         </div>
     </section>
 
@@ -421,6 +437,27 @@
         const mainImg   = document.getElementById('main-image');
         const mainVideo = document.getElementById('main-video');
         const mainIframe = document.getElementById('main-iframe');
+
+        function openReviewLightbox(src) {
+            const lightbox = document.getElementById('review-lightbox');
+            const img = document.getElementById('review-lightbox-img');
+            if (!lightbox || !img) return;
+            img.src = src;
+            lightbox.classList.add('review-lightbox--open');
+        }
+
+        function closeReviewLightbox() {
+            const lightbox = document.getElementById('review-lightbox');
+            if (lightbox) lightbox.classList.remove('review-lightbox--open');
+        }
+
+        document.querySelectorAll('.review-pictures img').forEach(img => {
+            img.addEventListener('click', () => openReviewLightbox(img.dataset.full));
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeReviewLightbox();
+        });
 
         function showMainImage(src) {
             if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
@@ -514,10 +551,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"ghost-balloon-lamp":{"Red":"#f61f1f","Yellow":"#ffe500","Blue":"#005bd3","Orange":"#ff8a00","Pink":"#ffc0cb","Purple":"#a54dcf"}};</script>
-    <script src="../../auth.js?v=1785254119341"></script>
-    <script src="../../cart.js?v=1785254119341"></script>
-    <script src="../../search.js?v=1785254119341"></script>
-    <script src="../../wishlist.js?v=1785254119341"></script>
+    <script src="../../auth.js?v=1785254889395"></script>
+    <script src="../../cart.js?v=1785254889395"></script>
+    <script src="../../search.js?v=1785254889395"></script>
+    <script src="../../wishlist.js?v=1785254889395"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
