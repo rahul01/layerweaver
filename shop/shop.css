@@ -2298,6 +2298,35 @@
     padding: 16px 18px;
 }
 
+.review-card--more {
+    display: none;
+}
+
+.reviews-section--expanded .review-card--more {
+    display: block;
+}
+
+.reviews-show-all {
+    display: block;
+    margin: 20px auto 0;
+    background: none;
+    border: 1px solid var(--gray);
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reviews-show-all:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--light);
+}
+
 .review-header {
     display: flex;
     flex-wrap: wrap;

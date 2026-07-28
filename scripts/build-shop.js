@@ -203,6 +203,25 @@ async function promptForJudgemeToken() {
   }
 }
 
+// Keeps reviews in their original order, except any below-top-rated review that
+// would land in the first 3 (always-visible) slots gets bumped to right after
+// them — out of the spotlight, but not shoved to the bottom of the full list.
+function prioritizeTopReviews(reviews) {
+  const maxRating = Math.max(...reviews.map(r => r.rating));
+  const front = [];
+  const bumped = [];
+  const rest = [];
+  for (const r of reviews) {
+    if (front.length < 3) {
+      if (r.rating === maxRating) front.push(r);
+      else bumped.push(r);
+    } else {
+      rest.push(r);
+    }
+  }
+  return [...front, ...bumped, ...rest];
+}
+
 async function fetchAllReviews(products) {
   if (!JUDGEME_TOKEN && process.stdin.isTTY) {
     JUDGEME_TOKEN = await promptForJudgemeToken();
@@ -249,7 +268,7 @@ async function fetchAllReviews(products) {
     map[product.handle] = {
       rating: avgRating,
       count: reviews.length,
-      reviews: reviews.slice(0, 6),
+      reviews: prioritizeTopReviews(reviews),
     };
   }
   console.log(`  Got reviews for ${Object.keys(map).length} product(s)`);
@@ -268,11 +287,11 @@ function starsHtml(rating, count, size = 'sm') {
   </div>`;
 }
 
-function reviewCardHtml(review) {
+function reviewCardHtml(review, index = 0) {
   const date = new Date(review.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' });
   const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
   const name = escAttr(review.reviewer?.name || 'Customer');
-  return `<div class="review-card">
+  return `<div class="review-card${index >= 3 ? ' review-card--more' : ''}">
     <div class="review-header">
       <span class="review-stars">${stars}</span>
       <span class="review-author">${name}</span>
@@ -944,6 +963,7 @@ function generateProductPage(product, collection, reviewData = null) {
             <div class="reviews-list">
                 ${reviewData.reviews.map(reviewCardHtml).join('\n')}
             </div>
+            ${reviewData.reviews.length > 3 ? `<button type="button" class="reviews-show-all" onclick="this.closest('.reviews-section').classList.add('reviews-section--expanded'); this.remove();">Show all ${reviewData.reviews.length} reviews</button>` : ''}
         </div>
         </div>` : ''}
     </section>
