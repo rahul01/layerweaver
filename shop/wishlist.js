@@ -243,9 +243,15 @@
         const ic = btn.querySelector('i');
         if (ic) ic.className = added ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
         updateBadge();
-        window.LW_LOG_EVENT?.(added ? 'add_to_wishlist' : 'remove_from_wishlist', {
-          item_name: item.title,
-          item_id:   item.handle,
+        const price = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
+        if (typeof gtag === 'function') gtag('event', added ? 'add_to_wishlist' : 'remove_from_wishlist', {
+          currency: 'INR',
+          value:    price,
+          items: [{
+            item_id:   item.handle,
+            item_name: item.title,
+            price:     price,
+          }],
         });
       });
     });

@@ -563,7 +563,7 @@ test.describe('Analytics events', () => {
   test('add_to_cart event fires', async ({ page }) => {
     await page.evaluate(() => {
       window._testEvents = [];
-      window.LW_LOG_EVENT = (name, params) => window._testEvents.push({ name, params });
+      window.gtag = (...args) => window._testEvents.push({ name: args[1], params: args[2] });
     });
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
@@ -571,7 +571,7 @@ test.describe('Analytics events', () => {
     }, { timeout: 10_000 });
     const events = await page.evaluate(() => window._testEvents);
     const addEvent = events.find(e => e.name === 'add_to_cart');
-    expect(addEvent.params.item_name).toBe('Articulated Octopus');
+    expect(addEvent.params.items[0].item_name).toBe('Articulated Octopus');
     expect(addEvent.params.value).toBe(249);
     expect(addEvent.params.currency).toBe('INR');
   });
@@ -585,7 +585,7 @@ test.describe('Analytics events', () => {
 
     await page.evaluate(() => {
       window._testEvents = [];
-      window.LW_LOG_EVENT = (name, params) => window._testEvents.push({ name, params });
+      window.gtag = (...args) => window._testEvents.push({ name: args[1], params: args[2] });
     });
     await openDrawer(page);
     const events = await page.evaluate(() => window._testEvents);
@@ -601,7 +601,7 @@ test.describe('Analytics events', () => {
 
     await page.evaluate(() => {
       window._testEvents = [];
-      window.LW_LOG_EVENT = (name, params) => window._testEvents.push({ name, params });
+      window.gtag = (...args) => window._testEvents.push({ name: args[1], params: args[2] });
     });
     await openDrawer(page);
     await page.click('.remove-btn');
@@ -610,10 +610,10 @@ test.describe('Analytics events', () => {
     }, { timeout: 10_000 });
     const events = await page.evaluate(() => window._testEvents);
     const removeEvent = events.find(e => e.name === 'remove_from_cart');
-    expect(removeEvent.params.item_name).toBe('Articulated Octopus');
+    expect(removeEvent.params.items[0].item_name).toBe('Articulated Octopus');
   });
 
-  test('GA4 add_to_cart gtag event fires alongside the existing LW_LOG_EVENT/fbq calls', async ({ page }) => {
+  test('GA4 add_to_cart gtag event fires alongside the existing fbq call', async ({ page }) => {
     await page.evaluate(() => {
       window._testGtagCalls = [];
       window.gtag = (...args) => window._testGtagCalls.push(args);

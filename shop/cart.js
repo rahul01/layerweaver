@@ -282,11 +282,6 @@
       window.location.href = SHOP_ROOT;
     });
     document.getElementById('cart-checkout-btn').addEventListener('click', () => {
-      window.LW_LOG_EVENT?.('begin_checkout', {
-        value:     parseFloat(cart?.cost?.totalAmount?.amount || 0),
-        currency:  cart?.cost?.totalAmount?.currencyCode || '',
-        num_items: cart?.totalQuantity || 0,
-      });
       if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
         value:        parseFloat(cart?.cost?.totalAmount?.amount || 0),
         currency:     cart?.cost?.totalAmount?.currencyCode || 'INR',
@@ -497,10 +492,15 @@
     document.getElementById('cart-drawer')?.classList.add('open');
     document.getElementById('cart-overlay')?.classList.add('open');
     document.body.style.overflow = 'hidden';
-    window.LW_LOG_EVENT?.('view_cart', {
-      value:     parseFloat(cart?.cost?.totalAmount?.amount || 0),
-      currency:  cart?.cost?.totalAmount?.currencyCode || '',
-      num_items: cart?.totalQuantity || 0,
+    if (typeof gtag === 'function') gtag('event', 'view_cart', {
+      currency: cart?.cost?.totalAmount?.currencyCode || '',
+      value:    parseFloat(cart?.cost?.totalAmount?.amount || 0),
+      items: (cart?.lines?.edges || []).map(e => ({
+        item_id:   e.node.merchandise.id.split('/').pop(),
+        item_name: e.node.merchandise.product.title,
+        price:     parseFloat(e.node.merchandise.price.amount),
+        quantity:  e.node.quantity,
+      })),
     });
   }
 
@@ -589,13 +589,6 @@
     refreshUI();
     const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
     if (newLine) {
-      window.LW_LOG_EVENT?.('add_to_cart', {
-        item_name:  newLine.merchandise.product.title,
-        item_id:    newLine.merchandise.product.handle,
-        value:      parseFloat(newLine.merchandise.price.amount),
-        currency:   newLine.merchandise.price.currencyCode,
-        cart_total: parseFloat(cart?.cost?.totalAmount?.amount || 0),
-      });
       if (typeof fbq === 'function') fbq('track', 'AddToCart', {
         content_name: newLine.merchandise.product.title,
         content_ids:  [newLine.merchandise.id.split('/').pop()],
@@ -654,9 +647,15 @@
     cart = await removeLine(cart.id, lineId);
     refreshUI();
     if (line) {
-      window.LW_LOG_EVENT?.('remove_from_cart', {
-        item_name: line.merchandise.product.title,
-        item_id:   line.merchandise.product.handle,
+      if (typeof gtag === 'function') gtag('event', 'remove_from_cart', {
+        currency: line.merchandise.price.currencyCode,
+        value:    parseFloat(line.merchandise.price.amount) * line.quantity,
+        items: [{
+          item_id:   line.merchandise.id.split('/').pop(),
+          item_name: line.merchandise.product.title,
+          price:     parseFloat(line.merchandise.price.amount),
+          quantity:  line.quantity,
+        }],
       });
     }
   }

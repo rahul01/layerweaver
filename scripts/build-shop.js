@@ -357,7 +357,10 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      if (location.hostname === 'www.layerweaver.com') gtag('config', 'GT-NC682MJG');
+      if (location.hostname === 'www.layerweaver.com') {
+        gtag('config', 'GT-NC682MJG');
+        gtag('config', 'G-00DMH9PYCG');
+      }
     </script>
     <!-- Meta Pixel Code -->
     <script>
@@ -396,10 +399,8 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     ${fontAwesomeLinkHtml()}
     <script type="module">
-        window.LW_LOG_EVENT = () => {};
         if (location.hostname === 'www.layerweaver.com') {
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
-            const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js");
             const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
             const app = initializeApp({
                 apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
@@ -410,9 +411,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
                 appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
                 measurementId: "G-00DMH9PYCG"
             });
-            const analytics = getAnalytics(app);
             getPerformance(app);
-            window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
         }
     </script>`;
 }
@@ -1081,11 +1080,14 @@ function generateProductPage(product, collection, reviewData = null) {
         })();
 
         document.addEventListener('DOMContentLoaded', () => {
-            window.LW_LOG_EVENT?.('view_item', {
-                item_name: ${JSON.stringify(product.title)},
-                item_id:   ${JSON.stringify(product.handle)},
-                price:     ${parseFloat(firstAvailable.price.amount).toFixed(2)},
-                currency:  ${JSON.stringify(firstAvailable.price.currencyCode)},
+            if (typeof gtag === 'function') gtag('event', 'view_item', {
+                currency: ${JSON.stringify(firstAvailable.price.currencyCode)},
+                value:    ${parseFloat(firstAvailable.price.amount).toFixed(2)},
+                items: [{
+                    item_id:   ${JSON.stringify(product.handle)},
+                    item_name: ${JSON.stringify(product.title)},
+                    price:     ${parseFloat(firstAvailable.price.amount).toFixed(2)},
+                }],
             });
             if (typeof fbq === 'function') fbq('track', 'ViewContent', {
                 content_name: ${JSON.stringify(product.title)},
@@ -1246,7 +1248,10 @@ function generateAccountPage() {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      if (location.hostname === 'www.layerweaver.com') gtag('config', 'GT-NC682MJG');
+      if (location.hostname === 'www.layerweaver.com') {
+        gtag('config', 'GT-NC682MJG');
+        gtag('config', 'G-00DMH9PYCG');
+      }
     </script>
     <!-- Meta Pixel Code -->
     <script>
@@ -1277,10 +1282,8 @@ function generateAccountPage() {
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     ${fontAwesomeLinkHtml()}
     <script type="module">
-        window.LW_LOG_EVENT = () => {};
         if (location.hostname === 'www.layerweaver.com') {
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
-            const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js");
             const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
             const app = initializeApp({
                 apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
@@ -1291,9 +1294,7 @@ function generateAccountPage() {
                 appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
                 measurementId: "G-00DMH9PYCG"
             });
-            const analytics = getAnalytics(app);
             getPerformance(app);
-            window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
         }
     </script>
 </head>

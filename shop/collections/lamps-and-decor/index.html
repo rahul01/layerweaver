@@ -9,7 +9,10 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      if (location.hostname === 'www.layerweaver.com') gtag('config', 'GT-NC682MJG');
+      if (location.hostname === 'www.layerweaver.com') {
+        gtag('config', 'GT-NC682MJG');
+        gtag('config', 'G-00DMH9PYCG');
+      }
     </script>
     <!-- Meta Pixel Code -->
     <script>
@@ -42,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1785254889395">
+    <link rel="stylesheet" href="../../shop.css?v=1785341983605">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -50,10 +53,8 @@
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
     <script type="module">
-        window.LW_LOG_EVENT = () => {};
         if (location.hostname === 'www.layerweaver.com') {
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
-            const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js");
             const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
             const app = initializeApp({
                 apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
@@ -64,9 +65,7 @@
                 appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
                 measurementId: "G-00DMH9PYCG"
             });
-            const analytics = getAnalytics(app);
             getPerformance(app);
-            window.LW_LOG_EVENT = (name, params) => logEvent(analytics, name, params);
         }
     </script>
 </head>
@@ -595,10 +594,10 @@
         </div>
     </footer>
     <script>window.LW_SWATCHES = {"tulip-single-flower":{"Pink":"#ffc0cb","Purple":"#a54dcf","Red":"#f61f1f","Yellow":"#ffe500","White":"#ffffff"},"ghost-balloon-lamp":{"Red":"#f61f1f","Yellow":"#ffe500","Blue":"#005bd3","Orange":"#ff8a00","Pink":"#ffc0cb","Purple":"#a54dcf"}};</script>
-    <script src="../../auth.js?v=1785254889395"></script>
-    <script src="../../cart.js?v=1785254889395"></script>
-    <script src="../../search.js?v=1785254889395"></script>
-    <script src="../../wishlist.js?v=1785254889395"></script>
+    <script src="../../auth.js?v=1785341983605"></script>
+    <script src="../../cart.js?v=1785341983605"></script>
+    <script src="../../search.js?v=1785341983605"></script>
+    <script src="../../wishlist.js?v=1785341983605"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
