@@ -281,26 +281,6 @@
       closeDrawer();
       window.location.href = SHOP_ROOT;
     });
-    document.getElementById('cart-checkout-btn').addEventListener('click', () => {
-      if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
-        value:        parseFloat(cart?.cost?.totalAmount?.amount || 0),
-        currency:     cart?.cost?.totalAmount?.currencyCode || 'INR',
-        num_items:    cart?.totalQuantity || 0,
-        content_ids:  (cart?.lines?.edges || []).map(e => e.node.merchandise.id.split('/').pop()),
-        content_type: 'product',
-      });
-      if (typeof gtag === 'function') gtag('event', 'begin_checkout', {
-        currency: cart?.cost?.totalAmount?.currencyCode || '',
-        value:    parseFloat(cart?.cost?.totalAmount?.amount || 0),
-        items: (cart?.lines?.edges || []).map(e => ({
-          item_id:   e.node.merchandise.id.split('/').pop(),
-          item_name: e.node.merchandise.product.title,
-          price:     parseFloat(e.node.merchandise.price.amount),
-          quantity:  e.node.quantity,
-        })),
-      });
-    });
-
     let _drawerBusy = false;
     document.getElementById('cart-body').addEventListener('click', async (e) => {
       if (_drawerBusy) return;

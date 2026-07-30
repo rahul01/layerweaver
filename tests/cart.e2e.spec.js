@@ -634,7 +634,12 @@ test.describe('Analytics events', () => {
     }]);
   });
 
-  test('GA4 begin_checkout gtag event fires with cart line items', async ({ page }) => {
+  // Shopify's own checkout pages already report checkout_started (mapped to
+  // GA4 begin_checkout / Meta InitiateCheckout) natively once the browser
+  // lands there, so the storefront no longer sends a duplicate begin_checkout
+  // event on the "Checkout" button click - it only needs the generic click
+  // signal (type/section) for on-site funnel visibility, same as any other CTA.
+  test('checkout button click fires the generic click event, not a duplicate begin_checkout', async ({ page }) => {
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
@@ -654,18 +659,13 @@ test.describe('Analytics events', () => {
     });
     await page.click('#cart-checkout-btn');
     await page.waitForFunction(() => {
-      return window._testGtagCalls?.some(args => args[0] === 'event' && args[1] === 'begin_checkout');
+      return window._testGtagCalls?.some(args => args[0] === 'event' && args[1] === 'click' && args[2]?.label === 'Checkout');
     }, { timeout: 10_000 });
     const calls = await page.evaluate(() => window._testGtagCalls);
-    const [, , params] = calls.find(args => args[1] === 'begin_checkout');
-    expect(params.currency).toBe('INR');
-    expect(params.value).toBe(249);
-    expect(params.items).toEqual([{
-      item_id: expect.any(String),
-      item_name: 'Articulated Octopus',
-      price: 249,
-      quantity: 1,
-    }]);
+    expect(calls.some(args => args[1] === 'begin_checkout')).toBe(false);
+    const [, , params] = calls.find(args => args[1] === 'click' && args[2]?.label === 'Checkout');
+    expect(params.type).toBe('cta');
+    expect(params.section).toBe('cart_drawer');
   });
 });
 
