@@ -262,8 +262,14 @@ async function fetchAllReviews(products) {
 
   const map = {};
   for (const product of products) {
-    const reviews = byExternalId[getNumericId(product.id)];
+    let reviews = byExternalId[getNumericId(product.id)];
     if (!reviews || !reviews.length) continue;
+    // Below 3 stars gets hidden unless the product has enough reviews (50+) that a
+    // few low ratings won't unfairly define it.
+    if (reviews.length < 50) {
+      reviews = reviews.filter(r => r.rating >= 3);
+      if (!reviews.length) continue;
+    }
     const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
     map[product.handle] = {
       rating: avgRating,
