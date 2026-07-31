@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1785475559561">
+    <link rel="stylesheet" href="../../shop.css?v=1785475906801">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -275,7 +275,7 @@
             if (mainImg) { mainImg.style.display = ''; if (src) mainImg.src = src; }
         }
 
-        function selectVariantBtn(btn) {
+        function selectVariantBtn(btn, updateUrl = true) {
             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const priceEl = document.getElementById('product-price'); if (priceEl) priceEl.textContent = btn.dataset.price;
@@ -290,11 +290,24 @@
                     t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
                 });
             }
+            if (updateUrl) {
+                const url = new URL(location.href);
+                url.searchParams.set('variant', btn.dataset.variantId);
+                history.replaceState(null, '', url);
+            }
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
             btn.addEventListener('click', () => selectVariantBtn(btn));
         });
+
+        // Preselect the variant named in the URL (e.g. shared/bookmarked link), if any.
+        (function() {
+            const wantedId = new URLSearchParams(location.search).get('variant');
+            if (!wantedId) return;
+            const btn = document.querySelector(`.variant-btn[data-variant-id="${wantedId}"]`);
+            if (btn) selectVariantBtn(btn, false);
+        })();
 
         // Thumbnail click - handles images and video thumbnails
         document.querySelectorAll('.thumbnail, .video-thumb').forEach(thumb => {
@@ -325,6 +338,9 @@
                             const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
+                            const url = new URL(location.href);
+                            url.searchParams.set('variant', btn.dataset.variantId);
+                            history.replaceState(null, '', url);
                         }
                     }
                 }
@@ -364,10 +380,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"cupcake-clicker-one-piece":{"Purple":"#a54dcf","Beige":"#ead8ab"}};</script>
-    <script src="../../auth.js?v=1785475559561"></script>
-    <script src="../../cart.js?v=1785475559561"></script>
-    <script src="../../search.js?v=1785475559561"></script>
-    <script src="../../wishlist.js?v=1785475559561"></script>
+    <script src="../../auth.js?v=1785475906801"></script>
+    <script src="../../cart.js?v=1785475906801"></script>
+    <script src="../../search.js?v=1785475906801"></script>
+    <script src="../../wishlist.js?v=1785475906801"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

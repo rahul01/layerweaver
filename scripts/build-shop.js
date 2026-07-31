@@ -1016,7 +1016,7 @@ function generateProductPage(product, collection, reviewData = null) {
             if (mainImg) { mainImg.style.display = ''; if (src) mainImg.src = src; }
         }
 
-        function selectVariantBtn(btn) {
+        function selectVariantBtn(btn, updateUrl = true) {
             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const priceEl = document.getElementById('product-price'); if (priceEl) priceEl.textContent = btn.dataset.price;
@@ -1031,11 +1031,24 @@ function generateProductPage(product, collection, reviewData = null) {
                     t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
                 });
             }
+            if (updateUrl) {
+                const url = new URL(location.href);
+                url.searchParams.set('variant', btn.dataset.variantId);
+                history.replaceState(null, '', url);
+            }
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
             btn.addEventListener('click', () => selectVariantBtn(btn));
         });
+
+        // Preselect the variant named in the URL (e.g. shared/bookmarked link), if any.
+        (function() {
+            const wantedId = new URLSearchParams(location.search).get('variant');
+            if (!wantedId) return;
+            const btn = document.querySelector(\`.variant-btn[data-variant-id="\${wantedId}"]\`);
+            if (btn) selectVariantBtn(btn, false);
+        })();
 
         // Thumbnail click - handles images and video thumbnails
         document.querySelectorAll('.thumbnail, .video-thumb').forEach(thumb => {
@@ -1066,6 +1079,9 @@ function generateProductPage(product, collection, reviewData = null) {
                             const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
+                            const url = new URL(location.href);
+                            url.searchParams.set('variant', btn.dataset.variantId);
+                            history.replaceState(null, '', url);
                         }
                     }
                 }
