@@ -60,6 +60,7 @@ async function fetchCollections() {
                       price { amount currencyCode }
                       availableForSale
                       image { url altText }
+                      requiresComponents
                     }
                   }
                 }
@@ -96,6 +97,7 @@ async function fetchCollections() {
     'keychains-pocket-charms',
     'page-pals',
     'aquarium-tech-and-accessories',
+    'bundles',
   ];
 
   collections.sort((a, b) => {
@@ -156,6 +158,19 @@ async function fetchProducts() {
                   price { amount currencyCode }
                   availableForSale
                   image { url altText }
+                  requiresComponents
+                  components(first: 20) {
+                    edges {
+                      node {
+                        quantity
+                        productVariant {
+                          id title
+                          image { url altText }
+                          product { title handle }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -348,6 +363,24 @@ function isContactOnly(product) {
 // Products tagged 'custom_price' show their Shopify price as indicative only.
 function isCustomPrice(product) {
   return product.tags.includes('custom_price');
+}
+
+// Native Shopify Bundles: a bundle variant's `requiresComponents` is true and it
+// lists the component products/quantities via `components`.
+function isBundle(product) {
+  return product.variants.edges.some(e => e.node.requiresComponents);
+}
+
+// Flattens the component list of the first bundle variant into { title, handle, image, quantity }.
+function bundleComponents(product) {
+  const bundleVariant = product.variants.edges.find(e => e.node.requiresComponents)?.node;
+  if (!bundleVariant) return [];
+  return (bundleVariant.components?.edges || []).map(e => ({
+    quantity: e.node.quantity,
+    title: e.node.productVariant.product.title,
+    handle: e.node.productVariant.product.handle,
+    image: e.node.productVariant.image,
+  }));
 }
 
 // ── HTML partials (all paths relative to site root via `base`) ────────────────
@@ -569,7 +602,10 @@ function productCardHtml(product, productsBase, reviewData = null) {
                        ${!v.availableForSale ? 'disabled' : ''}></button>`;
         }).join('')
       }</div>`
-    : (hasMultiple && !needsProductPage ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>` : '');
+    : '';
+  // Non-color multi-variant products without per-variant images (e.g. bundles) need
+  // a "Choose option" link inside the actions row, sized like the other pill buttons.
+  const needsChooseOption = hasMultiple && !allAreColors && !needsProductPage;
 
   return `
       <div class="shop-product-card">
@@ -580,6 +616,7 @@ function productCardHtml(product, productsBase, reviewData = null) {
                     : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                   }
                   ${!available ? '<span class="sold-out-badge">Sold Out</span>' : ''}
+                  ${isBundle(product) ? '<span class="bundle-badge">Bundle</span>' : ''}
                   <button class="wishlist-btn"
                           data-handle="${product.handle}"
                           data-title="${escAttr(product.title)}"
@@ -608,7 +645,7 @@ function productCardHtml(product, productsBase, reviewData = null) {
                           ? `<a href="https://wa.me/917558783018?text=I'm interested in ${encodeURIComponent(product.title)}" class="listing-whatsapp-btn" target="_blank">
                                  <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
                              </a>`
-                          : needsProductPage
+                          : needsProductPage || needsChooseOption
                             ? `<a href="${productsBase}${product.handle}/" class="listing-choose-link">Choose option</a>`
                             : `<button class="listing-add-to-cart"
                                  data-variant-gid="${firstVariant.id}">
@@ -671,7 +708,9 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
   const base     = '../';
   const shopBase = './';
 
-  const productCards = products.map(p => productCardHtml(p, 'products/', reviewsMap[p.handle])).join('\n');
+  // Bundles are shown only in their own collection, not mixed into the main grid.
+  const singleProducts = products.filter(p => !isBundle(p));
+  const productCards = singleProducts.map(p => productCardHtml(p, 'products/', reviewsMap[p.handle])).join('\n');
 
   // Pick the first product image from each collection for the "All" banner
   const BANNER_EXCLUDE = ['cone-fidget'];
@@ -914,6 +953,22 @@ function generateProductPage(product, collection, reviewData = null) {
                     <h1>${toTitleCase(product.title)}</h1>
                     ${reviewData?.count ? starsHtml(reviewData.rating, reviewData.count, 'lg') : ''}
                     ${isContactOnly(product) ? '' : `<p class="product-price${isCustomPrice(product) ? ' custom-price' : ''}" id="product-price">${price}${isCustomPrice(product) ? '<span class="indicative-label">Final price varies with customization</span>' : ''}</p>`}
+
+                    ${isBundle(product) ? `
+                    <div class="bundle-includes">
+                        <p class="bundle-includes-label">This bundle includes</p>
+                        <div class="bundle-includes-list">
+                            ${bundleComponents(product).map(c => `
+                            <a href="${shopBase}products/${c.handle}/" class="bundle-includes-item">
+                                ${c.image
+                                  ? `<img src="${resizedImageUrl(c.image.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(c.image.altText || c.title)}" loading="lazy">`
+                                  : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
+                                }
+                                <span class="bundle-includes-title">${toTitleCase(c.title)}</span>
+                                ${c.quantity > 1 ? `<span class="bundle-includes-qty">× ${c.quantity}</span>` : ''}
+                            </a>`).join('')}
+                        </div>
+                    </div>` : ''}
 
                     ${hasVariants ? `
                     <div class="variants-section">

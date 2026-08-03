@@ -437,6 +437,72 @@
     margin-top: 2px;
 }
 
+.bundle-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--primary);
+    color: var(--light);
+    font-size: 0.75rem;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sold-out-badge + .bundle-badge {
+    top: 42px;
+}
+
+.bundle-includes {
+    margin: 16px 0;
+}
+
+.bundle-includes-label {
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--dark);
+    margin: 0 0 10px;
+}
+
+.bundle-includes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+}
+
+.bundle-includes-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: var(--dark);
+}
+
+.bundle-includes-item img,
+.bundle-includes-item .no-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border, #eee);
+}
+
+.bundle-includes-title {
+    font-size: 0.78rem;
+    margin-top: 6px;
+    line-height: 1.3;
+}
+
+.bundle-includes-qty {
+    font-size: 0.72rem;
+    color: #888;
+}
+
 .product-card-actions {
     padding: 0 16px 16px;
     display: flex;
