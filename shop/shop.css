@@ -1219,6 +1219,18 @@
     margin: 0;
 }
 
+/* Per-character personalization surcharge, nested under its base cart line */
+.line-personalization-surcharge {
+    font-size: 0.78rem;
+    color: var(--gray-medium);
+    margin: 2px 0 0;
+}
+
+.line-personalization-surcharge .line-price {
+    display: inline;
+    font-size: inherit;
+}
+
 .line-qty {
     display: flex;
     align-items: center;

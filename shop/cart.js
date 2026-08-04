@@ -150,20 +150,28 @@
     return addLines(cartId, [line]);
   }
 
-  async function updateLine(cartId, lineId, qty) {
+  async function updateLines(cartId, updates) {
     const data = await gql(`
       mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
         cartLinesUpdate(cartId: $cartId, lines: $lines) { cart { ${CART_FIELDS} } }
-      }`, { cartId, lines: [{ id: lineId, quantity: qty }] });
+      }`, { cartId, lines: updates });
     return data.cartLinesUpdate.cart;
   }
 
-  async function removeLine(cartId, lineId) {
+  async function updateLine(cartId, lineId, qty) {
+    return updateLines(cartId, [{ id: lineId, quantity: qty }]);
+  }
+
+  async function removeLines(cartId, lineIds) {
     const data = await gql(`
       mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
         cartLinesRemove(cartId: $cartId, lineIds: $lineIds) { cart { ${CART_FIELDS} } }
-      }`, { cartId, lineIds: [lineId] });
+      }`, { cartId, lineIds });
     return data.cartLinesRemove.cart;
+  }
+
+  async function removeLine(cartId, lineId) {
+    return removeLines(cartId, [lineId]);
   }
 
   // One-time cleanup for carts that still hold the free-gift line item and/or
@@ -193,6 +201,30 @@
       }
     } catch (err) {
       console.warn('[Cart] Legacy gift line cleanup failed:', err);
+    }
+  }
+
+  // Per-char surcharge lines (see handleAddToCart) only make sense paired
+  // with their base line via a shared `_pgroup` attribute. A surcharge line
+  // whose base line is missing - e.g. removed by a pre-pairing version of
+  // this code, or some other path that bypassed handleRemoveLine - is a
+  // silent overcharge with nothing left to explain it, so it's swept on
+  // every cart load rather than left for the customer to notice at checkout.
+  async function cleanupOrphanSurchargeLines() {
+    if (!cart) return;
+    const lines = cart.lines.edges.map(e => e.node);
+    const orphanIds = lines
+      .filter(isSurchargeLine)
+      .filter(sLine => {
+        const pgroup = attrValue(sLine, '_pgroup');
+        return !lines.some(b => !isSurchargeLine(b) && attrValue(b, '_pgroup') === pgroup);
+      })
+      .map(l => l.id);
+    if (!orphanIds.length) return;
+    try {
+      cart = await removeLines(cart.id, orphanIds);
+    } catch (err) {
+      console.warn('[Cart] Orphan surcharge line cleanup failed:', err);
     }
   }
 
@@ -290,15 +322,16 @@
       setDrawerLoading(true);
       try {
         const lineId = btn.dataset.lineId;
+        const pairedLineId = btn.dataset.pairedLineId || null;
         if (btn.classList.contains('remove-btn') || btn.classList.contains('qty-dec')) {
           const newQty = btn.classList.contains('remove-btn') ? 0 : parseInt(btn.dataset.qty) - 1;
           if (newQty <= 0) {
-            await handleRemoveLine(lineId);
+            await handleRemoveLine(lineId, pairedLineId);
           } else {
-            await handleUpdateLine(lineId, newQty);
+            await handleUpdateLine(lineId, newQty, pairedLineId);
           }
         } else {
-          await handleUpdateLine(lineId, parseInt(btn.dataset.qty) + 1);
+          await handleUpdateLine(lineId, parseInt(btn.dataset.qty) + 1, pairedLineId);
         }
       } finally {
         _drawerBusy = false;
@@ -402,6 +435,16 @@
     }
   }
 
+  // Attribute keys starting with `_` are internal bookkeeping (pairing
+  // tokens, flags) - never shown to the customer as a line detail.
+  function attrValue(line, key) {
+    return line.attributes?.find(a => a.key === key)?.value;
+  }
+
+  function isSurchargeLine(line) {
+    return attrValue(line, '_surcharge') === 'true';
+  }
+
   function renderCart() {
     const body   = document.getElementById('cart-body');
     const total  = document.getElementById('cart-total-price');
@@ -422,7 +465,28 @@
       return;
     }
 
-    body.innerHTML = lines.map(line => {
+    // Pair each per-char surcharge line to its base line via the shared
+    // `_pgroup` token so it can render nested (no independent qty/remove
+    // controls) instead of as its own confusing line item. A surcharge line
+    // whose base line is gone (e.g. removed before this pairing existed)
+    // falls back to rendering as a normal standalone line rather than being
+    // silently hidden.
+    const surchargeLines = lines.filter(isSurchargeLine);
+    const baseLines = lines.filter(l => !isSurchargeLine(l));
+    const pairedSurchargeIds = new Set();
+    const surchargeFor = new Map(); // base line id -> surcharge line
+    for (const sLine of surchargeLines) {
+      const pgroup = attrValue(sLine, '_pgroup');
+      const base = pgroup && baseLines.find(b => attrValue(b, '_pgroup') === pgroup);
+      if (base) {
+        surchargeFor.set(base.id, sLine);
+        pairedSurchargeIds.add(sLine.id);
+      }
+    }
+    const orphanSurchargeLines = surchargeLines.filter(l => !pairedSurchargeIds.has(l.id));
+    const renderOrder = [...baseLines, ...orphanSurchargeLines];
+
+    body.innerHTML = renderOrder.map(line => {
       const v     = line.merchandise;
       const price = fmt(v.price.amount, v.price.currencyCode);
       const img   = v.image ? `<img src="${v.image.url}" alt="${esc(v.image.altText || v.product.title)}">` : '';
@@ -433,8 +497,15 @@
       const variantLabel = v.title !== 'Default Title'
         ? `<span class="line-variant">${swatchDot}${esc(v.title)}</span>`
         : '';
-      const customAttrs = line.attributes?.filter(a => a.value)
+      const customAttrs = line.attributes?.filter(a => a.value && !a.key.startsWith('_'))
         .map(a => `<span class="line-attr"><em>${esc(a.key)}:</em> ${esc(a.value)}</span>`).join('') || '';
+
+      const pairedSurcharge = surchargeFor.get(line.id);
+      const surchargeNote = pairedSurcharge
+        ? `<p class="line-personalization-surcharge">+ ${pairedSurcharge.quantity} extra character${pairedSurcharge.quantity > 1 ? 's' : ''}: <span class="line-price">${fmt(pairedSurcharge.quantity * parseFloat(pairedSurcharge.merchandise.price.amount), pairedSurcharge.merchandise.price.currencyCode)}</span></p>`
+        : '';
+      const pairedAttr = pairedSurcharge ? ` data-paired-line-id="${pairedSurcharge.id}"` : '';
+
       return `
         <div class="cart-line" data-line-id="${line.id}">
           <a class="cart-line-link" href="${SHOP_ROOT}products/${v.product.handle}/">
@@ -444,13 +515,14 @@
               ${variantLabel}
               ${customAttrs}
               <p class="line-price">${price}</p>
+              ${surchargeNote}
             </div>
           </a>
           <div class="line-qty">
-            <button class="qty-btn qty-dec" data-line-id="${line.id}" data-qty="${line.quantity}">−</button>
+            <button class="qty-btn qty-dec" data-line-id="${line.id}"${pairedAttr} data-qty="${line.quantity}">−</button>
             <span>${line.quantity}</span>
-            <button class="qty-btn qty-inc" data-line-id="${line.id}" data-qty="${line.quantity}">+</button>
-            <button class="remove-btn" data-line-id="${line.id}" aria-label="Remove">
+            <button class="qty-btn qty-inc" data-line-id="${line.id}"${pairedAttr} data-qty="${line.quantity}">+</button>
+            <button class="remove-btn" data-line-id="${line.id}"${pairedAttr} aria-label="Remove">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -541,11 +613,13 @@
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
-  async function addToCartCore(variantGid, qty = 1, attributes = []) {
+  // Shared by single-item and multi-item (e.g. per-char surcharge) add-to-cart
+  // flows. `lines` is an array of { merchandiseId, quantity, attributes? }.
+  async function addLinesCore(lines) {
     const cartId = loadCartId();
     if (cartId) {
       try {
-        cart = await addLine(cartId, variantGid, qty, attributes);
+        cart = await addLines(cartId, lines);
       } catch (err) {
         // A line elsewhere in this cart likely references a variant that no
         // longer exists (e.g. after swapping color variants in Shopify) -
@@ -553,22 +627,28 @@
         // entirely. See recoverCart().
         console.warn('[Cart] Add failed, attempting to recover the existing cart:', err);
         const recovered = await recoverCart(cartId);
-        cart = recovered ? await addLine(cartId, variantGid, qty, attributes).catch(() => null) : null;
+        cart = recovered ? await addLines(cartId, lines).catch(() => null) : null;
       }
       if (!cart) {
         localStorage.removeItem(KEY);
-        cart = await createCart(variantGid, qty, attributes);
+        cart = await createCart(lines[0].merchandiseId, lines[0].quantity, lines[0].attributes || []);
+        if (lines.length > 1) cart = await addLines(cart.id, lines.slice(1));
         saveCartId(cart.id);
         syncCartIdToServer(cart.id);
       }
     } else {
-      cart = await createCart(variantGid, qty, attributes);
+      cart = await createCart(lines[0].merchandiseId, lines[0].quantity, lines[0].attributes || []);
+      if (lines.length > 1) cart = await addLines(cart.id, lines.slice(1));
       saveCartId(cart.id);
       syncCartIdToServer(cart.id);
     }
     refreshUI();
-    const newLine = cart?.lines.edges.find(e => e.node.merchandise.id === variantGid)?.node;
-    if (newLine) {
+
+    const addedGids = new Set(lines.map(l => l.merchandiseId));
+    const newLines = cart?.lines.edges
+      .map(e => e.node)
+      .filter(node => addedGids.has(node.merchandise.id)) || [];
+    for (const newLine of newLines) {
       if (typeof fbq === 'function') fbq('track', 'AddToCart', {
         content_name: newLine.merchandise.product.title,
         content_ids:  [newLine.merchandise.id.split('/').pop()],
@@ -576,26 +656,32 @@
         value:        parseFloat(newLine.merchandise.price.amount),
         currency:     newLine.merchandise.price.currencyCode,
       });
-      if (typeof gtag === 'function') gtag('event', 'add_to_cart', {
-        currency: newLine.merchandise.price.currencyCode,
-        value:    parseFloat(newLine.merchandise.price.amount) * newLine.quantity,
-        items: [{
-          item_id:   newLine.merchandise.id.split('/').pop(),
-          item_name: newLine.merchandise.product.title,
-          price:     parseFloat(newLine.merchandise.price.amount),
-          quantity:  newLine.quantity,
-        }],
-      });
     }
+    if (newLines.length && typeof gtag === 'function') gtag('event', 'add_to_cart', {
+      currency: newLines[0].merchandise.price.currencyCode,
+      value:    newLines.reduce((sum, l) => sum + parseFloat(l.merchandise.price.amount) * l.quantity, 0),
+      items: newLines.map(l => ({
+        item_id:   l.merchandise.id.split('/').pop(),
+        item_name: l.merchandise.product.title,
+        price:     parseFloat(l.merchandise.price.amount),
+        quantity:  l.quantity,
+      })),
+    });
+    return cart;
+  }
+
+  async function addToCartCore(variantGid, qty = 1, attributes = []) {
+    return addLinesCore([{ merchandiseId: variantGid, quantity: qty, attributes }]);
   }
 
   async function handleAddToCart(variantGid, qty = 1) {
     const btn = document.getElementById('add-to-cart-btn');
 
     const attributes = [];
+    let text = '';
     if (btn?.dataset.personalized) {
       const input = document.getElementById('custom-text');
-      const text  = input?.value.trim();
+      text = input?.value.trim();
       if (!text) {
         input?.focus();
         input?.classList.add('field-error');
@@ -607,7 +693,40 @@
 
     setAddBtnLoading(btn, true);
     try {
-      await addToCartCore(variantGid, qty, attributes);
+      // Per-character pricing: the cart can't override a line's price, so the
+      // per-char rate is charged by adding a second line for a hidden
+      // surcharge variant at quantity = characters beyond the first. The two
+      // lines are tied together with a shared `_pgroup` token (keys starting
+      // with `_` are internal - see customAttrs in renderCart) so the drawer
+      // can pair them: the surcharge line never gets its own qty/remove
+      // controls, and updating/removing the base line cascades to it.
+      const rate = parseFloat(btn?.dataset.perCharRate);
+      const surchargeGid = btn?.dataset.surchargeGid;
+      if (rate && surchargeGid) {
+        const extraChars = Math.max(0, text.length - 1);
+        if (extraChars > 0) {
+          const pgroup = `pg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+          attributes.push({ key: '_pgroup', value: pgroup });
+          const lines = [
+            { merchandiseId: variantGid, quantity: qty, attributes },
+            {
+              merchandiseId: surchargeGid,
+              quantity: extraChars * qty,
+              attributes: [
+                { key: 'Custom Text', value: text },
+                { key: 'For', value: btn.dataset.forProduct || '' },
+                { key: '_pgroup', value: pgroup },
+                { key: '_surcharge', value: 'true' },
+              ],
+            },
+          ];
+          await addLinesCore(lines);
+        } else {
+          await addToCartCore(variantGid, qty, attributes);
+        }
+      } else {
+        await addToCartCore(variantGid, qty, attributes);
+      }
     } catch (err) {
       console.error('Add to cart failed:', err);
       alert('Could not add to cart. Please try again.');
@@ -616,15 +735,34 @@
     }
   }
 
-  async function handleUpdateLine(lineId, newQty) {
-    if (newQty <= 0) return handleRemoveLine(lineId);
+  // `pairedLineId`, when present, is a per-char surcharge line tied to this
+  // base line (see renderCart's pairing logic) - it's never given its own
+  // qty/remove controls, so any change to the base line must cascade to it
+  // here, in the same mutation, to keep the two in sync.
+  async function handleUpdateLine(lineId, newQty, pairedLineId = null) {
+    if (newQty <= 0) return handleRemoveLine(lineId, pairedLineId);
+    if (pairedLineId) {
+      const baseLine = cart?.lines.edges.find(e => e.node.id === lineId)?.node;
+      const pairedLine = cart?.lines.edges.find(e => e.node.id === pairedLineId)?.node;
+      if (baseLine && pairedLine && baseLine.quantity > 0) {
+        const perUnit = pairedLine.quantity / baseLine.quantity;
+        cart = await updateLines(cart.id, [
+          { id: lineId, quantity: newQty },
+          { id: pairedLineId, quantity: Math.round(perUnit * newQty) },
+        ]);
+        refreshUI();
+        return;
+      }
+    }
     cart = await updateLine(cart.id, lineId, newQty);
     refreshUI();
   }
 
-  async function handleRemoveLine(lineId) {
+  async function handleRemoveLine(lineId, pairedLineId = null) {
     const line = cart?.lines.edges.find(e => e.node.id === lineId)?.node;
-    cart = await removeLine(cart.id, lineId);
+    cart = pairedLineId
+      ? await removeLines(cart.id, [lineId, pairedLineId])
+      : await removeLine(cart.id, lineId);
     refreshUI();
     if (line) {
       if (typeof gtag === 'function') gtag('event', 'remove_from_cart', {
@@ -786,7 +924,7 @@
       try {
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; } // cart explicitly gone on Shopify
-        else await cleanupLegacyGiftLine();
+        else { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
       } catch (err) {
         // Could be a real network error, or a line in this cart referencing
         // a variant Shopify can no longer resolve (see recoverCart). Try to
@@ -794,7 +932,7 @@
         // there instead of quietly looking empty until the next add.
         console.warn('[Cart] Restoring saved cart failed, attempting recovery:', err);
         cart = await recoverCart(cartId).catch(() => null);
-        if (cart) await cleanupLegacyGiftLine();
+        if (cart) { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
       }
     }
 
@@ -825,10 +963,10 @@
       try {
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; }
-        else await cleanupLegacyGiftLine();
+        else { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
       } catch {
         cart = await recoverCart(cartId).catch(() => null);
-        if (cart) await cleanupLegacyGiftLine();
+        if (cart) { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
       }
     } else {
       cart = null;

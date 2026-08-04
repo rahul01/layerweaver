@@ -365,6 +365,33 @@ function isCustomPrice(product) {
   return product.tags.includes('custom_price');
 }
 
+// Per-character personalization pricing: a product tagged 'personalized' +
+// 'per_char' + 'char_N' charges its Shopify price for the first character,
+// then ₹N per additional character. Since the Storefront API cart can't
+// override a line's price, the extra is charged by adding a second cart
+// line for a hidden surcharge variant (see PER_CHAR_SURCHARGE_VARIANTS)
+// at quantity = extra characters, alongside the base variant at quantity 1.
+const PER_CHAR_SURCHARGE_VARIANTS = {
+  100: 'gid://shopify/ProductVariant/48547657646302', // Personalization Surcharge · ₹100 per character
+};
+
+// Returns the per-character rate (e.g. 100) if this product uses per-char
+// pricing, or null otherwise. Throws if 'per_char' is present without a
+// matching 'char_N' tag, or if that rate has no surcharge variant configured
+// above - better to fail the build than silently undercharge.
+function perCharRate(product) {
+  if (!product.tags.includes('per_char')) return null;
+  const charTag = product.tags.find(t => /^char_\d+$/.test(t));
+  if (!charTag) {
+    throw new Error(`Product "${product.handle}" is tagged 'per_char' but has no matching 'char_N' tag`);
+  }
+  const rate = parseInt(charTag.slice('char_'.length), 10);
+  if (!PER_CHAR_SURCHARGE_VARIANTS[rate]) {
+    throw new Error(`Product "${product.handle}" wants a ₹${rate}/char surcharge, but no surcharge variant is configured for that rate in PER_CHAR_SURCHARGE_VARIANTS`);
+  }
+  return rate;
+}
+
 // Native Shopify Bundles: a bundle variant's `requiresComponents` is true and it
 // lists the component products/quantities via `components`.
 function isBundle(product) {
@@ -775,6 +802,8 @@ function generateProductPage(product, collection, reviewData = null) {
   const variants        = product.variants.edges.map(e => e.node);
   const images          = product.images.edges.map(e => e.node);
   const firstAvailable  = variants.find(v => v.availableForSale) || variants[0];
+  const charRate        = perCharRate(product);
+  const surchargeGid    = charRate ? PER_CHAR_SURCHARGE_VARIANTS[charRate] : null;
   const hasVariants     = variants.length > 1 || variants[0].title !== 'Default Title';
   const swatchMap       = buildSwatchMap(product);
   const allColors       = hasVariants && variants.every(v => swatchMap[v.title]);
@@ -982,7 +1011,9 @@ function generateProductPage(product, collection, reviewData = null) {
                     <div class="personalization-field">
                         <label for="custom-text">Personalization <span class="required">*</span></label>
                         <input type="text" id="custom-text" maxlength="20" placeholder="Enter the text to be printed">
-                        <p class="field-hint">This text will appear on your item exactly as entered.</p>
+                        <p class="field-hint">${charRate
+                          ? `${formatPrice(firstAvailable.price.amount, firstAvailable.price.currencyCode)} for the first character, +${formatPrice(charRate, firstAvailable.price.currencyCode)} per character after that.`
+                          : 'This text will appear on your item exactly as entered.'}</p>
                     </div>` : ''}
 
                     <div class="product-actions">
@@ -990,7 +1021,8 @@ function generateProductPage(product, collection, reviewData = null) {
                         <button id="add-to-cart-btn"
                                 class="btn-primary add-to-cart-btn"
                                 data-variant-gid="${firstAvailable.id}"
-                                ${product.tags.includes('personalized') ? 'data-personalized="true"' : ''}>
+                                ${product.tags.includes('personalized') ? 'data-personalized="true"' : ''}
+                                ${charRate ? `data-per-char-rate="${charRate}" data-surcharge-gid="${surchargeGid}" data-base-price="${firstAvailable.price.amount}" data-for-product="${escAttr(toTitleCase(product.title))}"` : ''}>
                             Add to Cart
                         </button>`}
                         <button class="wishlist-btn btn-secondary wishlist-page-btn"
@@ -1155,6 +1187,26 @@ function generateProductPage(product, collection, reviewData = null) {
             }
             customTextInput.addEventListener('input', updateWaLink);
         })();
+
+        ${charRate ? `
+        (function() {
+            const addBtn = document.getElementById('add-to-cart-btn');
+            const customTextInput = document.getElementById('custom-text');
+            const priceEl = document.getElementById('product-price');
+            if (!addBtn || !customTextInput || !priceEl) return;
+            const basePrice = parseFloat(addBtn.dataset.basePrice);
+            const rate = parseFloat(addBtn.dataset.perCharRate);
+            const currencyCode = ${JSON.stringify(firstAvailable.price.currencyCode)};
+            function fmt(amount) {
+                return currencyCode === 'INR' ? '₹' + amount.toFixed(0) : currencyCode + ' ' + amount.toFixed(2);
+            }
+            function updatePrice() {
+                const len = customTextInput.value.trim().length;
+                const extraChars = Math.max(0, len - 1);
+                priceEl.textContent = fmt(basePrice + extraChars * rate);
+            }
+            customTextInput.addEventListener('input', updatePrice);
+        })();` : ''}
 
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof gtag === 'function') gtag('event', 'view_item', {
@@ -1615,7 +1667,11 @@ function generateTeamReviewLinksPage(products) {
 
 async function main() {
   console.log('Fetching products from Shopify Storefront API...');
-  const products = await fetchProducts();
+  // Internal-only line items (e.g. the per-char personalization surcharge -
+  // see PER_CHAR_SURCHARGE_VARIANTS) are published to the headless channel so
+  // cart.js can add them by variant GID, but must never appear as a real
+  // product: no product page, no listing card, no search/sitemap entry.
+  const products = (await fetchProducts()).filter(p => !p.tags.includes('internal'));
   console.log(`Found ${products.length} product(s)`);
 
   console.log('Fetching collections...');
