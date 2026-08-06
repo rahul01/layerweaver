@@ -42,7 +42,6 @@ app-release/
 app-release.apk
 Screenshot*.png
 
-# Rakhi ad creative PNGs - set aside temporarily (large binaries, kept
-# locally in .local-ad-pngs-backup/ and re-added once deploy is stable)
-ads/rakhi/**/*.png
+# Local-only backup of Rakhi ad creative PNGs (see git history for the
+# committed copies under ads/rakhi/)
 .local-ad-pngs-backup/
