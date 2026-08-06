@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakhi Ad — Desk Gear</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #A083D5;
+            --secondary: #EFCF20;
+            --amber: #E8A020;
+            --dark: #000000;
+            --light: #FFFFFF;
+            --offwhite: #FAF8F5;
+            --font-primary: 'Montserrat', sans-serif;
+            --font-brand: 'Science Gothic', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #1a1a1a;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: var(--font-primary);
+            gap: 32px;
+            padding: 40px;
+        }
+
+        .ad-block { display: flex; flex-direction: column; gap: 12px; }
+
+        .ad-label {
+            color: #888;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 4;
+            padding: 40px 48px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%);
+        }
+
+        .brand { display: flex; align-items: center; gap: 14px; }
+
+        .brand-logo { height: 40px; width: auto; }
+
+        .brand-name {
+            font-family: var(--font-brand);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--light);
+            letter-spacing: 0.03em;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .rakhi-tag {
+            background: var(--amber);
+            color: var(--dark);
+            font-size: 16px;
+            font-weight: 700;
+            padding: 8px 22px;
+            border-radius: 100px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .personalize-note {
+            display: block;
+            font-size: 13px;
+            color: rgba(0,0,0,0.45);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .price-badge {
+            background: var(--dark);
+            color: var(--light);
+            font-weight: 800;
+            padding: 12px 30px;
+            border-radius: 100px;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+
+        .shipping-badge {
+            background: var(--primary);
+            color: var(--light);
+            font-weight: 700;
+            padding: 8px 20px;
+            border-radius: 100px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .cta-btn {
+            background: var(--dark);
+            color: var(--light);
+            font-weight: 700;
+            border-radius: 100px;
+            border: none;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+        }
+
+        .url {
+            font-family: var(--font-brand);
+            color: rgba(0,0,0,0.28);
+            letter-spacing: 0.05em;
+        }
+
+        /* ── SQUARE 1080×1080 ── */
+        .ad-square {
+            width: 1080px; height: 1080px;
+            position: relative; overflow: hidden;
+            background: #000; display: flex; flex-direction: column;
+        }
+        .ad-square .image-section { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 60px; }
+        .ad-square .image-section img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .ad-square .copy-band {
+            position: relative; z-index: 3;
+            background: linear-gradient(135deg, var(--secondary) 0%, #f5dc40 100%);
+            padding: 40px 64px 46px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between; gap: 32px;
+        }
+        .ad-square .copy-band::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary); }
+        .ad-square .copy-left { flex: 1; }
+        .ad-square .eyebrow { font-size: 19px; font-weight: 700; color: rgba(0,0,0,0.42); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+        .ad-square .headline { font-size: 66px; font-weight: 900; color: var(--dark); line-height: 0.98; letter-spacing: -0.02em; margin-bottom: 16px; }
+        .ad-square .sub { font-size: 20px; color: rgba(0,0,0,0.55); font-weight: 500; line-height: 1.5; }
+        .ad-square .copy-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
+        .ad-square .price-badge { font-size: 28px; }
+        .ad-square .shipping-badge { font-size: 15px; }
+        .ad-square .cta-btn { font-size: 22px; padding: 18px 40px; }
+        .ad-square .url { font-size: 14px; }
+
+        /* ── STORY 1080×1920 ── */
+        .ad-story {
+            width: 1080px; height: 1920px;
+            position: relative; overflow: hidden;
+            background: #000; display: flex; flex-direction: column;
+        }
+        .ad-story .image-section { flex: 1.1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 80px 60px; }
+        .ad-story .image-section img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .ad-story .copy-band {
+            position: relative; z-index: 3; flex: 0.9;
+            background: linear-gradient(160deg, var(--secondary) 0%, #f5dc40 100%);
+            padding: 64px 64px 96px; flex-shrink: 0;
+            display: flex; flex-direction: column; justify-content: center; gap: 24px;
+        }
+        .ad-story .copy-band::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--primary); }
+        .ad-story .eyebrow { font-size: 24px; font-weight: 700; color: rgba(0,0,0,0.42); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
+        .ad-story .headline { font-size: 84px; font-weight: 900; color: var(--dark); line-height: 0.98; letter-spacing: -0.02em; }
+        .ad-story .sub { font-size: 28px; color: rgba(0,0,0,0.55); font-weight: 500; line-height: 1.5; }
+        .ad-story .price-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 8px; }
+        .ad-story .price-badge { font-size: 34px; }
+        .ad-story .shipping-badge { font-size: 18px; }
+        .ad-story .cta-btn { font-size: 30px; padding: 26px 56px; width: 100%; text-align: center; margin-top: 16px; }
+        .ad-story .url { font-size: 18px; text-align: center; margin-top: 8px; }
+
+        /* ── LANDSCAPE 1200×628 ── */
+        .ad-landscape {
+            width: 1200px; height: 628px;
+            position: relative; overflow: hidden;
+            background: var(--offwhite); display: flex;
+        }
+        .ad-landscape .image-section { flex: 0 0 46%; background: #000; position: relative; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .ad-landscape .image-section img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .ad-landscape .copy-band {
+            flex: 1; padding: 48px 56px; display: flex; flex-direction: column; justify-content: center; gap: 16px; position: relative;
+        }
+        .ad-landscape .copy-band::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary); }
+        .ad-landscape .eyebrow { font-size: 15px; font-weight: 700; color: rgba(0,0,0,0.42); letter-spacing: 0.16em; text-transform: uppercase; }
+        .ad-landscape .headline { font-size: 44px; font-weight: 900; color: var(--dark); line-height: 1.0; letter-spacing: -0.015em; }
+        .ad-landscape .sub { font-size: 17px; color: rgba(0,0,0,0.55); font-weight: 500; line-height: 1.4; }
+        .ad-landscape .price-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+        .ad-landscape .price-badge { font-size: 20px; padding: 9px 22px; }
+        .ad-landscape .shipping-badge { font-size: 12px; padding: 6px 16px; }
+        .ad-landscape .cta-btn { font-size: 17px; padding: 14px 30px; }
+        .ad-landscape .top-bar { padding: 24px 32px 0; }
+        .ad-landscape .brand-logo { height: 30px; }
+        .ad-landscape .brand-name { font-size: 20px; }
+        .ad-landscape .rakhi-tag { font-size: 12px; padding: 6px 16px; }
+
+        /* ── WHATSAPP 800×800 ── */
+        .ad-whatsapp {
+            width: 800px; height: 800px;
+            position: relative; overflow: hidden;
+            background: #000; display: flex; flex-direction: column;
+        }
+        .ad-whatsapp .image-section { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 44px; }
+        .ad-whatsapp .image-section img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .ad-whatsapp .copy-band {
+            position: relative; z-index: 3;
+            background: linear-gradient(135deg, var(--secondary) 0%, #f5dc40 100%);
+            padding: 30px 46px 34px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between; gap: 20px;
+        }
+        .ad-whatsapp .copy-band::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary); }
+        .ad-whatsapp .eyebrow { font-size: 14px; font-weight: 700; color: rgba(0,0,0,0.42); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
+        .ad-whatsapp .headline { font-size: 46px; font-weight: 900; color: var(--dark); line-height: 0.98; letter-spacing: -0.015em; margin-bottom: 10px; }
+        .ad-whatsapp .sub { font-size: 15px; color: rgba(0,0,0,0.55); font-weight: 500; line-height: 1.4; }
+        .ad-whatsapp .copy-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+        .ad-whatsapp .price-badge { font-size: 20px; padding: 9px 22px; }
+        .ad-whatsapp .shipping-badge { font-size: 11px; padding: 5px 14px; }
+        .ad-whatsapp .cta-btn { font-size: 16px; padding: 12px 28px; }
+        .ad-whatsapp .url { font-size: 11px; }
+        .ad-whatsapp .top-bar { padding: 28px 36px 0; }
+        .ad-whatsapp .brand-logo { height: 30px; }
+        .ad-whatsapp .brand-name { font-size: 20px; }
+        .ad-whatsapp .rakhi-tag { font-size: 12px; padding: 6px 16px; }
+    </style>
+</head>
+<body>
+
+    <div class="ad-block">
+        <p class="ad-label">Square — 1080 × 1080 — Instagram/Facebook Feed</p>
+        <div class="ad-square">
+            <div class="top-bar">
+                <div class="brand">
+                    <img class="brand-logo" src="../../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+                    <span class="brand-name">LayerWeaver.com</span>
+                </div>
+                <span class="rakhi-tag">Rakhi Special</span>
+            </div>
+            <div class="image-section"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_05_33_11_PM.png?v=1785845065" alt="Desk Gear"></div>
+            <div class="copy-band">
+                <div class="copy-left">
+                    <p class="eyebrow">Desk Gear</p>
+                    <h2 class="headline">Deserves Better<br>Than A Mug.</h2>
+                    <p class="sub">Controller stands, keycaps &amp; desk gear</p>
+                </div>
+                <div class="copy-right">
+                    <span class="price-badge">From ₹199</span>
+                    <span class="shipping-badge">Free Shipping Above ₹299</span>
+                    <button class="cta-btn">Shop Now →</button>
+                    <span class="url">layerweaver.com/shop/rakhi/the-gamer-bro/</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ad-block">
+        <p class="ad-label">Story — 1080 × 1920 — Instagram/Facebook Stories, Reels Cover</p>
+        <div class="ad-story">
+            <div class="top-bar">
+                <div class="brand">
+                    <img class="brand-logo" src="../../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+                    <span class="brand-name">LayerWeaver.com</span>
+                </div>
+                <span class="rakhi-tag">Rakhi Special</span>
+            </div>
+            <div class="image-section"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_05_33_11_PM.png?v=1785845065" alt="Desk Gear"></div>
+            <div class="copy-band">
+                <p class="eyebrow">Desk Gear</p>
+                <h2 class="headline">Deserves Better<br>Than A Mug.</h2>
+                <p class="sub">Controller stands, keycaps &amp; desk gear</p>
+                <div class="price-row">
+                    <span class="price-badge">From ₹199</span>
+                    <span class="shipping-badge">Free Shipping Above ₹299</span>
+                </div>
+                <button class="cta-btn">Shop Now →</button>
+                <span class="url">layerweaver.com/shop/rakhi/the-gamer-bro/</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ad-block">
+        <p class="ad-label">Landscape — 1200 × 628 — Facebook/Google Display</p>
+        <div class="ad-landscape">
+            <div class="image-section">
+                <div class="top-bar">
+                    <div class="brand">
+                        <img class="brand-logo" src="../../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+                        <span class="brand-name">LayerWeaver.com</span>
+                    </div>
+                </div>
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_05_33_11_PM.png?v=1785845065" alt="Desk Gear">
+            </div>
+            <div class="copy-band">
+                <span class="rakhi-tag" style="align-self:flex-start;margin-bottom:6px;">Rakhi Special</span>
+                <p class="eyebrow">Desk Gear</p>
+                <h2 class="headline">Deserves Better<br>Than A Mug.</h2>
+                <p class="sub">Controller stands, keycaps &amp; desk gear</p>
+                <div class="price-row">
+                    <span class="price-badge">From ₹199</span>
+                    <span class="shipping-badge">Free Shipping ₹299+</span>
+                    <button class="cta-btn">Shop Now →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ad-block">
+        <p class="ad-label">WhatsApp — 800 × 800 — Catalogue / Broadcast</p>
+        <div class="ad-whatsapp">
+            <div class="top-bar">
+                <div class="brand">
+                    <img class="brand-logo" src="../../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+                    <span class="brand-name">LayerWeaver.com</span>
+                </div>
+                <span class="rakhi-tag">Rakhi Special</span>
+            </div>
+            <div class="image-section"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_05_33_11_PM.png?v=1785845065" alt="Desk Gear"></div>
+            <div class="copy-band">
+                <div class="copy-left">
+                    <p class="eyebrow">Desk Gear</p>
+                    <h2 class="headline">Deserves Better<br>Than A Mug.</h2>
+                    <p class="sub">Controller stands, keycaps &amp; desk gear</p>
+                </div>
+                <div class="copy-right">
+                    <span class="price-badge">From ₹199</span>
+                    <span class="shipping-badge">Free Shipping</span>
+                    <button class="cta-btn">Shop →</button>
+                    <span class="url">layerweaver.com/shop/rakhi/the-gamer-bro/</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

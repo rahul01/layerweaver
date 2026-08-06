@@ -1,5 +1,17 @@
-# Rakhi Combos — AI Creative Brief
+# Rakhi Gift Catalogue — AI Creative Brief
 ## LayerWeaver | Rakshabandhan 2026
+
+---
+
+## What changed from the original combo-based brief
+
+The site no longer bundles products into fixed-price "combos." Instead there
+are **8 real Shopify collections**, each shown as a browsable page at
+`layerweaver.com/shop/rakhi/<handle>/` (and all 8 together at
+`layerweaver.com/shop/rakhi/`). Every product is sold individually at its own
+price — there's no combo total to advertise. Creative should sell the
+**collection as a shopping destination** ("here's where to find gifts for
+your gamer brother"), not a fixed 3-item bundle.
 
 ---
 
@@ -7,12 +19,21 @@
 
 **Use two tools in sequence:**
 
-1. **Midjourney** (via Discord) — generate the hero product images for each combo. Best quality for 3D printed objects; renders texture and depth better than other tools.
-2. **Canva** (Magic Media + layouts) — take Midjourney outputs, drop them into Canva ad templates, add text overlays, price badges, and export in multiple sizes.
+1. **Midjourney** (via Discord) — generate the hero product images for each
+   collection. Best quality for 3D printed objects; renders texture and
+   depth better than other tools.
+2. **Canva** (Magic Media + layouts) — take Midjourney outputs, drop them
+   into Canva ad templates, add text overlays, price badges, and export in
+   multiple sizes.
 
-**Why not one tool?** Midjourney images > Canva AI images for physical products. But Canva wins for fast multi-size ad production with text. Use both.
+**Why not one tool?** Midjourney images > Canva AI images for physical
+products. But Canva wins for fast multi-size ad production with text. Use
+both.
 
-**Alternative if you want one tool only:** Use **Adobe Firefly** — commercial-safe, decent for product mockups, and has built-in text + layout tools. Slower than the Midjourney → Canva workflow but legally cleaner if you're running paid ads.
+**Alternative if you want one tool only:** Use **Adobe Firefly** —
+commercial-safe, decent for product mockups, and has built-in text + layout
+tools. Slower than the Midjourney → Canva workflow but legally cleaner if
+you're running paid ads.
 
 ---
 
@@ -31,7 +52,7 @@ Festival label:    "Rakshabandhan 2026" or "Rakhi Special"
 
 ---
 
-## Ad Formats to Produce Per Combo
+## Ad Formats to Produce Per Collection
 
 | Format | Size | Use |
 |--------|------|-----|
@@ -40,16 +61,17 @@ Festival label:    "Rakshabandhan 2026" or "Rakhi Special"
 | Landscape | 1200×628 | Facebook/Google display ads |
 | WhatsApp | 800×800 | WhatsApp catalogue / broadcast |
 
-Produce all 4 formats per combo, or at minimum the Square + Story.
+Produce all 4 formats per collection, or at minimum the Square + Story.
 
 ---
 
 ## Master Midjourney Prompt Template
 
-Use this base template and swap in the `[COMBO-SPECIFIC INSERT]` for each combo:
+Use this base template and swap in the `[COLLECTION-SPECIFIC INSERT]` for
+each collection:
 
 ```
-Flat lay product photography of [COMBO-SPECIFIC INSERT], arranged on a warm cream textured surface.
+Flat lay product photography of [COLLECTION-SPECIFIC INSERT], arranged on a warm cream textured surface.
 3D printed objects in vibrant colors. Soft natural side lighting, minimal shadows.
 Purple ribbon and small marigold flowers scattered as props — festive Rakshabandhan mood.
 Shot from directly above (bird's eye). High detail, studio quality.
@@ -60,210 +82,203 @@ Aspect ratio 1:1. Style: commercial product photography.
 
 For Story format, change `--ar 1:1` to `--ar 9:16`.
 
+Pick 3–4 representative products per collection for the flat lay — you don't
+need to show every product in the collection, just enough to communicate the
+theme. Full product list and prices are below for reference.
+
 ---
 
-## Per-Combo Prompts and Ad Copy
+## Per-Collection Prompts and Ad Copy
+
+All prices and product lists below are pulled live from Shopify
+(`shop/rakhi/<handle>/`) — verify against the live page before shipping a
+creative in case the catalogue has changed since this brief was written.
 
 ---
 
-### 1. The Gamer Brother (₹797)
+### 1. The Book Worm Sister
+`layerweaver.com/shop/rakhi/the-book-worm-sister/`
+
+**Products (6):** Butterfly Bookmark (₹149) · Cat Bookmark (₹99) · Dog
+Bookmark (₹99) · Multi Purpose Dino Box — pen/toothbrush holder (₹399) ·
+Hoodie Pen Pot with Personalisation (₹800) · Personalized Pencil Topper (₹99)
 
 **Midjourney insert:**
 ```
-a WASD mechanical keycap keychain, a single-key keyboard clicker toy, and a cupcake-shaped button clicker,
-all 3D printed in bright purple and white colors
-```
-
-**Headline:** The Gamer Brother deserves better than a mug.
-**Subheadline:** WASD Keychain + Keyboard Clicker + Cupcake Clicker
-**CTA:** Shop the Combo — ₹797
-**Body copy (for longer formats):** 3D printed desk toys he'll actually use. Not a gift card. Not socks.
-
----
-
-### 2. The Bookworm Sister (₹347)
-
-**Midjourney insert:**
-```
-a butterfly-shaped bookmark, a cat-shaped bookmark, and a monstera leaf keychain,
+a butterfly-shaped bookmark, a cat-shaped bookmark, and a dinosaur-shaped pen holder box,
 all 3D printed in pastel colors — laid next to an open book with a fabric cover
 ```
 
 **Headline:** She reads. Now she does it in style.
-**Subheadline:** Butterfly Bookmark + Cat Bookmark + Monstera Keychain
-**CTA:** Shop the Combo — ₹347 (Free Shipping)
-**Body copy:** Three little things she'll reach for every single day. Under ₹350 with free shipping.
+**Subheadline:** Bookmarks, pen pots & pencil toppers from ₹99
+**CTA:** Shop The Book Worm Sister →
+**Body copy:** Little things she'll reach for every single day. Starting at ₹99.
 
 ---
 
-### 3. The Aesthetic Sister (₹647)
+### 2. The Aesthetic Sister
+`layerweaver.com/shop/rakhi/the-aesthetic-sister/`
+
+**Products (7):** Ghost Balloon Lamp (₹399) · Tulip Single Flower (₹149) ·
+Bunny Keychain (₹99) · Octopus Table Lamp (₹1,599) · Snail Lamp (₹1,899) ·
+Monstera Coaster Set (₹1,899) · Decorative Vases (₹299–999)
 
 **Midjourney insert:**
 ```
-a ghost-shaped glowing balloon lamp (small, soft purple glow), a 3D printed tulip flower stem, and a bunny keychain,
+a ghost-shaped glowing balloon lamp (small, soft purple glow), a 3D printed tulip flower stem, and a snail-shaped lamp,
 arranged together on a marble surface
 ```
 
 **Headline:** Lights, flowers, and tiny joys.
-**Subheadline:** Ghost Lamp + Tulip Flower + Bunny Keychain
-**CTA:** Shop the Combo — ₹647
+**Subheadline:** Lamps, decor & keychains from ₹99
+**CTA:** Shop The Aesthetic Sister →
 **Body copy:** For the sister whose room already looks like a Pinterest board — give her something that belongs there.
 
 ---
 
-### 4. The Desk Setup Bro (₹847)
+### 3. The WFH Sister
+`layerweaver.com/shop/rakhi/the-wfh-sister/`
+
+**Products (8):** Cactus Headphone Stand (₹1,699) · Cute Wobble Penguin Desk
+Toy (₹399) · Pumpkin Articulated Legs (₹129) · Pineapple Articulated Legs
+(₹159) · Tree Articulated Legs (₹129) · Cupcake Clicker (₹249) · Coffee Mug
+Clicker Keychain (₹199) · Sweeping Sign Nameplate (₹899)
 
 **Midjourney insert:**
 ```
-a hoodie-shaped pen holder (3D printed, dark grey), a cat-shaped cable clip, and an infinity cube fidget toy,
-arranged on a clean desk surface with a laptop partially visible at the edge
-```
-
-**Headline:** Practical + fun. The rare combo.
-**Subheadline:** Hoodie Pen Pot + Cat Cable Clip + Infinity Cube
-**CTA:** Shop the Combo — ₹847
-**Body copy:** Finally, a Rakhi gift that improves his desk setup. He'll think of you every time he reaches for a pen.
-
----
-
-### 5. The Kid Sibling (₹946)
-
-**Midjourney insert:**
-```
-an articulated 3D printed octopus, a T-rex skeleton model, an articulated cute spider toy, and a cone-shaped fidget,
-scattered on a colorful playful background — bright and fun
-```
-
-**Headline:** Four things to obsess over.
-**Subheadline:** Octopus + T-rex + Articulated Spider + Cone Fidget
-**CTA:** Shop the Combo — ₹946
-**Body copy:** The younger sibling who can't sit still gets four reasons to stay busy.
-
----
-
-### 6. Made For You — Personalized (₹1,197)
-
-**Midjourney insert:**
-```
-a sweeping curved nameplate sign with a custom name engraved, a keyring with a name on it, and a personalized number plate keychain,
-all 3D printed, arranged elegantly on a dark wood surface
-```
-
-**Headline:** Because generic is lazy.
-**Subheadline:** Custom Nameplate + Name Keyring + Number Plate Keychain
-**CTA:** Personalize & Shop — ₹1,197
-**Body copy:** Three things with their name on it — literally. The combo that says you actually thought about this.
-**Note for ad:** Add a small text overlay: "Personalized to order — enter details at checkout"
-
----
-
-### 7. The Weird One — Affectionate (₹447)
-
-**Midjourney insert:**
-```
-a bird-shaped ocarina flute (3D printed, terracotta-colored), a coffee mug shaped clicker keychain, and a butterfly bookmark,
-arranged on a wooden surface with music sheet paper in the background
-```
-
-**Headline:** For the sibling who marches to their own beat.
-**Subheadline:** Bird Ocarina + Mug Clicker Keychain + Butterfly Bookmark
-**CTA:** Shop the Combo — ₹447
-**Body copy:** They won't see this coming. That's the point.
-
----
-
-### 8. The Plant Parent Sister (₹2,147)
-
-**Midjourney insert:**
-```
-a monstera leaf coaster set (4 coasters, 3D printed in deep green), a 3D printed tulip flower, and a monstera leaf keychain,
-arranged on a light linen surface with small potted plants in the background
-```
-
-**Headline:** She has 47 plants. She needs this.
-**Subheadline:** Monstera Coaster Set + Tulip Flower + Monstera Keychain
-**CTA:** Shop the Combo — ₹2,147
-**Body copy:** Everything matches. Everything is monstera. She will lose her mind (in a good way).
-
----
-
-### 9. The Car Guy Brother (₹997)
-
-**Midjourney insert:**
-```
-a die-cast car garage key hanger (3D printed), a personalized number plate keychain, and a WASD keycap keychain,
-arranged on a dark grey surface with a blurred car in the background
-```
-
-**Headline:** Niche. He'll get it.
-**Subheadline:** Car Key Hanger + Number Plate Keychain + WASD Keychain
-**CTA:** Shop the Combo — ₹997
-**Body copy:** The brother who watches car reviews at 2am. This one's for him.
-
----
-
-### 10. The Fidget Collector (₹846)
-
-**Midjourney insert:**
-```
-four 3D printed fidget/clicker toys: a cone fidget, an infinity cube, a single-key keyboard clicker, and a cupcake clicker button —
-all in different bright colors, flat lay arrangement
-```
-
-**Headline:** One for every meeting they zone out in.
-**Subheadline:** 4 Fidgets in One Combo
-**CTA:** Shop the Combo — ₹846
-**Body copy:** Cone + Infinity Cube + Keyboard Clicker + Cupcake Clicker. The sibling with ADHD or meeting-induced restlessness. This is them.
-
----
-
-**Game Night Siblings combo dropped** — was built around `spiral-connect-4`, which isn't a real product in the catalog and has no equivalent substitute. Removed rather than shipped with a weak replacement; revisit if a comparable premium game product gets added later.
-
----
-
-### 12. The WFH Sister (₹1,997)
-
-**Midjourney insert:**
-```
-a cactus-shaped headphone stand (3D printed, green and detailed), a coffee mug clicker keychain, and a cat-shaped cable clip,
+a cactus-shaped headphone stand (3D printed, green and detailed), a coffee mug clicker keychain, and a small wobbling penguin desk toy,
 arranged on a clean minimal desk with soft morning light
 ```
 
 **Headline:** Desk upgrade she wouldn't buy herself.
-**Subheadline:** Cactus Headphone Stand + Mug Keychain + Cat Cable Clip
-**CTA:** Shop the Combo — ₹1,997
+**Subheadline:** Headphone stands, desk buddies & clickers from ₹129
+**CTA:** Shop The WFH Sister →
 **Body copy:** The sister who works from home and whose desk could use a personality. This is it.
 
 ---
 
-### 13. Tiny Budget, Big Feels (₹327)
+### 4. The Kid Sibling
+`layerweaver.com/shop/rakhi/the-kid-sibling/`
+
+**Products (9):** T-rex Skeleton (₹249–499) · Articulated Cute Spider (₹249)
+· Bird Ocarina (₹199) · Cute Wobble Penguin Desk Toy (₹399) · Cone Fidget
+(₹199) · Card Game Box — Uno/Monopoly Deal/Exploding Kitten variants
+(₹399–549) · Articulated Octopus (₹249) · Tetris Balance Game (₹399) · Dino
+Skeletons — set of 4 (₹2,199)
 
 **Midjourney insert:**
 ```
-a tree-shaped articulated toy with moving legs, a bunny keychain, and a cat bookmark —
-all 3D printed in soft pastel colors, arranged on a light pink surface
+an articulated 3D printed octopus, a T-rex skeleton model, an articulated cute spider toy, and a bird-shaped ocarina flute,
+scattered on a colorful playful background — bright and fun
 ```
 
-**Headline:** Small budget. Zero compromise on thoughtfulness.
-**Subheadline:** Tree Articulated + Bunny Keychain + Cat Bookmark
-**CTA:** Shop the Combo — ₹327 (Free Shipping!)
-**Body copy:** Crosses ₹299 for free shipping. Three things they'll actually smile at. Sometimes that's enough.
+**Headline:** Four things to obsess over. Then four more.
+**Subheadline:** Fidgets, skeletons & game boxes from ₹199
+**CTA:** Shop The Kid Sibling →
+**Body copy:** The younger sibling who can't sit still gets a whole toy chest to choose from.
 
 ---
 
-### 14. Little Things, Her Name (₹448)
+### 5. Little Things, Big Feels
+`layerweaver.com/shop/rakhi/little-things-big-feels/`
+
+**Products (9):** Lip Balm Holder Keychain (₹299) · Custom Name Keyring
+(₹149) · Coffee Mug Clicker Keychain (₹199) · Cupcake Clicker (₹249) ·
+Pumpkin Articulated Legs (₹129) · Bunny Keychain (₹99) · Tree Articulated
+Legs (₹129) · Pineapple Articulated Legs (₹159) · Panda Figurine (₹249)
 
 **Midjourney insert:**
 ```
-a lip balm holder shaped like a keychain, and a personalized name keyring with an example name engraved,
+a lip balm holder shaped like a keychain, a personalized name keyring with an example name engraved, and a small articulated panda figurine,
 3D printed in soft pastel colors, arranged on a light fabric surface with a small ribbon
 ```
 
-**Headline:** Something for her lips, something with her name.
-**Subheadline:** Lip Balm Holder Keychain + Custom Name Keyring
-**CTA:** Personalize & Shop — ₹448 (Free Shipping)
-**Body copy:** One practical, one personal. Both things she'll clip to her bag and actually use.
-**Note for ad:** Add a small text overlay: "Includes a personalized item — enter details at checkout"
+**Headline:** Small budget. Zero compromise on thoughtfulness.
+**Subheadline:** Keychains, clickers & desk buddies from ₹99
+**CTA:** Shop Little Things, Big Feels →
+**Body copy:** Everything here crosses ₹299 for free shipping when paired with one more thing. Small, but they'll actually use it.
+**Note for ad:** Custom Name Keyring is personalized — include a small text overlay: "Personalize at checkout"
+
+---
+
+### 6. The Gamer Bro
+`layerweaver.com/shop/rakhi/the-gamer-bro/`
+
+**Products (4):** X-Box Controller Stand (₹699–1,149) · WASD Mechanical
+Keycap Keychain (₹349) · Cactus Headphone Stand (₹1,699) · Single Key
+Keyboard Clicker (₹199)
+
+**Midjourney insert:**
+```
+a controller display stand shaped like a skull, a WASD mechanical keycap keychain, and a single-key keyboard clicker toy,
+all 3D printed in bright purple and black colors, on a dark desk surface
+```
+
+**Headline:** The Gamer Bro deserves better than a mug.
+**Subheadline:** Controller stands, keycaps & desk gear from ₹199
+**CTA:** Shop The Gamer Bro →
+**Body copy:** 3D printed desk gear he'll actually use. Not a gift card. Not socks.
+
+---
+
+### 7. The Desk Setup Bro
+`layerweaver.com/shop/rakhi/the-desk-setup-bro/`
+
+**Products (11):** Hoodie Pen Pot (₹549) · WASD Mechanical Keycap Keychain
+(₹349) · Cat Cable Clip (₹99) · Infinity Cube (₹199) · Cactus Headphone
+Stand (₹1,699) · Articulated Cute Spider (₹249) · Panda Figurine (₹249) ·
+T-rex Skeleton (₹249–499) · Articulated Stegosaurus Skeleton (₹699) ·
+Articulated Brachiosaurus Skeleton (₹699) · Articulated Velociraptor
+Skeleton (₹549)
+
+**Midjourney insert:**
+```
+a hoodie-shaped pen holder (3D printed, dark grey), a cat-shaped cable clip, and an articulated dinosaur skeleton figure,
+arranged on a clean desk surface with a laptop partially visible at the edge
+```
+
+**Headline:** Practical + fun. The rare combo.
+**Subheadline:** Pen pots, fidgets & desk dinos from ₹99
+**CTA:** Shop The Desk Setup Bro →
+**Body copy:** Finally, a Rakhi gift that improves his desk setup. He'll think of you every time he reaches for a pen.
+
+---
+
+### 8. The Car Guy Brother
+`layerweaver.com/shop/rakhi/the-car-guy-brother/`
+
+**Products (3):** Die-cast Car Garage Key Hanger (₹499) · Shipping
+Container Display Garage — 8-car storage & display case (₹1,399) ·
+Personalized Number Plate Keychain (₹149)
+
+**Midjourney insert:**
+```
+a die-cast car garage key hanger (3D printed) and a shipping-container-shaped die-cast car display case,
+arranged on a dark grey surface with a blurred car in the background
+```
+
+**Headline:** Niche. He'll get it.
+**Subheadline:** Garage key hangers & display cases from ₹149
+**CTA:** Shop The Car Guy Brother →
+**Body copy:** The brother who watches car reviews at 2am. This one's for him.
+**Note for ad:** Number Plate Keychain is personalized — include a small text overlay: "Personalize at checkout"
+
+---
+
+## Retired / dropped from the catalogue
+
+These combos existed in the original 13-14-combo brief but did **not**
+carry over into the 8 live collections — don't reuse their prompts or copy:
+
+- **Made For You (Personalized)**, **The Weird One**, **The Plant Parent
+  Sister**, **Tiny Budget Big Feels**, **The Fidget Collector**, **Game
+  Night Siblings** — folded into other collections, dropped, or superseded.
+  Some of their individual products still exist in the catalogue but are
+  now organized under the 8 collections above.
+
+If a creative for one of these retired names is still running anywhere
+(paid ads, scheduled social posts), pause and replace it — the combo pages
+it would have linked to no longer exist.
 
 ---
 
@@ -276,12 +291,16 @@ Once you have Midjourney images:
 3. Drop Midjourney image into the top 60–65% of the canvas
 4. Bottom section: white card with rounded top corners overlapping the image
 5. In the white card:
-   - Combo name in bold (dark charcoal, ~28px)
+   - Collection name in bold (dark charcoal, ~28px)
    - Tagline in lighter weight (~18px, grey)
-   - Price in brand purple (`#A083D5`), large
-   - CTA button: solid purple, white text, "Shop Now" or "Add to Cart"
+   - Starting price in brand purple (`#A083D5`), large — e.g. "From ₹99"
+   - CTA button: solid purple, white text, "Shop Now" or "Explore Collection"
    - LayerWeaver logo bottom-right (small)
 6. Top-left corner: "Rakhi Special 🪢" pill badge in amber (`#E8A020`)
+
+Do not show a bundled total price anywhere — each product is sold and
+priced individually on the collection page. Use "From ₹X" (the lowest
+price in the collection) instead.
 
 For Stories, shift to a vertical layout: image top-half, text bottom-half, large CTA button near the bottom edge.
 
@@ -292,21 +311,20 @@ For Stories, shift to a vertical layout: image top-half, text bottom-half, large
 **Short version:**
 ```
 This Rakshabandhan, skip the generic.
-[Combo Name] — ₹[price] 🪢
-[product 1] + [product 2] + [product 3]
+[Collection Name] — from ₹[lowest price] 🪢
 3D printed with love in Pune 💜
-Shop link in bio → layerweaver.com
+Shop link in bio → layerweaver.com/shop/rakhi/
 ```
 
 **Long version:**
 ```
 Rakhi is tomorrow and you still haven't figured out the gift? We've got you.
 
-[Combo Name]: [tagline]
+[Collection Name]: [tagline]
 → [product 1] (₹[price])
 → [product 2] (₹[price])
 → [product 3] (₹[price])
-Total: ₹[total] | [Free Shipping if applicable]
+...and more in the collection, from ₹[lowest price].
 
 All 3D printed, eco-friendly PLA, ships fast from Pune.
 Personalized options available — DM us or tap the link. 🪢
@@ -323,7 +341,7 @@ Personalized options available — DM us or tap the link. 🪢
 #3DPrintedGifts #3DPrinting #MadeInPune #LayerWeaver
 #GiftIdeasIndia #UniqueGifts #SiblingLove #RakhiSeason
 #HandmadeGifts #EcoFriendlyGifts #PersonalizedGifts
-#GiftsForBrother #GiftsForSister #RakhiCombo
+#GiftsForBrother #GiftsForSister #RakhiCollection
 ```
 
 ---
@@ -331,9 +349,11 @@ Personalized options available — DM us or tap the link. 🪢
 ## Quick Checklist Before Publishing
 
 - [ ] Logo on every creative (bottom-right)
-- [ ] Price visible and accurate
-- [ ] "Free Shipping" badge on combos ≥ ₹299 (all of them qualify)
-- [ ] Personalized combo creatives include "enter details at checkout" note
+- [ ] "From ₹X" starting price visible and accurate — NOT a bundled total
+- [ ] CTA links to `/shop/rakhi/<handle>/`, not a retired combo page
+- [ ] "Free Shipping Above ₹299" badge where relevant
+- [ ] Personalized-product collections (Little Things Big Feels, The Car
+      Guy Brother) include a "Personalize at checkout" note
 - [ ] Story format has enough bottom padding for Instagram's UI chrome
 - [ ] All images exported at 300dpi for print, 72dpi/sRGB for digital
 - [ ] Caption has link-in-bio CTA or WhatsApp number
