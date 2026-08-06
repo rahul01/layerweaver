@@ -36,9 +36,24 @@ const IMG_WIDTH_MAIN = 1600;
 const IMG_WIDTH_BANNER = 800;
 const IMG_WIDTH_OG = 1200;
 
-async function fetchCollections() {
+// Seasonal Raksha Bandhan collections - real Shopify collections (so each is
+// independently manageable/orderable), but deliberately excluded from the
+// main shop nav, collection chip strip, and per-collection pages. They're
+// fetched separately and only ever rendered on shop/rakhi/.
+const RAKHI_COLLECTION_HANDLES = [
+  'the-book-worm-sister',
+  'the-aesthetic-sister',
+  'the-wfh-sister',
+  'the-kid-sibling',
+  'little-things-big-feels',
+  'the-gamer-bro',
+  'the-desk-setup-bro',
+  'the-car-guy-brother',
+];
+
+async function fetchCollectionsUnfiltered() {
   const query = `{
-    collections(first: 20, sortKey: TITLE) {
+    collections(first: 50, sortKey: TITLE) {
       edges {
         node {
           handle title description updatedAt
@@ -84,12 +99,16 @@ async function fetchCollections() {
   const data = await res.json();
   if (data.errors) throw new Error(JSON.stringify(data.errors));
 
-  const collections = data.data.collections.edges.map(e => ({
+  return data.data.collections.edges.map(e => ({
     ...e.node,
     products: e.node.products.edges.map(pe => pe.node),
   }));
+}
 
-  const HIDDEN_COLLECTIONS = ['all-products'];
+async function fetchCollections() {
+  const collections = await fetchCollectionsUnfiltered();
+
+  const HIDDEN_COLLECTIONS = ['all-products', ...RAKHI_COLLECTION_HANDLES];
   const ORDER = [
     'lamps-and-decor',
     'toys-games-and-desk-buddies',
@@ -110,6 +129,18 @@ async function fetchCollections() {
   });
 
   return collections.filter(c => !HIDDEN_COLLECTIONS.includes(c.handle));
+}
+
+// Same fetch, but returns only the Rakhi collections (in the curated order
+// given above), for the seasonal shop/rakhi/ catalogue page.
+async function fetchRakhiCollections() {
+  const all = await fetchCollectionsUnfiltered();
+  const byHandle = new Map(all.map(c => [c.handle, c]));
+  return RAKHI_COLLECTION_HANDLES.map(handle => {
+    const collection = byHandle.get(handle);
+    if (!collection) throw new Error(`Rakhi collection "${handle}" not found in Shopify`);
+    return collection;
+  });
 }
 
 async function fetchProducts() {
@@ -690,10 +721,10 @@ function productCardHtml(product, productsBase, reviewData = null) {
 // shopBase:     path from current page back to shop/
 // activeHandle: collection handle to mark active, or null for "All"
 
-function collectionNavHtml(collections, shopBase, activeHandle = null) {
+function collectionNavHtml(collections, shopBase, activeHandle = null, basePath = 'collections', allHref = shopBase) {
   const items = [
-    { handle: null, title: 'All', href: shopBase },
-    ...collections.map(c => ({ handle: c.handle, title: c.title, href: `${shopBase}collections/${c.handle}/` })),
+    { handle: null, title: 'All', href: allHref },
+    ...collections.map(c => ({ handle: c.handle, title: c.title, href: `${shopBase}${basePath}/${c.handle}/` })),
   ];
   const activeTitle = items.find(i => i.handle === activeHandle)?.title || 'All';
   const chips = items.map(({ handle, title, href }) => {
@@ -1361,6 +1392,136 @@ ${productCards}
 </html>`;
 }
 
+// ── Rakhi catalogue (shop/rakhi/, shop/rakhi/[handle]/) ───────────────────────
+// Structural replica of shop/ + shop/collections/[handle]/: an "All" index
+// page showing every Rakhi product (deduplicated - several products belong
+// to more than one collection, e.g. Cactus Headphone Stand) plus one real
+// sub-page per collection. Both use the same collectionNavHtml() chip strip
+// + mobile dropdown as the main site (basePath='rakhi'), so desktop and
+// mobile navigation both work identically to /shop with no custom JS.
+// Deliberately not linked from the main nav or collection chip strip (see
+// fetchCollections' HIDDEN_COLLECTIONS) - reachable via direct URL and the
+// sitemap only.
+
+function dedupeRakhiProducts(rakhiCollections) {
+  const byHandle = new Map();
+  for (const collection of rakhiCollections) {
+    for (const product of collection.products) {
+      if (!byHandle.has(product.handle)) byHandle.set(product.handle, product);
+    }
+  }
+  return [...byHandle.values()];
+}
+
+// depth from root: 2  →  base = '../../'   shopBase = '../'
+function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
+  const base     = '../../';
+  const shopBase = '../';
+
+  const uniqueProducts = dedupeRakhiProducts(rakhiCollections);
+  const productCards = uniqueProducts.map(p => productCardHtml(p, '../products/', reviewsMap[p.handle])).join('\n');
+  const bannerImages = rakhiCollections.map(c => c.products[0]?.images.edges[0]?.node).filter(Boolean);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    ${headHtml(base, shopBase, {
+      title: 'Rakhi Gift Catalogue – LayerWeaver',
+      description: 'Curated Raksha Bandhan gift picks for every kind of sibling – gamers, bookworms, WFH sisters, car guys, and more. Free shipping above ₹299.',
+      ogUrl: `${SITE_URL}/shop/rakhi/`,
+      ogImage: bannerImages[0] ? resizedImageUrl(bannerImages[0].url, IMG_WIDTH_OG) : undefined,
+    })}
+</head>
+<body>
+    ${shopHeaderHtml(base, shopBase)}
+    <div class="header-spacer"></div>
+    ${shopTrustStripHtml(base)}
+
+    <section class="collection-topbar">
+        <div class="container">
+            ${collectionNavHtml(rakhiCollections, shopBase, null, 'rakhi', `${shopBase}rakhi/`)}
+        </div>
+    </section>
+
+    <div class="container">
+        ${collagebannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan', bannerImages)}
+    </div>
+
+    <section class="shop-products">
+        <div class="container">
+            <div class="shop-grid">
+${productCards}
+            </div>
+        </div>
+    </section>
+
+    ${footerHtml(base)}
+    ${swatchDataScript(uniqueProducts)}
+    <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>
+    <script src="${base}script.js"></script>
+</body>
+</html>`;
+}
+
+// depth from root: 3  →  base = '../../../'   shopBase = '../../'
+function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = {}) {
+  const base     = '../../../';
+  const shopBase = '../../';
+
+  const productCards = collection.products.map(p => productCardHtml(p, '../../products/', reviewsMap[p.handle])).join('\n');
+  const bannerImages = collection.products.slice(-5).map(p => p.images.edges[0]?.node);
+  const bannerHtml = collagebannerHtml(collection.title, collection.description, bannerImages);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    ${headHtml(base, shopBase, {
+      title: `${collection.title} – Rakhi Gifts – LayerWeaver`,
+      description: escAttr(truncateWords(
+        collection.description || `Shop ${collection.title} – curated Raksha Bandhan gifts from LayerWeaver.`,
+        150
+      )),
+      ogImage: resizedImageUrl(collection.image?.url, IMG_WIDTH_OG),
+      ogUrl: `${SITE_URL}/shop/rakhi/${collection.handle}/`,
+    })}
+</head>
+<body>
+    ${shopHeaderHtml(base, shopBase)}
+    <div class="header-spacer"></div>
+    ${shopTrustStripHtml(base)}
+
+    <section class="collection-topbar">
+        <div class="container">
+            ${collectionNavHtml(rakhiCollections, shopBase, collection.handle, 'rakhi', `${shopBase}rakhi/`)}
+        </div>
+    </section>
+
+    <div class="container">
+        ${bannerHtml}
+    </div>
+
+    <section class="shop-products">
+        <div class="container">
+            <div class="shop-grid">
+${productCards}
+            </div>
+        </div>
+    </section>
+
+    ${footerHtml(base)}
+    ${swatchDataScript(collection.products)}
+    <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>
+    <script src="${base}script.js"></script>
+</body>
+</html>`;
+}
+
 // ── Account page (shop/account/index.html) ────────────────────────────────────
 // depth from root: 2  →  base = '../../'   shopBase = '../'
 
@@ -1705,6 +1866,20 @@ async function main() {
   fs.writeFileSync(path.join(accountDir, 'index.html'), generateAccountPage());
   console.log('Generated shop/account/index.html');
 
+  console.log('Fetching Rakhi collections...');
+  const rakhiCollections = await fetchRakhiCollections();
+  const rakhiDir = path.join(shopDir, 'rakhi');
+  fs.mkdirSync(rakhiDir, { recursive: true });
+  fs.writeFileSync(path.join(rakhiDir, 'index.html'), generateRakhiIndexPage(rakhiCollections, reviewsMap));
+  console.log('Generated shop/rakhi/index.html');
+
+  for (const collection of rakhiCollections) {
+    const rakhiCollectionDir = path.join(rakhiDir, collection.handle);
+    fs.mkdirSync(rakhiCollectionDir, { recursive: true });
+    fs.writeFileSync(path.join(rakhiCollectionDir, 'index.html'), generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap));
+    console.log(`Generated shop/rakhi/${collection.handle}/index.html`);
+  }
+
   const teamReviewDir = path.join(__dirname, '..', 'team', 'review');
   fs.mkdirSync(teamReviewDir, { recursive: true });
   fs.writeFileSync(path.join(teamReviewDir, 'index.html'), generateTeamReviewLinksPage(products));
@@ -1749,6 +1924,14 @@ async function main() {
       console.log(`Removed stale shop/collections/${entry}`);
     }
   }
+  const rakhiCollectionHandles = new Set(rakhiCollections.map(c => c.handle));
+  for (const entry of fs.readdirSync(rakhiDir)) {
+    if (entry === 'index.html') continue;
+    if (!rakhiCollectionHandles.has(entry)) {
+      fs.rmSync(path.join(rakhiDir, entry), { recursive: true, force: true });
+      console.log(`Removed stale shop/rakhi/${entry}`);
+    }
+  }
 
   // Update homepage hero carousel with collage slides
   const indexPath = path.join(__dirname, '..', 'index.html');
@@ -1769,6 +1952,7 @@ async function main() {
   const STATIC_URLS = [
     { loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' },
     { loc: `${SITE_URL}/shop/`, priority: '0.9', changefreq: 'daily' },
+    { loc: `${SITE_URL}/shop/rakhi/`, priority: '0.8', changefreq: 'weekly' },
     { loc: `${SITE_URL}/gallery/`, priority: '0.7', changefreq: 'weekly' },
     { loc: `${SITE_URL}/workshop/`, priority: '0.7', changefreq: 'monthly' },
     { loc: `${SITE_URL}/connect/`, priority: '0.6', changefreq: 'monthly' },
@@ -1783,11 +1967,15 @@ async function main() {
     loc: `${SITE_URL}/shop/collections/${c.handle}/`, priority: '0.8', changefreq: 'weekly',
     lastmod: isoDateOnly(c.updatedAt),
   }));
+  const rakhiCollectionUrls = rakhiCollections.map(c => ({
+    loc: `${SITE_URL}/shop/rakhi/${c.handle}/`, priority: '0.7', changefreq: 'weekly',
+    lastmod: isoDateOnly(c.updatedAt),
+  }));
   const productUrls = products.map(p => ({
     loc: `${SITE_URL}/shop/products/${p.handle}/`, priority: '0.7', changefreq: 'monthly',
     lastmod: isoDateOnly(p.updatedAt),
   }));
-  const allUrls = [...STATIC_URLS, ...collectionUrls, ...productUrls];
+  const allUrls = [...STATIC_URLS, ...collectionUrls, ...rakhiCollectionUrls, ...productUrls];
   const sitemapXml = buildSitemapXml(allUrls);
   fs.writeFileSync(path.join(__dirname, '..', 'sitemap.xml'), sitemapXml);
   console.log('Generated sitemap.xml');
