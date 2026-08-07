@@ -436,6 +436,7 @@ function bundleComponents(product) {
   return (bundleVariant.components?.edges || []).map(e => ({
     quantity: e.node.quantity,
     title: e.node.productVariant.product.title,
+    variantTitle: e.node.productVariant.title,
     handle: e.node.productVariant.product.handle,
     image: e.node.productVariant.image,
   }));
@@ -511,6 +512,13 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
             getPerformance(app);
         }
     </script>`;
+}
+
+function announcementBarHtml(shopBase) {
+  return `
+    <div class="announcement-bar">
+        <a href="${shopBase}rakhi/">🪢 Rakhi Special: Free Bunny Keychain on orders ₹499+ &middot; 5% off ₹1,499+ (code RAKHI05) &middot; 10% off ₹2,999+ (code RAKHI10)</a>
+    </div>`;
 }
 
 function shopHeaderHtml(base, shopBase) {
@@ -790,6 +798,7 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
     })}
 </head>
 <body>
+    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -842,11 +851,22 @@ function generateProductPage(product, collection, reviewData = null) {
   // color products often share the same image across all variants.
   const uniqueVariantImageUrls = new Set(variants.map(v => v.image?.url).filter(Boolean));
   const hasVariantImages = hasVariants && uniqueVariantImageUrls.size > 1;
-  // Deduplicate by image URL so the same photo isn't shown as multiple thumbnails.
-  const variantsWithImages = hasVariantImages
-    ? variants.filter(v => v.image?.url).filter((v, _, arr) =>
-        arr.findIndex(u => u.image.url === v.image.url) === arr.indexOf(v))
-    : [];
+  // Group by image URL so the same photo isn't shown as multiple thumbnails -
+  // but keep every variant that shares it (e.g. two sizes with an identical
+  // product shot) linked to that one thumbnail, rather than silently
+  // dropping the later variant's thumbnail/highlight entirely.
+  const variantsByImageUrl = new Map();
+  if (hasVariantImages) {
+    for (const v of variants) {
+      if (!v.image?.url) continue;
+      if (!variantsByImageUrl.has(v.image.url)) variantsByImageUrl.set(v.image.url, []);
+      variantsByImageUrl.get(v.image.url).push(v);
+    }
+  }
+  const variantsWithImages = [...variantsByImageUrl.values()].map(vs => ({
+    ...vs[0],
+    allVariantIds: vs.map(v => v.id),
+  }));
   const mainImage     = hasVariantImages
     ? { url: firstAvailable.image?.url || images[0]?.url, altText: firstAvailable.title }
     : images[0];
@@ -923,9 +943,9 @@ function generateProductPage(product, collection, reviewData = null) {
   const imageThumbnails = hasVariantImages
     ? variantsWithImages.map(v => `
         <img src="${resizedImageUrl(v.image.url, IMG_WIDTH_THUMB_RAIL)}" alt="${escAttr(productImageAlt(product, v.title))}"
-             class="thumbnail${v.id === firstAvailable.id ? ' active' : ''}"
+             class="thumbnail${v.allVariantIds.includes(firstAvailable.id) ? ' active' : ''}"
              data-full-src="${resizedImageUrl(v.image.url, IMG_WIDTH_MAIN)}"
-             data-variant-gid="${v.id}"
+             data-variant-gid="${v.allVariantIds.join(',')}"
              data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
              data-variant-title="${v.title}"
              loading="lazy">`).join('')
@@ -981,6 +1001,7 @@ function generateProductPage(product, collection, reviewData = null) {
     })}
 </head>
 <body>
+    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1025,6 +1046,7 @@ function generateProductPage(product, collection, reviewData = null) {
                                   : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                                 }
                                 <span class="bundle-includes-title">${toTitleCase(c.title)}</span>
+                                ${c.variantTitle && c.variantTitle !== 'Default Title' ? `<span class="bundle-includes-variant">${escAttr(c.variantTitle)}</span>` : ''}
                                 ${c.quantity > 1 ? `<span class="bundle-includes-qty">× ${c.quantity}</span>` : ''}
                             </a>`).join('')}
                         </div>
@@ -1145,8 +1167,11 @@ function generateProductPage(product, collection, reviewData = null) {
             const hasVariantThumbs = !!document.querySelector('.thumbnail[data-variant-gid]');
             if (btn.dataset.image && hasVariantThumbs) {
                 showMainImage(btn.dataset.image);
+                // A thumbnail's data-variant-gid can be a comma-separated list when
+                // multiple variants share one photo (see build-shop.js variantsWithImages).
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => {
-                    t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
+                    const gids = (t.dataset.variantGid || '').split(',');
+                    t.classList.toggle('active', gids.includes(btn.dataset.variantGid));
                 });
             }
             if (updateUrl) {
@@ -1190,7 +1215,11 @@ function generateProductPage(product, collection, reviewData = null) {
                 } else {
                     showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
-                        const btn = document.querySelector(\`.variant-btn[data-variant-gid="\${thumb.dataset.variantGid}"]\`);
+                        // Pick the first variant sharing this thumbnail's image as the
+                        // one to activate - the others remain reachable via their own
+                        // variant buttons, which show the same (correct) image too.
+                        const firstGid = thumb.dataset.variantGid.split(',')[0];
+                        const btn = document.querySelector(\`.variant-btn[data-variant-gid="\${firstGid}"]\`);
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
@@ -1359,6 +1388,7 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
     })}
 </head>
 <body>
+    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1427,12 +1457,13 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
 <head>
     ${headHtml(base, shopBase, {
       title: 'Rakhi Gift Catalogue – LayerWeaver',
-      description: 'Curated Raksha Bandhan gift picks for every kind of sibling – gamers, bookworms, WFH sisters, car guys, and more. Free shipping above ₹299.',
+      description: 'Curated Raksha Bandhan gift picks for every kind of sibling – gamers, bookworms, WFH sisters, car guys, and more. Free Bunny Keychain on orders ₹499+, 5% off ₹1,499+, 10% off ₹2,999+.',
       ogUrl: `${SITE_URL}/shop/rakhi/`,
       ogImage: bannerImages[0] ? resizedImageUrl(bannerImages[0].url, IMG_WIDTH_OG) : undefined,
     })}
 </head>
 <body>
+    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1444,7 +1475,7 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
     </section>
 
     <div class="container">
-        ${collagebannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan', bannerImages)}
+        ${collagebannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan · Free Bunny Keychain ₹499+ · 5% off ₹1,499+ · 10% off ₹2,999+', bannerImages)}
     </div>
 
     <section class="shop-products">
@@ -1489,6 +1520,7 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
     })}
 </head>
 <body>
+    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1589,6 +1621,7 @@ function generateAccountPage() {
     </script>
 </head>
 <body>
+    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
