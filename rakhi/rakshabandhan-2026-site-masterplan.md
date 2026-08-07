@@ -1,22 +1,33 @@
 # Raksha Bandhan 2026 — Site Update Masterplan
 
-**Status:** Ready to execute. Written so a fresh Claude Code session can pick this up with no prior conversation context.
+**Status:** Executed. Steps A–F below all shipped (commits `609f5622`, `7d772974`, `128003e6`, pushed to `main` 2026-08-07). Kept for history/context, not as a live to-do list — see "What actually shipped" below for what changed since this was written.
 **Written:** 2026-08-06
 **Owner decisions already made:** see "Decisions locked" below — don't re-ask these.
 
 ---
 
+## 0. What actually shipped (read this first — supersedes parts of the plan below)
+
+The plan below was written and executed largely as designed, with two material changes discovered mid-implementation:
+
+1. **Bunny Keychain discount mechanism changed.** The plan's research (line ~15) found the free-keychain offer live as an **automatic** BXGY discount. During implementation, Shopify was found to not combine an automatic BXGY discount with an order-level percent-off code on the same order — so a customer couldn't get both the free keychain and 5%/10% off. Fix: the automatic BXGY was deleted and replaced with a **code-based** BXGY discount, `BUNNY499`, so all three offers (`BUNNY499`, `RAKHI05`, `RAKHI10`) are ordinary discount codes and **mutually exclusive** — only the highest tier the cart qualifies for is ever applied. See `shop/cart.js`'s `REWARD_TIERS`.
+2. **Cart-side progress bar was explicitly requested and built**, reversing "Decisions locked" item 7's "out of scope for this pass" note. It merges free shipping (₹299+) and all three Rakhi tiers into one evenly-spaced progress bar in the cart drawer, with an auto-added/removed gift line for `BUNNY499` and a Subtotal/Discount/Total breakdown in the footer. This was substantial follow-on work beyond the original 4-offer announcement/nav/banner scope — see `shop/cart.js` (`REWARD_TIERS`, `syncRakhiPerks`, `renderRewardsBar`) and `shop/shop.css` (`.rewards-progress` block).
+
+Everything else in this document (announcement bar, nav link, homepage promo banner, collection banner copy) shipped materially as planned.
+
+---
+
 ## 1. Context — what already exists (verified, don't rebuild)
 
-### Shopify offers — already live, verified via Shopify Admin GraphQL on 2026-08-06
+### Shopify offers — status as of 2026-08-06 research (see §0 for what changed since)
 
 | Offer | Type | Mechanism | Status |
 |---|---|---|---|
-| Free Bunny Keychain on orders ₹499+ | Automatic BXGY discount | `gid://shopify/DiscountAutomaticNode/1696221003998`, title "Free Bunny Keychain on orders above ₹499" | ACTIVE, 2026-08-06 → 2026-08-28 |
+| ~~Free Bunny Keychain on orders ₹499+~~ | ~~Automatic BXGY discount~~ | ~~`gid://shopify/DiscountAutomaticNode/1696221003998`~~ | **Superseded — deleted, see below** |
 | 5% off entire order, min ₹1,499 | Discount code | `RAKHI05` (`gid://shopify/DiscountCodeNode/1696219398366`) | ACTIVE, 2026-08-06 → 2026-08-28 |
 | 10% off entire order, min ₹2,999 | Discount code | `RAKHI10` (`gid://shopify/DiscountCodeNode/1696220283102`) | ACTIVE, 2026-08-06 → 2026-08-28 |
 
-Do not recreate these. If any need editing, they already exist — fetch and update, don't duplicate. There is also an unrelated always-on `FAMILY15` code (15% off, no relation to this campaign — leave alone).
+**Post-implementation change (§0):** the automatic BXGY above was deleted and replaced with a **code-based** BXGY discount, `BUNNY499` (created directly in Shopify Admin), because Shopify won't combine an automatic BXGY with an order-level percent-off code. All three offers are now ordinary, mutually-exclusive discount codes — see `shop/cart.js`'s `REWARD_TIERS`. If any need editing, they already exist — fetch and update, don't duplicate. There is also an unrelated always-on `FAMILY15` code (15% off, no relation to this campaign — leave alone).
 
 **Bunny Keychain stock:** shows `-3` available / `0` on hand in Shopify inventory. **This is not a problem** — the store owner confirmed inventory tracking is off for all products; everything is printed to order. Do not attempt to "fix" stock or gate the offer on inventory.
 
@@ -67,7 +78,7 @@ These handles are defined in `RAKHI_COLLECTION_HANDLES` (top of `scripts/build-s
 4. **Homepage also gets a dedicated promo banner/section** for Rakhi, separate from the existing (auto-generated, non-Rakhi) hero carousel — the hero carousel intentionally stays untouched since it's driven by `RAKHI_COLLECTION_HANDLES`-excluded collections only.
 5. **Leave `shop/collections/` exclusion as-is** — do not un-hide the 8 Rakhi collections from the regular collections grid or the homepage hero carousel. Discoverability is handled entirely via items 1-4 above, not by exposing them in the standard collection listing.
 6. **Collection banner subtitle copy** on `shop/rakhi/` and each of the 8 sub-collection pages should mention the 3 offers directly.
-7. **Out of scope for this pass:** cart-side progress-bar messaging ("add ₹X more for 10% off"), product-page-level offer badges, and anything from the retired combos spec. Don't build these unless separately requested.
+7. ~~**Out of scope for this pass:** cart-side progress-bar messaging ("add ₹X more for 10% off"), product-page-level offer badges, and anything from the retired combos spec. Don't build these unless separately requested.~~ **Superseded (see §0):** the cart-side progress bar was separately requested and built after this plan was written. Product-page-level offer badges and the retired combos spec remain out of scope.
 
 ---
 
