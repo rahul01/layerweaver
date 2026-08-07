@@ -2,10 +2,53 @@
    shop.css – LayerWeaver Shop styles
    ============================================================ */
 
+/* ------- Announcement bar (sitewide, sits above the fixed header) ------- */
+:root {
+    --announcement-height: 36px;
+}
+
+.announcement-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 101;
+    height: var(--announcement-height);
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 16px;
+    overflow: hidden;
+}
+
+.announcement-bar a {
+    color: var(--light);
+    text-decoration: none;
+    font-family: var(--font-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.announcement-bar a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .announcement-bar a {
+        font-size: 0.68rem;
+    }
+}
+
 /* ------- Shop Header (minimal) ------- */
 .shop-header {
     position: fixed;
-    top: 0;
+    top: var(--announcement-height);
     left: 0;
     right: 0;
     z-index: 100;
@@ -238,13 +281,13 @@
 
 /* ------- Header spacer (pushes page content below fixed header) ------- */
 .header-spacer {
-    height: 80px;
+    height: calc(80px + var(--announcement-height));
 }
 
 /* ------- Collection Topbar (nav above banner) ------- */
 .collection-topbar {
     position: sticky;
-    top: 80px;
+    top: calc(80px + var(--announcement-height));
     z-index: 50;
     background: var(--light);
     padding: 0;
@@ -495,6 +538,13 @@
 .bundle-includes-title {
     font-size: 0.78rem;
     margin-top: 6px;
+    line-height: 1.3;
+}
+
+.bundle-includes-variant {
+    font-size: 0.7rem;
+    color: #888;
+    text-transform: capitalize;
     line-height: 1.3;
 }
 
@@ -1256,6 +1306,7 @@
 }
 
 .qty-btn:hover { background: var(--primary); color: var(--light); }
+.qty-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
 
 .line-qty span {
     font-family: var(--font-primary);
@@ -1277,6 +1328,7 @@
 }
 
 .remove-btn:hover { color: #e53e3e; }
+.remove-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
 
 /* Cart footer */
 .cart-footer {
@@ -1287,18 +1339,21 @@
     gap: 14px;
 }
 
-.shipping-progress {
-    padding: 4px 0 8px;
+/* Cart rewards progress bar (staged: free shipping → free gift → 5% off → 10% off) */
+.rewards-progress {
+    padding: 4px 0 20px;
 }
 
-.shipping-bar-track {
+.rewards-bar-track {
+    position: relative;
     height: 6px;
     background: #ede8f7;
     border-radius: 3px;
-    overflow: hidden;
+    overflow: visible;
+    margin: 0 3px; /* half the tick's width, so the end ticks don't clip the track edges */
 }
 
-.shipping-bar-fill {
+.rewards-bar-fill {
     height: 100%;
     width: 0%;
     background: var(--primary);
@@ -1306,31 +1361,107 @@
     transition: width 0.5s ease;
 }
 
-.shipping-unlocked .shipping-bar-fill {
+.rewards-bar-ticks {
+    position: absolute;
+    inset: 0;
+}
+
+.rewards-tick {
+    position: absolute;
+    top: 50%;
+    min-width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 2px solid #ede8f7;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    color: #c4bcdc;
+    font-size: 0.65rem;
+    transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+}
+
+/* Text ticks (5%, 10%) need more horizontal room than a fixed circle -
+   become a pill instead of clipping the label. */
+.rewards-tick-has-text {
+    width: auto;
+    padding: 0 6px;
+    border-radius: 11px;
+}
+
+.rewards-tick-text {
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.rewards-tick-reached {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+    transform: translate(-50%, -50%) scale(1.08);
+}
+
+.rewards-all-unlocked .rewards-tick-reached {
+    border-color: #22c55e;
     background: #22c55e;
 }
 
-.shipping-bar-msg {
+.rewards-all-unlocked .rewards-bar-fill {
+    background: #22c55e;
+}
+
+.rewards-bar-msg {
     font-size: 0.85rem;
     font-weight: 600;
     color: #444;
-    margin: 7px 0 0;
+    margin: 9px 0 0;
     text-align: center;
 }
 
-.shipping-unlocked .shipping-bar-msg {
+.rewards-all-unlocked .rewards-bar-msg {
     color: #22c55e;
-    animation: shipping-pop 0.4s ease;
+    animation: rewards-pop 0.4s ease;
 }
 
-@keyframes shipping-pop {
+@keyframes rewards-pop {
     0%   { transform: scale(1); }
     50%  { transform: scale(1.12); }
     100% { transform: scale(1); }
 }
 
-/* Free shipping speech bubble */
-#shipping-bubble {
+/* Free gift line in the cart drawer (auto-added Bunny Keychain via BUNNY499) */
+.cart-line-gift {
+    background: rgba(160, 131, 213, 0.05);
+    border-radius: 10px;
+}
+
+.line-gift-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--primary);
+    background: rgba(160, 131, 213, 0.12);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.line-qty-gift {
+    display: flex;
+    align-items: center;
+}
+
+/* Cart rewards speech bubble */
+#rewards-bubble {
     position: fixed;
     background: #fff;
     border: 1.5px solid #e8e0f5;
@@ -1345,12 +1476,12 @@
     pointer-events: none;
 }
 
-#shipping-bubble.bubble-visible {
+#rewards-bubble.bubble-visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-#shipping-bubble::before {
+#rewards-bubble::before {
     content: '';
     position: absolute;
     top: -7px;
@@ -1370,9 +1501,9 @@
     margin: 0 0 7px;
 }
 
-#shipping-bubble.bubble-unlocked .bubble-msg {
+#rewards-bubble.bubble-unlocked .bubble-msg {
     color: #22c55e;
-    animation: shipping-pop 0.4s ease;
+    animation: rewards-pop 0.4s ease;
 }
 
 .bubble-track {
@@ -1390,7 +1521,7 @@
     transition: width 0.5s ease;
 }
 
-#shipping-bubble.bubble-unlocked .bubble-fill {
+#rewards-bubble.bubble-unlocked .bubble-fill {
     background: #22c55e;
 }
 
@@ -1405,6 +1536,21 @@
     50%  { transform: scale(1.3) rotate(10deg); }
     75%  { transform: scale(1.15) rotate(-5deg); }
     100% { transform: scale(1) rotate(0deg); }
+}
+
+.cart-discount-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-primary);
+    font-size: 0.88rem;
+    color: var(--gray-medium, #666);
+}
+
+.cart-discount-row.cart-discount-savings {
+    color: #22c55e;
+    font-weight: 600;
+    margin-bottom: 2px;
 }
 
 .cart-total {

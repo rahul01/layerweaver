@@ -6,8 +6,38 @@
   const DOMAIN            = 'shop.layerweaver.com';
   const TOKEN             = '7f0eafeb115e99a4a917e044a1fb4125';
   const API               = `https://${DOMAIN}/api/2025-01/graphql.json`;
-  const KEY               = 'lw_cart_id';
-  const FREE_SHIPPING_MIN = 299;
+  const KEY                = 'lw_cart_id';
+
+  // Unified cart rewards ladder - free shipping plus the Raksha Bandhan 2026
+  // campaign (2026-08-06 → 2026-08-28). Thresholds/codes mirror the live
+  // Shopify discount codes - see rakhi/rakshabandhan-2026-site-masterplan.md.
+  // Shipping has no discount code (it's just informational - Shopify applies
+  // it automatically at checkout based on order value). The 3 Rakhi offers
+  // are single-use discount codes (BUNNY499 is a code-based BXGY, not an
+  // automatic one) so only one is ever active on a cart at a time - Shopify's
+  // discount engine doesn't allow a BXGY (the free-gift mechanic) to combine
+  // with an order-wide % off code on the same order, so "free gift AND % off"
+  // was never achievable; mutually-exclusive codes sidesteps that entirely.
+  // Tiers are ordered ascending; the highest tier whose min the subtotal
+  // meets is always the active discount code (a customer at ₹3000 gets
+  // RAKHI10, not RAKHI05 or BUNNY499).
+  //
+  // BUNNY499 needs the Bunny Keychain physically in the cart to have
+  // anything to make free (verified: applying it to a cart with no keychain
+  // line leaves it inapplicable) - so syncRakhiPerks auto-adds/removes that
+  // line whenever BUNNY499 is the active tier, tagged with GIFT_LINE_ATTR so
+  // it can tell "the line it added" apart from a keychain the customer
+  // bought themselves.
+  const RAKHI_GIFT_VARIANT_GID = 'gid://shopify/ProductVariant/48079833432286'; // Bunny Keychain
+  const GIFT_LINE_ATTR = '_rakhi_bunny499_gift';
+  const REWARD_TIERS = [
+    { min: 299,  label: 'Free Shipping',        icon: 'fa-truck-fast' },
+    { min: 499,  code: 'BUNNY499', label: 'Free Bunny Keychain', needsGiftLine: true, icon: 'fa-gift' },
+    { min: 1499, code: 'RAKHI05',  label: '5% off (RAKHI05)',    text: '5%' },
+    { min: 2999, code: 'RAKHI10',  label: '10% off (RAKHI10)',   text: '10%' },
+  ];
+  const RAKHI_TIERS = REWARD_TIERS.filter(t => t.code);
+  const RAKHI_CODES = RAKHI_TIERS.map(t => t.code);
 
   // Derive the path to shop/ root from the current page URL
   const path     = window.location.pathname;
@@ -70,7 +100,7 @@
         }}
       }}
     }
-    cost { totalAmount { amount currencyCode } }
+    cost { totalAmount { amount currencyCode } subtotalAmount { amount currencyCode } }
     discountCodes { code applicable }
   `;
 
@@ -136,12 +166,34 @@
     return null;
   }
 
-  async function addLines(cartId, lines) {
+  async function rawAddLines(cartId, lines) {
     const data = await gql(`
       mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
         cartLinesAdd(cartId: $cartId, lines: $lines) { cart { ${CART_FIELDS} } }
       }`, { cartId, lines });
     return data.cartLinesAdd.cart;
+  }
+
+  // Adding a variant already present as a line merges into that line's
+  // quantity server-side - the same quantity-increase-while-discounted bug
+  // documented above on updateLines applies here too (verified: adding a
+  // variant already in the cart while a code is active can even bump the
+  // *wrong* line's quantity, not just fragment the right one). currentCart
+  // is optional so the handful of call sites that only ever add to an empty
+  // or freshly-created cart (no discount code could possibly be active yet)
+  // don't need to plumb it through.
+  async function addLines(cartId, lines, currentCart = null) {
+    const priorCodes = (currentCart?.discountCodes || []).filter(c => c.applicable).map(c => c.code);
+    if (!priorCodes.length) return rawAddLines(cartId, lines);
+
+    await setDiscountCodes(cartId, []);
+    const updated = await rawAddLines(cartId, lines);
+    try {
+      return await setDiscountCodes(cartId, priorCodes);
+    } catch (err) {
+      console.warn('[Cart] Failed to restore discount codes after add:', err);
+      return updated;
+    }
   }
 
   async function addLine(cartId, variantId, qty, attributes = []) {
@@ -150,7 +202,18 @@
     return addLines(cartId, [line]);
   }
 
-  async function updateLines(cartId, updates) {
+  // Shopify's cartLinesUpdate has been observed to occasionally fragment a
+  // line instead of updating its quantity in place - verified via direct
+  // API testing: any cartLinesUpdate that *increases* a line's quantity
+  // while the cart has an active discount code fragments that line into
+  // two (e.g. requesting quantity 7 on an existing qty-6 line comes back as
+  // two lines, qty 1 + qty 6, instead of one line at qty 7). Decreases and
+  // no-op updates are unaffected, and it's not specific to which line is
+  // discounted - any line, discounted or not, fragments on increase.
+  // Reapplying the same discount code afterward does not itself fragment
+  // anything, so the fix is to always increase quantity with no discount
+  // code active, then restore it: strip codes -> update -> reapply.
+  async function rawUpdateLines(cartId, updates) {
     const data = await gql(`
       mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
         cartLinesUpdate(cartId: $cartId, lines: $lines) { cart { ${CART_FIELDS} } }
@@ -158,8 +221,41 @@
     return data.cartLinesUpdate.cart;
   }
 
-  async function updateLine(cartId, lineId, qty) {
-    return updateLines(cartId, [{ id: lineId, quantity: qty }]);
+  async function updateLines(cartId, updates, currentCart = null) {
+    const priorCodes = (currentCart?.discountCodes || []).filter(c => c.applicable).map(c => c.code);
+    const isIncrease = currentCart && updates.some(u => {
+      const line = currentCart.lines.edges.find(e => e.node.id === u.id)?.node;
+      return line && u.quantity > line.quantity;
+    });
+
+    if (!priorCodes.length || !isIncrease) {
+      return rawUpdateLines(cartId, updates);
+    }
+
+    // Strip discount codes, apply the quantity increase safely, then restore
+    // whatever *non-Rakhi* codes were active - a no-op reapply of a stable
+    // code doesn't fragment anything, only quantity increases do. A Rakhi
+    // code is deliberately NOT restored here even if it was active before:
+    // this update may have just crossed a tier boundary, and re-applying the
+    // old (now possibly wrong) tier's code would be visible to anyone
+    // reading cart state between this call and syncRakhiPerks's correction
+    // right after - syncRakhiPerks is the sole source of truth for which
+    // Rakhi code (if any) belongs on the cart, so it's left off here and
+    // applied fresh once.
+    const nonRakhiCodes = priorCodes.filter(c => !RAKHI_CODES.includes(c));
+    await setDiscountCodes(cartId, []);
+    const updated = await rawUpdateLines(cartId, updates);
+    if (!nonRakhiCodes.length) return updated;
+    try {
+      return await setDiscountCodes(cartId, nonRakhiCodes);
+    } catch (err) {
+      console.warn('[Cart] Failed to restore discount codes after qty increase:', err);
+      return updated;
+    }
+  }
+
+  async function updateLine(cartId, lineId, qty, currentCart = null) {
+    return updateLines(cartId, [{ id: lineId, quantity: qty }], currentCart);
   }
 
   async function removeLines(cartId, lineIds) {
@@ -228,6 +324,109 @@
     }
   }
 
+  async function setDiscountCodes(cartId, codes) {
+    const data = await gql(`
+      mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+        cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+          cart { ${CART_FIELDS} }
+        }
+      }`, { cartId, discountCodes: codes });
+    return data.cartDiscountCodesUpdate.cart;
+  }
+
+  // Keeps the cart's free Bunny Keychain line and RAKHI05/RAKHI10 discount
+  // code in sync with the cart subtotal, on every cart load/mutation.
+  // Eligibility is computed against the subtotal *excluding* the auto-added
+  // gift line's own price, so adding the ₹99 gift never causes the ₹1,499/
+  // ₹2,999 tiers to be crossed on their own - only the customer's real
+  // purchases decide the code tier.
+  // The customer's real spend, excluding the auto-added gift line - used for
+  // reward-tier eligibility everywhere so adding the ₹99 gift never causes
+  // the ₹1,499/₹2,999 tiers to be crossed on its own. Deliberately sums each
+  // non-gift line's own price×quantity rather than using
+  // cart.cost.subtotalAmount minus the gift line's price: verified that
+  // Shopify's subtotalAmount silently EXCLUDES a 100%-off line once
+  // cartDiscountCodesUpdate has been applied (though not right after
+  // cartLinesAdd, before the code exists) - subtracting the gift price from
+  // an already-excluding subtotal double-subtracted it, undercounting the
+  // customer's real spend by ₹99 and delaying every tier crossing by one
+  // click.
+  function rakhiEligibleSubtotal(cart) {
+    return cart.lines.edges
+      .map(e => e.node)
+      .filter(l => attrValue(l, GIFT_LINE_ATTR) !== 'true')
+      .reduce((s, l) => s + parseFloat(l.merchandise.price.amount) * l.quantity, 0);
+  }
+
+  // Sum of every line (including the gift line) at full, undiscounted price -
+  // i.e. what the cart would cost with no discount at all. Used to show the
+  // "was ₹X, discount -₹Y, now ₹Z" breakdown in the footer. Computed the same
+  // way as rakhiEligibleSubtotal (summing each line's own price×quantity)
+  // rather than trusting cart.cost.subtotalAmount, since that field has been
+  // observed to silently exclude a 100%-off line once a discount code is
+  // applied - see rakhiEligibleSubtotal's comment for the full story.
+  function cartFullPriceTotal(cart) {
+    return cart.lines.edges
+      .map(e => e.node)
+      .reduce((s, l) => s + parseFloat(l.merchandise.price.amount) * l.quantity, 0);
+  }
+
+  async function syncRakhiPerks() {
+    if (!cart) return;
+
+    const giftLine = cart.lines.edges.map(e => e.node).find(l => attrValue(l, GIFT_LINE_ATTR) === 'true');
+    const subtotal = rakhiEligibleSubtotal(cart);
+
+    const bestTier = RAKHI_TIERS.filter(t => subtotal >= t.min).pop() || null;
+    const bestCode = bestTier?.code || null;
+    const wantsGiftLine = !!bestTier?.needsGiftLine;
+
+    // ── Gift line (BUNNY499 needs the Bunny Keychain physically in the cart
+    // to have anything to make free - see the block comment above) ──
+    if (wantsGiftLine && !giftLine) {
+      try {
+        cart = await addLines(cart.id, [{
+          merchandiseId: RAKHI_GIFT_VARIANT_GID,
+          quantity: 1,
+          attributes: [{ key: GIFT_LINE_ATTR, value: 'true' }],
+        }], cart);
+      } catch (err) {
+        console.warn('[Cart] Rakhi gift add failed:', err);
+      }
+    } else if (!wantsGiftLine && giftLine) {
+      try {
+        cart = await removeLine(cart.id, giftLine.id);
+      } catch (err) {
+        console.warn('[Cart] Rakhi gift remove failed:', err);
+      }
+    } else if (wantsGiftLine && giftLine && giftLine.quantity !== 1) {
+      // Guard against the gift line's quantity ever being bumped above 1
+      // (e.g. a stray updateLines call elsewhere) - it's a single free item.
+      try {
+        cart = await updateLine(cart.id, giftLine.id, 1, cart);
+      } catch (err) {
+        console.warn('[Cart] Rakhi gift quantity fix failed:', err);
+      }
+    }
+
+    // ── Discount code ──
+    // Only ever manage the Rakhi codes here - if the customer already has a
+    // non-Rakhi code applied (e.g. FAMILY15), leave it alone entirely rather
+    // than clobbering it with cartDiscountCodesUpdate's full-replace semantics.
+    const currentCodes = (cart.discountCodes || []).map(c => c.code);
+    const currentRakhi = currentCodes.find(c => RAKHI_CODES.includes(c)) || null;
+    const otherCodes   = currentCodes.filter(c => !RAKHI_CODES.includes(c));
+
+    if (currentRakhi !== bestCode) {
+      const nextCodes = bestCode ? [...otherCodes, bestCode] : otherCodes;
+      try {
+        cart = await setDiscountCodes(cart.id, nextCodes);
+      } catch (err) {
+        console.warn('[Cart] Rakhi discount code sync failed:', err);
+      }
+    }
+  }
+
   // ── State ─────────────────────────────────────────────────────────────────
 
   let cart = null;
@@ -284,11 +483,20 @@
       <div class="cart-body" id="cart-body"></div>
       <div class="cart-footer" id="cart-footer">
         <div id="cart-checkout-section" style="display:none">
-          <div id="shipping-progress" class="shipping-progress">
-            <div class="shipping-bar-track">
-              <div class="shipping-bar-fill" id="shipping-bar-fill"></div>
+          <div id="rewards-progress" class="rewards-progress" style="display:none">
+            <div class="rewards-bar-track">
+              <div class="rewards-bar-fill" id="rewards-bar-fill"></div>
+              <div class="rewards-bar-ticks" id="rewards-bar-ticks"></div>
             </div>
-            <p class="shipping-bar-msg" id="shipping-bar-msg"></p>
+            <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
+          </div>
+          <div class="cart-discount-row" id="cart-discount-row" style="display:none">
+            <span>Subtotal</span>
+            <span id="cart-subtotal-price"></span>
+          </div>
+          <div class="cart-discount-row cart-discount-savings" id="cart-savings-row" style="display:none">
+            <span id="cart-discount-label">Discount</span>
+            <span id="cart-discount-amount"></span>
           </div>
           <div class="cart-total">
             <span>Total</span>
@@ -313,30 +521,94 @@
       closeDrawer();
       window.location.href = SHOP_ROOT;
     });
-    let _drawerBusy = false;
-    document.getElementById('cart-body').addEventListener('click', async (e) => {
-      if (_drawerBusy) return;
+    let _drawerBusy = false; // still used to serialize remove-btn, which fully re-renders
+    // Rapid +/- clicks on the same line are debounced into a single mutation
+    // chain targeting the final quantity, instead of firing a full
+    // clear-code/update/reapply round trip (see updateLines) per click - both
+    // because each round trip is ~600-900ms (feels sluggish under fast
+    // clicking) and because collapsing N clicks into one mutation means only
+    // one clear/reapply detour instead of N. The displayed number updates
+    // immediately on every click (optimistic) so the UI never feels stuck
+    // waiting on the network; the real re-render after the debounced mutation
+    // settles simply overwrites it with the true state.
+    const _pending = new Map(); // lineId -> { qty, pairedLineId, extraLineIds, timer }
+    const DEBOUNCE_MS = 450;
+
+    function flushPending(lineId) {
+      const p = _pending.get(lineId);
+      if (!p) return Promise.resolve();
+      _pending.delete(lineId);
+      setLineBusy(lineId, true);
+      const run = p.extraLineIds.length
+        ? (p.qty <= 0
+            ? handleRemoveLine(lineId, p.pairedLineId, p.extraLineIds)
+            : handleConsolidateAndUpdate(lineId, p.extraLineIds, p.qty))
+        : (p.qty <= 0
+            ? handleRemoveLine(lineId, p.pairedLineId)
+            : handleUpdateLine(lineId, p.qty, p.pairedLineId));
+      return run.finally(() => setLineBusy(lineId, false));
+    }
+
+    function setLineBusy(lineId, busy) {
+      document.querySelectorAll(`[data-line-id="${lineId}"]`).forEach(el => {
+        el.disabled = busy;
+      });
+    }
+
+    document.getElementById('cart-body').addEventListener('click', (e) => {
       const btn = e.target.closest('.qty-dec, .qty-inc, .remove-btn');
       if (!btn) return;
-      _drawerBusy = true;
-      setDrawerLoading(true);
-      try {
-        const lineId = btn.dataset.lineId;
-        const pairedLineId = btn.dataset.pairedLineId || null;
-        if (btn.classList.contains('remove-btn') || btn.classList.contains('qty-dec')) {
-          const newQty = btn.classList.contains('remove-btn') ? 0 : parseInt(btn.dataset.qty) - 1;
-          if (newQty <= 0) {
-            await handleRemoveLine(lineId, pairedLineId);
-          } else {
-            await handleUpdateLine(lineId, newQty, pairedLineId);
-          }
-        } else {
-          await handleUpdateLine(lineId, parseInt(btn.dataset.qty) + 1, pairedLineId);
-        }
-      } finally {
-        _drawerBusy = false;
-        setDrawerLoading(false);
+      const lineId = btn.dataset.lineId;
+      const pairedLineId = btn.dataset.pairedLineId || null;
+      const extraLineIds = btn.dataset.extraLineIds ? btn.dataset.extraLineIds.split(',') : [];
+
+      if (btn.classList.contains('remove-btn')) {
+        if (_drawerBusy) return;
+        // Flush any other line's pending debounced update first and wait for
+        // it - handleRemoveLine/handleUpdateLine both read/write the shared
+        // `cart` global, so two of these flows racing on the network would
+        // let whichever response lands second silently clobber the other's
+        // result.
+        _pending.delete(lineId);
+        const others = [..._pending.keys()];
+        _drawerBusy = true;
+        setDrawerLoading(true);
+        Promise.all(others.map(id => {
+          clearTimeout(_pending.get(id).timer);
+          return flushPending(id);
+        }))
+          .then(() => handleRemoveLine(lineId, pairedLineId, extraLineIds))
+          .finally(() => {
+            _drawerBusy = false;
+            setDrawerLoading(false);
+          });
+        return;
       }
+
+      // Base quantity to increment/decrement from: whatever's already
+      // pending for this line (so repeated clicks accumulate), else what's
+      // currently on screen.
+      const baseQty = _pending.has(lineId) ? _pending.get(lineId).qty : parseInt(btn.dataset.qty);
+      const nextQty = baseQty + (btn.classList.contains('qty-dec') ? -1 : 1);
+
+      // Reflect the click immediately in the displayed number and badge -
+      // the real cart.totalQuantity is restored by refreshUI() once the
+      // debounced mutation settles, this is purely a felt-latency fix.
+      const qtyDisplay = btn.closest('.line-qty')?.querySelector('span');
+      if (qtyDisplay && nextQty > 0) qtyDisplay.textContent = nextQty;
+      document.querySelectorAll(`[data-line-id="${lineId}"][data-qty]`).forEach(el => {
+        el.dataset.qty = Math.max(nextQty, 0);
+      });
+      const badge = document.getElementById('cart-badge');
+      if (badge) {
+        const delta = btn.classList.contains('qty-dec') ? -1 : 1;
+        badge.textContent = Math.max(parseInt(badge.textContent || '0') + delta, 0);
+      }
+
+      const existing = _pending.get(lineId);
+      if (existing) clearTimeout(existing.timer);
+      const timer = setTimeout(() => flushPending(lineId), DEBOUNCE_MS);
+      _pending.set(lineId, { qty: nextQty, pairedLineId, extraLineIds, timer });
     });
   }
 
@@ -367,10 +639,10 @@
     }
   }
 
-  function injectShippingBubble() {
-    if (document.getElementById('shipping-bubble')) return;
+  function injectRewardsBubble() {
+    if (document.getElementById('rewards-bubble')) return;
     const bubble = document.createElement('div');
-    bubble.id = 'shipping-bubble';
+    bubble.id = 'rewards-bubble';
     bubble.innerHTML = `
       <p class="bubble-msg" id="bubble-msg"></p>
       <div class="bubble-track"><div class="bubble-fill" id="bubble-fill"></div></div>`;
@@ -378,8 +650,8 @@
   }
 
   let _bubbleTimer = null;
-  function showShippingBubble(pct, msg, unlocked) {
-    const bubble = document.getElementById('shipping-bubble');
+  function showRewardsBubble(pct, msg, unlocked) {
+    const bubble = document.getElementById('rewards-bubble');
     const fill   = document.getElementById('bubble-fill');
     const msgEl  = document.getElementById('bubble-msg');
     if (!bubble || !fill || !msgEl) return;
@@ -400,38 +672,93 @@
     _bubbleTimer = setTimeout(() => bubble.classList.remove('bubble-visible'), unlocked ? 3500 : 2800);
   }
 
-  function renderShippingBar() {
-    const total       = parseFloat(cart?.cost?.totalAmount?.amount || 0);
-    const isUnlocked  = total >= FREE_SHIPPING_MIN;
-    const pct         = Math.min((total / FREE_SHIPPING_MIN) * 100, 100);
-    const unlockMsg   = '🎉 Free shipping unlocked!';
-    const pendingMsg  = `🚚 Add ₹${(FREE_SHIPPING_MIN - total).toFixed(0)} more for free shipping`;
-    const wasUnlocked = sessionStorage.getItem('lw_shipping_unlocked') === 'true';
+  // Single staged bar with a tick mark at every threshold - free shipping
+  // (₹299) through the 3 Rakhi tiers. Ticks are spaced evenly (not
+  // proportional to the ₹ gap between them) so the huge jump from ₹499 to
+  // ₹2,999 doesn't crush the first two milestones into the left edge of the
+  // bar - each stage gets equal visual room regardless of how many rupees
+  // it actually spans. Uses the same cart subtotal as syncRakhiPerks so the
+  // bar and the actually-applied discount code never disagree about which
+  // tier the cart is in.
+  function renderRewardsBar() {
+    const progressEl = document.getElementById('rewards-progress');
+    const fill        = document.getElementById('rewards-bar-fill');
+    const ticksEl      = document.getElementById('rewards-bar-ticks');
+    const msg          = document.getElementById('rewards-bar-msg');
+    if (!progressEl || !fill || !ticksEl || !msg || !cart) return;
 
-    // ── Cart drawer bar ──
-    const progressEl = document.getElementById('shipping-progress');
-    const fill       = document.getElementById('shipping-bar-fill');
-    const msg        = document.getElementById('shipping-bar-msg');
-    if (fill && msg && progressEl) {
-      fill.style.width = pct + '%';
-      if (isUnlocked) {
-        msg.textContent = unlockMsg;
-        progressEl.classList.add('shipping-unlocked');
-        if (!wasUnlocked) {
-          sessionStorage.setItem('lw_shipping_unlocked', 'true');
-          spawnPageConfetti();
-        }
-      } else {
-        msg.textContent = pendingMsg;
-        progressEl.classList.remove('shipping-unlocked');
-        sessionStorage.removeItem('lw_shipping_unlocked');
-      }
+    const subtotal = rakhiEligibleSubtotal(cart);
+
+    if (subtotal <= 0) { progressEl.style.display = 'none'; return; }
+    progressEl.style.display = '';
+
+    // Ticks at (i+1)/n rather than i/(n-1), so the first milestone (free
+    // shipping) sits a stretch into the bar instead of glued to the left
+    // edge - the empty run from 0% represents "cart just started, nothing
+    // unlocked yet" rather than looking like shipping is already halfway won.
+    const n = REWARD_TIERS.length;
+    const tickPct = i => ((i + 1) / n) * 100;
+
+    if (!ticksEl.dataset.built) {
+      ticksEl.innerHTML = REWARD_TIERS.map((t, i) => {
+        const inner = t.text
+          ? `<span class="rewards-tick-text">${esc(t.text)}</span>`
+          : `<i class="fa-solid ${t.icon}"></i>`;
+        return `<span class="rewards-tick${t.text ? ' rewards-tick-has-text' : ''}" data-tier-index="${i}" style="left:${tickPct(i)}%" title="${esc(t.label)}">
+          ${inner}
+        </span>`;
+      }).join('');
+      ticksEl.dataset.built = 'true';
     }
 
+    // Fill width by segment progress, not raw ₹ ratio: full width to the
+    // last fully-met tick, plus partial progress across the current segment
+    // toward the next one.
+    let pct;
+    const metIdx = REWARD_TIERS.reduce((last, t, i) => subtotal >= t.min ? i : last, -1);
+    if (metIdx === n - 1) {
+      pct = 100;
+    } else {
+      const segStart = metIdx === -1 ? 0 : REWARD_TIERS[metIdx].min;
+      const segEnd = REWARD_TIERS[metIdx + 1].min;
+      const segFrac = Math.min(Math.max((subtotal - segStart) / (segEnd - segStart), 0), 1);
+      const segStartPct = metIdx === -1 ? 0 : tickPct(metIdx);
+      const segEndPct = tickPct(metIdx + 1);
+      pct = segStartPct + segFrac * (segEndPct - segStartPct);
+    }
+    fill.style.width = pct + '%';
+
+    const nextTier = REWARD_TIERS.find(t => subtotal < t.min);
+    const metCount = REWARD_TIERS.filter(t => subtotal >= t.min).length;
+
+    // Light up each milestone icon individually as its own threshold is
+    // reached, rather than only styling the bar as a whole.
+    ticksEl.querySelectorAll('.rewards-tick').forEach((tickEl, i) => {
+      tickEl.classList.toggle('rewards-tick-reached', subtotal >= REWARD_TIERS[i].min);
+    });
+
+    let text;
+    if (!nextTier) {
+      text = `🎉 All rewards unlocked!`;
+    } else {
+      const remaining = (nextTier.min - subtotal).toFixed(0);
+      text = `🪢 Add ₹${remaining} more for ${nextTier.label}`;
+    }
+    msg.textContent = text;
+    const allUnlocked = !nextTier;
+    progressEl.classList.toggle('rewards-all-unlocked', allUnlocked);
+
+    const wasMetCount = parseInt(sessionStorage.getItem('lw_rewards_tier_count') || '0');
+    if (_cartReady && metCount > wasMetCount) spawnPageConfetti();
+    sessionStorage.setItem('lw_rewards_tier_count', metCount);
+
     // ── Speech bubble near cart icon ──
-    // Only show on user-triggered changes, not on initial page load.
-    if (_cartReady && (!isUnlocked || !wasUnlocked)) {
-      showShippingBubble(pct, isUnlocked ? unlockMsg : pendingMsg, isUnlocked);
+    // Nudge on every render while there's still a reward to chase, and once
+    // more right when the last tier gets crossed - matches the old shipping
+    // bubble's behavior (only staying silent once already fully unlocked and
+    // nothing changed).
+    if (_cartReady && (!allUnlocked || metCount !== wasMetCount)) {
+      showRewardsBubble(pct, text, allUnlocked);
     }
   }
 
@@ -465,6 +792,31 @@
       return;
     }
 
+    // Shopify's cartLinesUpdate/cartDiscountCodesUpdate has a verified
+    // server-side quirk where a line's quantity fragments into two lines
+    // (same variant, same attributes, split quantity) once a discount code
+    // is applied/reapplied to the cart - retrying doesn't self-heal it, so
+    // rather than fight an unfixable API behavior, duplicate lines are
+    // merged for *display* only: shown as one row summing their quantities,
+    // with the mutation handlers (below) fanning qty/remove actions out
+    // across every real line ID behind that row. Gift and surcharge lines
+    // are excluded - only ever added once at qty 1, they don't fragment.
+    const dupGroups = new Map(); // "variantId::attrsKey" -> line[]
+    for (const line of lines) {
+      if (isSurchargeLine(line) || attrValue(line, GIFT_LINE_ATTR) === 'true') continue;
+      const key = `${line.merchandise.id}::${(line.attributes || []).map(a => `${a.key}=${a.value}`).sort().join('|')}`;
+      if (!dupGroups.has(key)) dupGroups.set(key, []);
+      dupGroups.get(key).push(line);
+    }
+    const mergedIds = new Set(); // ids folded into a merged display line, so raw baseLines skips them
+    const extraLineIdsFor = new Map(); // primary line id -> [other real line ids also representing this row]
+    for (const group of dupGroups.values()) {
+      if (group.length < 2) continue;
+      const [primary, ...rest] = group;
+      extraLineIdsFor.set(primary.id, rest.map(l => l.id));
+      rest.forEach(l => mergedIds.add(l.id));
+    }
+
     // Pair each per-char surcharge line to its base line via the shared
     // `_pgroup` token so it can render nested (no independent qty/remove
     // controls) instead of as its own confusing line item. A surcharge line
@@ -472,7 +824,7 @@
     // falls back to rendering as a normal standalone line rather than being
     // silently hidden.
     const surchargeLines = lines.filter(isSurchargeLine);
-    const baseLines = lines.filter(l => !isSurchargeLine(l));
+    const baseLines = lines.filter(l => !isSurchargeLine(l) && !mergedIds.has(l.id));
     const pairedSurchargeIds = new Set();
     const surchargeFor = new Map(); // base line id -> surcharge line
     for (const sLine of surchargeLines) {
@@ -506,26 +858,49 @@
         : '';
       const pairedAttr = pairedSurcharge ? ` data-paired-line-id="${pairedSurcharge.id}"` : '';
 
+      // If Shopify fragmented this variant into multiple real lines (see the
+      // dupGroups comment above), fold their quantities into one displayed
+      // number and tag the extra line IDs so qty/remove clicks fan out to
+      // all of them, not just the "primary" one shown here.
+      const extraIds = extraLineIdsFor.get(line.id) || [];
+      const extraLines = extraIds.map(id => lines.find(l => l.id === id)).filter(Boolean);
+      const displayQty = line.quantity + extraLines.reduce((s, l) => s + l.quantity, 0);
+      const extraAttr = extraIds.length ? ` data-extra-line-ids="${extraIds.join(',')}"` : '';
+
+      // The auto-added BUNNY499 gift line (see syncRakhiPerks) is a locked
+      // qty-1 freebie, not a normal line - no qty controls, price shown as
+      // "FREE" (the real ₹0 only reconciles once BUNNY499 is applied), and a
+      // badge so it doesn't read as an accidental purchase.
+      const isGift = attrValue(line, GIFT_LINE_ATTR) === 'true';
+      const giftBadge = isGift ? `<span class="line-gift-badge"><i class="fa-solid fa-gift"></i> Free Gift</span>` : '';
+      const lineControls = isGift
+        ? `<div class="line-qty line-qty-gift">
+            <button class="remove-btn" data-line-id="${line.id}" aria-label="Remove free gift">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>`
+        : `<div class="line-qty">
+            <button class="qty-btn qty-dec" data-line-id="${line.id}"${pairedAttr}${extraAttr} data-qty="${displayQty}">−</button>
+            <span>${displayQty}</span>
+            <button class="qty-btn qty-inc" data-line-id="${line.id}"${pairedAttr}${extraAttr} data-qty="${displayQty}">+</button>
+            <button class="remove-btn" data-line-id="${line.id}"${pairedAttr}${extraAttr} aria-label="Remove">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>`;
+
       return `
-        <div class="cart-line" data-line-id="${line.id}">
+        <div class="cart-line${isGift ? ' cart-line-gift' : ''}" data-line-id="${line.id}">
           <a class="cart-line-link" href="${SHOP_ROOT}products/${v.product.handle}/">
             <div class="line-image">${img}</div>
             <div class="line-info">
-              <p class="line-title">${esc(v.product.title)}</p>
+              <p class="line-title">${esc(v.product.title)} ${giftBadge}</p>
               ${variantLabel}
               ${customAttrs}
-              <p class="line-price">${price}</p>
+              <p class="line-price">${isGift ? '<s>' + price + '</s> FREE' : price}</p>
               ${surchargeNote}
             </div>
           </a>
-          <div class="line-qty">
-            <button class="qty-btn qty-dec" data-line-id="${line.id}"${pairedAttr} data-qty="${line.quantity}">−</button>
-            <span>${line.quantity}</span>
-            <button class="qty-btn qty-inc" data-line-id="${line.id}"${pairedAttr} data-qty="${line.quantity}">+</button>
-            <button class="remove-btn" data-line-id="${line.id}"${pairedAttr} aria-label="Remove">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
+          ${lineControls}
         </div>`;
     }).join('');
 
@@ -533,9 +908,44 @@
     const costAmt = cart.cost.totalAmount;
     total.textContent = fmt(costAmt.amount, costAmt.currencyCode);
     chkBtn.href = cart.checkoutUrl;
+    renderDiscountBreakdown(cart);
     const checkoutSection = document.getElementById('cart-checkout-section');
     if (checkoutSection) checkoutSection.style.display = 'contents';
-    renderShippingBar();
+    renderRewardsBar();
+  }
+
+  // Shows "Subtotal ₹X" / "Discount -₹Y" rows above the Total whenever any
+  // discount is actually saving the customer money - either a Rakhi code
+  // (RAKHI05/RAKHI10, computed as % off) or the BUNNY499 gift line itself
+  // (100% off just that line). Hidden entirely when nothing is discounted,
+  // so the footer looks exactly as it always has for a plain cart.
+  function renderDiscountBreakdown(cart) {
+    const subtotalRow = document.getElementById('cart-discount-row');
+    const savingsRow  = document.getElementById('cart-savings-row');
+    const subtotalEl  = document.getElementById('cart-subtotal-price');
+    const labelEl     = document.getElementById('cart-discount-label');
+    const amountEl    = document.getElementById('cart-discount-amount');
+    if (!subtotalRow || !savingsRow || !subtotalEl || !labelEl || !amountEl) return;
+
+    const fullPrice = cartFullPriceTotal(cart);
+    const actualTotal = parseFloat(cart.cost.totalAmount.amount);
+    const savings = fullPrice - actualTotal;
+    const currency = cart.cost.totalAmount.currencyCode;
+
+    if (savings <= 0.01) {
+      subtotalRow.style.display = 'none';
+      savingsRow.style.display = 'none';
+      return;
+    }
+
+    const activeCode = (cart.discountCodes || []).find(c => c.applicable && RAKHI_CODES.includes(c.code))?.code;
+    const tier = RAKHI_TIERS.find(t => t.code === activeCode);
+    labelEl.textContent = tier ? tier.label : 'Discount';
+
+    subtotalEl.textContent = fmt(fullPrice, currency);
+    amountEl.textContent = `-${fmt(savings, currency)}`;
+    subtotalRow.style.display = '';
+    savingsRow.style.display = '';
   }
 
   // ── Drawer open / close ───────────────────────────────────────────────────
@@ -617,9 +1027,10 @@
   // flows. `lines` is an array of { merchandiseId, quantity, attributes? }.
   async function addLinesCore(lines) {
     const cartId = loadCartId();
+    const cartBefore = cart;
     if (cartId) {
       try {
-        cart = await addLines(cartId, lines);
+        cart = await addLines(cartId, lines, cartBefore);
       } catch (err) {
         // A line elsewhere in this cart likely references a variant that no
         // longer exists (e.g. after swapping color variants in Shopify) -
@@ -627,12 +1038,12 @@
         // entirely. See recoverCart().
         console.warn('[Cart] Add failed, attempting to recover the existing cart:', err);
         const recovered = await recoverCart(cartId);
-        cart = recovered ? await addLines(cartId, lines).catch(() => null) : null;
+        cart = recovered ? await addLines(cartId, lines, recovered).catch(() => null) : null;
       }
       if (!cart) {
         localStorage.removeItem(KEY);
         cart = await createCart(lines[0].merchandiseId, lines[0].quantity, lines[0].attributes || []);
-        if (lines.length > 1) cart = await addLines(cart.id, lines.slice(1));
+        if (lines.length > 1) cart = await addLines(cart.id, lines.slice(1), cart);
         saveCartId(cart.id);
         syncCartIdToServer(cart.id);
       }
@@ -642,6 +1053,7 @@
       saveCartId(cart.id);
       syncCartIdToServer(cart.id);
     }
+    await syncRakhiPerks();
     refreshUI();
 
     const addedGids = new Set(lines.map(l => l.merchandiseId));
@@ -749,33 +1161,71 @@
         cart = await updateLines(cart.id, [
           { id: lineId, quantity: newQty },
           { id: pairedLineId, quantity: Math.round(perUnit * newQty) },
-        ]);
+        ], cart);
+        await syncRakhiPerks();
         refreshUI();
         return;
       }
     }
-    cart = await updateLine(cart.id, lineId, newQty);
+    cart = await updateLine(cart.id, lineId, newQty, cart);
+    await syncRakhiPerks();
     refreshUI();
   }
 
-  async function handleRemoveLine(lineId, pairedLineId = null) {
+  async function handleRemoveLine(lineId, pairedLineId = null, extraLineIds = []) {
     const line = cart?.lines.edges.find(e => e.node.id === lineId)?.node;
-    cart = pairedLineId
-      ? await removeLines(cart.id, [lineId, pairedLineId])
+    // Capture extra fragment lines' quantities before cart is reassigned -
+    // see renderCart's dupGroups comment for why a display row can be
+    // backed by more than one real Shopify line.
+    const extraQty = extraLineIds.reduce((s, id) => {
+      const l = cart?.lines.edges.find(e => e.node.id === id)?.node;
+      return s + (l?.quantity || 0);
+    }, 0);
+    const allIds = [lineId, pairedLineId, ...extraLineIds].filter(Boolean);
+    cart = allIds.length > 1
+      ? await removeLines(cart.id, allIds)
       : await removeLine(cart.id, lineId);
+    await syncRakhiPerks();
     refreshUI();
     if (line) {
       if (typeof gtag === 'function') gtag('event', 'remove_from_cart', {
         currency: line.merchandise.price.currencyCode,
-        value:    parseFloat(line.merchandise.price.amount) * line.quantity,
+        value:    parseFloat(line.merchandise.price.amount) * (line.quantity + extraQty),
         items: [{
           item_id:   line.merchandise.id.split('/').pop(),
           item_name: line.merchandise.product.title,
           price:     parseFloat(line.merchandise.price.amount),
-          quantity:  line.quantity,
+          quantity:  line.quantity + extraQty,
         }],
       });
     }
+  }
+
+  // Consolidates a Shopify-fragmented display row (see renderCart's
+  // dupGroups) into a single real line, then sets it to targetQty in the
+  // same safe sequence used elsewhere: clear any active discount code
+  // (removal/update never fragments when no code is active), remove the
+  // extra fragment lines, set the primary line to targetQty, reapply
+  // whatever *non-Rakhi* code was active (see updateLines for why a Rakhi
+  // code specifically is left for syncRakhiPerks to reapply fresh, rather
+  // than restored here - targetQty may have just crossed a tier boundary).
+  // A customer clicking +/- on an already-merged display row never sees
+  // more than one line again after this runs.
+  async function handleConsolidateAndUpdate(primaryLineId, extraLineIds, targetQty) {
+    const priorCodes = (cart.discountCodes || []).filter(c => c.applicable).map(c => c.code);
+    const nonRakhiCodes = priorCodes.filter(c => !RAKHI_CODES.includes(c));
+    if (priorCodes.length) cart = await setDiscountCodes(cart.id, []);
+    cart = await removeLines(cart.id, extraLineIds);
+    cart = await rawUpdateLines(cart.id, [{ id: primaryLineId, quantity: targetQty }]);
+    if (nonRakhiCodes.length) {
+      try {
+        cart = await setDiscountCodes(cart.id, nonRakhiCodes);
+      } catch (err) {
+        console.warn('[Cart] Failed to restore discount codes after consolidate:', err);
+      }
+    }
+    await syncRakhiPerks();
+    refreshUI();
   }
 
   function setDrawerLoading(on) {
@@ -893,12 +1343,13 @@
                   merchandiseId: e.node.merchandise.id,
                   quantity: e.node.quantity,
                 }));
-                cart = await addLines(serverCartId, linesToMerge);
+                cart = await addLines(serverCartId, linesToMerge, serverCart);
               }
             } catch { /* local cart gone - ignore */ }
           }
           saveCartId(serverCartId);
           cart = await fetchCart(serverCartId);
+          await syncRakhiPerks();
           refreshUI();
         } else if (localCartId) {
           syncCartIdToServer(localCartId);
@@ -916,7 +1367,7 @@
   async function init() {
     injectCartIcon();
     injectDrawer();
-    injectShippingBubble();
+    injectRewardsBubble();
 
     // Restore cart from previous session
     const cartId = loadCartId();
@@ -924,7 +1375,7 @@
       try {
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; } // cart explicitly gone on Shopify
-        else { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
+        else { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); await syncRakhiPerks(); }
       } catch (err) {
         // Could be a real network error, or a line in this cart referencing
         // a variant Shopify can no longer resolve (see recoverCart). Try to
@@ -932,7 +1383,7 @@
         // there instead of quietly looking empty until the next add.
         console.warn('[Cart] Restoring saved cart failed, attempting recovery:', err);
         cart = await recoverCart(cartId).catch(() => null);
-        if (cart) { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
+        if (cart) { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); await syncRakhiPerks(); }
       }
     }
 
@@ -963,10 +1414,10 @@
       try {
         cart = await fetchCart(cartId);
         if (!cart) { localStorage.removeItem(KEY); cart = null; }
-        else { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
+        else { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); await syncRakhiPerks(); }
       } catch {
         cart = await recoverCart(cartId).catch(() => null);
-        if (cart) { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); }
+        if (cart) { await cleanupLegacyGiftLine(); await cleanupOrphanSurchargeLines(); await syncRakhiPerks(); }
       }
     } else {
       cart = null;
