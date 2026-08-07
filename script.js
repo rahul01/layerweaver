@@ -166,12 +166,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         window.addEventListener('scroll', function() {
             if (window.scrollY > 100) {
-                paddingTarget.style.paddingTop = '10px';
-                paddingTarget.style.paddingBottom = '10px';
+                if (!isShop) {
+                    paddingTarget.style.paddingTop = '10px';
+                    paddingTarget.style.paddingBottom = '10px';
+                }
                 header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
             } else {
-                paddingTarget.style.paddingTop = '15px';
-                paddingTarget.style.paddingBottom = '15px';
+                if (!isShop) {
+                    paddingTarget.style.paddingTop = '15px';
+                    paddingTarget.style.paddingBottom = '15px';
+                }
                 header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
             }
             syncHeaderLayout();
