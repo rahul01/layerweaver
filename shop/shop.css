@@ -62,6 +62,12 @@
     justify-content: space-between;
 }
 
+.logo-container {
+    position: relative;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
 .logo-link {
     display: flex;
     align-items: center;
@@ -71,6 +77,32 @@
     min-width: 0;
     flex-shrink: 1;
     overflow: hidden;
+}
+
+.logo-rakhi-ribbon {
+    position: absolute;
+    top: 100%;
+    right: 4px;
+    margin-top: -6px;
+    background: var(--secondary);
+    color: var(--dark);
+    font-family: var(--font-primary);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    padding: 4px 12px;
+    text-decoration: none;
+    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
+    transform: rotate(-5deg);
+    clip-path: polygon(0% 0%, 3% 20%, 0% 40%, 2% 60%, 0% 80%, 1% 100%, 100% 100%, 98% 80%, 100% 60%, 97% 40%, 100% 20%, 99% 0%);
+    transition: background 0.2s ease, color 0.2s ease;
+    z-index: 1;
+}
+
+.logo-rakhi-ribbon:hover {
+    background: var(--dark);
+    color: var(--secondary);
 }
 
 .logo-link:hover { opacity: 0.8; }
@@ -115,6 +147,14 @@
        starting/ending at the same point instead of "Layer" looking narrower. */
     .logo-word:first-child  { font-size: clamp(0.57rem, 3.44vw, 0.92rem); }
     .logo-word:last-child   { font-size: clamp(0.44rem, 2.62vw, 0.7rem); }
+}
+
+@media (max-width: 480px) {
+    .logo-rakhi-ribbon {
+        font-size: 0.5rem;
+        padding: 3px 8px;
+        right: 0;
+    }
 }
 
 .shop-header h1 {
@@ -190,6 +230,19 @@
 .collection-nav-chip.active {
     background: var(--primary);
     border-color: var(--primary);
+    color: var(--light);
+}
+
+.collection-nav-chip--cross {
+    margin-left: 10px;
+    border-style: dashed;
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(160, 131, 213, 0.06);
+}
+
+.collection-nav-chip--cross:hover {
+    background: var(--primary);
     color: var(--light);
 }
 
@@ -279,6 +332,11 @@
     background: rgba(160, 131, 213, 0.08);
 }
 
+.collection-dropdown-item--cross {
+    color: var(--primary);
+    background: rgba(160, 131, 213, 0.04);
+}
+
 /* ------- Header spacer (pushes page content below fixed header) ------- */
 .header-spacer {
     height: calc(80px + var(--announcement-height));
@@ -362,6 +420,65 @@
     .collection-banner-overlay { padding: 0 24px; }
     .collection-banner-overlay h1 { font-size: 1.5rem; }
     .collection-banner-overlay p  { display: none; }
+}
+
+/* ------- Rakhi festive theme (Rakhi catalogue pages only) ------- */
+body.rakhi-theme {
+    background: var(--rakhi-cream);
+}
+
+.rakhi-banner-wrap {
+    position: relative;
+}
+
+.rakhi-special-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+    background: var(--rakhi-amber);
+    color: var(--dark);
+    font-family: var(--font-primary);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 16px 8px;
+    filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.25));
+    clip-path: polygon(0% 0%, 3% 20%, 0% 40%, 2% 60%, 0% 80%, 1% 100%, 100% 100%, 98% 80%, 100% 60%, 97% 40%, 100% 20%, 99% 0%);
+}
+
+.rakhi-banner-motif {
+    position: absolute;
+    bottom: 18px;
+    left: 48px;
+    z-index: 2;
+    color: var(--rakhi-amber);
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+}
+
+.rakhi-thread-motif {
+    width: 92px;
+    height: auto;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .rakhi-special-badge { top: 12px; left: 12px; font-size: 0.62rem; padding: 5px 12px 6px; }
+    .rakhi-banner-motif { display: none; }
+}
+
+/* Rakhi-only accent on the active collection chip and cross-link, layered
+   alongside the brand purple used everywhere else in the chip strip. */
+body.rakhi-theme .collection-nav-chip.active {
+    background: var(--rakhi-amber);
+    border-color: var(--rakhi-amber);
+    color: var(--dark);
+}
+
+body.rakhi-theme .collection-dropdown-item.active {
+    color: var(--dark);
+    background: rgba(232, 160, 32, 0.14);
 }
 
 /* ------- Product Grid (shop index) ------- */
