@@ -140,9 +140,7 @@
   }
 
   /* Per-image crop anchors: near-square cells (1:1, 4:5) vs. tall cells (9:16) */
-  .ad[data-ratio="1x1"] .img-named,
-  .ad[data-ratio="4x5"] .img-named { object-position: 60% 65%; }
-  .ad[data-ratio="9x16"] .img-named { object-position: 60% 55%; }
+  .product-cell img.img-cat { object-fit: contain; object-position: center; }
 
   .ad[data-ratio="1x1"] .img-cupcake,
   .ad[data-ratio="4x5"] .img-cupcake { object-position: center 35%; }
@@ -236,9 +234,9 @@
 
   <div class="product-grid">
     <div class="product-cell">
-      <img class="img-named" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPTImageJul12_2026_02_43_16AM.png" alt="Named & Glossy">
-      <div class="product-label">Named & Glossy</div>
-      <div class="product-price">₹448</div>
+      <img class="img-cat" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPTImageAug7_2026_08_30_17PM.png" alt="Floating Cat">
+      <div class="product-label">Floating Cat</div>
+      <div class="product-price">₹399</div>
     </div>
     <div class="product-cell">
       <img class="img-cupcake" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/cupcake-clicker-one-piece-2.png" alt="Cupcake Clicker">
