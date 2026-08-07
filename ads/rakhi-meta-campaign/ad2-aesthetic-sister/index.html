@@ -1,325 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ad — 🌸 The Aesthetic Sister</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --font: 'Montserrat', sans-serif; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<title>Ad 2 — The Aesthetic Sister</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background: #333;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-            justify-content: center;
-            min-height: 100vh;
-            font-family: var(--font);
-            gap: 32px;
-            padding: 40px;
-        }
+  html, body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #fdf6f0;
+  }
 
-        .ad-block { display: flex; flex-direction: column; gap: 12px; }
+  .ad {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #fdf6f0;
+    overflow: hidden;
+  }
 
-        .ad-label {
-            color: #ccc;
-            font-size: 12px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
+  /* ---- Ratio: 1:1 (1080x1080) ---- */
+  .ad[data-ratio="1x1"] { width: 1080px; height: 1080px; }
+  .ad[data-ratio="1x1"] .top-bar { padding: 44px 48px 0; }
+  .ad[data-ratio="1x1"] .persona-tag { font-size: 28px; padding: 12px 26px; }
+  .ad[data-ratio="1x1"] .brand { font-size: 22px; }
+  .ad[data-ratio="1x1"] .headline { padding: 30px 48px 22px; }
+  .ad[data-ratio="1x1"] .headline h1 { font-size: 64px; }
+  .ad[data-ratio="1x1"] .sub-headline { display: none; }
+  .ad[data-ratio="1x1"] .product-grid { height: 55%; padding: 0 48px; }
+  .ad[data-ratio="1x1"] .product-label { font-size: 22px; padding: 6px 14px; }
+  .ad[data-ratio="1x1"] .product-price { font-size: 24px; padding: 6px 14px; }
+  .ad[data-ratio="1x1"] .bottom-bar { padding: 24px 48px 48px; }
+  .ad[data-ratio="1x1"] .offer-pill { font-size: 22px; padding: 10px 20px; }
+  .ad[data-ratio="1x1"] .cta { font-size: 26px; padding: 14px 32px; }
 
-        .ad {
-            position: relative;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            padding: 46px;
-            overflow: hidden;
-        }
+  /* ---- Ratio: 4:5 (1080x1350) ---- */
+  .ad[data-ratio="4x5"] { width: 1080px; height: 1350px; }
+  .ad[data-ratio="4x5"] .top-bar { padding: 46px 48px 0; }
+  .ad[data-ratio="4x5"] .persona-tag { font-size: 30px; padding: 13px 28px; }
+  .ad[data-ratio="4x5"] .brand { font-size: 24px; }
+  .ad[data-ratio="4x5"] .headline { padding: 32px 48px 24px; }
+  .ad[data-ratio="4x5"] .headline h1 { font-size: 70px; }
+  .ad[data-ratio="4x5"] .sub-headline { display: none; }
+  .ad[data-ratio="4x5"] .product-grid { flex: 1; padding: 0 48px; }
+  .ad[data-ratio="4x5"] .product-label { font-size: 24px; padding: 7px 15px; }
+  .ad[data-ratio="4x5"] .product-price { font-size: 26px; padding: 7px 15px; }
+  .ad[data-ratio="4x5"] .bottom-bar { padding: 26px 48px 56px; flex-wrap: wrap; row-gap: 20px; }
+  .ad[data-ratio="4x5"] .offers { flex-wrap: wrap; }
+  .ad[data-ratio="4x5"] .offer-pill { font-size: 24px; padding: 11px 22px; }
+  .ad[data-ratio="4x5"] .cta { font-size: 28px; padding: 15px 34px; }
 
-        .top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+  /* ---- Ratio: 9:16 (1080x1920) ---- */
+  .ad[data-ratio="9x16"] { width: 1080px; height: 1920px; }
+  .ad[data-ratio="9x16"] .top-bar { padding: 48px 48px 0; }
+  .ad[data-ratio="9x16"] .persona-tag { font-size: 34px; padding: 14px 30px; }
+  .ad[data-ratio="9x16"] .brand { font-size: 26px; }
+  .ad[data-ratio="9x16"] .headline { padding: 36px 48px 8px; }
+  .ad[data-ratio="9x16"] .headline h1 { font-size: 80px; }
+  .ad[data-ratio="9x16"] .sub-headline { display: block; padding: 0 48px 32px; }
+  .ad[data-ratio="9x16"] .sub-headline p { font-size: 36px; }
+  .ad[data-ratio="9x16"] .product-grid { flex: 1; padding: 0 48px; }
+  .ad[data-ratio="9x16"] .product-label { font-size: 26px; padding: 8px 16px; }
+  .ad[data-ratio="9x16"] .product-price { font-size: 28px; padding: 8px 16px; }
+  .ad[data-ratio="9x16"] .bottom-bar { padding: 28px 48px 60px; flex-wrap: wrap; row-gap: 20px; }
+  .ad[data-ratio="9x16"] .offers { flex-wrap: wrap; }
+  .ad[data-ratio="9x16"] .offer-pill { font-size: 26px; padding: 12px 24px; }
+  .ad[data-ratio="9x16"] .cta { font-size: 30px; padding: 16px 36px; }
 
-        .persona-tag {
-            font-size: 19px;
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: 100px;
-            letter-spacing: 0.01em;
-            white-space: nowrap;
-        }
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
 
-        .brand-name {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--text);
-            letter-spacing: 0.02em;
-        }
+  .persona-tag {
+    background: #e8a0bf;
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border-radius: 40px;
+    text-transform: uppercase;
+  }
 
-        .headline {
-            font-weight: 900;
-            line-height: 1.05;
-            letter-spacing: -0.02em;
-            color: var(--text);
-        }
+  .brand {
+    color: #555;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
 
-        .sub-headline {
-            color: var(--sub-text);
-            font-weight: 500;
-        }
+  /* Headline */
+  .headline { flex-shrink: 0; }
 
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 6px;
-            flex: 1;
-            min-height: 0;
-        }
+  .headline h1 {
+    color: #1a1a1a;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
 
-        .cell {
-            position: relative;
-            background: var(--cell-bg);
-            border: 1px solid var(--cell-border);
-            box-shadow: var(--cell-shadow);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            overflow: hidden;
-        }
-        .cell img { max-width: 78%; max-height: 78%; object-fit: contain; }
+  .headline h1 span { color: #c0527a; }
 
-        .cell-name {
-            position: absolute;
-            left: 10px; bottom: 10px;
-            background: rgba(255,255,255,0.9);
-            color: #1a1a1a;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 8px;
-            max-width: 62%;
-        }
+  /* Sub-headline (9:16 only) */
+  .sub-headline { display: none; flex-shrink: 0; }
+  .sub-headline p {
+    color: #888;
+    font-weight: 600;
+  }
 
-        .cell-price {
-            position: absolute;
-            right: 10px; bottom: 10px;
-            background: var(--accent);
-            color: var(--accent-text);
-            font-size: 16px;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 8px;
-            white-space: nowrap;
-        }
+  /* Product grid */
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    min-height: 0;
+  }
 
-        .bottom-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-        }
+  .product-cell {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
 
-        .pills {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
+  .product-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
 
-        .pill {
-            display: inline-block;
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid rgba(128,128,128,0.35);
-            border-radius: 100px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .pill-highlight {
-            background: var(--accent);
-            color: var(--accent-text);
-            border-color: transparent;
-        }
+  /* Per-image crop anchors: near-square cells (1:1, 4:5) vs. tall cells (9:16) */
+  .ad[data-ratio="1x1"] .img-monstera,
+  .ad[data-ratio="4x5"] .img-monstera { object-position: center 40%; }
+  .ad[data-ratio="9x16"] .img-monstera { object-position: center 35%; }
 
-        .cta-btn {
-            background: var(--accent);
-            color: var(--accent-text);
-            font-weight: 700;
-            border-radius: 100px;
-            border: none;
-            letter-spacing: 0.02em;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
+  .ad[data-ratio="1x1"] .img-tulip,
+  .ad[data-ratio="4x5"] .img-tulip { object-position: center 25%; }
+  .ad[data-ratio="9x16"] .img-tulip { object-position: center 20%; }
 
-        /* ── 1:1 — 1080×1080 ── */
-        .ad-1x1 { width: 1080px; height: 1080px; gap: 20px; }
-        .ad-1x1 .headline { font-size: 56px; }
-        .ad-1x1 .sub-headline { display: none; }
-        .ad-1x1 .product-grid { min-height: 55%; }
-        .ad-1x1 .pill { font-size: 16px; padding: 11px 20px; }
-        .ad-1x1 .cta-btn { font-size: 20px; padding: 16px 32px; }
+  .ad[data-ratio="1x1"] .img-snail,
+  .ad[data-ratio="4x5"] .img-snail { object-position: center 45%; }
+  .ad[data-ratio="9x16"] .img-snail { object-position: center 40%; }
 
-        /* ── 4:5 — 1080×1350 ── */
-        .ad-4x5 { width: 1080px; height: 1350px; gap: 24px; padding-bottom: 56px; }
-        .ad-4x5 .headline { font-size: 62px; }
-        .ad-4x5 .sub-headline { display: none; }
-        .ad-4x5 .product-grid { min-height: 58%; }
-        .ad-4x5 .persona-tag { font-size: 20px; }
-        .ad-4x5 .brand-name { font-size: 23px; }
-        .ad-4x5 .cell-name, .ad-4x5 .cell-price { font-size: 17px; }
-        .ad-4x5 .pill { font-size: 17px; padding: 12px 22px; }
-        .ad-4x5 .cta-btn { font-size: 21px; padding: 17px 34px; }
+  .ad[data-ratio="1x1"] .img-octopus,
+  .ad[data-ratio="4x5"] .img-octopus { object-position: center 40%; }
+  .ad[data-ratio="9x16"] .img-octopus { object-position: center 30%; }
 
-        /* ── 9:16 — 1080×1920 ── */
-        .ad-9x16 { width: 1080px; height: 1920px; gap: 28px; }
-        .ad-9x16 .headline { font-size: 70px; }
-        .ad-9x16 .sub-headline { display: block; font-size: 26px; margin-top: -12px; }
-        .ad-9x16 .product-grid { min-height: 62%; }
-        .ad-9x16 .persona-tag { font-size: 21px; }
-        .ad-9x16 .brand-name { font-size: 24px; }
-        .ad-9x16 .cell-name, .ad-9x16 .cell-price { font-size: 19px; padding: 7px 14px; }
-        .ad-9x16 .pills { row-gap: 12px; }
-        .ad-9x16 .pill { font-size: 19px; padding: 14px 24px; }
-        .ad-9x16 .cta-btn { font-size: 23px; padding: 19px 38px; }
-        .ad-9x16 .bottom-bar { flex-wrap: wrap; }
-    </style>
+  .product-label {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(255,255,255,0.9);
+    color: #222;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+
+  .product-price {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: #e8a0bf;
+    color: #ffffff;
+    font-weight: 800;
+    border-radius: 8px;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    row-gap: 20px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    margin-top: 14px;
+    padding-top: 24px;
+  }
+
+  .offers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .offer-pill {
+    background: #ffffff;
+    color: #444;
+    font-weight: 600;
+    border-radius: 40px;
+    border: 1px solid #e0d0d0;
+    white-space: nowrap;
+  }
+
+  .offer-pill.highlight {
+    background: #fce8f0;
+    border-color: #e8a0bf;
+    color: #c0527a;
+  }
+
+  .cta {
+    background: #c0527a;
+    color: #ffffff;
+    font-weight: 800;
+    border-radius: 40px;
+    white-space: nowrap;
+  }
+</style>
 </head>
 <body>
+<div class="ad" data-ratio="1x1" id="ad">
+  <div class="top-bar">
+    <div class="persona-tag">🌸 The Aesthetic Sister</div>
+    <div class="brand">LayerWeaver</div>
+  </div>
 
-    <div class="ad-block">
-        <p class="ad-label">1:1 — 1080 × 1080 — Facebook/Instagram Feed</p>
-        <div class="ad ad-1x1" style="--bg:#fdf6f0; --accent:#c0527a; --accent-text:#ffffff; --cell-bg:#ffffff; --text:#1a1a1a; --sub-text:#888888; --cell-border:transparent; --cell-shadow:0 4px 18px rgba(0,0,0,0.08);">
-            <div class="top-bar">
-                <span class="persona-tag" style="background:#e8a0bf; color:#ffffff;">🌸 The Aesthetic Sister</span>
-                <span class="brand-name">LayerWeaver</span>
-            </div>
-            <h2 class="headline">She’ll find a place<br>for <span style="color:#c0527a">every single one.</span></h2>
-            
-            <div class="product-grid">
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-1.png" alt="Ghost Balloon Lamp">
-                <span class="cell-name">Ghost Balloon Lamp</span>
-                <span class="cell-price">₹399</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-1.png" alt="Tulip Single Flower">
-                <span class="cell-name">Tulip Single Flower</span>
-                <span class="cell-price">₹149</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/monstera-coaster-set-1.png" alt="Monstera Coaster Set">
-                <span class="cell-name">Monstera Coaster Set</span>
-                <span class="cell-price">₹1,899</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bunny-keychain-1.png" alt="Bunny Keychain">
-                <span class="cell-name">Bunny Keychain</span>
-                <span class="cell-price">₹99</span>
-            </div>
-            </div>
-            <div class="bottom-bar">
-                <div class="pills">
-                <span class="pill pill-highlight">Free shipping above ₹299</span>
-                <span class="pill">Free bunny gift above ₹499</span>
-                <span class="pill">3D printed in Pune</span>
-                </div>
-                <button class="cta-btn">Shop now →</button>
-            </div>
-        </div>
-    </div>
+  <div class="headline">
+    <h1>She'll find a place<br>for <span>every single one.</span></h1>
+  </div>
 
-    <div class="ad-block">
-        <p class="ad-label">4:5 — 1080 × 1350 — Instagram Feed (preferred)</p>
-        <div class="ad ad-4x5" style="--bg:#fdf6f0; --accent:#c0527a; --accent-text:#ffffff; --cell-bg:#ffffff; --text:#1a1a1a; --sub-text:#888888; --cell-border:transparent; --cell-shadow:0 4px 18px rgba(0,0,0,0.08);">
-            <div class="top-bar">
-                <span class="persona-tag" style="background:#e8a0bf; color:#ffffff;">🌸 The Aesthetic Sister</span>
-                <span class="brand-name">LayerWeaver</span>
-            </div>
-            <h2 class="headline">She’ll find a place<br>for <span style="color:#c0527a">every single one.</span></h2>
-            
-            <div class="product-grid">
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-1.png" alt="Ghost Balloon Lamp">
-                <span class="cell-name">Ghost Balloon Lamp</span>
-                <span class="cell-price">₹399</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-1.png" alt="Tulip Single Flower">
-                <span class="cell-name">Tulip Single Flower</span>
-                <span class="cell-price">₹149</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/monstera-coaster-set-1.png" alt="Monstera Coaster Set">
-                <span class="cell-name">Monstera Coaster Set</span>
-                <span class="cell-price">₹1,899</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bunny-keychain-1.png" alt="Bunny Keychain">
-                <span class="cell-name">Bunny Keychain</span>
-                <span class="cell-price">₹99</span>
-            </div>
-            </div>
-            <div class="bottom-bar">
-                <div class="pills">
-                <span class="pill pill-highlight">Free shipping above ₹299</span>
-                <span class="pill">Free bunny gift above ₹499</span>
-                <span class="pill">3D printed in Pune</span>
-                </div>
-                <button class="cta-btn">Shop now →</button>
-            </div>
-        </div>
-    </div>
+  <div class="sub-headline">
+    <p>Raksha Bandhan gifts for the sister who curates everything.</p>
+  </div>
 
-    <div class="ad-block">
-        <p class="ad-label">9:16 — 1080 × 1920 — Stories/Reels</p>
-        <div class="ad ad-9x16" style="--bg:#fdf6f0; --accent:#c0527a; --accent-text:#ffffff; --cell-bg:#ffffff; --text:#1a1a1a; --sub-text:#888888; --cell-border:transparent; --cell-shadow:0 4px 18px rgba(0,0,0,0.08);">
-            <div class="top-bar">
-                <span class="persona-tag" style="background:#e8a0bf; color:#ffffff;">🌸 The Aesthetic Sister</span>
-                <span class="brand-name">LayerWeaver</span>
-            </div>
-            <h2 class="headline">She’ll find a place<br>for <span style="color:#c0527a">every single one.</span></h2>
-            <p class="sub-headline">Raksha Bandhan gifts for the sister who curates everything.</p>
-            <div class="product-grid">
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-1.png" alt="Ghost Balloon Lamp">
-                <span class="cell-name">Ghost Balloon Lamp</span>
-                <span class="cell-price">₹399</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-1.png" alt="Tulip Single Flower">
-                <span class="cell-name">Tulip Single Flower</span>
-                <span class="cell-price">₹149</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/monstera-coaster-set-1.png" alt="Monstera Coaster Set">
-                <span class="cell-name">Monstera Coaster Set</span>
-                <span class="cell-price">₹1,899</span>
-            </div>
-            <div class="cell">
-                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bunny-keychain-1.png" alt="Bunny Keychain">
-                <span class="cell-name">Bunny Keychain</span>
-                <span class="cell-price">₹99</span>
-            </div>
-            </div>
-            <div class="bottom-bar">
-                <div class="pills">
-                <span class="pill pill-highlight">Free shipping above ₹299</span>
-                <span class="pill">Free bunny gift above ₹499</span>
-                <span class="pill">3D printed in Pune</span>
-                </div>
-                <button class="cta-btn">Shop now →</button>
-            </div>
-        </div>
+  <div class="product-grid">
+    <div class="product-cell">
+      <img class="img-monstera" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/monstera-coaster-set-1.png" alt="Monstera Coaster Set">
+      <div class="product-label">Monstera Coaster Set</div>
+      <div class="product-price">₹1,899</div>
     </div>
+    <div class="product-cell">
+      <img class="img-tulip" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-4.png" alt="Tulip Single Flower">
+      <div class="product-label">Tulip Flower</div>
+      <div class="product-price">₹149</div>
+    </div>
+    <div class="product-cell">
+      <img class="img-snail" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/snail-lamp-2.png" alt="Snail Lamp">
+      <div class="product-label">Snail Lamp</div>
+      <div class="product-price">₹1,899</div>
+    </div>
+    <div class="product-cell">
+      <img class="img-octopus" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Jul_17_2026_05_06_38_PM.png" alt="Octopus Table Lamp">
+      <div class="product-label">Octopus Table Lamp</div>
+      <div class="product-price">₹1,599</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="offers">
+      <div class="offer-pill highlight">Free shipping above ₹299</div>
+      <div class="offer-pill">Free bunny gift above ₹499</div>
+      <div class="offer-pill">3D printed in Pune</div>
+    </div>
+    <div class="cta">Shop now →</div>
+  </div>
+</div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const ratio = params.get('ratio');
+  if (ratio) document.getElementById('ad').setAttribute('data-ratio', ratio);
+</script>
 </body>
 </html>
