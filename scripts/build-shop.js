@@ -1341,14 +1341,27 @@ function collagebannerHtml(title, description, images) {
 }
 
 // Rakhi-only festive wrapper around collagebannerHtml() — adds an amber "Rakhi
-// Special" ribbon badge and the thread/knot motif flanking the title, without
-// touching the shared banner function used by regular (non-Rakhi) collections.
+// Special" ribbon badge and two thread/knot motifs (one flanking the title,
+// one smaller accent in the top-right corner), without touching the shared
+// banner function used by regular (non-Rakhi) collections.
 function rakhiFestiveBannerHtml(title, description, images) {
   return `
     <div class="rakhi-banner-wrap">
         ${collagebannerHtml(title, description, images)}
         <span class="rakhi-special-badge">Rakhi Special</span>
         <div class="rakhi-banner-motif">${rakhiThreadMotifSvg()}</div>
+        <div class="rakhi-banner-motif rakhi-banner-motif--corner">${rakhiThreadMotifSvg()}</div>
+    </div>`;
+}
+
+// Decorative divider placed between the Rakhi banner and the product grid —
+// a thread motif flanked by fading amber lines, purely visual (aria-hidden).
+function rakhiGridDividerHtml() {
+  return `
+    <div class="rakhi-grid-divider" aria-hidden="true">
+        <span class="rakhi-divider-line"></span>
+        ${rakhiThreadMotifSvg()}
+        <span class="rakhi-divider-line"></span>
     </div>`;
 }
 
@@ -1508,6 +1521,7 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
 
     <div class="container">
         ${rakhiFestiveBannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan · Free Bunny Keychain ₹499+ · 5% off ₹1,499+ · 10% off ₹2,999+', bannerImages)}
+        ${rakhiGridDividerHtml()}
     </div>
 
     <section class="shop-products">
@@ -1565,6 +1579,7 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
 
     <div class="container">
         ${bannerHtml}
+        ${rakhiGridDividerHtml()}
     </div>
 
     <section class="shop-products">
