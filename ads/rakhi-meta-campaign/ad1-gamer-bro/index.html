@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Ad 1 — The Gamer Bro</title>
+<link href="https://fonts.googleapis.com/css2?family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -85,11 +86,23 @@
   }
 
   .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.85;
+  }
+
+  .brand-logo {
+    height: 2.2em;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    font-family: 'Science Gothic', sans-serif;
     color: #ffffff;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    opacity: 0.7;
-    text-transform: uppercase;
+    letter-spacing: 0.03em;
   }
 
   /* Headline */
@@ -121,7 +134,7 @@
   }
 
   .product-cell {
-    background: #1a1a1a;
+    background: #ffffff;
     border-radius: 12px;
     overflow: hidden;
     position: relative;
@@ -133,27 +146,10 @@
   .product-cell img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
     display: block;
   }
-
-  /* Per-image crop anchors: near-square cells (1:1, 4:5) vs. tall cells (9:16) */
-  .ad[data-ratio="1x1"] .img-cactus,
-  .ad[data-ratio="4x5"] .img-cactus { object-position: center 35%; }
-  .ad[data-ratio="9x16"] .img-cactus { object-position: center 25%; }
-
-  .ad[data-ratio="1x1"] .img-xbox,
-  .ad[data-ratio="4x5"] .img-xbox { object-position: center 45%; }
-  .ad[data-ratio="9x16"] .img-xbox { object-position: center 35%; }
-
-  .ad[data-ratio="1x1"] .img-wasd,
-  .ad[data-ratio="4x5"] .img-wasd { object-position: center 50%; }
-  .ad[data-ratio="9x16"] .img-wasd { object-position: center 55%; }
-
-  .ad[data-ratio="1x1"] .img-clicker,
-  .ad[data-ratio="4x5"] .img-clicker { object-position: 35% center; }
-  .ad[data-ratio="9x16"] .img-clicker { object-position: 30% 45%; }
 
   .product-label {
     position: absolute;
@@ -223,7 +219,10 @@
 <div class="ad" data-ratio="1x1" id="ad">
   <div class="top-bar">
     <div class="persona-tag">🎮 The Gamer Bro</div>
-    <div class="brand">LayerWeaver</div>
+    <div class="brand">
+      <img class="brand-logo" src="../../../images/layerweaver-logo-white.svg" alt="">
+      <span class="brand-name">LayerWeaver.com</span>
+    </div>
   </div>
 
   <div class="headline">
@@ -261,7 +260,6 @@
     <div class="offers">
       <div class="offer-pill highlight">Free shipping above ₹299</div>
       <div class="offer-pill">3D printed in Pune</div>
-      <div class="offer-pill">Ships in 3 days</div>
     </div>
     <div class="cta">Shop now →</div>
   </div>

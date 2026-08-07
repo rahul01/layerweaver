@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Ad 4 — The Kid Sibling</title>
+<link href="https://fonts.googleapis.com/css2?family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -85,10 +86,23 @@
   }
 
   .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.85;
+  }
+
+  .brand-logo {
+    height: 2.2em;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    font-family: 'Science Gothic', sans-serif;
     color: #666;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: 0.03em;
   }
 
   /* Headline */
@@ -222,7 +236,10 @@
 <div class="ad" data-ratio="1x1" id="ad">
   <div class="top-bar">
     <div class="persona-tag">🦕 The Kid Sibling</div>
-    <div class="brand">LayerWeaver</div>
+    <div class="brand">
+      <img class="brand-logo" src="../../../images/layerweaver-logo.svg" alt="">
+      <span class="brand-name">LayerWeaver.com</span>
+    </div>
   </div>
 
   <div class="headline">
@@ -258,7 +275,7 @@
 
   <div class="bottom-bar">
     <div class="offers">
-      <div class="offer-pill highlight">Free bunny gift above ₹499</div>
+      <div class="offer-pill highlight">Free bunny keychain above ₹499</div>
       <div class="offer-pill">Free shipping above ₹299</div>
       <div class="offer-pill">3D printed in Pune</div>
     </div>

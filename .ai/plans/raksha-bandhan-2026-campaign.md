@@ -46,7 +46,7 @@ Free shipping above ₹299 should appear in every ad — it removes a key object
 **One campaign. Four ads. One budget. Launch today.**
 
 ```
-Campaign: Raksha Bandhan 2026 [Advantage+ Shopping]
+Campaign: Raksha Bandhan 2026 [Advantage+ Sales Campaign]
 Budget: ₹700/day
 │
 └── Ad Set 1
