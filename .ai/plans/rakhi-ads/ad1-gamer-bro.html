@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f0f0f;
+  }
+
+  .ad {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #0f0f0f;
+  }
+
+  /* Top bar */
+  .top-bar {
+    padding: 40px 48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .persona-tag {
+    background: #c8ff00;
+    color: #0f0f0f;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 10px 22px;
+    border-radius: 40px;
+    text-transform: uppercase;
+  }
+
+  .brand {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+
+  /* Headline */
+  .headline {
+    padding: 28px 48px 20px;
+    flex-shrink: 0;
+  }
+
+  .headline h1 {
+    color: #ffffff;
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  .headline h1 span {
+    color: #c8ff00;
+  }
+
+  /* Product grid */
+  .product-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    padding: 0 48px;
+    min-height: 0;
+  }
+
+  .product-cell {
+    background: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+  }
+
+  .product-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .product-price {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: #c8ff00;
+    color: #0f0f0f;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    padding: 20px 48px 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 12px;
+  }
+
+  .offers {
+    display: flex;
+    gap: 16px;
+  }
+
+  .offer-pill {
+    background: rgba(255,255,255,0.1);
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .offer-pill.highlight {
+    background: rgba(200,255,0,0.15);
+    border-color: #c8ff00;
+    color: #c8ff00;
+  }
+
+  .cta {
+    background: #c8ff00;
+    color: #0f0f0f;
+    font-size: 19px;
+    font-weight: 800;
+    padding: 12px 28px;
+    border-radius: 40px;
+    letter-spacing: 0.01em;
+  }
+</style>
+</head>
+<body>
+<div class="ad">
+  <div class="top-bar">
+    <div class="persona-tag">🎮 The Gamer Bro</div>
+    <div class="brand">LayerWeaver</div>
+  </div>
+
+  <div class="headline">
+    <h1>Rakhi gifts he<br><span>actually wants.</span></h1>
+  </div>
+
+  <div class="product-grid">
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Aug_4_2026_04_07_58_PM.png" alt="Cactus Headphone Stand">
+      <div class="product-label">Cactus Headphone Stand</div>
+      <div class="product-price">₹1,699</div>
+    </div>
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_05_33_11_PM.png" alt="Xbox Controller Stand">
+      <div class="product-label">Xbox Controller Stand</div>
+      <div class="product-price">₹1,149</div>
+    </div>
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/wasd-mechanical-keycap-keychain-1.png" alt="WASD Keycap Keychain">
+      <div class="product-label">WASD Keycap Keychain</div>
+      <div class="product-price">₹349</div>
+    </div>
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/single-key-keyboard-1.png" alt="Single Key Clicker">
+      <div class="product-label">Single Key Clicker</div>
+      <div class="product-price">₹199</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="offers">
+      <div class="offer-pill highlight">Free shipping above ₹299</div>
+      <div class="offer-pill">3D printed in Pune</div>
+      <div class="offer-pill">Ships in 3 days</div>
+    </div>
+    <div class="cta">Shop now →</div>
+  </div>
+</div>
+</body>
+</html>

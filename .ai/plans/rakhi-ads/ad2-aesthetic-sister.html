@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #fdf6f0;
+  }
+
+  .ad {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #fdf6f0;
+  }
+
+  .top-bar {
+    padding: 40px 48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .persona-tag {
+    background: #e8a0bf;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 10px 22px;
+    border-radius: 40px;
+    text-transform: uppercase;
+  }
+
+  .brand {
+    color: #555;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .headline {
+    padding: 28px 48px 20px;
+    flex-shrink: 0;
+  }
+
+  .headline h1 {
+    color: #1a1a1a;
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  .headline h1 span {
+    color: #c0527a;
+  }
+
+  .product-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    padding: 0 48px;
+    min-height: 0;
+  }
+
+  .product-cell {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .product-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+  }
+
+  .product-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.9);
+    color: #222;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .product-price {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: #e8a0bf;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .bottom-bar {
+    padding: 20px 48px 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .offers {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .offer-pill {
+    background: #fff;
+    color: #444;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid #e0d0d0;
+  }
+
+  .offer-pill.highlight {
+    background: #fce8f0;
+    border-color: #e8a0bf;
+    color: #c0527a;
+  }
+
+  .cta {
+    background: #c0527a;
+    color: #fff;
+    font-size: 19px;
+    font-weight: 800;
+    padding: 12px 28px;
+    border-radius: 40px;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="ad">
+  <div class="top-bar">
+    <div class="persona-tag">🌸 The Aesthetic Sister</div>
+    <div class="brand">LayerWeaver</div>
+  </div>
+
+  <div class="headline">
+    <h1>She'll find a place<br>for <span>every single one.</span></h1>
+  </div>
+
+  <div class="product-grid">
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-1.png" alt="Ghost Balloon Lamp">
+      <div class="product-label">Ghost Balloon Lamp</div>
+      <div class="product-price">₹399</div>
+    </div>
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-1.png" alt="Tulip Single Flower">
+      <div class="product-label">Tulip Flower</div>
+      <div class="product-price">₹149</div>
+    </div>
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/monstera-coaster-set-1.png" alt="Monstera Coaster Set">
+      <div class="product-label">Monstera Coaster Set</div>
+      <div class="product-price">₹1,899</div>
+    </div>
+    <div class="product-cell">
+      <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bunny-keychain-1.png" alt="Bunny Keychain">
+      <div class="product-label">Bunny Keychain</div>
+      <div class="product-price">₹99</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="offers">
+      <div class="offer-pill highlight">Free shipping above ₹299</div>
+      <div class="offer-pill">Free bunny gift above ₹499</div>
+      <div class="offer-pill">3D printed in Pune</div>
+    </div>
+    <div class="cta">Shop now →</div>
+  </div>
+</div>
+</body>
+</html>

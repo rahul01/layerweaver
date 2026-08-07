@@ -1,6 +1,6 @@
 # Rakhi Combos Page — Implementation Plan
 
-**Source specs:** `rakhi/rakhi-combos-claude-code-spec.md` (technical spec), `rakhi/rakhi-creatives-ai-brief.md` (ad creative brief, not part of this build). Also cross-checked against `.ai/plans/raksha-bandhan-2026-campaign.md` for IP-excluded products.
+**Source specs:** `.ai/plans/rakhi-combos-claude-code-spec.md` (technical spec), `.ai/plans/rakhi-creatives-ai-brief.md` (ad creative brief, not part of this build). Also cross-checked against `.ai/plans/raksha-bandhan-2026-campaign.md` for IP-excluded products.
 
 **Not using Shopify Bundles for this** (unlike the Dino Skeletons bundle) — combos here are a marketing/merchandising grouping of independently purchasable products, not a single SKU. "Add All to Cart" adds each product as its own cart line.
 
@@ -18,7 +18,7 @@ This site doesn't work that way. Every other page — products, collections, sho
 
 ## Data validation — done, missing handles fixed
 
-Checked every product handle in the spec's `RAKHI_COMBOS` array against the current `shop/products/` output. Two handles didn't exist in the store: `zigizigi-fidget` (used in `kid-sibling` and `fidget-collector`) and `spiral-connect-4` (used in `game-night`, as the ₹2499 hero item). Both `rakhi/rakhi-combos-claude-code-spec.md` and `rakhi/rakhi-creatives-ai-brief.md` have been updated:
+Checked every product handle in the spec's `RAKHI_COMBOS` array against the current `shop/products/` output. Two handles didn't exist in the store: `zigizigi-fidget` (used in `kid-sibling` and `fidget-collector`) and `spiral-connect-4` (used in `game-night`, as the ₹2499 hero item). Both `.ai/plans/rakhi-combos-claude-code-spec.md` and `.ai/plans/rakhi-creatives-ai-brief.md` have been updated:
 
 - **`kid-sibling`**: `zigizigi-fidget` → `articulated-cute-spider` (₹249). New total: **₹946** (was ₹846).
 - **`fidget-collector`**: `zigizigi-fidget` → `single-key-keyboard` (₹199). New total: **₹846** (unchanged — same as before since ₹149→₹199 offset the combo differently; verify against live price at build time regardless).

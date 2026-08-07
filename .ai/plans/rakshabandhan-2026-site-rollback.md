@@ -4,13 +4,13 @@
 **Written:** 2026-08-06
 **Updated 2026-08-07:** see new §1a — the masterplan was executed with one mechanism change (BXGY became a discount code, not automatic) and one scope addition (a cart-side rewards progress bar) beyond what this document originally anticipated. Sections below that reference the old automatic-discount GID or don't mention the cart system are corrected/extended accordingly; read §1a before executing.
 **Execute on:** 2026-08-29 (the day after the festival — 2026-08-28 — and after the Shopify discounts have expired)
-**Depends on:** `rakhi/rakshabandhan-2026-site-masterplan.md` having actually been executed first. If that plan was never implemented (check `git log` for its commits before doing anything else here), there is nothing to roll back — stop and tell the user.
+**Depends on:** `.ai/plans/rakshabandhan-2026-site-masterplan.md` having actually been executed first. If that plan was never implemented (check `git log` for its commits before doing anything else here), there is nothing to roll back — stop and tell the user.
 
 ---
 
 ## 1. Why this document exists
 
-The site masterplan (`rakhi/rakshabandhan-2026-site-masterplan.md`) intentionally added **no auto-expiry logic** for any of its changes (see that plan's Step C and "Open items" section — the user explicitly did not want auto-expiry code, decisions were deferred to "ask when the time comes"). That time has come. This document is that decision, written in advance so it doesn't need to be re-litigated on the day.
+The site masterplan (`.ai/plans/rakshabandhan-2026-site-masterplan.md`) intentionally added **no auto-expiry logic** for any of its changes (see that plan's Step C and "Open items" section — the user explicitly did not want auto-expiry code, decisions were deferred to "ask when the time comes"). That time has come. This document is that decision, written in advance so it doesn't need to be re-litigated on the day.
 
 **Do not run this before 2026-08-29.** The campaign runs through Raksha Bandhan (2026-08-28) and the Shopify discounts (RAKHI05, RAKHI10, free bunny keychain BXGY) are configured to expire automatically at `2026-08-28T18:30:xx Z`. Running this a day early would pull the site messaging while the offers are still technically live.
 
@@ -100,9 +100,10 @@ Don't touch these. They're either permanent site infrastructure that predates th
 - **The 8 Rakhi Shopify collections and their generated pages** (`shop/rakhi/index.html`, `shop/rakhi/<handle>/index.html`, and the `generateRakhiIndexPage`/`generateRakhiCollectionPage`/`RAKHI_COLLECTION_HANDLES`/`fetchRakhiCollections` machinery in `scripts/build-shop.js`). These existed **before** this campaign's site-update work and are reachable via direct URL/sitemap per the original design — that's independent of the announcement-bar/nav-link/promo-banner additions this rollback removes. Leave them live unless the user separately asks to retire the Rakhi catalogue entirely (different, bigger decision — don't make it unilaterally here).
 - **The Shopify discounts themselves** (`BUNNY499`, `RAKHI05`, `RAKHI10` — see §1a for the `BUNNY499` naming/mechanism change). These expire on their own via their `endsAt` dates — don't delete or archive them manually unless Section 2's pre-flight check found them still active for some reason (e.g. manually extended) and the user then confirms they should be turned off.
 - **The free-shipping (₹299) tier of the cart progress bar**, if §3.E's revert kept it as evergreen, non-Rakhi cart messaging rather than removing the whole mechanism — confirm this was the actual outcome of §3.E before assuming it's still there.
-- **`rakhi/rakhi-creatives-ai-brief.md`, `rakhi/rakhi-combos-claude-code-spec.md`, `.ai/plans/rakhi-combos-page.md`, `.ai/plans/raksha-bandhan-2026-campaign.md`** — historical/reference docs, not live site code. Leave as-is; they're campaign history, not something to clean up.
+- **`.ai/plans/rakhi-creatives-ai-brief.md`, `.ai/plans/rakhi-combos-claude-code-spec.md`, `.ai/plans/rakhi-combos-page.md`, `.ai/plans/raksha-bandhan-2026-campaign.md`** — historical/reference docs, not live site code. Leave as-is; they're campaign history, not something to clean up.
+- **`ads/rakhi/` (ad creative pages + exported PNGs, including the `.offer-strip` offer copy added 2026-08-07 per masterplan §0 item 3).** Not live site code — these are static marketing assets for external ad platforms (Meta, WhatsApp), not served/linked from the site itself. Leave as-is; if ad campaigns using these creatives are still running past 2026-08-29, that's a separate ad-platform decision (pausing/archiving the campaign in Meta Ads Manager etc.), not something this rollback's git-level reversal touches.
 - **The homepage hero carousel** (`HERO-CAROUSEL-SLIDES-START/END` markers, `heroCarouselSlidesHtml()`) — this was never touched by the masterplan (it's driven by non-Rakhi collections only) and needs no reversal.
-- **This document and the masterplan document itself** — keep both in `rakhi/` as a record of what was built and unbuilt. Don't delete them as part of "cleanup."
+- **This document and the masterplan document itself** — keep both in `.ai/plans/` as a record of what was built and unbuilt. Don't delete them as part of "cleanup."
 
 ---
 

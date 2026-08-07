@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Ad — 🦕 The Kid Sibling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --font: 'Montserrat', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #333;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: var(--font);
+            gap: 32px;
+            padding: 40px;
+        }
+
+        .ad-block { display: flex; flex-direction: column; gap: 12px; }
+
+        .ad-label {
+            color: #ccc;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .ad {
+            position: relative;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            padding: 46px;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .persona-tag {
+            font-size: 19px;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 100px;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: 0.02em;
+        }
+
+        .headline {
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        .sub-headline {
+            color: var(--sub-text);
+            font-weight: 500;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 6px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .cell {
+            position: relative;
+            background: var(--cell-bg);
+            border: 1px solid var(--cell-border);
+            box-shadow: var(--cell-shadow);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow: hidden;
+        }
+        .cell img { max-width: 78%; max-height: 78%; object-fit: contain; }
+
+        .cell-name {
+            position: absolute;
+            left: 10px; bottom: 10px;
+            background: rgba(255,255,255,0.9);
+            color: #1a1a1a;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            max-width: 62%;
+        }
+
+        .cell-price {
+            position: absolute;
+            right: 10px; bottom: 10px;
+            background: var(--accent);
+            color: var(--accent-text);
+            font-size: 16px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .pills {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-block;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid rgba(128,128,128,0.35);
+            border-radius: 100px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .pill-highlight {
+            background: var(--accent);
+            color: var(--accent-text);
+            border-color: transparent;
+        }
+
+        .cta-btn {
+            background: var(--accent);
+            color: var(--accent-text);
+            font-weight: 700;
+            border-radius: 100px;
+            border: none;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ── 1:1 — 1080×1080 ── */
+        .ad-1x1 { width: 1080px; height: 1080px; gap: 20px; }
+        .ad-1x1 .headline { font-size: 56px; }
+        .ad-1x1 .sub-headline { display: none; }
+        .ad-1x1 .product-grid { min-height: 55%; }
+        .ad-1x1 .pill { font-size: 16px; padding: 11px 20px; }
+        .ad-1x1 .cta-btn { font-size: 20px; padding: 16px 32px; }
+
+        /* ── 4:5 — 1080×1350 ── */
+        .ad-4x5 { width: 1080px; height: 1350px; gap: 24px; padding-bottom: 56px; }
+        .ad-4x5 .headline { font-size: 62px; }
+        .ad-4x5 .sub-headline { display: none; }
+        .ad-4x5 .product-grid { min-height: 58%; }
+        .ad-4x5 .persona-tag { font-size: 20px; }
+        .ad-4x5 .brand-name { font-size: 23px; }
+        .ad-4x5 .cell-name, .ad-4x5 .cell-price { font-size: 17px; }
+        .ad-4x5 .pill { font-size: 17px; padding: 12px 22px; }
+        .ad-4x5 .cta-btn { font-size: 21px; padding: 17px 34px; }
+
+        /* ── 9:16 — 1080×1920 ── */
+        .ad-9x16 { width: 1080px; height: 1920px; gap: 28px; }
+        .ad-9x16 .headline { font-size: 70px; }
+        .ad-9x16 .sub-headline { display: block; font-size: 26px; margin-top: -12px; }
+        .ad-9x16 .product-grid { min-height: 62%; }
+        .ad-9x16 .persona-tag { font-size: 21px; }
+        .ad-9x16 .brand-name { font-size: 24px; }
+        .ad-9x16 .cell-name, .ad-9x16 .cell-price { font-size: 19px; padding: 7px 14px; }
+        .ad-9x16 .pills { row-gap: 12px; }
+        .ad-9x16 .pill { font-size: 19px; padding: 14px 24px; }
+        .ad-9x16 .cta-btn { font-size: 23px; padding: 19px 38px; }
+        .ad-9x16 .bottom-bar { flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+    <div class="ad-block">
+        <p class="ad-label">1:1 — 1080 × 1080 — Facebook/Instagram Feed</p>
+        <div class="ad ad-1x1" style="--bg:#f0f7ff; --accent:#4a90e2; --accent-text:#ffffff; --cell-bg:#ffffff; --text:#1a1a1a; --sub-text:#666666; --cell-border:transparent; --cell-shadow:0 4px 18px rgba(74,144,226,0.12);">
+            <div class="top-bar">
+                <span class="persona-tag" style="background:#4a90e2; color:#ffffff;">🦕 The Kid Sibling</span>
+                <span class="brand-name">LayerWeaver</span>
+            </div>
+            <h2 class="headline">They’ve seen everything.<br><span style="color:#4a90e2">Not these.</span></h2>
+            
+            <div class="product-grid">
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png" alt="T-Rex Skeleton">
+                <span class="cell-name">T-Rex Skeleton</span>
+                <span class="cell-price">₹249</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tetris-balance-game-1.png" alt="Tetris Balance Game">
+                <span class="cell-name">Tetris Balance Game</span>
+                <span class="cell-price">₹399</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-1.jpg" alt="Articulated Octopus">
+                <span class="cell-name">Articulated Octopus</span>
+                <span class="cell-price">₹249</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-1.png" alt="Bird Ocarina">
+                <span class="cell-name">Bird Ocarina</span>
+                <span class="cell-price">₹199</span>
+            </div>
+            </div>
+            <div class="bottom-bar">
+                <div class="pills">
+                <span class="pill pill-highlight">Free bunny gift above ₹499</span>
+                <span class="pill">Free shipping above ₹299</span>
+                <span class="pill">3D printed in Pune</span>
+                </div>
+                <button class="cta-btn">Shop now →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ad-block">
+        <p class="ad-label">4:5 — 1080 × 1350 — Instagram Feed (preferred)</p>
+        <div class="ad ad-4x5" style="--bg:#f0f7ff; --accent:#4a90e2; --accent-text:#ffffff; --cell-bg:#ffffff; --text:#1a1a1a; --sub-text:#666666; --cell-border:transparent; --cell-shadow:0 4px 18px rgba(74,144,226,0.12);">
+            <div class="top-bar">
+                <span class="persona-tag" style="background:#4a90e2; color:#ffffff;">🦕 The Kid Sibling</span>
+                <span class="brand-name">LayerWeaver</span>
+            </div>
+            <h2 class="headline">They’ve seen everything.<br><span style="color:#4a90e2">Not these.</span></h2>
+            
+            <div class="product-grid">
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png" alt="T-Rex Skeleton">
+                <span class="cell-name">T-Rex Skeleton</span>
+                <span class="cell-price">₹249</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tetris-balance-game-1.png" alt="Tetris Balance Game">
+                <span class="cell-name">Tetris Balance Game</span>
+                <span class="cell-price">₹399</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-1.jpg" alt="Articulated Octopus">
+                <span class="cell-name">Articulated Octopus</span>
+                <span class="cell-price">₹249</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-1.png" alt="Bird Ocarina">
+                <span class="cell-name">Bird Ocarina</span>
+                <span class="cell-price">₹199</span>
+            </div>
+            </div>
+            <div class="bottom-bar">
+                <div class="pills">
+                <span class="pill pill-highlight">Free bunny gift above ₹499</span>
+                <span class="pill">Free shipping above ₹299</span>
+                <span class="pill">3D printed in Pune</span>
+                </div>
+                <button class="cta-btn">Shop now →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ad-block">
+        <p class="ad-label">9:16 — 1080 × 1920 — Stories/Reels</p>
+        <div class="ad ad-9x16" style="--bg:#f0f7ff; --accent:#4a90e2; --accent-text:#ffffff; --cell-bg:#ffffff; --text:#1a1a1a; --sub-text:#666666; --cell-border:transparent; --cell-shadow:0 4px 18px rgba(74,144,226,0.12);">
+            <div class="top-bar">
+                <span class="persona-tag" style="background:#4a90e2; color:#ffffff;">🦕 The Kid Sibling</span>
+                <span class="brand-name">LayerWeaver</span>
+            </div>
+            <h2 class="headline">They’ve seen everything.<br><span style="color:#4a90e2">Not these.</span></h2>
+            <p class="sub-headline">3D printed toys and games they’ve never seen before.</p>
+            <div class="product-grid">
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png" alt="T-Rex Skeleton">
+                <span class="cell-name">T-Rex Skeleton</span>
+                <span class="cell-price">₹249</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tetris-balance-game-1.png" alt="Tetris Balance Game">
+                <span class="cell-name">Tetris Balance Game</span>
+                <span class="cell-price">₹399</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-1.jpg" alt="Articulated Octopus">
+                <span class="cell-name">Articulated Octopus</span>
+                <span class="cell-price">₹249</span>
+            </div>
+            <div class="cell">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-1.png" alt="Bird Ocarina">
+                <span class="cell-name">Bird Ocarina</span>
+                <span class="cell-price">₹199</span>
+            </div>
+            </div>
+            <div class="bottom-bar">
+                <div class="pills">
+                <span class="pill pill-highlight">Free bunny gift above ₹499</span>
+                <span class="pill">Free shipping above ₹299</span>
+                <span class="pill">3D printed in Pune</span>
+                </div>
+                <button class="cta-btn">Shop now →</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

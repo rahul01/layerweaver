@@ -10,7 +10,7 @@
 
   // Unified cart rewards ladder - free shipping plus the Raksha Bandhan 2026
   // campaign (2026-08-06 → 2026-08-28). Thresholds/codes mirror the live
-  // Shopify discount codes - see rakhi/rakshabandhan-2026-site-masterplan.md.
+  // Shopify discount codes - see .ai/plans/rakshabandhan-2026-site-masterplan.md.
   // Shipping has no discount code (it's just informational - Shopify applies
   // it automatically at checkout based on order value). The 3 Rakhi offers
   // are single-use discount codes (BUNNY499 is a code-based BXGY, not an

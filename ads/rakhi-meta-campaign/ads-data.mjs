@@ -1,0 +1,121 @@
+// Data for the 4 Meta (Facebook/Instagram) persona ad creatives. Originally
+// built against a since-superseded rakhi/creative-brief.md (Aug 7 2026) —
+// see .ai/plans/rakhi-ads/creative-brief.md for the current version of that
+// brief (separate, later work; this file predates its min-text-size table).
+// Each ad renders at 3 ratios: 1:1 (1080x1080), 4:5 (1080x1350), 9:16 (1080x1920).
+export const ADS = [
+  {
+    id: 'ad1-gamer-bro',
+    personaTag: '🎮 The Gamer Bro',
+    headlineLines: ['Rakhi gifts he', 'actually wants.'],
+    headlineAccentWord: 'actually wants.',
+    subHeadline: '3D printed in Pune. Ships across India.',
+    colors: {
+      bg: '#0f0f0f',
+      accent: '#c8ff00',
+      accentText: '#0f0f0f',
+      cellBg: '#1a1a1a',
+      text: '#ffffff',
+      subText: 'rgba(255,255,255,0.5)',
+      cellBorder: 'transparent',
+      cellShadow: 'none',
+    },
+    products: [
+      { name: 'Cactus Headphone Stand', price: '₹1,699', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Aug_4_2026_04_07_58_PM.png' },
+      { name: 'Xbox Controller Stand', price: '₹1,149', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_05_33_11_PM.png' },
+      { name: 'WASD Keycap Keychain', price: '₹349', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/wasd-mechanical-keycap-keychain-1.png' },
+      { name: 'Single Key Clicker', price: '₹199', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/single-key-keyboard-1.png' },
+    ],
+    pills: [
+      { text: 'Free shipping above ₹299', highlight: true },
+      { text: '3D printed in Pune', highlight: false },
+      { text: 'Ships in 3 days', highlight: false },
+    ],
+  },
+  {
+    id: 'ad2-aesthetic-sister',
+    personaTag: '🌸 The Aesthetic Sister',
+    headlineLines: ['She’ll find a place', 'for every single one.'],
+    headlineAccentWord: 'every single one.',
+    subHeadline: 'Raksha Bandhan gifts for the sister who curates everything.',
+    colors: {
+      bg: '#fdf6f0',
+      accent: '#c0527a',
+      accentText: '#ffffff',
+      cellBg: '#ffffff',
+      text: '#1a1a1a',
+      subText: '#888888',
+      cellBorder: 'transparent',
+      cellShadow: '0 4px 18px rgba(0,0,0,0.08)',
+    },
+    personaTagBg: '#e8a0bf',
+    personaTagText: '#ffffff',
+    products: [
+      { name: 'Ghost Balloon Lamp', price: '₹399', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-1.png' },
+      { name: 'Tulip Single Flower', price: '₹149', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tulip-single-flower-1.png' },
+      { name: 'Monstera Coaster Set', price: '₹1,899', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/monstera-coaster-set-1.png' },
+      { name: 'Bunny Keychain', price: '₹99', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bunny-keychain-1.png' },
+    ],
+    pills: [
+      { text: 'Free shipping above ₹299', highlight: true },
+      { text: 'Free bunny gift above ₹499', highlight: false },
+      { text: '3D printed in Pune', highlight: false },
+    ],
+  },
+  {
+    id: 'ad3-little-things',
+    personaTag: '🎀 Little Things, Big Feels',
+    headlineLines: ['Rakhi gifts under ₹500.', 'That feel like more.'],
+    headlineAccentWord: 'under ₹500.',
+    subHeadline: 'Thoughtful doesn’t have to mean expensive.',
+    colors: {
+      bg: '#fffbf2',
+      accent: '#f5a623',
+      accentText: '#ffffff',
+      cellBg: '#ffffff',
+      text: '#1a1a1a',
+      subText: '#888888',
+      cellBorder: '#f0e8d8',
+      cellShadow: 'none',
+    },
+    products: [
+      { name: 'Custom Name Keyring', price: '₹149', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/custom-name-keyring-3.png' },
+      { name: 'Coffee Mug Clicker', price: '₹199', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/coffee-mug-clicker-one-piece-red-or-white-mug-1.png' },
+      { name: 'Cupcake Clicker', price: '₹249', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/cupcake-clicker-one-piece-1.png' },
+      { name: 'Bunny Keychain', price: '₹99', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bunny-keychain-1.png' },
+    ],
+    pills: [
+      { text: 'Free bunny gift above ₹499', highlight: true },
+      { text: 'Free shipping above ₹299', highlight: false },
+      { text: 'Ships in 3 days', highlight: false },
+    ],
+  },
+  {
+    id: 'ad4-kid-sibling',
+    personaTag: '🦕 The Kid Sibling',
+    headlineLines: ['They’ve seen everything.', 'Not these.'],
+    headlineAccentWord: 'Not these.',
+    subHeadline: '3D printed toys and games they’ve never seen before.',
+    colors: {
+      bg: '#f0f7ff',
+      accent: '#4a90e2',
+      accentText: '#ffffff',
+      cellBg: '#ffffff',
+      text: '#1a1a1a',
+      subText: '#666666',
+      cellBorder: 'transparent',
+      cellShadow: '0 4px 18px rgba(74,144,226,0.12)',
+    },
+    products: [
+      { name: 'T-Rex Skeleton', price: '₹249', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png' },
+      { name: 'Tetris Balance Game', price: '₹399', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/tetris-balance-game-1.png' },
+      { name: 'Articulated Octopus', price: '₹249', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-1.jpg' },
+      { name: 'Bird Ocarina', price: '₹199', image: 'https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bird-ocarina-1.png' },
+    ],
+    pills: [
+      { text: 'Free bunny gift above ₹499', highlight: true },
+      { text: 'Free shipping above ₹299', highlight: false },
+      { text: '3D printed in Pune', highlight: false },
+    ],
+  },
+];

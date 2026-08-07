@@ -17,6 +17,8 @@ function nl2br(s) {
   return escHtml(s).replace(/\n/g, '<br>');
 }
 
+const OFFER_LINE = 'Free Bunny Keychain ₹499+ · 5% off ₹1,499+ · 10% off ₹2,999+';
+
 function pageHtml(c) {
   const title = c.eyebrow;
   const shopUrl = `layerweaver.com/shop/rakhi/${c.handle}/`;
@@ -147,6 +149,13 @@ function pageHtml(c) {
             letter-spacing: 0.05em;
         }
 
+        .offer-strip {
+            background: var(--primary);
+            color: var(--light);
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
         /* ── SQUARE 1080×1080 ── */
         .ad-square {
             width: 1080px; height: 1080px;
@@ -171,6 +180,7 @@ function pageHtml(c) {
         .ad-square .shipping-badge { font-size: 15px; }
         .ad-square .cta-btn { font-size: 22px; padding: 18px 40px; }
         .ad-square .url { font-size: 14px; }
+        .ad-square .offer-strip { font-size: 15px; padding: 12px 64px; text-align: center; }
 
         /* ── STORY 1080×1920 ── */
         .ad-story {
@@ -195,6 +205,7 @@ function pageHtml(c) {
         .ad-story .shipping-badge { font-size: 18px; }
         .ad-story .cta-btn { font-size: 30px; padding: 26px 56px; width: 100%; text-align: center; margin-top: 16px; }
         .ad-story .url { font-size: 18px; text-align: center; margin-top: 8px; }
+        .ad-story .offer-strip { font-size: 20px; padding: 16px 64px; text-align: center; line-height: 1.4; }
 
         /* ── LANDSCAPE 1200×628 ── */
         .ad-landscape {
@@ -219,6 +230,7 @@ function pageHtml(c) {
         .ad-landscape .brand-logo { height: 30px; }
         .ad-landscape .brand-name { font-size: 20px; }
         .ad-landscape .rakhi-tag { font-size: 12px; padding: 6px 16px; }
+        .ad-landscape .offer-strip { font-size: 12px; padding: 8px 20px; line-height: 1.4; margin-top: 4px; }
 
         /* ── WHATSAPP 800×800 ── */
         .ad-whatsapp {
@@ -247,6 +259,7 @@ function pageHtml(c) {
         .ad-whatsapp .brand-logo { height: 30px; }
         .ad-whatsapp .brand-name { font-size: 20px; }
         .ad-whatsapp .rakhi-tag { font-size: 12px; padding: 6px 16px; }
+        .ad-whatsapp .offer-strip { font-size: 12px; padding: 10px 46px; text-align: center; }
     </style>
 </head>
 <body>
@@ -275,6 +288,7 @@ function pageHtml(c) {
                     <span class="url">${shopUrl}</span>
                 </div>
             </div>
+            <div class="offer-strip">${escHtml(OFFER_LINE)}</div>
         </div>
     </div>
 
@@ -300,6 +314,7 @@ function pageHtml(c) {
                 <button class="cta-btn">Shop Now →</button>
                 <span class="url">${shopUrl}</span>
             </div>
+            <div class="offer-strip">${escHtml(OFFER_LINE)}</div>
         </div>
     </div>
 
@@ -325,6 +340,7 @@ function pageHtml(c) {
                     <span class="shipping-badge">Free Shipping ₹299+</span>
                     <button class="cta-btn">Shop Now →</button>
                 </div>
+                <div class="offer-strip">${escHtml(OFFER_LINE)}</div>
             </div>
         </div>
     </div>
@@ -353,6 +369,7 @@ function pageHtml(c) {
                     <span class="url">${shopUrl}</span>
                 </div>
             </div>
+            <div class="offer-strip">${escHtml(OFFER_LINE)}</div>
         </div>
     </div>
 
