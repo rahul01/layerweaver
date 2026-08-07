@@ -182,10 +182,12 @@ scattered on a colorful playful background — bright and fun
 ### 5. Little Things, Big Feels
 `layerweaver.com/shop/rakhi/little-things-big-feels/`
 
-**Products (9):** Lip Balm Holder Keychain (₹299) · Custom Name Keyring
+**Products (10):** Lip Balm Holder Keychain (₹299) · Custom Name Keyring
 (₹149) · Coffee Mug Clicker Keychain (₹199) · Cupcake Clicker (₹249) ·
 Pumpkin Articulated Legs (₹129) · Bunny Keychain (₹99) · Tree Articulated
-Legs (₹129) · Pineapple Articulated Legs (₹159) · Panda Figurine (₹249)
+Legs (₹129) · Pineapple Articulated Legs (₹159) · Panda Figurine (₹249) ·
+**Named & Glossy (₹448)** — a bundle of the Custom Name Keyring + Lip Balm
+Holder Keychain, personalized, added after this brief was first written.
 
 **Midjourney insert:**
 ```
@@ -197,7 +199,8 @@ a lip balm holder shaped like a keychain, a personalized name keyring with an ex
 **Subheadline:** Keychains, clickers & desk buddies from ₹99
 **CTA:** Shop Little Things, Big Feels →
 **Body copy:** Everything here crosses ₹299 for free shipping when paired with one more thing. Small, but they'll actually use it.
-**Note for ad:** Custom Name Keyring is personalized — include a small text overlay: "Personalize at checkout"
+**Note for ad:** Custom Name Keyring, Named & Glossy are personalized —
+include a small text overlay: "Personalize at checkout"
 
 ---
 
