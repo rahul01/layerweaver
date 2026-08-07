@@ -68,7 +68,7 @@
     <style>
         .policy-hero {
             background: linear-gradient(135deg, rgba(160, 131, 213, 0.08) 0%, rgba(239, 207, 32, 0.08) 100%);
-            padding: 100px 0 32px;
+            padding: calc(100px + var(--announcement-height)) 0 32px;
             text-align: center;
         }
 
@@ -136,6 +136,9 @@
     </style>
 </head>
 <body>
+    <div class="announcement-bar">
+        <a href="../shop/rakhi/">🪢 Rakhi Special: Free Bunny Keychain on orders ₹499+ &middot; 5% off ₹1,499+ (code RAKHI05) &middot; 10% off ₹2,999+ (code RAKHI10)</a>
+    </div>
     <header>
         <div class="container">
             <a href="../" class="logo-container logo-link">
@@ -145,6 +148,7 @@
             <nav>
                 <ul class="nav-links">
                     <li><a href="../shop/" class="btn-primary">Shop</a></li>
+                    <li><a href="../shop/rakhi/">Rakhi Gifts</a></li>
                     <li><a href="../gallery/">Gallery</a></li>
                     <li><a href="../workshop">Workshops</a></li>
                     <li><a href="../#about">About</a></li>

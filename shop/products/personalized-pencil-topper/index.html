@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1786030763492">
+    <link rel="stylesheet" href="../../shop.css?v=1786081572135">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -70,6 +70,10 @@
     </script>
 </head>
 <body>
+    
+    <div class="announcement-bar">
+        <a href="../../rakhi/">🪢 Rakhi Special: Free Bunny Keychain on orders ₹499+ &middot; 5% off ₹1,499+ (code RAKHI05) &middot; 10% off ₹2,999+ (code RAKHI10)</a>
+    </div>
     
     <header class="shop-header">
         <div class="container">
@@ -286,8 +290,11 @@
             const hasVariantThumbs = !!document.querySelector('.thumbnail[data-variant-gid]');
             if (btn.dataset.image && hasVariantThumbs) {
                 showMainImage(btn.dataset.image);
+                // A thumbnail's data-variant-gid can be a comma-separated list when
+                // multiple variants share one photo (see build-shop.js variantsWithImages).
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => {
-                    t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
+                    const gids = (t.dataset.variantGid || '').split(',');
+                    t.classList.toggle('active', gids.includes(btn.dataset.variantGid));
                 });
             }
             if (updateUrl) {
@@ -331,7 +338,11 @@
                 } else {
                     showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
-                        const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
+                        // Pick the first variant sharing this thumbnail's image as the
+                        // one to activate - the others remain reachable via their own
+                        // variant buttons, which show the same (correct) image too.
+                        const firstGid = thumb.dataset.variantGid.split(',')[0];
+                        const btn = document.querySelector(`.variant-btn[data-variant-gid="${firstGid}"]`);
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
@@ -382,10 +393,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"personalized-pencil-topper":{"Pink":"#ffc0cb","light blue":"#9bd3e8"}};</script>
-    <script src="../../auth.js?v=1786030763492"></script>
-    <script src="../../cart.js?v=1786030763492"></script>
-    <script src="../../search.js?v=1786030763492"></script>
-    <script src="../../wishlist.js?v=1786030763492"></script>
+    <script src="../../auth.js?v=1786081572135"></script>
+    <script src="../../cart.js?v=1786081572135"></script>
+    <script src="../../search.js?v=1786081572135"></script>
+    <script src="../../wishlist.js?v=1786081572135"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

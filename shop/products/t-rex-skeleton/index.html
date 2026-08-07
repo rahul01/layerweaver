@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1786030763492">
+    <link rel="stylesheet" href="../../shop.css?v=1786081572135">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -70,6 +70,10 @@
     </script>
 </head>
 <body>
+    
+    <div class="announcement-bar">
+        <a href="../../rakhi/">🪢 Rakhi Special: Free Bunny Keychain on orders ₹499+ &middot; 5% off ₹1,499+ (code RAKHI05) &middot; 10% off ₹2,999+ (code RAKHI10)</a>
+    </div>
     
     <header class="shop-header">
         <div class="container">
@@ -118,24 +122,19 @@
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bone_white_t_rex.png?v=1783880772&width=300" alt="T-rex Skeleton - bone white / 15cm"
              class="thumbnail active"
              data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bone_white_t_rex.png?v=1783880772&width=1600"
-             data-variant-gid="gid://shopify/ProductVariant/48427637113054"
+             data-variant-gid="gid://shopify/ProductVariant/48427637113054,gid://shopify/ProductVariant/48545833058526"
              data-price="₹249"
              data-variant-title="bone white / 15cm"
-             loading="lazy">
-        <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512&width=300" alt="T-rex Skeleton - bone white / 22cm"
-             class="thumbnail"
-             data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512&width=1600"
-             data-variant-gid="gid://shopify/ProductVariant/48545833058526"
-             data-price="₹499"
-             data-variant-title="bone white / 22cm"
              loading="lazy">
         <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_40_PM.png?v=1784534511&width=300" alt="T-rex Skeleton - ivory white / 15cm"
              class="thumbnail"
              data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_40_PM.png?v=1784534511&width=1600"
-             data-variant-gid="gid://shopify/ProductVariant/48427637145822"
+             data-variant-gid="gid://shopify/ProductVariant/48427637145822,gid://shopify/ProductVariant/48545833091294"
              data-price="₹249"
              data-variant-title="ivory white / 15cm"
              loading="lazy">
+          <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512&width=300" alt="T-rex Skeleton"
+               class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512&width=1600" loading="lazy">
           <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_12_48_55_AM.png?v=1785787481&width=300" alt="T-rex Skeleton"
                class="thumbnail" data-full-src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Aug_4_2026_12_48_55_AM.png?v=1785787481&width=1600" loading="lazy"></div>
                 </div>
@@ -166,7 +165,7 @@
                     data-variant-id="48545833058526"
                     data-variant-gid="gid://shopify/ProductVariant/48545833058526"
                     data-price="₹499"
-                    data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512"
+                    data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bone_white_t_rex.png?v=1783880772"
                     >
                     bone white / 22cm
                 </button>
@@ -182,7 +181,7 @@
                     data-variant-id="48545833091294"
                     data-variant-gid="gid://shopify/ProductVariant/48545833091294"
                     data-price="₹499"
-                    data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_45_PM.png?v=1784534512"
+                    data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Jul_20_2026_01_27_40_PM.png?v=1784534511"
                     >
                     ivory white / 22cm
                 </button>
@@ -419,8 +418,11 @@
             const hasVariantThumbs = !!document.querySelector('.thumbnail[data-variant-gid]');
             if (btn.dataset.image && hasVariantThumbs) {
                 showMainImage(btn.dataset.image);
+                // A thumbnail's data-variant-gid can be a comma-separated list when
+                // multiple variants share one photo (see build-shop.js variantsWithImages).
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => {
-                    t.classList.toggle('active', t.dataset.variantGid === btn.dataset.variantGid);
+                    const gids = (t.dataset.variantGid || '').split(',');
+                    t.classList.toggle('active', gids.includes(btn.dataset.variantGid));
                 });
             }
             if (updateUrl) {
@@ -464,7 +466,11 @@
                 } else {
                     showMainImage(thumb.dataset.fullSrc || thumb.src);
                     if (thumb.dataset.variantGid) {
-                        const btn = document.querySelector(`.variant-btn[data-variant-gid="${thumb.dataset.variantGid}"]`);
+                        // Pick the first variant sharing this thumbnail's image as the
+                        // one to activate - the others remain reachable via their own
+                        // variant buttons, which show the same (correct) image too.
+                        const firstGid = thumb.dataset.variantGid.split(',')[0];
+                        const btn = document.querySelector(`.variant-btn[data-variant-gid="${firstGid}"]`);
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
@@ -515,10 +521,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"t-rex-skeleton":{"bone white":"#dbd5c8","ivory white":"#f2ede0"}};</script>
-    <script src="../../auth.js?v=1786030763492"></script>
-    <script src="../../cart.js?v=1786030763492"></script>
-    <script src="../../search.js?v=1786030763492"></script>
-    <script src="../../wishlist.js?v=1786030763492"></script>
+    <script src="../../auth.js?v=1786081572135"></script>
+    <script src="../../cart.js?v=1786081572135"></script>
+    <script src="../../search.js?v=1786081572135"></script>
+    <script src="../../wishlist.js?v=1786081572135"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
