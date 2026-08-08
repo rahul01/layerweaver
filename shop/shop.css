@@ -14,7 +14,7 @@
     right: 0;
     z-index: 101;
     height: var(--announcement-height);
-    background: var(--primary);
+    background: var(--rakhi-amber);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,11 +24,11 @@
 }
 
 .announcement-bar a {
-    color: var(--light);
+    color: var(--dark);
     text-decoration: none;
     font-family: var(--font-primary);
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.2px;
     white-space: nowrap;
     overflow: hidden;
@@ -39,10 +39,38 @@
     text-decoration: underline;
 }
 
+.announcement-bar-track a:nth-of-type(2) {
+    display: none;
+}
+
 @media (max-width: 600px) {
+    .announcement-bar {
+        justify-content: flex-start;
+        padding: 0;
+    }
+
+    .announcement-bar-track {
+        display: inline-flex;
+        align-items: center;
+        animation: announcement-marquee 14s linear infinite;
+        will-change: transform;
+    }
+
+    .announcement-bar-track a:nth-of-type(2) {
+        display: inline;
+    }
+
     .announcement-bar a {
         font-size: 0.68rem;
+        overflow: visible;
+        text-overflow: clip;
+        padding: 0 16px;
     }
+}
+
+@keyframes announcement-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
 }
 
 /* ------- Shop Header (minimal) ------- */

@@ -515,9 +515,13 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
 }
 
 function announcementBarHtml(shopBase) {
+  const link = `<a href="${shopBase}rakhi/">🪢 Rakhi Special: Free Bunny Keychain on orders ₹499+ &middot; 5% off ₹1,499+ &middot; 10% off ₹2,999+</a>`;
   return `
     <div class="announcement-bar">
-        <a href="${shopBase}rakhi/">🪢 Rakhi Special: Free Bunny Keychain on orders ₹499+ &middot; 5% off ₹1,499+ &middot; 10% off ₹2,999+</a>
+        <div class="announcement-bar-track">
+            ${link}
+            ${link}
+        </div>
     </div>`;
 }
 
