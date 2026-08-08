@@ -50,10 +50,10 @@ Campaign: Raksha Bandhan 2026 [Advantage+ Sales Campaign]
 Budget: ₹700/day
 │
 └── Ad Set 1
-    ├── Ad 1: The Gamer Bro          → /collections/the-gamer-bro
-    ├── Ad 2: The Aesthetic Sister   → /collections/the-aesthetic-sister
-    ├── Ad 3: Little Things, Big Feels → /collections/little-things-big-feels
-    └── Ad 4: The Kid Sibling        → /collections/the-kid-sibling
+    ├── Ad 1: The Gamer Bro          → /collections/the-gamer-bro?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=gamer-bro
+    ├── Ad 2: The Aesthetic Sister   → /collections/the-aesthetic-sister?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=aesthetic-sister
+    ├── Ad 3: Little Things, Big Feels → /collections/little-things-big-feels?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=little-things
+    └── Ad 4: The Kid Sibling        → /collections/the-kid-sibling?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=kid-sibling
 ```
 
 **Keep this completely separate from Hi Value Sales July.** Don't add any of these ads to the existing campaign. Different objective, different audience moment, different landing pages.

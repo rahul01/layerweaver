@@ -136,7 +136,7 @@ Color: rgba(255,255,255,0.5)
 
 **CTA:** `Shop now →` on `#c8ff00`, text `#0f0f0f`
 
-**Landing page:** `layerweaver.in/collections/the-gamer-bro`
+**Landing page:** `layerweaver.in/collections/the-gamer-bro?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=gamer-bro`
 
 ---
 
@@ -203,7 +203,7 @@ Color: `#888`
 
 **CTA:** `Shop now →` on `#c0527a`, white text
 
-**Landing page:** `layerweaver.in/collections/the-aesthetic-sister`
+**Landing page:** `layerweaver.in/collections/the-aesthetic-sister?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=aesthetic-sister`
 
 ---
 
@@ -269,7 +269,7 @@ Color: `#888`
 
 **CTA:** `Shop now →` on `#f5a623`, white text
 
-**Landing page:** `layerweaver.in/collections/little-things-big-feels`
+**Landing page:** `layerweaver.in/collections/little-things-big-feels?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=little-things`
 
 ---
 
@@ -335,7 +335,7 @@ Color: `#666`
 
 **CTA:** `Shop now →` on `#4a90e2`, white text
 
-**Landing page:** `layerweaver.in/collections/the-kid-sibling`
+**Landing page:** `layerweaver.in/collections/the-kid-sibling?utm_source=facebook&utm_medium=paid_social&utm_campaign=rakhi2026&utm_content=kid-sibling`
 
 ---
 
