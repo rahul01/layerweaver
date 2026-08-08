@@ -1310,11 +1310,13 @@ function generateProductPage(product, collection, reviewData = null) {
 // small corner accent, and a section-divider centerpiece.
 
 function rakhiThreadMotifSvg(className = '') {
-  const cx = 40, cy = 40, petalCount = 8, petalLength = 22;
+  const cx = 40, cy = 40, petalCount = 8, L = 26, W = 8;
+  // Same lens/teardrop leaf silhouette as the original 2-leaf motif (a wide,
+  // gently-curved outline with a pointed tip), just scaled down and repeated
+  // radially instead of only mirrored twice.
   const petals = Array.from({ length: petalCount }, (_, i) => {
     const angle = (360 / petalCount) * i;
-    // One petal (a slim leaf loop pointing up from center) rotated into place.
-    return `<path d="M${cx} ${cy} C ${cx - 6} ${cy - petalLength * 0.5}, ${cx - 4} ${cy - petalLength}, ${cx} ${cy - petalLength - 4} C ${cx + 4} ${cy - petalLength}, ${cx + 6} ${cy - petalLength * 0.5}, ${cx} ${cy} Z"
+    return `<path d="M${cx} ${cy} C ${cx - W} ${cy - L * 0.28}, ${cx - W} ${cy - L * 0.6}, ${cx} ${cy - L} C ${cx + W} ${cy - L * 0.6}, ${cx + W} ${cy - L * 0.28}, ${cx} ${cy} Z"
           stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"
           transform="rotate(${angle} ${cx} ${cy})"/>`;
   }).join('\n        ');
