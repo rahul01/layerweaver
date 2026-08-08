@@ -1303,17 +1303,28 @@ function generateProductPage(product, collection, reviewData = null) {
 </html>`;
 }
 
-// ── Rakhi thread/knot motif (decorative SVG, Rakhi pages only) ───────────────
-// Line-art rakhi thread with a central knot and two dangling tassels, drawn in
-// currentColor so it inherits whatever text color it's placed in. Used as a
-// flourish flanking the banner title and as a section-divider accent.
+// ── Rakhi mandala motif (decorative SVG, Rakhi pages only) ───────────────────
+// A small radial mandala of 8 petal/leaf loops around a central knot, with two
+// dangling tassels beneath - drawn in currentColor so it inherits whatever
+// text color it's placed in. Used as a flourish flanking the banner title, a
+// small corner accent, and a section-divider centerpiece.
 
 function rakhiThreadMotifSvg(className = '') {
-  return `<svg class="rakhi-thread-motif${className ? ' ' + className : ''}" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M2 20 C 30 4, 45 4, 52 20 C 45 36, 30 36, 2 20 Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M118 20 C 90 4, 75 4, 68 20 C 75 36, 90 36, 118 20 Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="60" cy="20" r="7" fill="currentColor"/>
-        <path d="M60 27 L 56 40 M60 27 L 64 40 M60 27 L 60 40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  const cx = 40, cy = 40, petalCount = 8, petalLength = 22;
+  const petals = Array.from({ length: petalCount }, (_, i) => {
+    const angle = (360 / petalCount) * i;
+    // One petal (a slim leaf loop pointing up from center) rotated into place.
+    return `<path d="M${cx} ${cy} C ${cx - 6} ${cy - petalLength * 0.5}, ${cx - 4} ${cy - petalLength}, ${cx} ${cy - petalLength - 4} C ${cx + 4} ${cy - petalLength}, ${cx + 6} ${cy - petalLength * 0.5}, ${cx} ${cy} Z"
+          stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"
+          transform="rotate(${angle} ${cx} ${cy})"/>`;
+  }).join('\n        ');
+
+  return `<svg class="rakhi-thread-motif${className ? ' ' + className : ''}" viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        ${petals}
+        <circle cx="${cx}" cy="${cy}" r="6" fill="currentColor"/>
+        <circle cx="${cx}" cy="${cy}" r="10" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M${cx} ${cy + 20} L ${cx - 5} ${cy + 34} M${cx} ${cy + 20} L ${cx} ${cy + 36} M${cx} ${cy + 20} L ${cx + 5} ${cy + 34}"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
     </svg>`;
 }
 
