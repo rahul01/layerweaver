@@ -533,26 +533,12 @@ body.rakhi-theme .collection-dropdown-item.active {
     background: rgba(232, 160, 32, 0.14);
 }
 
-/* Rakhi-only product card accent: small amber corner ribbon + amber hover glow
-   instead of the sitewide purple, applied purely via descendant selector so
+/* Rakhi-only product card accent: amber border + amber hover glow instead of
+   the sitewide purple, applied purely via descendant selector so
    productCardHtml() itself stays completely untouched/shared. */
 body.rakhi-theme .shop-product-card {
     position: relative;
     border: 1px solid rgba(232, 160, 32, 0.35);
-}
-
-body.rakhi-theme .shop-product-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 34px 34px 0;
-    border-color: transparent var(--rakhi-amber) transparent transparent;
-    z-index: 1;
-    pointer-events: none;
 }
 
 body.rakhi-theme .shop-product-card:hover {
