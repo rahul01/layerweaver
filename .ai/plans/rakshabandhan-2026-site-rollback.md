@@ -62,6 +62,8 @@ Same day as §1g, the festive treatment was expanded beyond just the banner (per
 
 `rakhiThreadMotifSvg()` (`scripts/build-shop.js`) was redrawn from a 2-loop horizontal shape (viewBox `120×40`) to a radially-symmetric 8-petal mandala (viewBox `80×96`), generated programmatically via an `Array.from({length: 8}, ...)` loop with per-petal `rotate()` transforms rather than hardcoded paths. The matching tiled background pattern in `shop/shop.css` (`body.rakhi-theme`'s `background-image`) was also redrawn to a 6-petal version of the same family via SVG `<use>` references. Sizing was retuned across all three placements (banner motif, corner accent, divider) since the new square-ish shape doesn't fit the old width-only sizing the same way the wide horizontal shape did — see masterplan §0 item 13 for the exact before/after pixel values. Still purely visual/CSS+one-function, same low-risk profile as §1g/§1h — no new checklist item, still covered by **item I** below (which already says "remove `rakhiThreadMotifSvg()`" — that instruction is unchanged regardless of which shape the function currently draws).
 
+**Follow-up same day (masterplan §0 item 14):** the mandala's individual petal shape was refit to match the *original* 2-leaf motif's exact leaf silhouette (a wide teardrop/lens, width:length ratio ≈0.32) rather than the slimmer almond shape item 13 initially used — still the same `rakhiThreadMotifSvg()` function and `body.rakhi-theme` background tile, just different path coordinates within them. No change to the revert instructions below.
+
 ---
 
 ## 2. Pre-flight check — confirm campaign is actually over before touching anything
