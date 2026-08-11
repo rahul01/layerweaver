@@ -268,13 +268,17 @@ function prioritizeTopReviews(reviews) {
   return [...front, ...bumped, ...rest];
 }
 
+// Returns { map, storeReviews }: `map` is per-product review data (handle ->
+// {rating, count, reviews}), `storeReviews` is Judge.me's store-level reviews
+// (product_external_id 0 — reviews left via the "store-review-only" shareable
+// link, not tied to any single product) used for the homepage feedback section.
 async function fetchAllReviews(products) {
   if (!JUDGEME_TOKEN && process.stdin.isTTY) {
     JUDGEME_TOKEN = await promptForJudgemeToken();
   }
   if (!JUDGEME_TOKEN) {
     console.warn('  ⚠️  WARNING: JUDGEME_API_TOKEN not set — skipping reviews, shop will build with no ratings/reviews.');
-    return {};
+    return { map: {}, storeReviews: [] };
   }
   console.log('Fetching reviews from Judge.me...');
   // Judge.me's `external_id`/`product_id` query params on /reviews are not reliable
@@ -290,7 +294,7 @@ async function fetchAllReviews(products) {
       const res = await fetch(url);
       if (!res.ok) {
         console.warn(`  ⚠️  WARNING: Judge.me request failed: HTTP ${res.status} ${await res.text()}`);
-        return {};
+        return { map: {}, storeReviews: [] };
       }
       const data = await res.json();
       const reviews = data.reviews || [];
@@ -303,7 +307,7 @@ async function fetchAllReviews(products) {
     }
   } catch (err) {
     console.warn(`  ⚠️  WARNING: Judge.me request failed: ${err.message}`);
-    return {};
+    return { map: {}, storeReviews: [] };
   }
 
   const map = {};
@@ -327,7 +331,12 @@ async function fetchAllReviews(products) {
   if (Object.keys(map).length === 0) {
     console.warn('  ⚠️  WARNING: Judge.me returned 0 reviews for every product — check JUDGEME_API_TOKEN/JUDGEME_SHOP are correct.');
   }
-  return map;
+
+  // Store-level reviews use product_external_id 0 (Judge.me's synthetic
+  // "store review" product) — 5-star only, since these are user-facing on the
+  // homepage rather than a per-product listing where a mix of ratings is normal.
+  const storeReviews = (byExternalId['0'] || []).filter(r => r.rating >= 5 && r.body && r.body.trim());
+  return { map, storeReviews };
 }
 
 function starsHtml(rating, count, size = 'sm') {
@@ -1420,6 +1429,41 @@ function heroCarouselSlidesHtml(collections) {
   return { slides, dots };
 }
 
+// ── Homepage feedback/testimonial slides (index.html) ─────────────────────────
+// Generates text quote cards from Judge.me store-level reviews (product_
+// external_id 0), replacing what used to be hand-picked screenshot images.
+// Reviews with a customer photo attached show it alongside the quote.
+
+function testimonialSlidesHtml(storeReviews) {
+  const MAX_SLIDES = 8;
+  const reviews = storeReviews.slice(0, MAX_SLIDES);
+
+  const fiveStars = `<div class="testimonial-stars">${'<i class="fa-solid fa-star"></i>'.repeat(5)}</div>`;
+
+  const slides = reviews.map((r, i) => {
+    const photo = r.pictures?.find(p => !p.hidden)?.urls?.compact;
+    const name = escAttr(r.reviewer?.name || 'Verified Buyer');
+    const quote = escAttr(r.body.trim());
+    return `
+                <div class="testimonial-slide">
+                    <div class="testimonial-card${photo ? ' has-photo' : ''}">
+                        ${photo ? `<div class="testimonial-photo"><img src="${photo}" alt="Photo from ${name}'s review" loading="lazy"></div>` : ''}
+                        <div class="testimonial-body">
+                            ${fiveStars}
+                            <p class="testimonial-quote">&ldquo;${quote}&rdquo;</p>
+                            <p class="testimonial-name">${name}</p>
+                        </div>
+                    </div>
+                </div>`;
+  }).join('');
+
+  const dots = reviews.map((_, i) =>
+    `\n                <span class="dot${i === 0 ? ' active' : ''}"></span>`
+  ).join('');
+
+  return { slides, dots };
+}
+
 // ── Collection page (shop/collections/[handle]/index.html) ───────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
@@ -1936,7 +1980,7 @@ async function main() {
   const collections = await fetchCollections();
   console.log(`Found ${collections.length} collection(s)`);
 
-  const reviewsMap = await fetchAllReviews(products);
+  const { map: reviewsMap, storeReviews } = await fetchAllReviews(products);
 
   const shopDir        = path.join(__dirname, '..', 'shop');
   const productsDir    = path.join(shopDir, 'products');
@@ -2042,6 +2086,23 @@ async function main() {
     /<!-- HERO-CAROUSEL-DOTS-START -->[\s\S]*?<!-- HERO-CAROUSEL-DOTS-END -->/,
     `<!-- HERO-CAROUSEL-DOTS-START -->${dots}\n<!-- HERO-CAROUSEL-DOTS-END -->`
   );
+
+  // Update homepage feedback section with live Judge.me store reviews
+  if (storeReviews.length) {
+    const { slides: testimonialSlides, dots: testimonialDots } = testimonialSlidesHtml(storeReviews);
+    indexHtml = indexHtml.replace(
+      /<!-- TESTIMONIAL-SLIDES-START -->[\s\S]*?<!-- TESTIMONIAL-SLIDES-END -->/,
+      `<!-- TESTIMONIAL-SLIDES-START -->${testimonialSlides}\n                <!-- TESTIMONIAL-SLIDES-END -->`
+    );
+    indexHtml = indexHtml.replace(
+      /<!-- TESTIMONIAL-DOTS-START -->[\s\S]*?<!-- TESTIMONIAL-DOTS-END -->/,
+      `<!-- TESTIMONIAL-DOTS-START -->${testimonialDots}\n                <!-- TESTIMONIAL-DOTS-END -->`
+    );
+    console.log(`Updated index.html testimonials (${storeReviews.length} store review(s))`);
+  } else {
+    console.warn('  ⚠️  WARNING: No Judge.me store-level reviews found — leaving existing index.html testimonials untouched.');
+  }
+
   fs.writeFileSync(indexPath, indexHtml);
   console.log('Updated index.html hero carousel');
 
