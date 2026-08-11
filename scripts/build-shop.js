@@ -268,17 +268,20 @@ function prioritizeTopReviews(reviews) {
   return [...front, ...bumped, ...rest];
 }
 
-// Returns { map, storeReviews }: `map` is per-product review data (handle ->
-// {rating, count, reviews}), `storeReviews` is Judge.me's store-level reviews
-// (product_external_id 0 — reviews left via the "store-review-only" shareable
-// link, not tied to any single product) used for the homepage feedback section.
+// Returns { map, storeReviews, overall }: `map` is per-product review data
+// (handle -> {rating, count, reviews}), `storeReviews` is Judge.me's
+// store-level reviews (product_external_id 0 — reviews left via the
+// "store-review-only" shareable link, not tied to any single product) used
+// for the homepage feedback section, and `overall` is {rating, count} across
+// every published review site-wide (all products + store reviews, unfiltered
+// by rating) — the conventional "★ 4.7 (42 reviews)" trust-badge number.
 async function fetchAllReviews(products) {
   if (!JUDGEME_TOKEN && process.stdin.isTTY) {
     JUDGEME_TOKEN = await promptForJudgemeToken();
   }
   if (!JUDGEME_TOKEN) {
     console.warn('  ⚠️  WARNING: JUDGEME_API_TOKEN not set — skipping reviews, shop will build with no ratings/reviews.');
-    return { map: {}, storeReviews: [] };
+    return { map: {}, storeReviews: [], overall: null };
   }
   console.log('Fetching reviews from Judge.me...');
   // Judge.me's `external_id`/`product_id` query params on /reviews are not reliable
@@ -294,7 +297,7 @@ async function fetchAllReviews(products) {
       const res = await fetch(url);
       if (!res.ok) {
         console.warn(`  ⚠️  WARNING: Judge.me request failed: HTTP ${res.status} ${await res.text()}`);
-        return { map: {}, storeReviews: [] };
+        return { map: {}, storeReviews: [], overall: null };
       }
       const data = await res.json();
       const reviews = data.reviews || [];
@@ -307,7 +310,7 @@ async function fetchAllReviews(products) {
     }
   } catch (err) {
     console.warn(`  ⚠️  WARNING: Judge.me request failed: ${err.message}`);
-    return { map: {}, storeReviews: [] };
+    return { map: {}, storeReviews: [], overall: null };
   }
 
   const map = {};
@@ -336,7 +339,13 @@ async function fetchAllReviews(products) {
   // "store review" product) — 5-star only, since these are user-facing on the
   // homepage rather than a per-product listing where a mix of ratings is normal.
   const storeReviews = (byExternalId['0'] || []).filter(r => r.rating >= 5 && r.body && r.body.trim());
-  return { map, storeReviews };
+
+  const allReviews = Object.values(byExternalId).flat();
+  const overall = allReviews.length
+    ? { rating: allReviews.reduce((s, r) => s + r.rating, 0) / allReviews.length, count: allReviews.length }
+    : null;
+
+  return { map, storeReviews, overall };
 }
 
 function starsHtml(rating, count, size = 'sm') {
@@ -1429,6 +1438,18 @@ function heroCarouselSlidesHtml(collections) {
   return { slides, dots };
 }
 
+// ── Homepage hero rating badge (index.html) ────────────────────────────────────
+// Small "★ 4.7 (42 reviews)" trust badge, linking down to the Feedback section.
+
+function heroRatingBadgeHtml(overall) {
+  if (!overall || !overall.count) return '';
+  return `<a href="#testimonials" class="hero-rating-badge">
+                    <span class="hero-rating-stars"><i class="fa-solid fa-star"></i></span>
+                    <span class="hero-rating-value">${overall.rating.toFixed(1)}</span>
+                    <span class="hero-rating-count">(${overall.count} review${overall.count === 1 ? '' : 's'})</span>
+                </a>`;
+}
+
 // ── Homepage feedback/testimonial slides (index.html) ─────────────────────────
 // Generates text quote cards from Judge.me store-level reviews (product_
 // external_id 0), replacing what used to be hand-picked screenshot images.
@@ -1980,7 +2001,7 @@ async function main() {
   const collections = await fetchCollections();
   console.log(`Found ${collections.length} collection(s)`);
 
-  const { map: reviewsMap, storeReviews } = await fetchAllReviews(products);
+  const { map: reviewsMap, storeReviews, overall } = await fetchAllReviews(products);
 
   const shopDir        = path.join(__dirname, '..', 'shop');
   const productsDir    = path.join(shopDir, 'products');
@@ -2101,6 +2122,17 @@ async function main() {
     console.log(`Updated index.html testimonials (${storeReviews.length} store review(s))`);
   } else {
     console.warn('  ⚠️  WARNING: No Judge.me store-level reviews found — leaving existing index.html testimonials untouched.');
+  }
+
+  // Update hero rating badge
+  if (overall) {
+    indexHtml = indexHtml.replace(
+      /<!-- HERO-RATING-BADGE-START -->[\s\S]*?<!-- HERO-RATING-BADGE-END -->/,
+      `<!-- HERO-RATING-BADGE-START -->${heroRatingBadgeHtml(overall)}<!-- HERO-RATING-BADGE-END -->`
+    );
+    console.log(`Updated index.html hero rating badge (${overall.rating.toFixed(1)}★, ${overall.count} reviews)`);
+  } else {
+    console.warn('  ⚠️  WARNING: No overall rating available — leaving existing index.html hero rating badge untouched.');
   }
 
   fs.writeFileSync(indexPath, indexHtml);

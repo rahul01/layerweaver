@@ -444,6 +444,41 @@ header .container {
     color: var(--dark);
 }
 
+.hero-rating-badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: rgba(160, 131, 213, 0.08);
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.hero-rating-badge:hover {
+    background: rgba(160, 131, 213, 0.16);
+    transform: translateY(-1px);
+}
+
+.hero-rating-stars {
+    color: var(--secondary);
+    font-size: 0.95rem;
+}
+
+.hero-rating-value {
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--dark);
+}
+
+.hero-rating-count {
+    font-family: var(--font-secondary);
+    font-size: 0.85rem;
+    color: var(--gray-medium);
+}
+
 /* Hero Carousel */
 .hero-right {
     flex: 1;
