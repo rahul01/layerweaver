@@ -1615,12 +1615,6 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
         </div>
     </section>
 
-    <div class="rakhi-shop-all-bar">
-        <div class="container">
-            <a href="${shopBase}" class="rakhi-shop-all-link"><i class="fa-solid fa-bag-shopping"></i> Shop All Products</a>
-        </div>
-    </div>
-
     <div class="container">
         ${rakhiFestiveBannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan · Free Bunny Keychain ₹499+ · 5% off ₹1,499+ · 10% off ₹2,999+', bannerImages)}
         ${rakhiGridDividerHtml()}
@@ -1679,12 +1673,6 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
             ${collectionNavHtml(rakhiCollections, shopBase, collection.handle, 'rakhi', `${shopBase}rakhi/`, 'All Rakhi Gifts')}
         </div>
     </section>
-
-    <div class="rakhi-shop-all-bar">
-        <div class="container">
-            <a href="${shopBase}" class="rakhi-shop-all-link"><i class="fa-solid fa-bag-shopping"></i> Shop All Products</a>
-        </div>
-    </div>
 
     <div class="container">
         ${bannerHtml}
