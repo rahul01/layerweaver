@@ -127,19 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             showSlide(prevIndex);
         }
-
-        // Photo strip above the carousel - clicking a thumbnail jumps straight
-        // to that review's slide (a review can have more than one photo, so
-        // several strip thumbnails may point at the same slide index).
-        document.querySelectorAll('.testimonial-strip-photo').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const index = parseInt(btn.dataset.slideIndex, 10);
-                if (!isNaN(index) && index >= 0 && index < slides.length) {
-                    showSlide(index);
-                    testimonialSlider?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            });
-        });
     }
 
     // Testimonial photo lightbox - click a review photo to view it full-size

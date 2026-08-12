@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1786559596410">
+    <link rel="stylesheet" href="../../shop.css?v=1786560532719">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -349,8 +349,9 @@
     <span class="review-count">5.0 (3)</span>
   </div>
             </div>
+            
             <div class="reviews-list">
-                <div class="review-card">
+                <div class="review-card" id="review-1292544333">
     <div class="review-header">
       <span class="review-stars">★★★★★</span>
       <span class="review-author">Sumit .</span>
@@ -361,7 +362,7 @@
     <p class="review-body">Such a cute little desk companion! 🐧✨ Loved the adorable design and quality. It looks even better on my desk and adds such a fun vibe. Absolutely loved it</p>
     
   </div>
-<div class="review-card">
+<div class="review-card" id="review-1283837279">
     <div class="review-header">
       <span class="review-stars">★★★★★</span>
       <span class="review-author">Kaarthic </span>
@@ -372,7 +373,7 @@
     <p class="review-body">Didn't expect them to be bobbing. They are amazing desk buddies.</p>
     
   </div>
-<div class="review-card">
+<div class="review-card" id="review-1272682917">
     <div class="review-header">
       <span class="review-stars">★★★★★</span>
       <span class="review-author">Rajan Dube</span>
@@ -389,8 +390,15 @@
         </div>
 
         <div id="review-lightbox" class="review-lightbox" onclick="closeReviewLightbox()">
-            <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
-            <img id="review-lightbox-img" src="" alt="Customer review photo" onclick="event.stopPropagation()">
+            <div class="review-lightbox-content" onclick="event.stopPropagation()">
+                <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
+                <img id="review-lightbox-img" src="" alt="Customer review photo">
+                <div id="review-lightbox-caption" class="review-lightbox-caption">
+                    <span id="review-lightbox-stars" class="review-lightbox-stars"></span>
+                    <p id="review-lightbox-body" class="review-lightbox-body"></p>
+                    <p id="review-lightbox-name" class="review-lightbox-name"></p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -433,11 +441,23 @@
         const mainVideo = document.getElementById('main-video');
         const mainIframe = document.getElementById('main-iframe');
 
-        function openReviewLightbox(src) {
+        function openReviewLightbox(src, rating, name, body) {
             const lightbox = document.getElementById('review-lightbox');
             const img = document.getElementById('review-lightbox-img');
+            const caption = document.getElementById('review-lightbox-caption');
+            const starsEl = document.getElementById('review-lightbox-stars');
+            const bodyEl = document.getElementById('review-lightbox-body');
+            const nameEl = document.getElementById('review-lightbox-name');
             if (!lightbox || !img) return;
             img.src = src;
+            if (caption && rating) {
+                starsEl.textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+                bodyEl.textContent = body ? '“' + body + '”' : '';
+                nameEl.textContent = name || '';
+                caption.style.display = 'block';
+            } else if (caption) {
+                caption.style.display = 'none';
+            }
             lightbox.classList.add('review-lightbox--open');
         }
 
@@ -446,8 +466,11 @@
             if (lightbox) lightbox.classList.remove('review-lightbox--open');
         }
 
-        document.querySelectorAll('.review-pictures img').forEach(img => {
-            img.addEventListener('click', () => openReviewLightbox(img.dataset.full));
+        document.querySelectorAll('.review-pictures img, .review-strip-photo').forEach(el => {
+            el.addEventListener('click', () => {
+                const d = el.dataset;
+                openReviewLightbox(d.full, parseInt(d.rating, 10), d.name, d.body);
+            });
         });
 
         document.addEventListener('keydown', e => {
@@ -574,10 +597,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"cute-wobble-penguin-desk-toy":{"Blue":"#005bd3","Pink":"#ffc0cb","light blue":"#9bd3e8","Red":"#f61f1f","Purple":"#a54dcf","Yellow":"#ffe500","Black":"#000000","dark grey":"#808080"}};</script>
-    <script src="../../auth.js?v=1786559596410"></script>
-    <script src="../../cart.js?v=1786559596410"></script>
-    <script src="../../search.js?v=1786559596410"></script>
-    <script src="../../wishlist.js?v=1786559596410"></script>
+    <script src="../../auth.js?v=1786560532719"></script>
+    <script src="../../cart.js?v=1786560532719"></script>
+    <script src="../../search.js?v=1786560532719"></script>
+    <script src="../../wishlist.js?v=1786560532719"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

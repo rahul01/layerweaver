@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1786559596410">
+    <link rel="stylesheet" href="../../shop.css?v=1786560532719">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -323,8 +323,15 @@
         
 
         <div id="review-lightbox" class="review-lightbox" onclick="closeReviewLightbox()">
-            <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
-            <img id="review-lightbox-img" src="" alt="Customer review photo" onclick="event.stopPropagation()">
+            <div class="review-lightbox-content" onclick="event.stopPropagation()">
+                <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
+                <img id="review-lightbox-img" src="" alt="Customer review photo">
+                <div id="review-lightbox-caption" class="review-lightbox-caption">
+                    <span id="review-lightbox-stars" class="review-lightbox-stars"></span>
+                    <p id="review-lightbox-body" class="review-lightbox-body"></p>
+                    <p id="review-lightbox-name" class="review-lightbox-name"></p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -367,11 +374,23 @@
         const mainVideo = document.getElementById('main-video');
         const mainIframe = document.getElementById('main-iframe');
 
-        function openReviewLightbox(src) {
+        function openReviewLightbox(src, rating, name, body) {
             const lightbox = document.getElementById('review-lightbox');
             const img = document.getElementById('review-lightbox-img');
+            const caption = document.getElementById('review-lightbox-caption');
+            const starsEl = document.getElementById('review-lightbox-stars');
+            const bodyEl = document.getElementById('review-lightbox-body');
+            const nameEl = document.getElementById('review-lightbox-name');
             if (!lightbox || !img) return;
             img.src = src;
+            if (caption && rating) {
+                starsEl.textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+                bodyEl.textContent = body ? '“' + body + '”' : '';
+                nameEl.textContent = name || '';
+                caption.style.display = 'block';
+            } else if (caption) {
+                caption.style.display = 'none';
+            }
             lightbox.classList.add('review-lightbox--open');
         }
 
@@ -380,8 +399,11 @@
             if (lightbox) lightbox.classList.remove('review-lightbox--open');
         }
 
-        document.querySelectorAll('.review-pictures img').forEach(img => {
-            img.addEventListener('click', () => openReviewLightbox(img.dataset.full));
+        document.querySelectorAll('.review-pictures img, .review-strip-photo').forEach(el => {
+            el.addEventListener('click', () => {
+                const d = el.dataset;
+                openReviewLightbox(d.full, parseInt(d.rating, 10), d.name, d.body);
+            });
         });
 
         document.addEventListener('keydown', e => {
@@ -508,10 +530,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"bird-ocarina":{"Pink":"#ffc0cb","Blue":"#005bd3","Purple":"#a54dcf","Yellow":"#ffe500","Gold":"#d49a06","Orange":"#ff8a00","Green":"#05aa3d","Red":"#f61f1f"}};</script>
-    <script src="../../auth.js?v=1786559596410"></script>
-    <script src="../../cart.js?v=1786559596410"></script>
-    <script src="../../search.js?v=1786559596410"></script>
-    <script src="../../wishlist.js?v=1786559596410"></script>
+    <script src="../../auth.js?v=1786560532719"></script>
+    <script src="../../cart.js?v=1786560532719"></script>
+    <script src="../../search.js?v=1786560532719"></script>
+    <script src="../../wishlist.js?v=1786560532719"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

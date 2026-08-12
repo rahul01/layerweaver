@@ -362,7 +362,7 @@ function reviewCardHtml(review, index = 0) {
   const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
   const name = escAttr(review.reviewer?.name || 'Customer');
   const pictures = (review.pictures || []).filter(p => !p.hidden && p.urls?.compact);
-  return `<div class="review-card${index >= 3 ? ' review-card--more' : ''}">
+  return `<div class="review-card${index >= 3 ? ' review-card--more' : ''}" id="review-${review.id}">
     <div class="review-header">
       <span class="review-stars">${stars}</span>
       <span class="review-author">${name}</span>
@@ -372,9 +372,33 @@ function reviewCardHtml(review, index = 0) {
     ${review.title ? `<p class="review-title">${escAttr(review.title)}</p>` : ''}
     ${review.body ? `<p class="review-body">${escAttr(review.body)}</p>` : ''}
     ${pictures.length ? `<div class="review-pictures">
-      ${pictures.map(p => `<img src="${escAttr(p.urls.compact)}" data-full="${escAttr(p.urls.original || p.urls.huge || p.urls.compact)}" alt="Customer photo from ${name}" loading="lazy">`).join('\n      ')}
+      ${pictures.map(p => `<img src="${escAttr(p.urls.compact)}" data-full="${escAttr(p.urls.original || p.urls.huge || p.urls.compact)}" data-rating="${review.rating}" data-name="${name}" data-body="${escAttr(review.body || '')}" alt="Customer photo from ${name}" loading="lazy">`).join('\n      ')}
     </div>` : ''}
   </div>`;
+}
+
+// Amazon-style strip of every review photo for a product, shown above the
+// review list. Clicking a thumbnail opens it in the lightbox with the
+// review's rating/name/text as a caption - reuses the same data-* attributes
+// reviewCardHtml() already puts on each <img>, just rendered a second time
+// as a compact clickable grid.
+function reviewPhotoStripHtml(reviews) {
+  const photos = reviews.flatMap(r => {
+    const name = escAttr(r.reviewer?.name || 'Customer');
+    return (r.pictures || []).filter(p => !p.hidden && p.urls?.compact).map(p => ({
+      thumb: escAttr(p.urls.compact),
+      full: escAttr(p.urls.original || p.urls.huge || p.urls.compact),
+      rating: r.rating,
+      name,
+      body: escAttr(r.body || ''),
+    }));
+  });
+  if (!photos.length) return '';
+  return `<div class="review-photo-strip">
+      ${photos.map(p => `<button type="button" class="review-strip-photo" data-full="${p.full}" data-rating="${p.rating}" data-name="${p.name}" data-body="${p.body}" aria-label="Photo from ${p.name}'s review">
+        <img src="${p.thumb}" alt="Photo from ${p.name}'s review" loading="lazy">
+      </button>`).join('\n      ')}
+    </div>`;
 }
 
 // Build a title→hex map from Shopify's swatch data for a product
@@ -1147,6 +1171,7 @@ function generateProductPage(product, collection, reviewData = null) {
             <div class="reviews-aggregate">
                 ${starsHtml(reviewData.rating, reviewData.count, 'lg')}
             </div>
+            ${reviewPhotoStripHtml(reviewData.reviews)}
             <div class="reviews-list">
                 ${reviewData.reviews.map(reviewCardHtml).join('\n')}
             </div>
@@ -1155,8 +1180,15 @@ function generateProductPage(product, collection, reviewData = null) {
         </div>` : ''}
 
         <div id="review-lightbox" class="review-lightbox" onclick="closeReviewLightbox()">
-            <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
-            <img id="review-lightbox-img" src="" alt="Customer review photo" onclick="event.stopPropagation()">
+            <div class="review-lightbox-content" onclick="event.stopPropagation()">
+                <button type="button" class="review-lightbox-close" aria-label="Close" onclick="closeReviewLightbox()">&times;</button>
+                <img id="review-lightbox-img" src="" alt="Customer review photo">
+                <div id="review-lightbox-caption" class="review-lightbox-caption">
+                    <span id="review-lightbox-stars" class="review-lightbox-stars"></span>
+                    <p id="review-lightbox-body" class="review-lightbox-body"></p>
+                    <p id="review-lightbox-name" class="review-lightbox-name"></p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1167,11 +1199,23 @@ function generateProductPage(product, collection, reviewData = null) {
         const mainVideo = document.getElementById('main-video');
         const mainIframe = document.getElementById('main-iframe');
 
-        function openReviewLightbox(src) {
+        function openReviewLightbox(src, rating, name, body) {
             const lightbox = document.getElementById('review-lightbox');
             const img = document.getElementById('review-lightbox-img');
+            const caption = document.getElementById('review-lightbox-caption');
+            const starsEl = document.getElementById('review-lightbox-stars');
+            const bodyEl = document.getElementById('review-lightbox-body');
+            const nameEl = document.getElementById('review-lightbox-name');
             if (!lightbox || !img) return;
             img.src = src;
+            if (caption && rating) {
+                starsEl.textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+                bodyEl.textContent = body ? '“' + body + '”' : '';
+                nameEl.textContent = name || '';
+                caption.style.display = 'block';
+            } else if (caption) {
+                caption.style.display = 'none';
+            }
             lightbox.classList.add('review-lightbox--open');
         }
 
@@ -1180,8 +1224,11 @@ function generateProductPage(product, collection, reviewData = null) {
             if (lightbox) lightbox.classList.remove('review-lightbox--open');
         }
 
-        document.querySelectorAll('.review-pictures img').forEach(img => {
-            img.addEventListener('click', () => openReviewLightbox(img.dataset.full));
+        document.querySelectorAll('.review-pictures img, .review-strip-photo').forEach(el => {
+            el.addEventListener('click', () => {
+                const d = el.dataset;
+                openReviewLightbox(d.full, parseInt(d.rating, 10), d.name, d.body);
+            });
         });
 
         document.addEventListener('keydown', e => {
@@ -1464,10 +1511,7 @@ function heroRatingBadgeHtml(overall) {
 // ── Homepage feedback/testimonial slides (index.html) ─────────────────────────
 // Generates text quote cards from Judge.me store-level reviews (product_
 // external_id 0), replacing what used to be hand-picked screenshot images.
-// Reviews with a customer photo attached show it alongside the quote, and
-// every photo (a review can have more than one) also appears in a strip
-// above the carousel, Amazon-style - clicking a strip thumbnail jumps the
-// carousel to that photo's review.
+// Reviews with a customer photo attached show it alongside the quote.
 
 function testimonialSlidesHtml(storeReviews) {
   const MAX_SLIDES = 8;
@@ -1475,21 +1519,12 @@ function testimonialSlidesHtml(storeReviews) {
 
   const fiveStars = `<div class="testimonial-stars">${'<i class="fa-solid fa-star"></i>'.repeat(5)}</div>`;
 
-  const stripPhotos = [];
-
   const slides = reviews.map((r, i) => {
-    const pictures = (r.pictures || []).filter(p => !p.hidden);
-    const photo = pictures[0]?.urls?.compact;
-    const photoFull = pictures[0]?.urls?.original || pictures[0]?.urls?.huge || photo;
+    const pictureUrls = r.pictures?.find(p => !p.hidden)?.urls;
+    const photo = pictureUrls?.compact;
+    const photoFull = pictureUrls?.original || pictureUrls?.huge || photo;
     const name = escAttr(r.reviewer?.name || 'Verified Buyer');
     const quote = escAttr(r.body.trim());
-
-    pictures.forEach(p => {
-      const thumb = p.urls?.compact;
-      const full = p.urls?.original || p.urls?.huge || thumb;
-      if (thumb) stripPhotos.push({ thumb, full, name, slideIndex: i });
-    });
-
     return `
                 <div class="testimonial-slide">
                     <div class="testimonial-card${photo ? ' has-photo' : ''}">
@@ -1507,12 +1542,7 @@ function testimonialSlidesHtml(storeReviews) {
     `\n                <span class="dot${i === 0 ? ' active' : ''}"></span>`
   ).join('');
 
-  const photoStrip = stripPhotos.map(p => `
-                <button type="button" class="testimonial-strip-photo" data-slide-index="${p.slideIndex}" aria-label="Jump to ${p.name}'s review">
-                    <img src="${p.thumb}" data-full="${p.full}" alt="Photo from ${p.name}'s review" loading="lazy">
-                </button>`).join('');
-
-  return { slides, dots, photoStrip };
+  return { slides, dots };
 }
 
 // ── Collection page (shop/collections/[handle]/index.html) ───────────────────
@@ -2143,7 +2173,7 @@ async function main() {
 
   // Update homepage feedback section with live Judge.me store reviews
   if (storeReviews.length) {
-    const { slides: testimonialSlides, dots: testimonialDots, photoStrip } = testimonialSlidesHtml(storeReviews);
+    const { slides: testimonialSlides, dots: testimonialDots } = testimonialSlidesHtml(storeReviews);
     indexHtml = indexHtml.replace(
       /<!-- TESTIMONIAL-SLIDES-START -->[\s\S]*?<!-- TESTIMONIAL-SLIDES-END -->/,
       `<!-- TESTIMONIAL-SLIDES-START -->${testimonialSlides}\n                <!-- TESTIMONIAL-SLIDES-END -->`
@@ -2152,11 +2182,7 @@ async function main() {
       /<!-- TESTIMONIAL-DOTS-START -->[\s\S]*?<!-- TESTIMONIAL-DOTS-END -->/,
       `<!-- TESTIMONIAL-DOTS-START -->${testimonialDots}\n                <!-- TESTIMONIAL-DOTS-END -->`
     );
-    indexHtml = indexHtml.replace(
-      /<!-- TESTIMONIAL-PHOTO-STRIP-START -->[\s\S]*?<!-- TESTIMONIAL-PHOTO-STRIP-END -->/,
-      `<!-- TESTIMONIAL-PHOTO-STRIP-START -->${photoStrip}\n            <!-- TESTIMONIAL-PHOTO-STRIP-END -->`
-    );
-    console.log(`Updated index.html testimonials (${storeReviews.length} store review(s), ${photoStrip.split('testimonial-strip-photo').length - 1} photo(s))`);
+    console.log(`Updated index.html testimonials (${storeReviews.length} store review(s))`);
   } else {
     console.warn('  ⚠️  WARNING: No Judge.me store-level reviews found — leaving existing index.html testimonials untouched.');
   }
