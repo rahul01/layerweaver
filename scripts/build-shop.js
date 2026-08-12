@@ -754,22 +754,19 @@ function productCardHtml(product, productsBase, reviewData = null) {
 // shopBase:     path from current page back to shop/
 // activeHandle: collection handle to mark active, or null for "All"
 
-function collectionNavHtml(collections, shopBase, activeHandle = null, basePath = 'collections', allHref = shopBase, crossLink = null, allLabel = 'All') {
+function collectionNavHtml(collections, shopBase, activeHandle = null, basePath = 'collections', allHref = shopBase, allLabel = 'All') {
   const items = [
     { handle: null, title: allLabel, href: allHref },
     ...collections.map(c => ({ handle: c.handle, title: c.title, href: `${shopBase}${basePath}/${c.handle}/` })),
-    ...(crossLink ? [{ handle: '__cross__', title: crossLink.title, href: crossLink.href }] : []),
   ];
   const activeTitle = items.find(i => i.handle === activeHandle)?.title || allLabel;
   const chips = items.map(({ handle, title, href }) => {
     const active = handle === activeHandle ? ' active' : '';
-    const cross = handle === '__cross__' ? ' collection-nav-chip--cross' : '';
-    return `<a href="${href}" class="collection-nav-chip${active}${cross}">${title}</a>`;
+    return `<a href="${href}" class="collection-nav-chip${active}">${title}</a>`;
   }).join('\n          ');
   const dropdownItems = items.map(({ handle, title, href }) => {
     const active = handle === activeHandle ? ' active' : '';
-    const cross = handle === '__cross__' ? ' collection-dropdown-item--cross' : '';
-    return `<a href="${href}" class="collection-dropdown-item${active}${cross}">${title}</a>`;
+    return `<a href="${href}" class="collection-dropdown-item${active}">${title}</a>`;
   }).join('\n          ');
   return `
       <div class="collection-nav">
@@ -793,6 +790,18 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
               <div class="search-dropdown" role="listbox"></div>
           </div>
       </div>`;
+}
+
+// ── Cross-shop floating action button ─────────────────────────────────────────
+// Persistent (position: fixed) link between the regular shop and the Rakhi
+// catalogue, shown on shop/collection index+listing pages on both sides.
+// toRakhi=true: shown on regular shop pages, links to shop/rakhi/.
+// toRakhi=false: shown on Rakhi pages, links back to the full shop (shopBase).
+
+function crossShopFabHtml(shopBase, toRakhi) {
+  return toRakhi
+    ? `<a href="${shopBase}rakhi/" class="cross-shop-fab cross-shop-fab--rakhi">🪢 Rakhi Gifts</a>`
+    : `<a href="${shopBase}" class="cross-shop-fab">Shop All Products</a>`;
 }
 
 // ── Shop index (shop/index.html) ──────────────────────────────────────────────
@@ -833,7 +842,7 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
 
     <section class="collection-topbar">
         <div class="container">
-            ${collectionNavHtml(collections, shopBase, null, 'collections', shopBase, { title: '🪢 Rakhi Gifts', href: `${shopBase}rakhi/` })}
+            ${collectionNavHtml(collections, shopBase, null, 'collections', shopBase)}
         </div>
     </section>
 
@@ -849,6 +858,7 @@ ${productCards}
         </div>
     </section>
 
+    ${crossShopFabHtml(shopBase, true)}
     ${footerHtml(base)}
     ${swatchDataScript(products)}
     <script src="auth.js?v=${BUILD_VER}"></script>
@@ -1525,7 +1535,7 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
 
     <section class="collection-topbar">
         <div class="container">
-            ${collectionNavHtml(collections, shopBase, collection.handle, 'collections', shopBase, { title: '🪢 Rakhi Gifts', href: `${shopBase}rakhi/` })}
+            ${collectionNavHtml(collections, shopBase, collection.handle, 'collections', shopBase)}
         </div>
     </section>
 
@@ -1541,6 +1551,7 @@ ${productCards}
         </div>
     </section>
 
+    ${crossShopFabHtml(shopBase, true)}
     ${footerHtml(base)}
     ${swatchDataScript(collection.products)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
@@ -1600,9 +1611,15 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
 
     <section class="collection-topbar">
         <div class="container">
-            ${collectionNavHtml(rakhiCollections, shopBase, null, 'rakhi', `${shopBase}rakhi/`, { title: '← Full Shop', href: shopBase }, 'All Rakhi Gifts')}
+            ${collectionNavHtml(rakhiCollections, shopBase, null, 'rakhi', `${shopBase}rakhi/`, 'All Rakhi Gifts')}
         </div>
     </section>
+
+    <div class="rakhi-shop-all-bar">
+        <div class="container">
+            <a href="${shopBase}" class="rakhi-shop-all-link"><i class="fa-solid fa-bag-shopping"></i> Shop All Products</a>
+        </div>
+    </div>
 
     <div class="container">
         ${rakhiFestiveBannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan · Free Bunny Keychain ₹499+ · 5% off ₹1,499+ · 10% off ₹2,999+', bannerImages)}
@@ -1617,6 +1634,7 @@ ${productCards}
         </div>
     </section>
 
+    ${crossShopFabHtml(shopBase, false)}
     ${footerHtml(base)}
     ${swatchDataScript(uniqueProducts)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
@@ -1658,9 +1676,15 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
 
     <section class="collection-topbar">
         <div class="container">
-            ${collectionNavHtml(rakhiCollections, shopBase, collection.handle, 'rakhi', `${shopBase}rakhi/`, { title: '← Full Shop', href: shopBase }, 'All Rakhi Gifts')}
+            ${collectionNavHtml(rakhiCollections, shopBase, collection.handle, 'rakhi', `${shopBase}rakhi/`, 'All Rakhi Gifts')}
         </div>
     </section>
+
+    <div class="rakhi-shop-all-bar">
+        <div class="container">
+            <a href="${shopBase}" class="rakhi-shop-all-link"><i class="fa-solid fa-bag-shopping"></i> Shop All Products</a>
+        </div>
+    </div>
 
     <div class="container">
         ${bannerHtml}
@@ -1675,6 +1699,7 @@ ${productCards}
         </div>
     </section>
 
+    ${crossShopFabHtml(shopBase, false)}
     ${footerHtml(base)}
     ${swatchDataScript(collection.products)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>

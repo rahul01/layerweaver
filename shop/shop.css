@@ -261,19 +261,6 @@
     color: var(--light);
 }
 
-.collection-nav-chip--cross {
-    margin-left: 10px;
-    border-style: dashed;
-    border-color: var(--primary);
-    color: var(--primary);
-    background: rgba(160, 131, 213, 0.06);
-}
-
-.collection-nav-chip--cross:hover {
-    background: var(--primary);
-    color: var(--light);
-}
-
 .collection-nav-mobile { display: none; }
 
 @media (max-width: 768px) {
@@ -358,11 +345,6 @@
 .collection-dropdown-item.active {
     color: var(--primary);
     background: rgba(160, 131, 213, 0.08);
-}
-
-.collection-dropdown-item--cross {
-    color: var(--primary);
-    background: rgba(160, 131, 213, 0.04);
 }
 
 /* ------- Header spacer (pushes page content below fixed header) ------- */
@@ -572,6 +554,79 @@ body.rakhi-theme .shop-product-card {
 body.rakhi-theme .shop-product-card:hover {
     box-shadow: 0 8px 32px rgba(232, 160, 32, 0.28);
     border-color: var(--rakhi-amber);
+}
+
+/* ------- Cross-shop floating action button ------- */
+/* Persistent link between the regular shop and the Rakhi catalogue - default
+   (Rakhi -> full shop) is dark-on-amber; the --rakhi variant (shop -> Rakhi
+   catalogue) is white-on-purple, matching each side's own brand accent. */
+.cross-shop-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 90;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 22px;
+    border-radius: 50px;
+    background: var(--rakhi-amber);
+    color: var(--dark);
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cross-shop-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.28);
+}
+
+.cross-shop-fab--rakhi {
+    background: var(--primary);
+    color: var(--light);
+}
+
+@media (max-width: 600px) {
+    .cross-shop-fab {
+        bottom: 16px;
+        right: 16px;
+        padding: 12px 18px;
+        font-size: 0.82rem;
+    }
+}
+
+/* ------- Rakhi "Shop All Products" bar (Rakhi pages only, below the chip strip) ------- */
+.rakhi-shop-all-bar {
+    background: var(--rakhi-cream);
+    border-bottom: 1px solid rgba(232, 160, 32, 0.25);
+    padding: 14px 0;
+    text-align: center;
+}
+
+.rakhi-shop-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 28px;
+    border-radius: 50px;
+    background: var(--primary);
+    color: var(--light);
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(160, 131, 213, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.rakhi-shop-all-link:hover {
+    background: var(--dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 /* ------- Product Grid (shop index) ------- */
