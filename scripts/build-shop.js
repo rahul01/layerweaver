@@ -1401,8 +1401,9 @@ function rakhiGridDividerHtml() {
 }
 
 // ── Homepage hero carousel slides (index.html) ───────────────────────────────
-// Generates collage-style slides from each collection's product images,
+// Generates collage-style slides from each Rakhi collection's product images,
 // matching the same banner-collage pattern used on shop/collection pages.
+// Links to shop/rakhi/<handle>/ - the only caller passes rakhiCollections.
 
 function heroCarouselSlidesHtml(collections) {
   const BANNER_EXCLUDE = ['cone-fidget'];
@@ -1422,7 +1423,7 @@ function heroCarouselSlidesHtml(collections) {
                         </div>`).join('');
 
     return `
-                        <a href="shop/collections/${collection.handle}/" class="hero-carousel-slide${i === 0 ? ' active' : ''}">
+                        <a href="shop/rakhi/${collection.handle}/" class="hero-carousel-slide${i === 0 ? ' active' : ''}">
                             <div class="banner-collage">${cells}
                             </div>
                             <div class="hero-carousel-caption">
