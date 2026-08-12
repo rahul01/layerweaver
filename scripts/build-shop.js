@@ -1464,7 +1464,10 @@ function heroRatingBadgeHtml(overall) {
 // ── Homepage feedback/testimonial slides (index.html) ─────────────────────────
 // Generates text quote cards from Judge.me store-level reviews (product_
 // external_id 0), replacing what used to be hand-picked screenshot images.
-// Reviews with a customer photo attached show it alongside the quote.
+// Reviews with a customer photo attached show it alongside the quote, and
+// every photo (a review can have more than one) also appears in a strip
+// above the carousel, Amazon-style - clicking a strip thumbnail jumps the
+// carousel to that photo's review.
 
 function testimonialSlidesHtml(storeReviews) {
   const MAX_SLIDES = 8;
@@ -1472,12 +1475,21 @@ function testimonialSlidesHtml(storeReviews) {
 
   const fiveStars = `<div class="testimonial-stars">${'<i class="fa-solid fa-star"></i>'.repeat(5)}</div>`;
 
+  const stripPhotos = [];
+
   const slides = reviews.map((r, i) => {
-    const pictureUrls = r.pictures?.find(p => !p.hidden)?.urls;
-    const photo = pictureUrls?.compact;
-    const photoFull = pictureUrls?.original || pictureUrls?.huge || photo;
+    const pictures = (r.pictures || []).filter(p => !p.hidden);
+    const photo = pictures[0]?.urls?.compact;
+    const photoFull = pictures[0]?.urls?.original || pictures[0]?.urls?.huge || photo;
     const name = escAttr(r.reviewer?.name || 'Verified Buyer');
     const quote = escAttr(r.body.trim());
+
+    pictures.forEach(p => {
+      const thumb = p.urls?.compact;
+      const full = p.urls?.original || p.urls?.huge || thumb;
+      if (thumb) stripPhotos.push({ thumb, full, name, slideIndex: i });
+    });
+
     return `
                 <div class="testimonial-slide">
                     <div class="testimonial-card${photo ? ' has-photo' : ''}">
@@ -1495,7 +1507,12 @@ function testimonialSlidesHtml(storeReviews) {
     `\n                <span class="dot${i === 0 ? ' active' : ''}"></span>`
   ).join('');
 
-  return { slides, dots };
+  const photoStrip = stripPhotos.map(p => `
+                <button type="button" class="testimonial-strip-photo" data-slide-index="${p.slideIndex}" aria-label="Jump to ${p.name}'s review">
+                    <img src="${p.thumb}" data-full="${p.full}" alt="Photo from ${p.name}'s review" loading="lazy">
+                </button>`).join('');
+
+  return { slides, dots, photoStrip };
 }
 
 // ── Collection page (shop/collections/[handle]/index.html) ───────────────────
@@ -2126,7 +2143,7 @@ async function main() {
 
   // Update homepage feedback section with live Judge.me store reviews
   if (storeReviews.length) {
-    const { slides: testimonialSlides, dots: testimonialDots } = testimonialSlidesHtml(storeReviews);
+    const { slides: testimonialSlides, dots: testimonialDots, photoStrip } = testimonialSlidesHtml(storeReviews);
     indexHtml = indexHtml.replace(
       /<!-- TESTIMONIAL-SLIDES-START -->[\s\S]*?<!-- TESTIMONIAL-SLIDES-END -->/,
       `<!-- TESTIMONIAL-SLIDES-START -->${testimonialSlides}\n                <!-- TESTIMONIAL-SLIDES-END -->`
@@ -2135,7 +2152,11 @@ async function main() {
       /<!-- TESTIMONIAL-DOTS-START -->[\s\S]*?<!-- TESTIMONIAL-DOTS-END -->/,
       `<!-- TESTIMONIAL-DOTS-START -->${testimonialDots}\n                <!-- TESTIMONIAL-DOTS-END -->`
     );
-    console.log(`Updated index.html testimonials (${storeReviews.length} store review(s))`);
+    indexHtml = indexHtml.replace(
+      /<!-- TESTIMONIAL-PHOTO-STRIP-START -->[\s\S]*?<!-- TESTIMONIAL-PHOTO-STRIP-END -->/,
+      `<!-- TESTIMONIAL-PHOTO-STRIP-START -->${photoStrip}\n            <!-- TESTIMONIAL-PHOTO-STRIP-END -->`
+    );
+    console.log(`Updated index.html testimonials (${storeReviews.length} store review(s), ${photoStrip.split('testimonial-strip-photo').length - 1} photo(s))`);
   } else {
     console.warn('  ⚠️  WARNING: No Judge.me store-level reviews found — leaving existing index.html testimonials untouched.');
   }
