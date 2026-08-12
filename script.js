@@ -128,7 +128,49 @@ document.addEventListener('DOMContentLoaded', function() {
             showSlide(prevIndex);
         }
     }
-    
+
+    // Testimonial photo lightbox - click a review photo to view it full-size
+    const testimonialPhotos = document.querySelectorAll('.testimonial-photo');
+    if (testimonialPhotos.length > 0) {
+        const photoLightbox = document.createElement('div');
+        photoLightbox.className = 'photo-lightbox';
+        photoLightbox.innerHTML = `
+            <div class="photo-lightbox-content">
+                <span class="photo-lightbox-close">&times;</span>
+                <img class="photo-lightbox-image" alt="">
+            </div>
+        `;
+        document.body.appendChild(photoLightbox);
+        const photoLightboxImage = photoLightbox.querySelector('.photo-lightbox-image');
+
+        function openPhotoLightbox(img) {
+            photoLightboxImage.src = img.dataset.full || img.src;
+            photoLightboxImage.alt = img.alt;
+            photoLightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePhotoLightbox() {
+            photoLightbox.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        testimonialPhotos.forEach(photo => {
+            photo.addEventListener('click', () => {
+                const img = photo.querySelector('img');
+                if (img) openPhotoLightbox(img);
+            });
+        });
+
+        photoLightbox.addEventListener('click', (e) => {
+            if (e.target === photoLightbox) closePhotoLightbox();
+        });
+        photoLightbox.querySelector('.photo-lightbox-close').addEventListener('click', closePhotoLightbox);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePhotoLightbox();
+        });
+    }
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {

@@ -1463,13 +1463,15 @@ function testimonialSlidesHtml(storeReviews) {
   const fiveStars = `<div class="testimonial-stars">${'<i class="fa-solid fa-star"></i>'.repeat(5)}</div>`;
 
   const slides = reviews.map((r, i) => {
-    const photo = r.pictures?.find(p => !p.hidden)?.urls?.compact;
+    const pictureUrls = r.pictures?.find(p => !p.hidden)?.urls;
+    const photo = pictureUrls?.compact;
+    const photoFull = pictureUrls?.original || pictureUrls?.huge || photo;
     const name = escAttr(r.reviewer?.name || 'Verified Buyer');
     const quote = escAttr(r.body.trim());
     return `
                 <div class="testimonial-slide">
                     <div class="testimonial-card${photo ? ' has-photo' : ''}">
-                        ${photo ? `<div class="testimonial-photo"><img src="${photo}" alt="Photo from ${name}'s review" loading="lazy"></div>` : ''}
+                        ${photo ? `<div class="testimonial-photo"><img src="${photo}" data-full="${photoFull}" alt="Photo from ${name}'s review" loading="lazy"></div>` : ''}
                         <div class="testimonial-body">
                             ${fiveStars}
                             <p class="testimonial-quote">&ldquo;${quote}&rdquo;</p>
