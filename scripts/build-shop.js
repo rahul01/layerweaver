@@ -150,7 +150,7 @@ async function fetchProducts() {
         pageInfo { hasNextPage endCursor }
         edges {
           node {
-            id title handle tags description descriptionHtml updatedAt
+            id title handle tags productType description descriptionHtml updatedAt
             priceRange {
               minVariantPrice { amount currencyCode }
               maxVariantPrice { amount currencyCode }
@@ -897,14 +897,22 @@ ${productCards}
 // ── Product page (shop/products/[handle]/index.html) ──────────────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
-function generateProductPage(product, collection, reviewData = null, reviewsMap = {}) {
+function generateProductPage(product, collection, reviewData = null, reviewsMap = {}, allProducts = []) {
   const base     = '../../../';
   const shopBase = '../../';
 
-  // "You may also like" - other products from the same collection, excluding
-  // this one. Only rendered if this product actually belongs to a collection
-  // and that collection has other products in it.
-  const relatedProducts = (collection?.products || []).filter(p => p.handle !== product.handle);
+  // "You may also like" - prefer other products sharing this product's
+  // Shopify productType (the real category field, e.g. "Lamps & Decor"),
+  // falling back to same-collection products to fill out the list if the
+  // productType alone doesn't have enough (or the product has no type set).
+  const MAX_RELATED = 8;
+  const sameType = product.productType
+    ? allProducts.filter(p => p.handle !== product.handle && p.productType === product.productType)
+    : [];
+  const sameTypeHandles = new Set(sameType.map(p => p.handle));
+  const sameCollectionFallback = (collection?.products || [])
+    .filter(p => p.handle !== product.handle && !sameTypeHandles.has(p.handle));
+  const relatedProducts = [...sameType, ...sameCollectionFallback].slice(0, MAX_RELATED);
 
   const variants        = product.variants.edges.map(e => e.node);
   const images          = product.images.edges.map(e => e.node);
@@ -2145,7 +2153,7 @@ async function main() {
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);
     fs.mkdirSync(productDir, { recursive: true });
-    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap));
+    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap, products));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
 
