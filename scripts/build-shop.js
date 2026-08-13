@@ -902,16 +902,23 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
   const shopBase = '../../';
 
   // "You may also like" - prefer other products sharing this product's
-  // Shopify productType (the real category field, e.g. "Lamps & Decor"),
-  // falling back to same-collection products to fill out the list if the
-  // productType alone doesn't have enough (or the product has no type set).
+  // Shopify productType (the real category field, e.g. "Lamps & Decor").
+  // Same-collection products only pad the list when the type bucket is thin
+  // (fewer than MIN_BEFORE_FALLBACK matches), and even then only up to a
+  // small cap - otherwise a niche type (e.g. only 2 products) gets padded
+  // with a long tail of unrelated same-collection items and the list wanders.
   const MAX_RELATED = 8;
+  const MIN_BEFORE_FALLBACK = 4;
+  const MAX_FALLBACK = 3;
   const sameType = product.productType
     ? allProducts.filter(p => p.handle !== product.handle && p.productType === product.productType)
     : [];
   const sameTypeHandles = new Set(sameType.map(p => p.handle));
-  const sameCollectionFallback = (collection?.products || [])
-    .filter(p => p.handle !== product.handle && !sameTypeHandles.has(p.handle));
+  const sameCollectionFallback = sameType.length < MIN_BEFORE_FALLBACK
+    ? (collection?.products || [])
+        .filter(p => p.handle !== product.handle && !sameTypeHandles.has(p.handle))
+        .slice(0, MAX_FALLBACK)
+    : [];
   const relatedProducts = [...sameType, ...sameCollectionFallback].slice(0, MAX_RELATED);
 
   const variants        = product.variants.edges.map(e => e.node);
