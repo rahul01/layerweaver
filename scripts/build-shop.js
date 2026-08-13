@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml } = require('./build-shop-utils');
+const { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -897,29 +897,17 @@ ${productCards}
 // ── Product page (shop/products/[handle]/index.html) ──────────────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
-function generateProductPage(product, collection, reviewData = null, reviewsMap = {}, allProducts = []) {
+function generateProductPage(product, collection, reviewData = null, reviewsMap = {}, allProducts = [], similarityIndex = null) {
   const base     = '../../../';
   const shopBase = '../../';
 
-  // "You may also like" - prefer other products sharing this product's
-  // Shopify productType (the real category field, e.g. "Lamps & Decor").
-  // Same-collection products only pad the list when the type bucket is thin
-  // (fewer than MIN_BEFORE_FALLBACK matches), and even then only up to a
-  // small cap - otherwise a niche type (e.g. only 2 products) gets padded
-  // with a long tail of unrelated same-collection items and the list wanders.
-  const MAX_RELATED = 8;
-  const MIN_BEFORE_FALLBACK = 4;
-  const MAX_FALLBACK = 3;
-  const sameType = product.productType
-    ? allProducts.filter(p => p.handle !== product.handle && p.productType === product.productType)
-    : [];
-  const sameTypeHandles = new Set(sameType.map(p => p.handle));
-  const sameCollectionFallback = sameType.length < MIN_BEFORE_FALLBACK
-    ? (collection?.products || [])
-        .filter(p => p.handle !== product.handle && !sameTypeHandles.has(p.handle))
-        .slice(0, MAX_FALLBACK)
-    : [];
-  const relatedProducts = [...sameType, ...sameCollectionFallback].slice(0, MAX_RELATED);
+  // "You may also like" - ranked by title/description text similarity (TF-IDF
+  // weighted cosine similarity; title words count 3x a description word, and
+  // words rare across the catalog count for more than words nearly every
+  // listing shares). Sharing this product's Shopify productType only adds a
+  // small nudge on top - it is not the primary signal.
+  const index = similarityIndex || buildSimilarityIndex(allProducts);
+  const relatedProducts = computeRelatedProducts(product, allProducts, index);
 
   const variants        = product.variants.edges.map(e => e.node);
   const images          = product.images.edges.map(e => e.node);
@@ -1203,7 +1191,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
         <div class="container">
         <div class="related-products-section">
             <h3>You May Also Like</h3>
-            <div class="shop-grid">
+            <div class="related-products-row">
 ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap[p.handle])).join('\n')}
             </div>
         </div>
@@ -2157,10 +2145,11 @@ async function main() {
     }
   }
 
+  const similarityIndex = buildSimilarityIndex(products);
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);
     fs.mkdirSync(productDir, { recursive: true });
-    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap, products));
+    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap, products, similarityIndex));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
 

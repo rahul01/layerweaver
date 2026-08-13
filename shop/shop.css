@@ -2751,6 +2751,63 @@ body.rakhi-theme .shop-product-card:hover {
     margin-bottom: 20px;
 }
 
+.related-products-row {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+}
+
+.related-products-row .shop-product-card {
+    flex: 0 0 240px;
+    scroll-snap-align: start;
+}
+
+@media (max-width: 600px) {
+    .related-products-row .shop-product-card {
+        flex-basis: 200px;
+    }
+}
+
+/* Cards in the scroll row stay narrow at every width, so the <480px "horizontal
+   card" override (image left, info right - built for a full-width grid cell) has
+   no room to work with here and crushes the title/price/button. Keep these cards
+   in the normal vertical layout (image on top) regardless of viewport width. */
+@media (max-width: 480px) {
+    .related-products-row .shop-product-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .related-products-row .product-card-link {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .related-products-row .product-image-wrap {
+        aspect-ratio: 1;
+        height: auto;
+        min-height: 0;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .related-products-row .product-card-info {
+        padding: 12px 14px 4px;
+        flex: 1;
+    }
+
+    .related-products-row .product-card-info h3 {
+        font-size: 0.95rem;
+    }
+
+    .related-products-row .product-card-actions {
+        padding: 8px 14px 14px;
+    }
+}
+
 .reviews-aggregate {
     margin-bottom: 24px;
 }
