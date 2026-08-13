@@ -897,9 +897,14 @@ ${productCards}
 // ── Product page (shop/products/[handle]/index.html) ──────────────────────────
 // depth from root: 3  →  base = '../../../'   shopBase = '../../'
 
-function generateProductPage(product, collection, reviewData = null) {
+function generateProductPage(product, collection, reviewData = null, reviewsMap = {}) {
   const base     = '../../../';
   const shopBase = '../../';
+
+  // "You may also like" - other products from the same collection, excluding
+  // this one. Only rendered if this product actually belongs to a collection
+  // and that collection has other products in it.
+  const relatedProducts = (collection?.products || []).filter(p => p.handle !== product.handle);
 
   const variants        = product.variants.edges.map(e => e.node);
   const images          = product.images.edges.map(e => e.node);
@@ -1176,6 +1181,16 @@ function generateProductPage(product, collection, reviewData = null) {
                 ${reviewData.reviews.map(reviewCardHtml).join('\n')}
             </div>
             ${reviewData.reviews.length > 3 ? `<button type="button" class="reviews-show-all" onclick="this.closest('.reviews-section').classList.add('reviews-section--expanded'); this.remove();">Show all ${reviewData.reviews.length} reviews</button>` : ''}
+        </div>
+        </div>` : ''}
+
+        ${relatedProducts.length ? `
+        <div class="container">
+        <div class="related-products-section">
+            <h3>You May Also Like</h3>
+            <div class="shop-grid">
+${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap[p.handle])).join('\n')}
+            </div>
         </div>
         </div>` : ''}
 
@@ -2130,7 +2145,7 @@ async function main() {
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);
     fs.mkdirSync(productDir, { recursive: true });
-    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle]));
+    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
 

@@ -2740,6 +2740,17 @@ body.rakhi-theme .shop-product-card:hover {
     margin-bottom: 12px;
 }
 
+.related-products-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--gray);
+}
+
+.related-products-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+}
+
 .reviews-aggregate {
     margin-bottom: 24px;
 }
@@ -2916,13 +2927,18 @@ body.rakhi-theme .shop-product-card:hover {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .review-lightbox img {
     max-width: 100%;
     max-height: 60vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     display: block;
     cursor: default;
+    align-self: center;
 }
 
 .review-lightbox-caption {
