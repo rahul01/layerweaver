@@ -249,17 +249,24 @@ async function promptForJudgemeToken() {
   }
 }
 
-// Keeps reviews in their original order, except any below-top-rated review that
+function hasVisiblePicture(review) {
+  return (review.pictures || []).some(p => !p.hidden && p.urls?.compact);
+}
+
+// Keeps reviews in their original order, except: reviews with photos are
+// moved ahead of photo-less reviews, and any review below 4 stars that
 // would land in the first 3 (always-visible) slots gets bumped to right after
 // them — out of the spotlight, but not shoved to the bottom of the full list.
 function prioritizeTopReviews(reviews) {
-  const maxRating = Math.max(...reviews.map(r => r.rating));
+  const withPhotos = reviews.filter(hasVisiblePicture);
+  const withoutPhotos = reviews.filter(r => !hasVisiblePicture(r));
+  const ordered = [...withPhotos, ...withoutPhotos];
   const front = [];
   const bumped = [];
   const rest = [];
-  for (const r of reviews) {
+  for (const r of ordered) {
     if (front.length < 3) {
-      if (r.rating === maxRating) front.push(r);
+      if (r.rating >= 4) front.push(r);
       else bumped.push(r);
     } else {
       rest.push(r);
@@ -317,12 +324,6 @@ async function fetchAllReviews(products) {
   for (const product of products) {
     let reviews = byExternalId[getNumericId(product.id)];
     if (!reviews || !reviews.length) continue;
-    // Below 3 stars gets hidden unless the product has enough reviews (50+) that a
-    // few low ratings won't unfairly define it.
-    if (reviews.length < 50) {
-      reviews = reviews.filter(r => r.rating >= 3);
-      if (!reviews.length) continue;
-    }
     const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
     map[product.handle] = {
       rating: avgRating,
@@ -336,9 +337,8 @@ async function fetchAllReviews(products) {
   }
 
   // Store-level reviews use product_external_id 0 (Judge.me's synthetic
-  // "store review" product) — 5-star only, since these are user-facing on the
-  // homepage rather than a per-product listing where a mix of ratings is normal.
-  const storeReviews = (byExternalId['0'] || []).filter(r => r.rating >= 5 && r.body && r.body.trim());
+  // "store review" product).
+  const storeReviews = (byExternalId['0'] || []).filter(r => r.body && r.body.trim());
 
   const allReviews = Object.values(byExternalId).flat();
   const overall = allReviews.length
@@ -1533,9 +1533,9 @@ function heroRatingBadgeHtml(overall) {
 
 function testimonialSlidesHtml(storeReviews) {
   const MAX_SLIDES = 8;
-  const reviews = storeReviews.slice(0, MAX_SLIDES);
-
-  const fiveStars = `<div class="testimonial-stars">${'<i class="fa-solid fa-star"></i>'.repeat(5)}</div>`;
+  const withPhotos = storeReviews.filter(hasVisiblePicture);
+  const withoutPhotos = storeReviews.filter(r => !hasVisiblePicture(r));
+  const reviews = [...withPhotos, ...withoutPhotos].slice(0, MAX_SLIDES);
 
   const slides = reviews.map((r, i) => {
     const pictureUrls = r.pictures?.find(p => !p.hidden)?.urls;
@@ -1543,12 +1543,15 @@ function testimonialSlidesHtml(storeReviews) {
     const photoFull = pictureUrls?.original || pictureUrls?.huge || photo;
     const name = escAttr(r.reviewer?.name || 'Verified Buyer');
     const quote = escAttr(r.body.trim());
+    const stars = `<div class="testimonial-stars">${
+      '<i class="fa-solid fa-star"></i>'.repeat(r.rating) + '<i class="fa-regular fa-star"></i>'.repeat(5 - r.rating)
+    }</div>`;
     return `
                 <div class="testimonial-slide">
                     <div class="testimonial-card${photo ? ' has-photo' : ''}">
                         ${photo ? `<div class="testimonial-photo"><img src="${photo}" data-full="${photoFull}" alt="Photo from ${name}'s review" loading="lazy"></div>` : ''}
                         <div class="testimonial-body">
-                            ${fiveStars}
+                            ${stars}
                             <p class="testimonial-quote">&ldquo;${quote}&rdquo;</p>
                             <p class="testimonial-name">${name}</p>
                         </div>
