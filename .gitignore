@@ -45,3 +45,8 @@ Screenshot*.png
 # Local-only backup of Rakhi ad creative PNGs (see git history for the
 # committed copies under ads/rakhi/)
 .local-ad-pngs-backup/
+
+# Financial/reconciliation scratch files - never meant for the public repo
+.ai/plans/*.xlsx
+.ai/plans/.~lock.*#
+.ai/plans/razorpay-*
