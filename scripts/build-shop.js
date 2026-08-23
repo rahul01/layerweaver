@@ -1064,7 +1064,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
   const thumbnails = imageThumbnails + videoThumbnails;
   const showThumbnails = thumbnails.length > 0;
 
-  const waText = encodeURIComponent(`Hi! I'm interested in ${product.title}`);
+  const waText = encodeURIComponent(`Hi! I'm interested in ${product.title}\n${SITE_URL}/shop/products/${product.handle}/`);
 
   return `<!DOCTYPE html>
 <html lang="en">
