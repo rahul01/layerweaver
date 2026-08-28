@@ -2920,6 +2920,30 @@ body.rakhi-theme .shop-product-card:hover {
     cursor: pointer;
 }
 
+.review-reply {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fff;
+    border-left: 3px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+}
+
+.review-reply-label {
+    display: block;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--primary);
+    margin-bottom: 3px;
+}
+
+.review-reply-body {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
 /* ------- Review photo strip (Amazon-style, above the review list) ------- */
 .review-photo-strip {
     display: flex;

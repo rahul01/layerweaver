@@ -257,6 +257,24 @@ function hasVisiblePicture(review) {
   return (review.pictures || []).some(p => !p.hidden && p.urls?.compact);
 }
 
+// When the same person has left multiple reviews on a product, keep only
+// their most recent one (by created_at) so the list doesn't repeat a name.
+function dedupeByReviewerName(reviews) {
+  const latestByName = new Map();
+  for (const r of reviews) {
+    const name = (r.reviewer?.name || '').trim().toLowerCase();
+    if (!name) continue;
+    const existing = latestByName.get(name);
+    if (!existing || new Date(r.created_at) > new Date(existing.created_at)) {
+      latestByName.set(name, r);
+    }
+  }
+  return reviews.filter(r => {
+    const name = (r.reviewer?.name || '').trim().toLowerCase();
+    return !name || latestByName.get(name) === r;
+  });
+}
+
 // Keeps reviews in their original order, except: reviews with photos are
 // moved ahead of photo-less reviews, and any review below 4 stars that
 // would land in the first 3 (always-visible) slots gets bumped to right after
@@ -279,6 +297,52 @@ function prioritizeTopReviews(reviews) {
   return [...front, ...bumped, ...rest];
 }
 
+// Judge.me's public API doesn't expose merchant replies, so replies are kept
+// in a CSV manually exported from the Judge.me dashboard (Reviews > Export >
+// "All published reviews, in Judge.me format") and dropped in at this path.
+// Re-export and overwrite the file whenever a new reply is posted. Reviews
+// are matched to CSV rows by product_id + review_date + reviewer_email since
+// the export has no numeric review id.
+const REVIEW_REPLIES_CSV = path.join(__dirname, 'judgeme-review-replies.csv');
+
+function parseCsvLine(line) {
+  const fields = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuotes) {
+      if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+      else if (c === '"') inQuotes = false;
+      else cur += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ',') { fields.push(cur); cur = ''; }
+      else cur += c;
+    }
+  }
+  fields.push(cur);
+  return fields;
+}
+
+function loadReviewReplies() {
+  if (!fs.existsSync(REVIEW_REPLIES_CSV)) return new Map();
+  const lines = fs.readFileSync(REVIEW_REPLIES_CSV, 'utf8').split('\n').filter(l => l.trim());
+  if (lines.length < 2) return new Map();
+  const header = parseCsvLine(lines[0]);
+  const idx = Object.fromEntries(header.map((h, i) => [h, i]));
+  const replies = new Map();
+  for (const line of lines.slice(1)) {
+    const fields = parseCsvLine(line);
+    const reply = fields[idx.reply];
+    if (!reply || !reply.trim()) continue;
+    const reviewDate = new Date(fields[idx.review_date].replace(' UTC', 'Z').replace(' ', 'T'));
+    const key = `${fields[idx.product_id]}|${Math.round(reviewDate.getTime() / 1000)}|${fields[idx.reviewer_email]}`;
+    replies.set(key, { reply: reply.trim(), replyDate: fields[idx.reply_date] });
+  }
+  return replies;
+}
+
 // Returns { map, storeReviews, overall }: `map` is per-product review data
 // (handle -> {rating, count, reviews}), `storeReviews` is Judge.me's
 // store-level reviews (product_external_id 0 — reviews left via the
@@ -295,6 +359,8 @@ async function fetchAllReviews(products) {
     return { map: {}, storeReviews: [], overall: null };
   }
   console.log('Fetching reviews from Judge.me...');
+  const replies = loadReviewReplies();
+  console.log(replies.size ? `  Loaded ${replies.size} merchant repl${replies.size === 1 ? 'y' : 'ies'} from ${path.basename(REVIEW_REPLIES_CSV)}` : `  No ${path.basename(REVIEW_REPLIES_CSV)} found — skipping merchant replies`);
   // Judge.me's `external_id`/`product_id` query params on /reviews are not reliable
   // filters (they're silently ignored, returning the unfiltered/paginated list), so
   // instead fetch every review once and group client-side by product_external_id,
@@ -315,6 +381,9 @@ async function fetchAllReviews(products) {
       for (const r of reviews) {
         if (r.published === false || r.hidden === true) continue;
         if (EXCLUDED_REVIEW_IDS.has(r.id)) continue;
+        const replyKey = `${r.product_external_id}|${Math.round(new Date(r.created_at).getTime() / 1000)}|${r.reviewer?.email || ''}`;
+        const match = replies.get(replyKey);
+        if (match) { r.reply = match.reply; r.reply_date = match.replyDate; }
         (byExternalId[r.product_external_id] ||= []).push(r);
       }
       if (reviews.length < PER_PAGE) break;
@@ -329,6 +398,7 @@ async function fetchAllReviews(products) {
   for (const product of products) {
     let reviews = byExternalId[getNumericId(product.id)];
     if (!reviews || !reviews.length) continue;
+    reviews = dedupeByReviewerName(reviews);
     const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
     map[product.handle] = {
       rating: avgRating,
@@ -378,6 +448,10 @@ function reviewCardHtml(review, index = 0) {
     ${review.body ? `<p class="review-body">${escAttr(review.body)}</p>` : ''}
     ${pictures.length ? `<div class="review-pictures">
       ${pictures.map(p => `<img src="${escAttr(p.urls.compact)}" data-full="${escAttr(p.urls.original || p.urls.huge || p.urls.compact)}" data-rating="${review.rating}" data-name="${name}" data-body="${escAttr(review.body || '')}" alt="Customer photo from ${name}" loading="lazy">`).join('\n      ')}
+    </div>` : ''}
+    ${review.reply ? `<div class="review-reply">
+      <span class="review-reply-label">LayerWeaver replied</span>
+      <p class="review-reply-body">${escAttr(review.reply)}</p>
     </div>` : ''}
   </div>`;
 }
