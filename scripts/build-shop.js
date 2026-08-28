@@ -30,9 +30,7 @@ const JUDGEME_REVIEW_UUID = 'f101c8b2-8f4d-4a3a-9acb-d51832084fe8';
 // Reviews hidden from the build without touching Judge.me itself — e.g. while
 // waiting on a customer to update/remove a review about a shipping issue.
 // Remove the ID once resolved so the review comes back automatically.
-const EXCLUDED_REVIEW_IDS = new Set([
-  1300620213, // Praikal, Articulated Stegosaurus Skeleton, "Got a broken toy" — asked customer to update/remove; re-check week of 2026-08-26
-]);
+const EXCLUDED_REVIEW_IDS = new Set([]);
 const SITE_URL = 'https://www.layerweaver.com';
 const BUILD_VER = Date.now();
 
