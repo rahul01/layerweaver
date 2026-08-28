@@ -3,9 +3,7 @@ import { test, expect } from '@playwright/test';
 const SHOP = '/shop/';
 const PRODUCT_OCTOPUS = '/shop/products/articulated-octopus/';   // 249
 const PRODUCT_KEYCHAIN = '/shop/products/personalized-number-plate-keychain/'; // 149, personalized
-const PRODUCT_CLIP = '/shop/products/cat-cable-clip/';           // 99
 const PRODUCT_BUTTERFLY = '/shop/products/butterfly-bookmark/';  // multi-variant
-const PRODUCT_LAMP = '/shop/products/octopus-table-lamp/';       // 1599, single variant - crosses the 499+1499 Rakhi tiers on its own, and 2999 at qty 2
 
 async function clearCart(page) {
   await page.evaluate(() => {
@@ -201,10 +199,8 @@ test.describe('Personalized products', () => {
 });
 
 // ── Cart rewards progress bar ────────────────────────────────────────────────
-// The bar is a single ladder: ₹299 free shipping → ₹499 free Bunny Keychain →
-// ₹1,499 RAKHI05 → ₹2,999 RAKHI10. "unlocked" copy only appears once every
-// tier is met (all 4); crossing an intermediate tier like ₹299 just advances
-// the message to the next tier's threshold.
+// Evergreen free-shipping messaging (₹299 threshold), not tied to any
+// campaign - see REWARD_TIERS in shop/cart.js.
 
 test.describe('Cart rewards progress bar', () => {
   test.beforeEach(async ({ page }) => {
@@ -214,7 +210,7 @@ test.describe('Cart rewards progress bar', () => {
     await waitForCartReady(page);
   });
 
-  test('shows amount needed below the first threshold', async ({ page }) => {
+  test('shows amount needed below the threshold', async ({ page }) => {
     // Octopus is 249, below the 299 free-shipping threshold
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
@@ -227,8 +223,8 @@ test.describe('Cart rewards progress bar', () => {
     expect(msg).toContain('Free Shipping');
   });
 
-  test('advances to the next tier message once a threshold is crossed', async ({ page }) => {
-    // 2x octopus = 498, crosses the 299 shipping tier but not the 499 gift tier
+  test('shows unlocked message once the threshold is crossed', async ({ page }) => {
+    // 2x octopus = 498, crosses the 299 shipping threshold
     await page.click('#add-to-cart-btn');
     await page.waitForFunction(() => {
       const badge = document.getElementById('cart-badge');
@@ -239,16 +235,15 @@ test.describe('Cart rewards progress bar', () => {
     await page.click('.qty-inc');
     await page.waitForFunction(() => {
       const msg = document.getElementById('rewards-bar-msg');
-      return msg && msg.textContent.includes('Free Bunny Keychain');
+      return msg && msg.textContent.includes('unlocked');
     }, { timeout: 15_000 });
     const msg = await page.textContent('#rewards-bar-msg');
-    expect(msg).toContain('Add');
-    expect(msg).toContain('Free Bunny Keychain');
+    expect(msg).toContain('Free shipping unlocked');
   });
 
-  // Regression coverage for the campaign revert: confetti now means "you've
-  // crossed a reward threshold," not "you added your first item."
-  test('confetti fires on crossing a threshold, not on the first item added', async ({ page }) => {
+  // Regression coverage: confetti means "you've crossed the free-shipping
+  // threshold," not "you added your first item."
+  test('confetti fires on crossing the threshold, not on the first item added', async ({ page }) => {
     const countConfetti = () => page.evaluate(() =>
       document.querySelectorAll('body > div[style*="z-index: 9999"]').length);
 
@@ -262,11 +257,11 @@ test.describe('Cart rewards progress bar', () => {
     await page.waitForTimeout(500);
     expect(await countConfetti()).toBe(0);
 
-    // 2x octopus (498) crosses the 299 shipping tier - confetti should fire now.
+    // 2x octopus (498) crosses the 299 shipping threshold - confetti should fire now.
     await page.click('.qty-inc');
     await page.waitForFunction(() => {
       const msg = document.getElementById('rewards-bar-msg');
-      return msg && msg.textContent.includes('Free Bunny Keychain');
+      return msg && msg.textContent.includes('unlocked');
     }, { timeout: 15_000 });
     await page.waitForFunction(() => document.querySelectorAll(
       'body > div[style*="z-index: 9999"]').length > 0, { timeout: 2_000 });
@@ -278,11 +273,8 @@ test.describe('Cart rewards progress bar', () => {
       'body > div[style*="z-index: 9999"]').length === 0, { timeout: 3_000 });
 
     // Close and reopen the drawer - still 2x octopus (498), still past the
-    // 299 shipping tier and below the next one (499), nothing newly crossed.
-    // Re-rendering the same tier state shouldn't re-fire. (Deliberately
-    // doesn't push the cart to 747 via a 3rd unit - that would cross 499,
-    // the next tier, which would independently fire confetti again and make
-    // this "no re-fire" assertion a false failure.)
+    // threshold, nothing newly crossed. Re-rendering the same state shouldn't
+    // re-fire.
     await page.click('#cart-close');
     await openDrawer(page);
     await page.waitForTimeout(500);
@@ -745,260 +737,6 @@ test.describe('Attribution capture', () => {
     expect(map['Attribution Source']).toBe('instagram');
     expect(map['Attribution Medium']).toBe('social');
     expect(map['Landing Page']).toBe(PRODUCT_OCTOPUS);
-  });
-});
-
-// ── Raksha Bandhan 2026 perks (mutually-exclusive auto-applied codes) ───────
-// Covers syncRakhiPerks(): the ₹499 BUNNY499 (free Bunny Keychain, code-based
-// BXGY), ₹1,499 RAKHI05 (5%), and ₹2,999 RAKHI10 (10%) tiers, all driven off
-// cart subtotal. Only one code is ever active at a time (Shopify's discount
-// engine won't combine a BXGY discount with an order-wide % off code on the
-// same order, so the three are deliberately mutually exclusive rather than
-// stacked - see syncRakhiPerks' comment). Octopus Table Lamp (₹1,599) is used
-// because it's a single-variant product priced to cross the 499 and 1,499
-// tiers in one add, and 2,999 at qty 2 - avoiding a slow string of qty-inc
-// clicks to reach these thresholds.
-
-test.describe('Rakhi rewards (auto-applied discount codes)', () => {
-  async function fetchServerCart(page, cartId) {
-    return page.evaluate(async (id) => {
-      const DOMAIN = 'shop.layerweaver.com';
-      const TOKEN = '7f0eafeb115e99a4a917e044a1fb4125';
-      const API = `https://${DOMAIN}/api/2025-01/graphql.json`;
-      const res = await fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': TOKEN },
-        body: JSON.stringify({
-          query: `query getCart($id: ID!) {
-            cart(id: $id) {
-              discountCodes { code applicable }
-              lines(first: 10) {
-                edges { node {
-                  quantity
-                  merchandise { ... on ProductVariant { title price { amount } } }
-                }}
-              }
-            }
-          }`,
-          variables: { id },
-        }),
-      });
-      const { data } = await res.json();
-      return data.cart;
-    }, cartId);
-  }
-
-  // NOTE: page.waitForFunction's polling only checks the *synchronous*
-  // return value of the predicate - passing an `async () => {...}` predicate
-  // means every poll returns a (truthy) Promise immediately, so it resolves
-  // on the very first tick regardless of what the awaited fetch inside
-  // actually finds. expect.poll runs the predicate from Node and properly
-  // awaits it between polls, so it's the correct tool for an async check.
-  async function waitForCode(page, cartId, code) {
-    await expect.poll(async () => {
-      const cart = await fetchServerCart(page, cartId);
-      return cart.discountCodes.some(c => c.code === code && c.applicable);
-    }, { timeout: 15_000 }).toBe(true);
-  }
-
-  test.beforeEach(async ({ page }) => {
-    await page.goto(PRODUCT_LAMP);
-    await clearCart(page);
-    await page.reload();
-    await waitForCartReady(page);
-  });
-
-  test('below 499 - no discount code, bar shows amount needed', async ({ page }) => {
-    // Cat Cable Clip (99) - deliberately cheap, stays well under the 499
-    // tier, unlike this suite's default PRODUCT_LAMP fixture. At 99 the next
-    // rung on the merged rewards ladder is the 299 free-shipping tier, not
-    // the 499 gift tier.
-    await page.goto(PRODUCT_CLIP);
-    await clearCart(page);
-    await page.reload();
-    await waitForCartReady(page);
-
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '1';
-    }, { timeout: 10_000 });
-    await openDrawer(page);
-
-    const cartId = await page.evaluate(() => localStorage.getItem('lw_cart_id'));
-    const serverCart = await fetchServerCart(page, cartId);
-    expect(serverCart.discountCodes.length).toBe(0);
-
-    const msg = await page.textContent('#rewards-bar-msg');
-    expect(msg).toContain('Add');
-    expect(msg).toContain('Free Shipping');
-  });
-
-  test('499-1,498 auto-adds the Bunny Keychain and applies BUNNY499', async ({ page }) => {
-    await page.goto(PRODUCT_CLIP); // 99
-    await clearCart(page);
-    await page.reload();
-    await waitForCartReady(page);
-
-    // 6x clip = 594 - crosses 499, stays under 1499. BUNNY499 needs the
-    // Bunny Keychain physically in the cart to have anything to make free,
-    // so syncRakhiPerks auto-adds it (a 7th line) once the tier is met.
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '1';
-    }, { timeout: 10_000 });
-    await openDrawer(page);
-    // Click, then wait for the badge (and re-rendered .qty-inc) to settle
-    // before the next click - each click round-trips through syncRakhiPerks
-    // and re-renders the drawer, so firing all 5 clicks back-to-back risks
-    // hitting a detached button mid-render or piling up racing requests.
-    // Iterations 2-5 (clip qty, subtotal < 499) match badge===target exactly;
-    // the qty-6 click (594, crosses 499) also auto-adds the gift line in the
-    // same syncRakhiPerks call, so the badge jumps straight to 7 rather than
-    // pausing at 6 - waited for separately below.
-    for (let target = 2; target <= 5; target++) {
-      await page.click('.qty-inc');
-      await page.waitForFunction((t) => {
-        const badge = document.getElementById('cart-badge');
-        return badge && badge.textContent === String(t);
-      }, target, { timeout: 10_000 });
-    }
-    await page.click('.qty-inc');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '7';
-    }, { timeout: 10_000 });
-
-    const cartId = await page.evaluate(() => localStorage.getItem('lw_cart_id'));
-    await waitForCode(page, cartId, 'BUNNY499');
-
-    const serverCart = await fetchServerCart(page, cartId);
-    const codes = serverCart.discountCodes.map(c => c.code);
-    expect(codes).toContain('BUNNY499');
-    expect(codes).not.toContain('RAKHI05');
-    expect(codes).not.toContain('RAKHI10');
-
-    // 6x clip line (qty 6) + 1x auto-added gift keychain line (qty 1) = 2 lines total.
-    expect(serverCart.lines.edges.length).toBe(2);
-
-    const total = await page.textContent('#cart-total-price');
-    const totalNum = parseInt(total.replace(/[^0-9]/g, ''));
-    // 6x99 (clips) + 99 (gift, made free by BUNNY499) = 693 pre-discount -> ~594.
-    expect(totalNum).toBeLessThan(693);
-
-    // Discount breakdown: full price (693) minus the free gift (99) = 594.
-    await expect(page.locator('#cart-discount-row')).toBeVisible();
-    await expect(page.locator('#cart-savings-row')).toBeVisible();
-    expect(await page.textContent('#cart-subtotal-price')).toContain('693');
-    expect(await page.textContent('#cart-discount-label')).toContain('Bunny Keychain');
-    expect(await page.textContent('#cart-discount-amount')).toContain('99');
-  });
-
-  test('1,499+ applies RAKHI05, no gift line added', async ({ page }) => {
-    await page.click('#add-to-cart-btn'); // 1x lamp = 1599, crosses 499 and 1499 in one step - RAKHI05 wins, BUNNY499 never gets a chance to add its gift line
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '1';
-    }, { timeout: 15_000 });
-    await openDrawer(page);
-
-    const cartId = await page.evaluate(() => localStorage.getItem('lw_cart_id'));
-    await waitForCode(page, cartId, 'RAKHI05');
-
-    const serverCart = await fetchServerCart(page, cartId);
-    const codes = serverCart.discountCodes.map(c => c.code);
-    expect(codes).toContain('RAKHI05');
-    expect(codes).not.toContain('BUNNY499');
-    expect(codes).not.toContain('RAKHI10');
-    // Exactly one line - no gift line was ever added.
-    expect(serverCart.lines.edges.length).toBe(1);
-
-    const total = await page.textContent('#cart-total-price');
-    const totalNum = parseInt(total.replace(/[^0-9]/g, ''));
-    expect(totalNum).toBeLessThan(1599);
-
-    // Discount breakdown: full-price subtotal, the discount amount, and the
-    // discounted total should all be visible and consistent (1599 - 5% = 1519.05).
-    await expect(page.locator('#cart-discount-row')).toBeVisible();
-    await expect(page.locator('#cart-savings-row')).toBeVisible();
-    expect(await page.textContent('#cart-subtotal-price')).toContain('1599');
-    expect(await page.textContent('#cart-discount-label')).toContain('RAKHI05');
-    const discountText = await page.textContent('#cart-discount-amount');
-    expect(discountText).toContain('-');
-    expect(discountText).toContain('80'); // 1599 * 5% = 79.95, rounds to 80
-  });
-
-  test('below any tier - no discount breakdown shown', async ({ page }) => {
-    await page.goto(PRODUCT_CLIP);
-    await clearCart(page);
-    await page.reload();
-    await waitForCartReady(page);
-
-    await page.click('#add-to-cart-btn'); // 1x clip = 99, below every tier
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '1';
-    }, { timeout: 10_000 });
-    await openDrawer(page);
-    await page.waitForTimeout(500);
-
-    await expect(page.locator('#cart-discount-row')).toBeHidden();
-    await expect(page.locator('#cart-savings-row')).toBeHidden();
-    expect(await page.textContent('#cart-total-price')).toContain('99');
-  });
-
-  test('2,999+ swaps RAKHI05 out for RAKHI10', async ({ page }) => {
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '1';
-    }, { timeout: 15_000 });
-    await openDrawer(page);
-
-    // Let the initial add's own syncRakhiPerks (which applies RAKHI05 at
-    // 1599) fully settle server-side before triggering a second discount
-    // swap - otherwise the qty-inc below can race the still-in-flight
-    // cartDiscountCodesUpdate from the add and read eventually-consistent
-    // Storefront API state.
-    const cartId = await page.evaluate(() => localStorage.getItem('lw_cart_id'));
-    await waitForCode(page, cartId, 'RAKHI05');
-
-    // scrollIntoViewIfNeeded + locator.click (rather than page.click) so this
-    // is robust to the qty-inc button sitting right at the drawer's edge -
-    // Playwright's actionability check can otherwise click a coordinate that
-    // ends up a pixel or two outside the actual viewport in some runs.
-    const qtyInc = page.locator('.qty-inc');
-    await qtyInc.scrollIntoViewIfNeeded();
-    await qtyInc.click(); // 2x lamp = 3198, crosses 2999
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '2';
-    }, { timeout: 10_000 });
-    await waitForCode(page, cartId, 'RAKHI10');
-
-    const serverCart = await fetchServerCart(page, cartId);
-    const codes = serverCart.discountCodes.map(c => c.code);
-    expect(codes).toContain('RAKHI10');
-    expect(codes).not.toContain('RAKHI05');
-    expect(codes).not.toContain('BUNNY499');
-  });
-
-  test('progress bar shows all-unlocked message past the top tier', async ({ page }) => {
-    await page.click('#add-to-cart-btn');
-    await page.waitForFunction(() => {
-      const badge = document.getElementById('cart-badge');
-      return badge && badge.textContent === '1';
-    }, { timeout: 15_000 });
-    await openDrawer(page);
-    await page.click('.qty-inc'); // 3198, past 2999
-
-    await page.waitForFunction(() => {
-      const msg = document.getElementById('rewards-bar-msg');
-      return msg && msg.textContent.includes('unlocked');
-    }, { timeout: 15_000 });
-    const msg = await page.textContent('#rewards-bar-msg');
-    expect(msg).toContain('All rewards unlocked');
   });
 });
 

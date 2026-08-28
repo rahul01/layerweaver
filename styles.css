@@ -8,10 +8,6 @@
     --gray-dark: #333333;
     --gray-medium: #666666;
 
-    /* Rakhi festive accent (from ads/rakhi-creatives-ai-brief.md brand parameters) */
-    --rakhi-cream: #FAF8F5;
-    --rakhi-amber: #E8A020;
-
     /* Font settings */
     --font-primary: 'Montserrat', sans-serif;
     --font-secondary: 'Open Sans', sans-serif;
@@ -119,81 +115,10 @@ a:hover {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* ------- Announcement bar (sitewide, sits above the fixed header) ------- */
-:root {
-    --announcement-height: 36px;
-}
-
-.announcement-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1001;
-    height: var(--announcement-height);
-    background: var(--rakhi-amber);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 0 16px;
-    overflow: hidden;
-}
-
-.announcement-bar a {
-    color: var(--dark);
-    text-decoration: none;
-    font-family: var(--font-primary);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.announcement-bar a:hover {
-    text-decoration: underline;
-}
-
-.announcement-bar-track a:nth-of-type(2) {
-    display: none;
-}
-
-@media (max-width: 600px) {
-    .announcement-bar {
-        justify-content: flex-start;
-        padding: 0;
-    }
-
-    .announcement-bar-track {
-        display: inline-flex;
-        align-items: center;
-        animation: announcement-marquee 14s linear infinite;
-        will-change: transform;
-    }
-
-    .announcement-bar-track a:nth-of-type(2) {
-        display: inline;
-    }
-
-    .announcement-bar a {
-        font-size: 0.68rem;
-        overflow: visible;
-        text-overflow: clip;
-        padding: 0 16px;
-    }
-}
-
-@keyframes announcement-marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-}
-
 /* Header & Navigation */
 header {
     position: fixed;
-    top: var(--announcement-height);
+    top: 0;
     left: 0;
     width: 100%;
     background-color: rgba(255, 255, 255, 0.95);
@@ -233,31 +158,6 @@ header .container {
     color: var(--dark);
     font-family: var(--font-brand);
     letter-spacing: 0.5px;
-}
-
-.logo-rakhi-ribbon {
-    position: absolute;
-    top: 100%;
-    right: 4px;
-    margin-top: -6px;
-    background: var(--secondary);
-    color: var(--dark);
-    font-family: var(--font-primary);
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    padding: 4px 12px;
-    text-decoration: none;
-    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
-    transform: rotate(-5deg);
-    clip-path: polygon(0% 0%, 3% 20%, 0% 40%, 2% 60%, 0% 80%, 1% 100%, 100% 100%, 98% 80%, 100% 60%, 97% 40%, 100% 20%, 99% 0%);
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.logo-rakhi-ribbon:hover {
-    background: var(--dark);
-    color: var(--secondary);
 }
 
 .nav-links {
@@ -324,7 +224,7 @@ header .container {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: calc(32px + var(--announcement-height)) 0 0;
+    padding: 32px 0 0;
 }
 
 .hero-split {
@@ -581,7 +481,7 @@ header .container {
 
 @media (max-width: 900px) {
     .hero {
-        padding-top: calc(88px + var(--announcement-height));
+        padding-top: 88px;
     }
     .hero-split {
         flex-direction: column;
@@ -687,45 +587,6 @@ section {
 .section-header p {
     font-size: 1.2rem;
     color: var(--gray-medium);
-}
-
-/* Rakhi Promo Section (seasonal - Raksha Bandhan) */
-.rakhi-promo {
-    background-color: #FAF8F5;
-    padding: 28px 0;
-    border-top: 1px solid rgba(0,0,0,0.06);
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-}
-
-.rakhi-promo-inner {
-    max-width: 700px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-}
-
-.rakhi-promo-offers {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px 24px;
-    margin: 8px 0 4px;
-    padding: 0;
-}
-
-.rakhi-promo-offers li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.95rem;
-    color: var(--dark);
-}
-
-.rakhi-promo-offers i {
-    color: var(--primary);
 }
 
 /* About Section */
@@ -2055,10 +1916,10 @@ footer {
     .nav-links {
         display: flex;
         position: fixed;
-        top: calc(80px + var(--announcement-height));
+        top: 80px;
         left: -100%;
         width: 100%;
-        height: calc(100vh - 80px - var(--announcement-height));
+        height: calc(100vh - 80px);
         background-color: var(--light);
         flex-direction: column;
         align-items: center;
@@ -2520,7 +2381,7 @@ footer {
 /* ================= SERVICE PAGE STYLES ================= */
 
 .service-page-hero {
-    padding: calc(100px + var(--announcement-height)) 0 20px;
+    padding: 100px 0 20px;
     background: linear-gradient(135deg, rgba(160, 131, 213, 0.08) 0%, rgba(239, 207, 32, 0.08) 100%);
     text-align: center;
 }
@@ -2775,7 +2636,7 @@ footer {
         padding: 24px 20px;
     }
     .service-page-hero {
-        padding: calc(90px + var(--announcement-height)) 0 24px;
+        padding: 90px 0 24px;
     }
 }
 

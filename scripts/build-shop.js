@@ -635,28 +635,14 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     </script>`;
 }
 
-function announcementBarHtml(shopBase) {
-  const link = `<a href="${shopBase}rakhi/">🪢 Rakhi Special: Free Bunny Keychain on orders ₹499+ &middot; 5% off ₹1,499+ &middot; 10% off ₹2,999+</a>`;
-  return `
-    <div class="announcement-bar">
-        <div class="announcement-bar-track">
-            ${link}
-            ${link}
-        </div>
-    </div>`;
-}
-
 function shopHeaderHtml(base, shopBase) {
   return `
     <header class="shop-header">
         <div class="container">
-            <div class="logo-container">
-                <a href="${base}" class="logo-link">
-                    <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
-                    <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
-                </a>
-                <a href="${shopBase}rakhi/" class="logo-rakhi-ribbon">Shop Rakhi Gifts</a>
-            </div>
+            <a href="${base}" class="logo-container logo-link">
+                <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
+                <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
+            </a>
             <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -895,18 +881,6 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
       </div>`;
 }
 
-// ── Cross-shop floating action button ─────────────────────────────────────────
-// Persistent (position: fixed) link between the regular shop and the Rakhi
-// catalogue, shown on shop/collection index+listing pages on both sides.
-// toRakhi=true: shown on regular shop pages, links to shop/rakhi/.
-// toRakhi=false: shown on Rakhi pages, links back to the full shop (shopBase).
-
-function crossShopFabHtml(shopBase, toRakhi) {
-  return toRakhi
-    ? `<a href="${shopBase}rakhi/" class="cross-shop-fab cross-shop-fab--rakhi">🪢 Rakhi Gifts</a>`
-    : `<a href="${shopBase}" class="cross-shop-fab">Shop All Products</a>`;
-}
-
 // ── Shop index (shop/index.html) ──────────────────────────────────────────────
 // depth from root: 1  →  base = '../'   shopBase = './'
 
@@ -938,7 +912,6 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
     })}
 </head>
 <body>
-    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -961,7 +934,6 @@ ${productCards}
         </div>
     </section>
 
-    ${crossShopFabHtml(shopBase, true)}
     ${footerHtml(base)}
     ${swatchDataScript(products)}
     <script src="auth.js?v=${BUILD_VER}"></script>
@@ -1150,7 +1122,6 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
     })}
 </head>
 <body>
-    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1479,33 +1450,6 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
 </html>`;
 }
 
-// ── Rakhi mandala motif (decorative SVG, Rakhi pages only) ───────────────────
-// A small radial mandala of 8 petal/leaf loops around a central knot, with two
-// dangling tassels beneath - drawn in currentColor so it inherits whatever
-// text color it's placed in. Used as a flourish flanking the banner title, a
-// small corner accent, and a section-divider centerpiece.
-
-function rakhiThreadMotifSvg(className = '') {
-  const cx = 40, cy = 40, petalCount = 8, L = 26, W = 8;
-  // Same lens/teardrop leaf silhouette as the original 2-leaf motif (a wide,
-  // gently-curved outline with a pointed tip), just scaled down and repeated
-  // radially instead of only mirrored twice.
-  const petals = Array.from({ length: petalCount }, (_, i) => {
-    const angle = (360 / petalCount) * i;
-    return `<path d="M${cx} ${cy} C ${cx - W} ${cy - L * 0.28}, ${cx - W} ${cy - L * 0.6}, ${cx} ${cy - L} C ${cx + W} ${cy - L * 0.6}, ${cx + W} ${cy - L * 0.28}, ${cx} ${cy} Z"
-          stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"
-          transform="rotate(${angle} ${cx} ${cy})"/>`;
-  }).join('\n        ');
-
-  return `<svg class="rakhi-thread-motif${className ? ' ' + className : ''}" viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        ${petals}
-        <circle cx="${cx}" cy="${cy}" r="6" fill="currentColor"/>
-        <circle cx="${cx}" cy="${cy}" r="10" stroke="currentColor" stroke-width="1.2"/>
-        <path d="M${cx} ${cy + 20} L ${cx - 5} ${cy + 34} M${cx} ${cy + 20} L ${cx} ${cy + 36} M${cx} ${cy + 20} L ${cx + 5} ${cy + 34}"
-              stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-    </svg>`;
-}
-
 // ── Collage banner (shared by shop index + collection pages) ─────────────────
 // images: array of { url, altText } - up to 5 used
 
@@ -1529,35 +1473,9 @@ function collagebannerHtml(title, description, images) {
     </div>`;
 }
 
-// Rakhi-only festive wrapper around collagebannerHtml() — adds an amber "Rakhi
-// Special" ribbon badge and two thread/knot motifs (one flanking the title,
-// one smaller accent in the top-right corner), without touching the shared
-// banner function used by regular (non-Rakhi) collections.
-function rakhiFestiveBannerHtml(title, description, images) {
-  return `
-    <div class="rakhi-banner-wrap">
-        ${collagebannerHtml(title, description, images)}
-        <span class="rakhi-special-badge">Rakhi Special</span>
-        <div class="rakhi-banner-motif">${rakhiThreadMotifSvg()}</div>
-        <div class="rakhi-banner-motif rakhi-banner-motif--corner">${rakhiThreadMotifSvg()}</div>
-    </div>`;
-}
-
-// Decorative divider placed between the Rakhi banner and the product grid —
-// a thread motif flanked by fading amber lines, purely visual (aria-hidden).
-function rakhiGridDividerHtml() {
-  return `
-    <div class="rakhi-grid-divider" aria-hidden="true">
-        <span class="rakhi-divider-line"></span>
-        ${rakhiThreadMotifSvg()}
-        <span class="rakhi-divider-line"></span>
-    </div>`;
-}
-
 // ── Homepage hero carousel slides (index.html) ───────────────────────────────
-// Generates collage-style slides from each Rakhi collection's product images,
+// Generates collage-style slides from each collection's product images,
 // matching the same banner-collage pattern used on shop/collection pages.
-// Links to shop/rakhi/<handle>/ - the only caller passes rakhiCollections.
 
 function heroCarouselSlidesHtml(collections) {
   const BANNER_EXCLUDE = ['cone-fidget'];
@@ -1577,7 +1495,7 @@ function heroCarouselSlidesHtml(collections) {
                         </div>`).join('');
 
     return `
-                        <a href="shop/rakhi/${collection.handle}/" class="hero-carousel-slide${i === 0 ? ' active' : ''}">
+                        <a href="shop/collections/${collection.handle}/" class="hero-carousel-slide${i === 0 ? ' active' : ''}">
                             <div class="banner-collage">${cells}
                             </div>
                             <div class="hero-carousel-caption">
@@ -1675,7 +1593,6 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
     })}
 </head>
 <body>
-    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1698,7 +1615,6 @@ ${productCards}
         </div>
     </section>
 
-    ${crossShopFabHtml(shopBase, true)}
     ${footerHtml(base)}
     ${swatchDataScript(collection.products)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
@@ -1745,13 +1661,12 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
 <head>
     ${headHtml(base, shopBase, {
       title: 'Rakhi Gift Catalogue – LayerWeaver',
-      description: 'Curated Raksha Bandhan gift picks for every kind of sibling – gamers, bookworms, WFH sisters, car guys, and more. Free Bunny Keychain on orders ₹499+, 5% off ₹1,499+, 10% off ₹2,999+.',
+      description: 'Curated Raksha Bandhan gift picks for every kind of sibling – gamers, bookworms, WFH sisters, car guys, and more. Free shipping above ₹299.',
       ogUrl: `${SITE_URL}/shop/rakhi/`,
       ogImage: bannerImages[0] ? resizedImageUrl(bannerImages[0].url, IMG_WIDTH_OG) : undefined,
     })}
 </head>
-<body class="rakhi-theme">
-    ${announcementBarHtml(shopBase)}
+<body>
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1763,8 +1678,7 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
     </section>
 
     <div class="container">
-        ${rakhiFestiveBannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan · Free Bunny Keychain ₹499+ · 5% off ₹1,499+ · 10% off ₹2,999+', bannerImages)}
-        ${rakhiGridDividerHtml()}
+        ${collagebannerHtml('Rakhi Gift Catalogue', 'Curated picks for every kind of sibling this Raksha Bandhan', bannerImages)}
     </div>
 
     <section class="shop-products">
@@ -1775,7 +1689,6 @@ ${productCards}
         </div>
     </section>
 
-    ${crossShopFabHtml(shopBase, false)}
     ${footerHtml(base)}
     ${swatchDataScript(uniqueProducts)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
@@ -1794,7 +1707,7 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
 
   const productCards = collection.products.map(p => productCardHtml(p, '../../products/', reviewsMap[p.handle])).join('\n');
   const bannerImages = collection.products.slice(-5).map(p => p.images.edges[0]?.node);
-  const bannerHtml = rakhiFestiveBannerHtml(collection.title, collection.description, bannerImages);
+  const bannerHtml = collagebannerHtml(collection.title, collection.description, bannerImages);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1809,8 +1722,7 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
       ogUrl: `${SITE_URL}/shop/rakhi/${collection.handle}/`,
     })}
 </head>
-<body class="rakhi-theme">
-    ${announcementBarHtml(shopBase)}
+<body>
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -1823,7 +1735,6 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
 
     <div class="container">
         ${bannerHtml}
-        ${rakhiGridDividerHtml()}
     </div>
 
     <section class="shop-products">
@@ -1834,7 +1745,6 @@ ${productCards}
         </div>
     </section>
 
-    ${crossShopFabHtml(shopBase, false)}
     ${footerHtml(base)}
     ${swatchDataScript(collection.products)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
@@ -1913,7 +1823,6 @@ function generateAccountPage() {
     </script>
 </head>
 <body>
-    ${announcementBarHtml(shopBase)}
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -2262,7 +2171,7 @@ async function main() {
   // Update homepage hero carousel with collage slides
   const indexPath = path.join(__dirname, '..', 'index.html');
   let indexHtml = fs.readFileSync(indexPath, 'utf8');
-  const { slides, dots } = heroCarouselSlidesHtml(rakhiCollections);
+  const { slides, dots } = heroCarouselSlidesHtml(collections);
   indexHtml = indexHtml.replace(
     /<!-- HERO-CAROUSEL-SLIDES-START -->[\s\S]*?<!-- HERO-CAROUSEL-SLIDES-END -->/,
     `<!-- HERO-CAROUSEL-SLIDES-START -->\n${slides}\n<!-- HERO-CAROUSEL-SLIDES-END -->`
