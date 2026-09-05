@@ -750,7 +750,7 @@ function swatchDataScript(products) {
 //   shop/index.html           → 'products/'
 //   shop/collections/*/       → '../../products/'
 
-function productCardHtml(product, productsBase, reviewData = null) {
+function productCardHtml(product, productsBase, reviewData = null, eager = false) {
   const minPrice    = formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
   const maxPrice    = formatPrice(product.priceRange.maxVariantPrice.amount, product.priceRange.maxVariantPrice.currencyCode);
   const priceDisplay = product.priceRange.minVariantPrice.amount === product.priceRange.maxVariantPrice.amount
@@ -792,7 +792,7 @@ function productCardHtml(product, productsBase, reviewData = null) {
           <a href="${productsBase}${product.handle}/" class="product-card-link">
               <div class="product-image-wrap">
                   ${image
-                    ? `<img src="${resizedImageUrl(image.url, IMG_WIDTH_GRID)}" alt="${escAttr(productImageAlt(product, image.altText))}" loading="lazy">`
+                    ? `<img src="${resizedImageUrl(image.url, IMG_WIDTH_GRID)}" alt="${escAttr(productImageAlt(product, image.altText))}" ${eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'}>`
                     : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                   }
                   ${!available ? '<span class="sold-out-badge">Sold Out</span>' : ''}
@@ -890,7 +890,7 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
 
   // Bundles are shown only in their own collection, not mixed into the main grid.
   const singleProducts = products.filter(p => !isBundle(p));
-  const productCards = singleProducts.map(p => productCardHtml(p, 'products/', reviewsMap[p.handle])).join('\n');
+  const productCards = singleProducts.map((p, i) => productCardHtml(p, 'products/', reviewsMap[p.handle], i < 4)).join('\n');
 
   // Pick the first product image from each collection for the "All" banner
   const BANNER_EXCLUDE = ['cone-fidget'];
@@ -1570,7 +1570,7 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
   const base     = '../../../';
   const shopBase = '../../';
 
-  const productCards = collection.products.map(p => productCardHtml(p, '../../products/', reviewsMap[p.handle])).join('\n');
+  const productCards = collection.products.map((p, i) => productCardHtml(p, '../../products/', reviewsMap[p.handle], i < 4)).join('\n');
 
   const BANNER_EXCLUDE = ['cone-fidget'];
   const bannerImages = collection.products
@@ -1653,7 +1653,7 @@ function generateRakhiIndexPage(rakhiCollections, reviewsMap = {}) {
   const shopBase = '../';
 
   const uniqueProducts = dedupeRakhiProducts(rakhiCollections);
-  const productCards = uniqueProducts.map(p => productCardHtml(p, '../products/', reviewsMap[p.handle])).join('\n');
+  const productCards = uniqueProducts.map((p, i) => productCardHtml(p, '../products/', reviewsMap[p.handle], i < 4)).join('\n');
   const bannerImages = rakhiCollections.map(c => c.products[0]?.images.edges[0]?.node).filter(Boolean);
 
   return `<!DOCTYPE html>
@@ -1705,7 +1705,7 @@ function generateRakhiCollectionPage(collection, rakhiCollections, reviewsMap = 
   const base     = '../../../';
   const shopBase = '../../';
 
-  const productCards = collection.products.map(p => productCardHtml(p, '../../products/', reviewsMap[p.handle])).join('\n');
+  const productCards = collection.products.map((p, i) => productCardHtml(p, '../../products/', reviewsMap[p.handle], i < 4)).join('\n');
   const bannerImages = collection.products.slice(-5).map(p => p.images.edges[0]?.node);
   const bannerHtml = collagebannerHtml(collection.title, collection.description, bannerImages);
 
