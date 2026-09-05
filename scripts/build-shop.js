@@ -1151,7 +1151,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                 <div class="product-images">
                     <div class="main-image-wrap">
                         ${mainImage
-                          ? `<img id="main-image" src="${resizedImageUrl(mainImage.url, IMG_WIDTH_MAIN)}" alt="${escAttr(productImageAlt(product, mainImage.altText))}">`
+                          ? `<img id="main-image" src="${resizedImageUrl(mainImage.url, IMG_WIDTH_MAIN)}" alt="${escAttr(productImageAlt(product, mainImage.altText))}" fetchpriority="high">`
                           : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                         }
                         <video id="main-video" style="display:none" autoplay muted loop playsinline controls></video>
