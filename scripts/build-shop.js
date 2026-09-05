@@ -905,8 +905,8 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
 <html lang="en">
 <head>
     ${headHtml(base, shopBase, {
-      title: 'Shop – LayerWeaver 3D Printed Products',
-      description: 'Browse and buy unique 3D printed products from LayerWeaver – affordable, handcrafted, and shipped to you.',
+      title: 'Shop – LayerWeaver 3D Printed Products | Pune, India',
+      description: 'Browse and buy unique 3D printed products from LayerWeaver – affordable, handcrafted in Pune, India, and shipped to you.',
       ogUrl: `${SITE_URL}/shop/`,
       ogImage: resizedImageUrl(products[0]?.images.edges[0]?.node.url, IMG_WIDTH_OG),
     })}
@@ -1114,8 +1114,8 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
 <html lang="en">
 <head>
     ${headHtml(base, shopBase, {
-      title: `${escAttr(toTitleCase(product.title))} – LayerWeaver`,
-      description: escAttr(truncateWords(product.description, 150)),
+      title: `${escAttr(toTitleCase(product.title))} – LayerWeaver | Pune`,
+      description: escAttr(`${truncateWords(product.description, 140)} 3D printed in Pune, India.`),
       ogImage: resizedImageUrl(mainImage?.url, IMG_WIDTH_OG),
       ogUrl: `${SITE_URL}/shop/products/${product.handle}/`,
       structuredData,
@@ -1583,10 +1583,10 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
 <html lang="en">
 <head>
     ${headHtml(base, shopBase, {
-      title: `${collection.title} – LayerWeaver`,
+      title: `${collection.title} – LayerWeaver | Pune, India`,
       description: escAttr(truncateWords(
-        collection.description || `Shop ${collection.title} – unique 3D printed products from LayerWeaver.`,
-        150
+        collection.description || `Shop ${collection.title} – unique 3D printed products from LayerWeaver, made in Pune, India.`,
+        140
       )),
       ogImage: resizedImageUrl(collection.image?.url, IMG_WIDTH_OG),
       ogUrl: `${SITE_URL}/shop/collections/${collection.handle}/`,
