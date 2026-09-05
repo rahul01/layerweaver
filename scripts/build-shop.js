@@ -617,21 +617,24 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     ${fontAwesomeLinkHtml()}
-    <script type="module">
-        if (location.hostname === 'www.layerweaver.com') {
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
-            const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
-            const app = initializeApp({
-                apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
-                authDomain: "layerweaver.firebaseapp.com",
-                projectId: "layerweaver",
-                storageBucket: "layerweaver.firebasestorage.app",
-                messagingSenderId: "1056344018064",
-                appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
-                measurementId: "G-00DMH9PYCG"
+    <script>
+        window.addEventListener('load', () => {
+            if (location.hostname !== 'www.layerweaver.com') return;
+            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js").then(({ initializeApp }) => {
+                import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js").then(({ getPerformance }) => {
+                    const app = initializeApp({
+                        apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+                        authDomain: "layerweaver.firebaseapp.com",
+                        projectId: "layerweaver",
+                        storageBucket: "layerweaver.firebasestorage.app",
+                        messagingSenderId: "1056344018064",
+                        appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+                        measurementId: "G-00DMH9PYCG"
+                    });
+                    getPerformance(app);
+                });
             });
-            getPerformance(app);
-        }
+        });
     </script>`;
 }
 
@@ -1805,21 +1808,24 @@ function generateAccountPage() {
     <link rel="stylesheet" href="${shopBase}shop.css?v=${BUILD_VER}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     ${fontAwesomeLinkHtml()}
-    <script type="module">
-        if (location.hostname === 'www.layerweaver.com') {
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js");
-            const { getPerformance } = await import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js");
-            const app = initializeApp({
-                apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
-                authDomain: "layerweaver.firebaseapp.com",
-                projectId: "layerweaver",
-                storageBucket: "layerweaver.firebasestorage.app",
-                messagingSenderId: "1056344018064",
-                appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
-                measurementId: "G-00DMH9PYCG"
+    <script>
+        window.addEventListener('load', () => {
+            if (location.hostname !== 'www.layerweaver.com') return;
+            import("https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js").then(({ initializeApp }) => {
+                import("https://www.gstatic.com/firebasejs/11.1.0/firebase-performance.js").then(({ getPerformance }) => {
+                    const app = initializeApp({
+                        apiKey: "AIzaSyA4v_CLxRxFjNsKO4M3NAiiSNF9HipccBk",
+                        authDomain: "layerweaver.firebaseapp.com",
+                        projectId: "layerweaver",
+                        storageBucket: "layerweaver.firebasestorage.app",
+                        messagingSenderId: "1056344018064",
+                        appId: "1:1056344018064:web:40f8e04b7dbd02d45a1c15",
+                        measurementId: "G-00DMH9PYCG"
+                    });
+                    getPerformance(app);
+                });
             });
-            getPerformance(app);
-        }
+        });
     </script>
 </head>
 <body>
