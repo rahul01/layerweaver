@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts } = require('./build-shop-utils');
+const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -37,6 +37,8 @@ const BUILD_VER = Date.now();
 const IMG_WIDTH_GRID = 500;
 const IMG_WIDTH_THUMB_RAIL = 300;
 const IMG_WIDTH_MAIN = 1600;
+const IMG_WIDTH_MAIN_SRCSET = [400, 600, 800, 1100, 1600];
+const IMG_WIDTH_MAIN_SIZES = '(max-width: 768px) calc(100vw - 40px), 550px';
 const IMG_WIDTH_BANNER = 800;
 const IMG_WIDTH_OG = 1200;
 
@@ -1151,7 +1153,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                 <div class="product-images">
                     <div class="main-image-wrap">
                         ${mainImage
-                          ? `<img id="main-image" src="${resizedImageUrl(mainImage.url, IMG_WIDTH_MAIN)}" alt="${escAttr(productImageAlt(product, mainImage.altText))}" fetchpriority="high">`
+                          ? `<img id="main-image" src="${resizedImageUrl(mainImage.url, IMG_WIDTH_MAIN)}" srcset="${srcsetFor(mainImage.url, IMG_WIDTH_MAIN_SRCSET)}" sizes="${IMG_WIDTH_MAIN_SIZES}" alt="${escAttr(productImageAlt(product, mainImage.altText))}" fetchpriority="high">`
                           : '<div class="no-image"><i class="fa-solid fa-cube"></i></div>'
                         }
                         <video id="main-video" style="display:none" autoplay muted loop playsinline controls></video>
@@ -1316,7 +1318,14 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
         function showMainImage(src) {
             if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
             if (mainIframe) { mainIframe.src = ''; mainIframe.style.display = 'none'; }
-            if (mainImg) { mainImg.style.display = ''; if (src) mainImg.src = src; }
+            if (mainImg && src) {
+                mainImg.style.display = '';
+                const base = src.split('?')[0];
+                mainImg.src = \`\${base}?width=${IMG_WIDTH_MAIN}\`;
+                mainImg.srcset = [${IMG_WIDTH_MAIN_SRCSET.map(w => `\`\${base}?width=${w} ${w}w\``).join(', ')}].join(', ');
+            } else if (mainImg) {
+                mainImg.style.display = '';
+            }
         }
 
         function selectVariantBtn(btn, updateUrl = true) {

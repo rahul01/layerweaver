@@ -11,6 +11,11 @@ function resizedImageUrl(url, width) {
   return `${url}${sep}width=${width}`;
 }
 
+function srcsetFor(url, widths) {
+  if (!url) return url;
+  return widths.map(w => `${resizedImageUrl(url, w)} ${w}w`).join(', ');
+}
+
 function escAttr(str) {
   return String(str).replace(/—/g, '-').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -162,4 +167,4 @@ function buildSitemapXml(urls) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`;
 }
 
-module.exports = { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts };
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts };

@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1788612809393">
+    <link rel="stylesheet" href="../../shop.css?v=1788681939332">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -120,7 +120,7 @@
             <div class="product-layout">
                 <div class="product-images">
                     <div class="main-image-wrap">
-                        <img id="main-image" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/aquarium-cave-1.png?v=1783875174&width=1600" alt="Aquarium Cave" fetchpriority="high">
+                        <img id="main-image" src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/aquarium-cave-1.png?v=1783875174&width=1600" srcset="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/aquarium-cave-1.png?v=1783875174&width=400 400w, https://cdn.shopify.com/s/files/1/0784/9404/0286/files/aquarium-cave-1.png?v=1783875174&width=600 600w, https://cdn.shopify.com/s/files/1/0784/9404/0286/files/aquarium-cave-1.png?v=1783875174&width=800 800w, https://cdn.shopify.com/s/files/1/0784/9404/0286/files/aquarium-cave-1.png?v=1783875174&width=1100 1100w, https://cdn.shopify.com/s/files/1/0784/9404/0286/files/aquarium-cave-1.png?v=1783875174&width=1600 1600w" sizes="(max-width: 768px) calc(100vw - 40px), 550px" alt="Aquarium Cave" fetchpriority="high">
                         <video id="main-video" style="display:none" autoplay muted loop playsinline controls></video>
                         <iframe id="main-iframe" style="display:none" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
                     </div>
@@ -393,7 +393,14 @@
         function showMainImage(src) {
             if (mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
             if (mainIframe) { mainIframe.src = ''; mainIframe.style.display = 'none'; }
-            if (mainImg) { mainImg.style.display = ''; if (src) mainImg.src = src; }
+            if (mainImg && src) {
+                mainImg.style.display = '';
+                const base = src.split('?')[0];
+                mainImg.src = `${base}?width=1600`;
+                mainImg.srcset = [`${base}?width=400 400w`, `${base}?width=600 600w`, `${base}?width=800 800w`, `${base}?width=1100 1100w`, `${base}?width=1600 1600w`].join(', ');
+            } else if (mainImg) {
+                mainImg.style.display = '';
+            }
         }
 
         function selectVariantBtn(btn, updateUrl = true) {
@@ -510,10 +517,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"aquarium-cave":{"Brown":"#9a5630","White":"#ffffff","Black":"#000000"}};</script>
-    <script src="../../auth.js?v=1788612809393"></script>
-    <script src="../../cart.js?v=1788612809393"></script>
-    <script src="../../search.js?v=1788612809393"></script>
-    <script src="../../wishlist.js?v=1788612809393"></script>
+    <script src="../../auth.js?v=1788681939332"></script>
+    <script src="../../cart.js?v=1788681939332"></script>
+    <script src="../../search.js?v=1788681939332"></script>
+    <script src="../../wishlist.js?v=1788681939332"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
