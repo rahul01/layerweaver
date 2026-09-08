@@ -259,9 +259,11 @@ function hasVisiblePicture(review) {
   return (review.pictures || []).some(p => !p.hidden && p.urls?.compact);
 }
 
-// When the same person has left multiple reviews on a product, keep only
-// their most recent one (by created_at) so the list doesn't repeat a name.
-function dedupeByReviewerName(reviews) {
+// When the same person has left multiple reviews on a product (e.g. a repeat
+// buyer reviewing separate orders), only their most recent one shows in the
+// default view - older ones are flagged `isOlderRepeat` so reviewCardHtml()
+// tucks them behind the "Show all reviews" expander instead of dropping them.
+function markOlderRepeatReviews(reviews) {
   const latestByName = new Map();
   for (const r of reviews) {
     const name = (r.reviewer?.name || '').trim().toLowerCase();
@@ -271,9 +273,10 @@ function dedupeByReviewerName(reviews) {
       latestByName.set(name, r);
     }
   }
-  return reviews.filter(r => {
+  return reviews.map(r => {
     const name = (r.reviewer?.name || '').trim().toLowerCase();
-    return !name || latestByName.get(name) === r;
+    const isOlderRepeat = !!name && latestByName.get(name) !== r;
+    return isOlderRepeat ? { ...r, isOlderRepeat: true } : r;
   });
 }
 
@@ -281,6 +284,9 @@ function dedupeByReviewerName(reviews) {
 // moved ahead of photo-less reviews, and any review below 4 stars that
 // would land in the first 3 (always-visible) slots gets bumped to right after
 // them — out of the spotlight, but not shoved to the bottom of the full list.
+// Older reviews from a repeat reviewer (isOlderRepeat, see
+// markOlderRepeatReviews) never take a front slot - only their latest review
+// does - so they always land behind the "Show all reviews" expander.
 function prioritizeTopReviews(reviews) {
   const withPhotos = reviews.filter(hasVisiblePicture);
   const withoutPhotos = reviews.filter(r => !hasVisiblePicture(r));
@@ -289,7 +295,7 @@ function prioritizeTopReviews(reviews) {
   const bumped = [];
   const rest = [];
   for (const r of ordered) {
-    if (front.length < 3) {
+    if (front.length < 3 && !r.isOlderRepeat) {
       if (r.rating >= 4) front.push(r);
       else bumped.push(r);
     } else {
@@ -400,12 +406,11 @@ async function fetchAllReviews(products) {
   for (const product of products) {
     let reviews = byExternalId[getNumericId(product.id)];
     if (!reviews || !reviews.length) continue;
-    reviews = dedupeByReviewerName(reviews);
     const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
     map[product.handle] = {
       rating: avgRating,
       count: reviews.length,
-      reviews: prioritizeTopReviews(reviews),
+      reviews: prioritizeTopReviews(markOlderRepeatReviews(reviews)),
     };
   }
   console.log(`  Got reviews for ${Object.keys(map).length} product(s)`);
@@ -439,7 +444,7 @@ function reviewCardHtml(review, index = 0) {
   const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
   const name = escAttr(review.reviewer?.name || 'Customer');
   const pictures = (review.pictures || []).filter(p => !p.hidden && p.urls?.compact);
-  return `<div class="review-card${index >= 3 ? ' review-card--more' : ''}" id="review-${review.id}">
+  return `<div class="review-card${(index >= 3 || review.isOlderRepeat) ? ' review-card--more' : ''}" id="review-${review.id}">
     <div class="review-header">
       <span class="review-stars">${stars}</span>
       <span class="review-author">${name}</span>
