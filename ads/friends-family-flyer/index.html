@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LayerWeaver - Friends & Family Flyer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #A083D5;
+            --secondary: #EFCF20;
+            --dark: #000000;
+            --light: #FFFFFF;
+            --font-primary: 'Montserrat', sans-serif;
+            --font-brand: 'Science Gothic', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: var(--font-primary);
+            padding: 40px;
+        }
+
+        .ad-label {
+            color: #666;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        /* 1080x1350 portrait flyer */
+        .ad {
+            width: 1080px;
+            height: 1350px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            background: var(--light);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOP BRAND BAND ── */
+        .top-band {
+            background: var(--primary);
+            padding: 56px 64px 44px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand-logo { height: 60px; width: auto; }
+
+        .brand-name {
+            font-family: var(--font-brand);
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--light);
+            letter-spacing: 0.03em;
+        }
+
+        .tagline {
+            font-size: 22px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.92);
+            letter-spacing: 0.01em;
+        }
+
+        /* ── PRODUCT COLLAGE ── */
+        .collage {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 4px;
+            height: 480px;
+            flex-shrink: 0;
+            background: #000;
+        }
+        .collage .cell {
+            overflow: hidden;
+            position: relative;
+        }
+        .collage .cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .collage .cell-a { grid-row: 1 / 3; }
+
+        /* ── HEADLINE + COPY ── */
+        .copy {
+            padding: 48px 64px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .headline {
+            font-size: 46px;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+        }
+
+        .sub {
+            font-size: 21px;
+            color: rgba(0,0,0,0.55);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .spacer { flex: 1; }
+
+        /* ── CONTACT / SOCIALS FOOTER ── */
+        .footer {
+            background: var(--dark);
+            padding: 40px 64px 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex-shrink: 0;
+        }
+
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icon-badge {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-text { display: flex; flex-direction: column; gap: 2px; }
+
+        .contact-label {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--light);
+        }
+
+        .contact-value {
+            font-size: 18px;
+            color: rgba(255,255,255,0.55);
+            font-weight: 500;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255,255,255,0.15);
+            margin: 4px 0;
+        }
+
+        .site-url {
+            font-family: var(--font-brand);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--secondary);
+            letter-spacing: 0.03em;
+        }
+
+        /* ── Responsive scale-down ── */
+        @media (max-width: 1180px) {
+            .ad { width: min(1080px, 92vw); height: min(1350px, 115vw); }
+        }
+    </style>
+</head>
+<body>
+    <p class="ad-label">Friends &amp; Family Flyer - 1080 x 1350</p>
+
+    <div class="ad">
+        <!-- Brand band -->
+        <div class="top-band">
+            <div class="brand">
+                <img class="brand-logo" src="../../images/layerweaver-logo-white.svg" alt="LayerWeaver">
+                <span class="brand-name">LayerWeaver</span>
+            </div>
+            <span class="tagline">3D-printed gifts, décor &amp; toys - made in Pune</span>
+        </div>
+
+        <!-- Product collage -->
+        <div class="collage">
+            <div class="cell cell-a"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/panda-figurine-1.png?v=1783875043&width=1200" alt="Panda Figurine"></div>
+            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bone_white_t_rex.png?v=1783880772&width=1200" alt="T-Rex Skeleton"></div>
+            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/articulated-octopus-3.jpg?v=1783875087&width=1200" alt="Articulated Octopus"></div>
+            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-4.png?v=1783875018&width=1200" alt="Ghost Balloon Lamp"></div>
+            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bunny-keychain-1.png?v=1783875042&width=1200" alt="Bunny Keychain"></div>
+        </div>
+
+        <!-- Headline -->
+        <div class="copy">
+            <h1 class="headline">Cute, custom &amp; one-of-a-kind gifts</h1>
+            <p class="sub">Figurines, nameplates, keychains, décor and more - designed and 3D-printed right here in Pune. Message us for custom orders!</p>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- Contact / socials -->
+        <div class="footer">
+            <div class="contact-row">
+                <div class="icon-badge">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M17 2H7C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5Z" stroke="#FFFFFF" stroke-width="1.8"/><path d="M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="#FFFFFF" stroke-width="1.8"/><path d="M17.5 6.5h.01" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg>
+                </div>
+                <div class="contact-text">
+                    <span class="contact-label">@thelayerweaver</span>
+                    <span class="contact-value">instagram.com/thelayerweaver</span>
+                </div>
+            </div>
+
+            <div class="contact-row">
+                <div class="icon-badge">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M20.5 11.86c0 4.86-3.97 8.8-8.87 8.8-1.56 0-3.02-.4-4.29-1.1L3 20.5l1-4.17a8.72 8.72 0 0 1-1.24-4.47C2.76 7 6.73 3.06 11.63 3.06s8.87 3.94 8.87 8.8Z" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 10.2c.3 2.6 2.9 5 5.4 5.3.9.1 1.6-.5 1.6-1.3 0-.3-.1-.5-.3-.7l-1.4-1.3c-.2-.2-.5-.2-.7 0l-.5.5c-.9-.4-1.8-1.3-2.2-2.2l.5-.5c.2-.2.2-.5 0-.7L9.6 8c-.2-.2-.4-.3-.7-.3-.8 0-1.4.7-1.3 1.6.1.3.1.6.9.9Z" fill="#FFFFFF"/></svg>
+                </div>
+                <div class="contact-text">
+                    <span class="contact-label">Order on WhatsApp</span>
+                    <span class="contact-value">wa.me/917558783018</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <span class="site-url">www.layerweaver.com/shop</span>
+        </div>
+    </div>
+</body>
+</html>
