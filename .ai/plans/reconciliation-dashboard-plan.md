@@ -299,33 +299,41 @@ the dashboard, not gated behind a `launchd` config change.
 
 ## Build order
 
+**Goal: get to fully unattended (HIGH+MEDIUM auto-resolve on the `launchd`
+schedule) as directly as possible.** No week-long watch periods or staged
+confidence rollout for their own sake — the one gate that isn't optional is
+proving the matcher's correctness against known-good historical data
+*before* it's allowed to write anything, because a wrong auto-created order
+(wrong address, wrong customer) is a worse outcome than the orphan it was
+trying to fix, and that's not a caution that fades with time — it applies
+identically on day one and day 100. Once that gate is passed, there's no
+reason to hold back HIGH+MEDIUM or the schedule separately.
+
 1. **Razorpay client** — `routes/lib/razorpay.js`: Basic Auth fetch wrapper,
    pagination, `status: "captured"` filter. Add
    `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` to `.env.example`.
-2. **Matching only, dry-run, no writes** — prove the amount/phone/email/time
-   scoring against several real days before any auto-resolve exists. Compare
-   its output against the Aug 8 manual report for the same days as a
-   correctness check.
-3. **Run-result storage** — the status card (above) reads a stored result
-   rather than triggering a live run, so `/api/reconcile/run` needs to
-   persist its output somewhere the dashboard can read back (a JSON file
-   under the project root, same lightweight pattern as
-   `print-status.local.json` in `routes/print.js`, is enough at this
-   volume — no real DB needed).
-4. **Grant `write_draft_orders`** on the Shopify app once matching is
-   trusted.
-5. **Auto-resolve for HIGH confidence only** — smallest blast radius first,
-   watch it for a week. Still triggered manually (calling the endpoint by
-   hand) at this stage, not yet on a schedule.
-6. **Expand to MEDIUM confidence**, add the dashboard status card.
-7. **Add the `launchd` scheduled job** (`com.layerweaver.reconcile.plist`)
-   only once steps 5–6 have been watched running manually and are trusted —
-   this is the step that turns the pipeline fully unattended, so it's
-   deliberately last, not bundled in with getting auto-resolve working in
-   the first place.
+2. **Matching only, dry-run, no writes** — implement the amount/phone/email/
+   time scoring, then run it against the days already covered by the Aug 8
+   manual report and confirm it reproduces those matches/orphans. This is
+   the one required checkpoint, not a multi-day soak — a single correct
+   comparison run is enough to move on.
+3. **Run-result storage** — a JSON file under the project root (same
+   lightweight pattern as `print-status.local.json` in `routes/print.js`),
+   so the status card and the `launchd` job both have something to read
+   back without re-running live.
+4. **Grant `write_draft_orders`** on the Shopify app — this is a manual
+   step in the Shopify admin, the one place a human has to act outside the
+   code itself.
+5. **Build the full pipeline in one pass**: HIGH+MEDIUM auto-resolve
+   (per the confidence tiers above), the dashboard status card + "Run Now"
+   button, and the `launchd` scheduled job (`com.layerweaver.reconcile.plist`)
+   — all together, not sequenced apart with waiting periods in between.
+   Turn the schedule on as soon as step 2's dry-run check has passed and
+   `write_draft_orders` is granted.
 
-Do not skip straight to auto-resolving MEDIUM/LOW-confidence matches or
-scheduling unattended runs before step 2's dry-run accuracy is actually
-checked against known-good historical data — a wrong auto-created order
-(wrong address, wrong customer) is a worse outcome than the orphan it was
+What still isn't negotiable, because these are what make unattended
+operation safe rather than what's slowing the build down: LOW confidence
+never auto-writes, every auto-created order's `note` carries the Razorpay
+payment ID (see Pipeline above), and the per-run cap/spike-alert stays in
+place from the first scheduled run, not added later.
 trying to fix.
