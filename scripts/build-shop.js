@@ -109,11 +109,19 @@ async function fetchCollections() {
     'car-die-cast-lovers',
   ];
   const ORDER = [
-    'lamps-and-decor',
-    'toys-games-and-desk-buddies',
-    'articulated-fidgets',
+    'halloween',
+    'lamps-and-lighting',
+    'lamps-and-decor',              // Home Decor
+    'gifts-for-her',
+    'made-for-you',                 // Personalized & Name Gifts
+    'toys-games-and-desk-buddies',  // Cute Animals & Desk Buddies
+    'articulated-fidgets',          // Fidgets & Clickers
+    'dino-skeletons',               // Dinosaurs & Prehistoric
+    'gamers-and-geek-gifts',
+    'plants-and-nature',
     'keychains-pocket-charms',
-    'page-pals',
+    'page-pals',                    // Desk & Stationery
+    'yarn-and-threads',
     'aquarium-tech-and-accessories',
     'bundles',
   ];
