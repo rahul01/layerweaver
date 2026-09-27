@@ -99,7 +99,15 @@ async function fetchCollectionsUnfiltered() {
 async function fetchCollections() {
   const collections = await fetchCollectionsUnfiltered();
 
-  const HIDDEN_COLLECTIONS = ['all-products'];
+  // Meta-only collections exist in Shopify purely as Meta ad product sets
+  // (price bands, tiny niche sets) - no nav chip, page or sitemap entry here.
+  // Plan: LayerWeaverDashboard/meta/categoriesmeta-full.md
+  const HIDDEN_COLLECTIONS = [
+    'all-products',
+    'gifts-under-300',
+    'high-value',
+    'car-die-cast-lovers',
+  ];
   const ORDER = [
     'lamps-and-decor',
     'toys-games-and-desk-buddies',
