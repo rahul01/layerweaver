@@ -1252,3 +1252,45 @@
     initFilterDropdown();
   }
 })();
+
+// Collection nav group menus (desktop). Mouse users get hover via CSS; this
+// handles click/tap and keyboard, and closes on outside click or Escape.
+(function () {
+  function initNavGroups() {
+    const groups = [...document.querySelectorAll('.collection-nav-group')];
+    if (!groups.length) return;
+
+    const setOpen = (group, open) => {
+      group.classList.toggle('open', open);
+      group.querySelector('.collection-nav-group-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    const closeAll = except => groups.forEach(g => { if (g !== except) setOpen(g, false); });
+
+    for (const group of groups) {
+      const btn = group.querySelector('.collection-nav-group-btn');
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAll(group);
+        setOpen(group, !group.classList.contains('open'));
+      });
+      group.addEventListener('mouseleave', () => setOpen(group, false));
+      group.addEventListener('focusout', (e) => {
+        if (!group.contains(e.relatedTarget)) setOpen(group, false);
+      });
+      group.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && group.classList.contains('open')) {
+          setOpen(group, false);
+          btn.focus();
+        }
+      });
+    }
+
+    document.addEventListener('click', () => closeAll());
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavGroups);
+  } else {
+    initNavGroups();
+  }
+})();

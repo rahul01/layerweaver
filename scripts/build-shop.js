@@ -847,26 +847,85 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
 }
 
 // ── Collection nav chip strip ─────────────────────────────────────────────────
+// Desktop shows seasonal collections as direct chips and groups the rest into
+// dropdowns so the sticky bar fits on one row. Any collection not listed here
+// lands in a trailing "More" group, so a new Shopify collection still shows up
+// until it's given a home. Mobile renders the same tree as a headed list.
+const COLLECTION_NAV = [
+  'halloween',
+  'diwali',
+  { label: 'Gifts', handles: ['gifts-for-her', 'made-for-you', 'gamers-and-geek-gifts', 'bundles'] },
+  { label: 'Home & Decor', handles: ['lamps-and-lighting', 'lamps-and-decor', 'plants-and-nature', 'aquarium-tech-and-accessories'] },
+  { label: 'Toys & Fidgets', handles: ['toys-games-and-desk-buddies', 'articulated-fidgets', 'dino-skeletons'] },
+  { label: 'Accessories', handles: ['keychains-pocket-charms', 'page-pals', 'yarn-and-threads'] },
+];
+
+// Resolves COLLECTION_NAV against the live collections: returns a list of
+// items ({ handle, title, href }) and groups ({ label, items }), skipping
+// handles that don't exist and dropping groups left empty.
+function collectionNavTree(collections, hrefFor) {
+  const byHandle = new Map(collections.map(c => [c.handle, c]));
+  const used = new Set();
+  const itemFor = handle => {
+    const c = byHandle.get(handle);
+    if (!c || used.has(handle)) return null;
+    used.add(handle);
+    return { handle, title: c.title, href: hrefFor(handle) };
+  };
+  const tree = [];
+  for (const entry of COLLECTION_NAV) {
+    if (typeof entry === 'string') {
+      const item = itemFor(entry);
+      if (item) tree.push(item);
+    } else {
+      const items = entry.handles.map(itemFor).filter(Boolean);
+      if (items.length) tree.push({ label: entry.label, items });
+    }
+  }
+  const rest = collections.filter(c => !used.has(c.handle)).map(c => itemFor(c.handle));
+  if (rest.length) tree.push({ label: 'More', items: rest });
+  return tree;
+}
+
 // shopBase:     path from current page back to shop/
 // activeHandle: collection handle to mark active, or null for "All"
 
 function collectionNavHtml(collections, shopBase, activeHandle = null, basePath = 'collections', allHref = shopBase) {
-  const items = [
+  const tree = [
     { handle: null, title: 'All', href: allHref },
-    ...collections.map(c => ({ handle: c.handle, title: c.title, href: `${shopBase}${basePath}/${c.handle}/` })),
+    ...collectionNavTree(collections, handle => `${shopBase}${basePath}/${handle}/`),
   ];
-  const activeTitle = items.find(i => i.handle === activeHandle)?.title || 'All';
-  const chips = items.map(({ handle, title, href }) => {
-    const active = handle === activeHandle ? ' active' : '';
-    return `<a href="${href}" class="collection-nav-chip${active}">${title}</a>`;
+  const flatItems = tree.flatMap(node => node.items || [node]);
+  const activeTitle = flatItems.find(i => i.handle === activeHandle)?.title || 'All';
+  const isActive = handle => handle === activeHandle ? ' active' : '';
+
+  const desktop = tree.map(node => {
+    if (!node.items) {
+      return `<a href="${node.href}" class="collection-nav-chip${isActive(node.handle)}">${node.title}</a>`;
+    }
+    const groupActive = node.items.some(i => i.handle === activeHandle) ? ' active' : '';
+    const links = node.items.map(i =>
+      `<a href="${i.href}" class="collection-nav-menu-item${isActive(i.handle)}">${i.title}</a>`
+    ).join('\n                  ');
+    return `<div class="collection-nav-group">
+              <button type="button" class="collection-nav-chip collection-nav-group-btn${groupActive}" aria-expanded="false" aria-haspopup="true">
+                  ${node.label} <i class="fa-solid fa-chevron-down collection-filter-chevron"></i>
+              </button>
+              <div class="collection-nav-menu">
+                  ${links}
+              </div>
+          </div>`;
   }).join('\n          ');
-  const dropdownItems = items.map(({ handle, title, href }) => {
-    const active = handle === activeHandle ? ' active' : '';
-    return `<a href="${href}" class="collection-dropdown-item${active}">${title}</a>`;
+
+  const dropdownItems = tree.map(node => {
+    const itemHtml = i => `<a href="${i.href}" class="collection-dropdown-item${isActive(i.handle)}">${i.title}</a>`;
+    if (!node.items) return itemHtml(node);
+    return [`<div class="collection-dropdown-heading">${node.label}</div>`, ...node.items.map(itemHtml)].join('\n          ');
   }).join('\n          ');
+
   return `
       <div class="collection-nav">
-          ${chips}
+          ${desktop}
       </div>
       <div class="collection-nav-mobile">
           <button class="collection-filter-btn" aria-expanded="false" aria-haspopup="true">
