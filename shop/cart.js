@@ -58,7 +58,15 @@
       body: JSON.stringify({ query, variables }),
     });
     const json = await res.json();
-    if (json.errors) throw new Error(json.errors[0].message);
+    if (json.errors) {
+      // Tagged so callers can tell "Shopify rejected this" (e.g. a cart line
+      // pointing at a deleted variant) apart from a dropped request on a
+      // flaky mobile connection - only the former justifies repairing or
+      // discarding the cart. See recoverCart().
+      const err = new Error(json.errors[0].message);
+      err.isGraphQLError = true;
+      throw err;
+    }
     return json.data;
   }
 
@@ -125,11 +133,20 @@
   // fetch after each removal, stopping as soon as it succeeds - in the
   // common case (a single bad line) that's one extra round trip, and it
   // never touches a line that turns out to be fine.
+  // Only a GraphQL error means the cart is actually broken. A network error
+  // (dropped request on mobile data) is rethrown before anything is removed,
+  // otherwise one blip would delete a perfectly healthy line.
   async function recoverCart(cartId) {
+    try {
+      return await fetchCart(cartId);
+    } catch (err) {
+      if (!err.isGraphQLError) throw err;
+    }
     let remaining;
     try {
       remaining = await fetchCartLineIds(cartId);
-    } catch {
+    } catch (err) {
+      if (!err.isGraphQLError) throw err;
       return null; // cart itself is gone, not just a bad line - nothing to salvage
     }
     while (remaining.length) {
@@ -137,7 +154,10 @@
       await removeLine(cartId, lineId).catch(() => {});
       try {
         return await fetchCart(cartId);
-      } catch { /* still broken - try removing the next candidate */ }
+      } catch (err) {
+        if (!err.isGraphQLError) throw err;
+        /* still broken - try removing the next candidate */
+      }
     }
     return null;
   }
@@ -820,6 +840,8 @@
       try {
         cart = await addLines(cartId, lines, cartBefore);
       } catch (err) {
+        // Network failure - leave the cart untouched so "try again" works.
+        if (!err.isGraphQLError) throw err;
         // A line elsewhere in this cart likely references a variant that no
         // longer exists (e.g. after swapping color variants in Shopify) -
         // try to salvage the rest of the cart before giving up on it
