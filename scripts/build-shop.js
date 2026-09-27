@@ -110,6 +110,7 @@ async function fetchCollections() {
   ];
   const ORDER = [
     'halloween',
+    'diwali',
     'lamps-and-lighting',
     'lamps-and-decor',              // Home Decor
     'gifts-for-her',
