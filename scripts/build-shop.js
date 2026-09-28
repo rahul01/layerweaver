@@ -935,6 +935,13 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
     return [`<div class="collection-dropdown-heading">${node.label}</div>`, ...node.items.map(itemHtml)].join('\n          ');
   }).join('\n          ');
 
+  // Phones only get the filter button, so seasonal collections also show as
+  // icon-only chips beside it to keep them one tap away.
+  const mobileSeasonal = tree
+    .filter(node => !node.items && COLLECTION_NAV_THEMES[node.handle])
+    .map(node => `<a href="${node.href}" class="collection-nav-chip collection-nav-icon-chip${themeClass('collection-nav-chip', node.handle)}${isActive(node.handle)}" aria-label="${node.title}" title="${node.title}"><span aria-hidden="true">${COLLECTION_NAV_THEMES[node.handle].icon}</span></a>`)
+    .join('\n          ');
+
   return `
       <div class="collection-nav">
           ${desktop}
@@ -948,6 +955,7 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
           <div class="collection-dropdown" role="menu">
               ${dropdownItems}
           </div>
+          ${mobileSeasonal}
           <div class="mobile-inline-search" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
               <div class="search-bar">
                   <i class="fa-solid fa-magnifying-glass search-icon"></i>
