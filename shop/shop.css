@@ -214,6 +214,122 @@
     background: rgba(160, 131, 213, 0.08);
 }
 
+/* Seasonal chips (see COLLECTION_NAV_THEMES in build-shop.js) */
+.collection-nav-icon {
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 1em;
+    line-height: 1;
+}
+
+.collection-nav-chip--halloween {
+    background: #1f1729;
+    border-color: #ff7a1a;
+    color: #ffa24d;
+    box-shadow: 0 0 10px rgba(255, 122, 26, 0.25);
+}
+
+.collection-nav-chip--halloween:hover {
+    background: #2a1f38;
+    border-color: #ff8f3d;
+    color: #ffb877;
+    box-shadow: 0 0 14px rgba(255, 122, 26, 0.45);
+}
+
+.collection-nav-chip--halloween.active {
+    background: #ff7a1a;
+    border-color: #ff7a1a;
+    color: #1f1729;
+}
+
+.collection-nav-chip--diwali {
+    background: linear-gradient(135deg, #fff6dc 0%, #ffe39a 100%);
+    border-color: #e8a020;
+    color: #9a4a00;
+    box-shadow: 0 0 10px rgba(232, 160, 32, 0.3);
+}
+
+.collection-nav-chip--diwali:hover {
+    background: linear-gradient(135deg, #ffefc2 0%, #ffd66b 100%);
+    border-color: #d98a0b;
+    color: #7f3c00;
+    box-shadow: 0 0 14px rgba(232, 160, 32, 0.5);
+}
+
+.collection-nav-chip--diwali.active {
+    background: linear-gradient(135deg, #f5b82e 0%, #e8741a 100%);
+    border-color: #e8741a;
+    color: #3b1600;
+}
+
+/* Moving shine around the Diwali chip border. ::before is a rotating conic
+   gradient masked down to a ring over the border; ::after is the same sweep
+   blurred behind the chip, so a glow travels with each glint. Both repeat
+   every 180deg, giving two glints on opposite sides. Browsers
+   without @property show a static gold ring with a fixed glint. */
+@property --diwali-shine-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+.collection-nav-chip--diwali { position: relative; }
+
+.collection-nav-chip--diwali::before,
+.collection-nav-chip--diwali::after {
+    content: '';
+    position: absolute;
+    border-radius: inherit;
+    pointer-events: none;
+    animation: diwali-shine 4s linear infinite;
+}
+
+.collection-nav-chip--diwali::before {
+    inset: -1.5px;
+    padding: 1.5px;
+    background: repeating-conic-gradient(
+        from var(--diwali-shine-angle),
+        #e8a020 0deg,
+        #e8a020 110deg,
+        #ffd66b 130deg,
+        #fff8dc 145deg,
+        #ffffff 155deg,
+        #fff8dc 165deg,
+        #ffd66b 172deg,
+        #e8a020 180deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.collection-nav-chip--diwali::after {
+    inset: -5px;
+    z-index: -1;
+    background: repeating-conic-gradient(
+        from var(--diwali-shine-angle),
+        transparent 0deg,
+        transparent 120deg,
+        rgba(255, 196, 60, 0.85) 142deg,
+        rgba(255, 244, 200, 1) 155deg,
+        rgba(255, 196, 60, 0.85) 167deg,
+        transparent 180deg
+    );
+    filter: blur(7px);
+}
+
+@keyframes diwali-shine {
+    to { --diwali-shine-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .collection-nav-chip--diwali::before,
+    .collection-nav-chip--diwali::after { animation: none; }
+}
+
+.collection-dropdown .collection-dropdown-item--halloween { color: #c2560a; }
+.collection-dropdown .collection-dropdown-item--diwali { color: #a35a08; }
+
 .collection-nav-mobile { display: none; }
 
 @media (max-width: 768px) {

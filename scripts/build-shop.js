@@ -860,6 +860,14 @@ const COLLECTION_NAV = [
   { label: 'Accessories', handles: ['keychains-pocket-charms', 'page-pals', 'yarn-and-threads'] },
 ];
 
+// Festive styling for seasonal chips (desktop chip + mobile dropdown item).
+// Adds a collection-nav-chip--<theme> / collection-dropdown-item--<theme>
+// class and an icon before the title. Remove an entry when its season ends.
+const COLLECTION_NAV_THEMES = {
+  halloween: { theme: 'halloween', icon: '🎃' },
+  diwali:    { theme: 'diwali',    icon: '🪔' },
+};
+
 // Resolves COLLECTION_NAV against the live collections: returns a list of
 // items ({ handle, title, href }) and groups ({ label, items }), skipping
 // handles that don't exist and dropping groups left empty.
@@ -898,10 +906,14 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
   const flatItems = tree.flatMap(node => node.items || [node]);
   const activeTitle = flatItems.find(i => i.handle === activeHandle)?.title || 'All';
   const isActive = handle => handle === activeHandle ? ' active' : '';
+  const themeClass = (base, handle) => COLLECTION_NAV_THEMES[handle] ? ` ${base}--${COLLECTION_NAV_THEMES[handle].theme}` : '';
+  const themedTitle = ({ handle, title }) => COLLECTION_NAV_THEMES[handle]
+    ? `<span class="collection-nav-icon" aria-hidden="true">${COLLECTION_NAV_THEMES[handle].icon}</span>${title}`
+    : title;
 
   const desktop = tree.map(node => {
     if (!node.items) {
-      return `<a href="${node.href}" class="collection-nav-chip${isActive(node.handle)}">${node.title}</a>`;
+      return `<a href="${node.href}" class="collection-nav-chip${themeClass('collection-nav-chip', node.handle)}${isActive(node.handle)}">${themedTitle(node)}</a>`;
     }
     const groupActive = node.items.some(i => i.handle === activeHandle) ? ' active' : '';
     const links = node.items.map(i =>
@@ -918,7 +930,7 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
   }).join('\n          ');
 
   const dropdownItems = tree.map(node => {
-    const itemHtml = i => `<a href="${i.href}" class="collection-dropdown-item${isActive(i.handle)}">${i.title}</a>`;
+    const itemHtml = i => `<a href="${i.href}" class="collection-dropdown-item${themeClass('collection-dropdown-item', i.handle)}${isActive(i.handle)}">${themedTitle(i)}</a>`;
     if (!node.items) return itemHtml(node);
     return [`<div class="collection-dropdown-heading">${node.label}</div>`, ...node.items.map(itemHtml)].join('\n          ');
   }).join('\n          ');
