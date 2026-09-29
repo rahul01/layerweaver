@@ -3050,6 +3050,67 @@ body.seasonal--halloween {
     color: #15101c;
 }
 
+/* Themed chrome below the header: the trust strip and collection bar take
+   the page palette so the white header is the only neutral band, and the
+   banner gets breathing room below the bar. Trust icons carry inline
+   colours, hence !important to tint them. */
+.seasonal .collection-banner { margin-top: 24px; }
+
+.seasonal--diwali .shop-trust-strip {
+    background: #fff3d6;
+    border-bottom-color: rgba(232, 160, 32, 0.3);
+}
+.seasonal--diwali .trust-item { color: #9a5a1a; }
+.seasonal--diwali .trust-item i { color: #d18a1c !important; }
+.seasonal--diwali .trust-sep { color: #e8a020; opacity: 0.6; }
+.seasonal--diwali .collection-topbar { border-bottom-color: rgba(232, 160, 32, 0.25); }
+.seasonal--diwali .collection-nav-chip:not(.collection-nav-chip--diwali):not(.collection-nav-chip--halloween),
+.seasonal--diwali .collection-filter-btn {
+    background: #fffdf7;
+    border-color: rgba(232, 160, 32, 0.35);
+    color: #8a5a1a;
+}
+.seasonal--diwali .collection-nav-chip:not(.collection-nav-chip--diwali):not(.collection-nav-chip--halloween):hover,
+.seasonal--diwali .collection-filter-btn:hover {
+    border-color: #e8a020;
+    color: #7f3c00;
+    background: #fff6dc;
+}
+.seasonal--diwali .collection-nav-mobile .search-bar { background: #fff3d6; }
+
+.seasonal--halloween .shop-trust-strip {
+    background: #1f1729;
+    border-bottom-color: rgba(255, 122, 26, 0.25);
+}
+.seasonal--halloween .trust-item { color: #d8cce6; }
+.seasonal--halloween .trust-item i { color: #ff8f3d !important; }
+.seasonal--halloween .trust-sep { color: #ff7a1a; opacity: 0.6; }
+.seasonal--halloween .collection-topbar {
+    background: #1a1322;
+    border-bottom-color: rgba(255, 122, 26, 0.2);
+}
+.seasonal--halloween .collection-nav-chip:not(.collection-nav-chip--diwali):not(.collection-nav-chip--halloween),
+.seasonal--halloween .collection-filter-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #d8cce6;
+}
+.seasonal--halloween .collection-nav-chip:not(.collection-nav-chip--diwali):not(.collection-nav-chip--halloween):hover,
+.seasonal--halloween .collection-filter-btn:hover,
+.seasonal--halloween .collection-filter-btn[aria-expanded="true"] {
+    border-color: #ff7a1a;
+    color: #ffa24d;
+    background: rgba(255, 122, 26, 0.08);
+}
+.seasonal--halloween .collection-nav-mobile .search-bar { background: rgba(255, 255, 255, 0.08); }
+.seasonal--halloween .collection-nav-mobile .search-input { color: #f3ecf9; }
+.seasonal--halloween .collection-nav-mobile .search-input::placeholder,
+.seasonal--halloween .collection-nav-mobile .search-icon { color: #b9a9cc; }
+
+@media (max-width: 768px) {
+    .seasonal .collection-banner { margin-top: 16px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .seasonal--diwali .collection-banner::after { animation: none; }
 }
