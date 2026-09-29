@@ -860,13 +860,34 @@ const COLLECTION_NAV = [
   { label: 'Accessories', handles: ['keychains-pocket-charms', 'page-pals', 'yarn-and-threads'] },
 ];
 
-// Festive styling for seasonal chips (desktop chip + mobile dropdown item).
-// Adds a collection-nav-chip--<theme> / collection-dropdown-item--<theme>
-// class and an icon before the title. Remove an entry when its season ends.
-const COLLECTION_NAV_THEMES = {
-  halloween: { theme: 'halloween', icon: '🎃' },
-  diwali:    { theme: 'diwali',    icon: '🪔' },
+// Seasonal collections, keyed by handle. Drives the festive nav chip (desktop,
+// phone icon chip, dropdown item), the themed collection page (seasonal--<theme>
+// body class, eyebrow over the banner) and the homepage hero slide. `featured`
+// picks the products for that collection's banner collage and hero slide, in
+// order; without it they use the collection's last 5 products.
+// Remove an entry when its season ends.
+const SEASONAL_THEMES = {
+  halloween: {
+    theme: 'halloween',
+    icon: '🎃',
+    eyebrow: 'Festive Season 2026',
+    featured: ['glowing-halloween-pumpkin-lantern-🎃', 'ghost-balloon-lamp', 'pumpkin-articulated-legs', 'articulated-cute-spider', 'skull-brain-clicker-keychain'],
+  },
+  diwali: {
+    theme: 'diwali',
+    icon: '🪔',
+    eyebrow: 'Festive Season 2026',
+    featured: ['peacock-led-decor-lamp', 'lotus-led-tea-light-holder', 'floating-lotus-flower', 'octopus-table-lamp', 'decorative-vases'],
+  },
 };
+
+// A collection's featured products (per SEASONAL_THEMES), or null if it has none.
+function featuredProducts(collection) {
+  const picked = (SEASONAL_THEMES[collection.handle]?.featured || [])
+    .map(handle => collection.products.find(p => p.handle === handle))
+    .filter(Boolean);
+  return picked.length ? picked : null;
+}
 
 // Resolves COLLECTION_NAV against the live collections: returns a list of
 // items ({ handle, title, href }) and groups ({ label, items }), skipping
@@ -906,9 +927,9 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
   const flatItems = tree.flatMap(node => node.items || [node]);
   const activeTitle = flatItems.find(i => i.handle === activeHandle)?.title || 'All';
   const isActive = handle => handle === activeHandle ? ' active' : '';
-  const themeClass = (base, handle) => COLLECTION_NAV_THEMES[handle] ? ` ${base}--${COLLECTION_NAV_THEMES[handle].theme}` : '';
-  const themedTitle = ({ handle, title }) => COLLECTION_NAV_THEMES[handle]
-    ? `<span class="collection-nav-icon" aria-hidden="true">${COLLECTION_NAV_THEMES[handle].icon}</span>${title}`
+  const themeClass = (base, handle) => SEASONAL_THEMES[handle] ? ` ${base}--${SEASONAL_THEMES[handle].theme}` : '';
+  const themedTitle = ({ handle, title }) => SEASONAL_THEMES[handle]
+    ? `<span class="collection-nav-icon" aria-hidden="true">${SEASONAL_THEMES[handle].icon}</span>${title}`
     : title;
 
   const desktop = tree.map(node => {
@@ -938,8 +959,8 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
   // Phones only get the filter button, so seasonal collections also show as
   // icon-only chips beside it to keep them one tap away.
   const mobileSeasonal = tree
-    .filter(node => !node.items && COLLECTION_NAV_THEMES[node.handle])
-    .map(node => `<a href="${node.href}" class="collection-nav-chip collection-nav-icon-chip${themeClass('collection-nav-chip', node.handle)}${isActive(node.handle)}" aria-label="${node.title}" title="${node.title}"><span aria-hidden="true">${COLLECTION_NAV_THEMES[node.handle].icon}</span></a>`)
+    .filter(node => !node.items && SEASONAL_THEMES[node.handle])
+    .map(node => `<a href="${node.href}" class="collection-nav-chip collection-nav-icon-chip${themeClass('collection-nav-chip', node.handle)}${isActive(node.handle)}" aria-label="${node.title}" title="${node.title}"><span aria-hidden="true">${SEASONAL_THEMES[node.handle].icon}</span></a>`)
     .join('\n          ');
 
   return `
@@ -1546,7 +1567,7 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
 // ── Collage banner (shared by shop index + collection pages) ─────────────────
 // images: array of { url, altText } - up to 5 used
 
-function collagebannerHtml(title, description, images) {
+function collagebannerHtml(title, description, images, eyebrow = '') {
   const seen = new Set();
   const imgs = images
     .filter(i => i?.url && !seen.has(i.url) && seen.add(i.url))
@@ -1560,6 +1581,7 @@ function collagebannerHtml(title, description, images) {
         <div class="banner-collage">${cells}
         </div>
         <div class="collection-banner-overlay">
+            ${eyebrow ? `<p class="collection-banner-eyebrow">${eyebrow}</p>` : ''}
             <h1>${title}</h1>
             ${description ? `<p>${description}</p>` : ''}
         </div>
@@ -1570,14 +1592,92 @@ function collagebannerHtml(title, description, images) {
 // Generates collage-style slides from each collection's product images,
 // matching the same banner-collage pattern used on shop/collection pages.
 
+// ── Homepage hero (index.html) ────────────────────────────────────────────────
+// While HERO_FESTIVE is set, the hero's eyebrow, heading, left-hand callouts,
+// CTA and carousel are all about its collections. Set it to null after the
+// season to restore the evergreen hero below - nothing to hand-edit.
+const HERO_FESTIVE = {
+  eyebrow: 'Festive Season 2026',
+  heading: 'Light Up Diwali, <span class="brand-text">Spook Up Halloween</span>',
+  collections: ['diwali', 'halloween'],
+  callouts: [
+    { theme: 'diwali', icon: '🪔', name: 'Diwali Collection', desc: 'Lamps, lotus lights &amp; festive decor', href: 'shop/collections/diwali/' },
+    { theme: 'halloween', icon: '🎃', name: 'Halloween Collection', desc: 'Glowing pumpkins, spiders &amp; spooky desk buddies', href: 'shop/collections/halloween/' },
+    { faIcon: 'fa-truck-fast', name: 'Free Shipping', desc: 'On every order above ₹299', href: 'shop/' },
+  ],
+  cta: { label: 'Shop Diwali Gifts', href: 'shop/collections/diwali/', theme: 'diwali' },
+};
+
+const HERO_EVERGREEN_HEADER = `                    <p class="hero-eyebrow">3D Printed Products</p>
+                    <h1>Bringing Ideas to Life <span class="brand-text">Layer by Layer</span></h1>`;
+
+const HERO_EVERGREEN_LEFT = `                <ul class="hero-services">
+                    <li class="hero-service-item">
+                        <a href="services/on-demand/" class="hero-service-link">
+                            <div class="hero-service-icon"><i class="fa-solid fa-cube"></i></div>
+                            <div class="hero-service-info">
+                                <span class="hero-service-name">On Demand Printing</span>
+                                <span class="hero-service-desc">Fast turnaround, any quantity</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="hero-service-item">
+                        <a href="services/3d-design/" class="hero-service-link">
+                            <div class="hero-service-icon"><i class="fa-solid fa-drafting-compass"></i></div>
+                            <div class="hero-service-info">
+                                <span class="hero-service-name">3D Design</span>
+                                <span class="hero-service-desc">Custom models &amp; prototypes</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="hero-service-item">
+                        <a href="workshop/" class="hero-service-link">
+                            <div class="hero-service-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+                            <div class="hero-service-info">
+                                <span class="hero-service-name">Workshops</span>
+                                <span class="hero-service-desc">Hands-on learning for all ages</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <a href="shop/" class="hero-shop-btn"><i class="fa-solid fa-bag-shopping"></i> Shop Now</a>`;
+
+function heroHeaderHtml(festive) {
+  if (!festive) return HERO_EVERGREEN_HEADER;
+  return `                    <p class="hero-eyebrow hero-eyebrow--festive">${festive.eyebrow}</p>
+                    <h1>${festive.heading}</h1>`;
+}
+
+function heroLeftHtml(festive) {
+  if (!festive) return HERO_EVERGREEN_LEFT;
+  const items = festive.callouts.map(c => {
+    const icon = c.faIcon ? `<i class="fa-solid ${c.faIcon}"></i>` : `<span aria-hidden="true">${c.icon}</span>`;
+    const linkTheme = c.theme ? ` hero-service-link--${c.theme}` : '';
+    return `                    <li class="hero-service-item">
+                        <a href="${c.href}" class="hero-service-link${linkTheme}">
+                            <div class="hero-service-icon">${icon}</div>
+                            <div class="hero-service-info">
+                                <span class="hero-service-name">${c.name}</span>
+                                <span class="hero-service-desc">${c.desc}</span>
+                            </div>
+                        </a>
+                    </li>`;
+  }).join('\n');
+  return `                <ul class="hero-services">
+${items}
+                </ul>
+                <a href="${festive.cta.href}" class="hero-shop-btn${festive.cta.theme ? ` hero-shop-btn--${festive.cta.theme}` : ''}"><i class="fa-solid fa-bag-shopping"></i> ${festive.cta.label}</a>`;
+}
+
 function heroCarouselSlidesHtml(collections) {
   const BANNER_EXCLUDE = ['cone-fidget'];
 
   const slides = collections.map((collection, i) => {
+    const theme = SEASONAL_THEMES[collection.handle];
     const seen = new Set();
-    const imgs = collection.products
+    const imgs = (featuredProducts(collection) || collection.products
       .filter(p => !BANNER_EXCLUDE.includes(p.handle))
-      .slice(-5)
+      .slice(-5))
       .map(p => p.images.edges[0]?.node)
       .filter(img => img?.url && !seen.has(img.url) && seen.add(img.url))
       .slice(0, 5);
@@ -1588,11 +1688,11 @@ function heroCarouselSlidesHtml(collections) {
                         </div>`).join('');
 
     return `
-                        <a href="shop/collections/${collection.handle}/" class="hero-carousel-slide${i === 0 ? ' active' : ''}">
+                        <a href="shop/collections/${collection.handle}/" class="hero-carousel-slide${theme ? ` hero-carousel-slide--${theme.theme}` : ''}${i === 0 ? ' active' : ''}">
                             <div class="banner-collage">${cells}
                             </div>
                             <div class="hero-carousel-caption">
-                                <span class="hero-carousel-title">${collection.title}</span>
+                                <span class="hero-carousel-title">${theme ? `<span class="hero-carousel-icon" aria-hidden="true">${theme.icon}</span>` : ''}${collection.title}</span>
                             </div>
                         </a>`;
   }).join('');
@@ -1666,11 +1766,12 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
   const productCards = collection.products.map((p, i) => productCardHtml(p, '../../products/', reviewsMap[p.handle], i < 4)).join('\n');
 
   const BANNER_EXCLUDE = ['cone-fidget'];
-  const bannerImages = collection.products
+  const seasonal = SEASONAL_THEMES[collection.handle];
+  const bannerImages = (featuredProducts(collection) || collection.products
     .filter(p => !BANNER_EXCLUDE.includes(p.handle))
-    .slice(-5)
+    .slice(-5))
     .map(p => p.images.edges[0]?.node);
-  const bannerHtml = collagebannerHtml(collection.title, collection.description, bannerImages);
+  const bannerHtml = collagebannerHtml(collection.title, collection.description, bannerImages, seasonal?.eyebrow);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1685,7 +1786,7 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
       ogUrl: `${SITE_URL}/shop/collections/${collection.handle}/`,
     })}
 </head>
-<body>
+<body${seasonal ? ` class="seasonal seasonal--${seasonal.theme}"` : ''}>
     ${shopHeaderHtml(base, shopBase)}
     <div class="header-spacer"></div>
     ${shopTrustStripHtml(base)}
@@ -2122,7 +2223,21 @@ async function main() {
   // Update homepage hero carousel with collage slides
   const indexPath = path.join(__dirname, '..', 'index.html');
   let indexHtml = fs.readFileSync(indexPath, 'utf8');
-  const { slides, dots } = heroCarouselSlidesHtml(collections);
+  // Festive hero only if at least one of its collections exists in Shopify
+  const festiveCollections = (HERO_FESTIVE?.collections || [])
+    .map(handle => collections.find(c => c.handle === handle))
+    .filter(Boolean);
+  const heroFestive = festiveCollections.length ? HERO_FESTIVE : null;
+  if (HERO_FESTIVE && !heroFestive) console.warn('  ⚠️  WARNING: HERO_FESTIVE collections not found in Shopify — using the evergreen hero.');
+  indexHtml = indexHtml.replace(
+    /<!-- HERO-HEADER-START -->[\s\S]*?<!-- HERO-HEADER-END -->/,
+    `<!-- HERO-HEADER-START -->\n${heroHeaderHtml(heroFestive)}\n<!-- HERO-HEADER-END -->`
+  );
+  indexHtml = indexHtml.replace(
+    /<!-- HERO-LEFT-START -->[\s\S]*?<!-- HERO-LEFT-END -->/,
+    `<!-- HERO-LEFT-START -->\n${heroLeftHtml(heroFestive)}\n<!-- HERO-LEFT-END -->`
+  );
+  const { slides, dots } = heroCarouselSlidesHtml(heroFestive ? festiveCollections : collections);
   indexHtml = indexHtml.replace(
     /<!-- HERO-CAROUSEL-SLIDES-START -->[\s\S]*?<!-- HERO-CAROUSEL-SLIDES-END -->/,
     `<!-- HERO-CAROUSEL-SLIDES-START -->\n${slides}\n<!-- HERO-CAROUSEL-SLIDES-END -->`

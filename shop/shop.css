@@ -223,6 +223,8 @@
 }
 
 .collection-nav-chip--halloween {
+    border-width: 1px;
+    padding: 7.5px 18.5px;
     background: #1f1729;
     border-color: #ff7a1a;
     color: #ffa24d;
@@ -243,6 +245,8 @@
 }
 
 .collection-nav-chip--diwali {
+    border-width: 1px;
+    padding: 7.5px 18.5px;
     background: linear-gradient(135deg, #fff6dc 0%, #ffe39a 100%);
     border-color: #e8a020;
     color: #9a4a00;
@@ -264,15 +268,10 @@
 
 /* Moving shine around the Diwali chip border. ::before is a rotating conic
    gradient masked down to a ring over the border; ::after is the same sweep
-   blurred behind the chip, so a glow travels with each glint. Both repeat
+   blurred behind the chip, so a glow travels with each glint. The
+   --diwali-shine-angle property and keyframes live in styles.css. Both repeat
    every 180deg, giving two glints on opposite sides. Browsers
    without @property show a static gold ring with a fixed glint. */
-@property --diwali-shine-angle {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
-}
-
 .collection-nav-chip--diwali { position: relative; }
 
 .collection-nav-chip--diwali::before,
@@ -285,8 +284,8 @@
 }
 
 .collection-nav-chip--diwali::before {
-    inset: -1.5px;
-    padding: 1.5px;
+    inset: -1px;
+    padding: 1px;
     background: repeating-conic-gradient(
         from var(--diwali-shine-angle),
         #e8a020 0deg,
@@ -318,10 +317,6 @@
     filter: blur(7px);
 }
 
-@keyframes diwali-shine {
-    to { --diwali-shine-angle: 360deg; }
-}
-
 @media (prefers-reduced-motion: reduce) {
     .collection-nav-chip--diwali::before,
     .collection-nav-chip--diwali::after { animation: none; }
@@ -330,6 +325,7 @@
 /* Icon-only seasonal chips beside the phone filter button */
 .collection-nav-icon-chip {
     flex-shrink: 0;
+    border-width: 1px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -755,33 +751,38 @@
 }
 
 .listing-add-to-cart {
-    background-color: #FFD814;
+    background: var(--btn-yellow-bg);
     color: var(--dark);
+    box-shadow: var(--btn-yellow-depth);
 }
 
 .listing-personalize-btn,
 .listing-whatsapp-btn {
-    background-color: #FFD814;
+    background: var(--btn-yellow-bg);
     color: var(--dark);
     text-decoration: none;
+    box-shadow: var(--btn-yellow-depth);
 }
 
 .listing-personalize-btn:hover,
 .listing-whatsapp-btn:hover {
-    background-color: #F7CA00;
+    background: var(--btn-yellow-bg-hover);
     color: var(--dark);
+    box-shadow: var(--btn-yellow-depth-hover);
 }
 
 .listing-add-to-cart:hover:not(:disabled) {
-    background-color: #F7CA00;
+    background: var(--btn-yellow-bg-hover);
+    box-shadow: var(--btn-yellow-depth-hover);
 }
 
 .listing-add-to-cart.btn-in-cart,
 .add-to-cart-btn.btn-in-cart,
 .product-card-actions .listing-add-to-cart.btn-in-cart,
 .product-actions .add-to-cart-btn.btn-in-cart {
-    background-color: var(--primary);
+    background: var(--btn-purple-bg);
     color: #fff;
+    box-shadow: var(--btn-purple-depth);
 }
 
 .listing-choose-link {
@@ -801,14 +802,16 @@
     cursor: pointer;
     box-sizing: border-box;
     transition: all 0.3s ease;
-    background-color: #FFD814;
+    background: var(--btn-yellow-bg);
     color: var(--dark);
     text-decoration: none;
+    box-shadow: var(--btn-yellow-depth);
 }
 
 .listing-choose-link:hover {
-    background-color: #F7CA00;
+    background: var(--btn-yellow-bg-hover);
     color: var(--dark);
+    box-shadow: var(--btn-yellow-depth-hover);
 }
 
 .listing-color-swatches {
@@ -1189,13 +1192,15 @@
 }
 
 .buy-now-btn {
-    background-color: var(--secondary);
+    background: var(--btn-yellow-bg);
     color: var(--dark);
+    box-shadow: var(--btn-yellow-depth);
 }
 
 .buy-now-btn:hover {
-    background-color: var(--dark);
-    color: var(--light);
+    background: var(--btn-yellow-bg-hover);
+    color: var(--dark);
+    box-shadow: var(--btn-yellow-depth-hover);
 }
 
 /* Description */
@@ -1685,12 +1690,14 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background-color: #FFD814;
+    background: var(--btn-yellow-bg);
     color: var(--dark);
+    box-shadow: var(--btn-yellow-depth);
 }
 
 .add-to-cart-btn:hover {
-    background-color: #F7CA00;
+    background: var(--btn-yellow-bg-hover);
+    box-shadow: var(--btn-yellow-depth-hover);
 }
 
 /* ------- Wishlist heart on product card ------- */
@@ -2912,4 +2919,137 @@
     align-items: center;
     justify-content: center;
     z-index: 1;
+}
+
+/* ------- Seasonal collection pages (SEASONAL_THEMES in build-shop.js) ------- */
+.collection-banner-eyebrow {
+    margin: 0;
+    font-family: var(--font-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.seasonal .collection-banner-overlay h1 {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+/* Diwali: warm ivory page, gold-framed banner with the moving shine, gold cards */
+body.seasonal--diwali {
+    background-color: #fffaf0;
+    background-image: radial-gradient(1200px 520px at 50% 0%, rgba(255, 214, 107, 0.22), transparent 70%);
+}
+.seasonal--diwali .collection-topbar { background: #fffaf0; }
+
+.seasonal--diwali .collection-banner {
+    box-shadow: 0 10px 40px rgba(201, 120, 14, 0.25);
+}
+.seasonal--diwali .collection-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: repeating-conic-gradient(
+        from var(--diwali-shine-angle),
+        #e8a020 0deg,
+        #e8a020 110deg,
+        #ffd66b 130deg,
+        #fff8dc 145deg,
+        #ffffff 155deg,
+        #fff8dc 165deg,
+        #ffd66b 172deg,
+        #e8a020 180deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: diwali-shine 6s linear infinite;
+}
+.seasonal--diwali .collection-banner-overlay {
+    background: linear-gradient(to right, rgba(74, 32, 0, 0.8) 0%, rgba(74, 32, 0, 0.35) 50%, transparent 100%);
+}
+.seasonal--diwali .collection-banner-eyebrow { color: #ffd66b; }
+.seasonal--diwali .collection-banner-overlay h1 {
+    background-image: linear-gradient(180deg, #fff3c4 0%, #ffd66b 50%, #eab042 100%);
+}
+.seasonal--diwali .collection-banner-overlay p { color: #fff1d6; }
+
+.seasonal--diwali .shop-product-card {
+    border: 1px solid rgba(232, 160, 32, 0.35);
+    box-shadow: 0 4px 20px rgba(201, 120, 14, 0.1);
+}
+.seasonal--diwali .shop-product-card:hover {
+    border-color: rgba(232, 160, 32, 0.7);
+    box-shadow: 0 10px 34px rgba(232, 160, 32, 0.35);
+}
+.seasonal--diwali .product-price { color: #b8650a; }
+
+.seasonal--diwali .listing-add-to-cart:not(.btn-in-cart),
+.seasonal--diwali .listing-personalize-btn,
+.seasonal--diwali .listing-whatsapp-btn {
+    background: linear-gradient(135deg, #fbe3a0 0%, #eab042 45%, #d18a1c 100%);
+    color: #3b1600;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 3px 10px rgba(201, 120, 14, 0.25);
+}
+.seasonal--diwali .listing-add-to-cart:not(.btn-in-cart):hover:not(:disabled),
+.seasonal--diwali .listing-personalize-btn:hover,
+.seasonal--diwali .listing-whatsapp-btn:hover {
+    background: linear-gradient(135deg, #fde9b0 0%, #efb94d 45%, #d99322 100%);
+    color: #2a0f00;
+}
+
+/* Halloween: deep night page, orange-framed banner, dark glowing cards */
+body.seasonal--halloween {
+    background-color: #15101c;
+    background-image: radial-gradient(1200px 520px at 50% 0%, rgba(255, 122, 26, 0.16), transparent 70%);
+}
+
+.seasonal--halloween .collection-banner {
+    box-shadow: 0 0 0 1px #ff7a1a, 0 10px 40px rgba(255, 122, 26, 0.25);
+}
+.seasonal--halloween .collection-banner-overlay {
+    background: linear-gradient(to right, rgba(21, 16, 28, 0.9) 0%, rgba(21, 16, 28, 0.4) 50%, transparent 100%);
+}
+.seasonal--halloween .collection-banner-eyebrow { color: #ffa24d; }
+.seasonal--halloween .collection-banner-overlay h1 {
+    background-image: linear-gradient(180deg, #ffd9b3 0%, #ffa24d 50%, #ff7a1a 100%);
+}
+.seasonal--halloween .collection-banner-overlay p { color: #d8cce6; }
+
+.seasonal--halloween .shop-product-card {
+    background: #1f1729;
+    border: 1px solid rgba(255, 122, 26, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+.seasonal--halloween .shop-product-card:hover {
+    border-color: rgba(255, 122, 26, 0.75);
+    box-shadow: 0 10px 34px rgba(255, 122, 26, 0.3);
+}
+.seasonal--halloween .product-card-info h3 { color: #f3ecf9; }
+.seasonal--halloween .product-price { color: #ffa24d; }
+.seasonal--halloween .review-count { color: #b9a9cc; }
+
+.seasonal--halloween .listing-add-to-cart:not(.btn-in-cart),
+.seasonal--halloween .listing-personalize-btn,
+.seasonal--halloween .listing-whatsapp-btn {
+    background: linear-gradient(135deg, #ffb45e 0%, #ff7a1a 55%, #e85d0c 100%);
+    color: #1f1729;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 12px rgba(255, 122, 26, 0.3);
+}
+.seasonal--halloween .listing-add-to-cart:not(.btn-in-cart):hover:not(:disabled),
+.seasonal--halloween .listing-personalize-btn:hover,
+.seasonal--halloween .listing-whatsapp-btn:hover {
+    background: linear-gradient(135deg, #ffc47e 0%, #ff8f3d 55%, #f06a18 100%);
+    color: #15101c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .seasonal--diwali .collection-banner::after { animation: none; }
 }

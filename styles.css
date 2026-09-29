@@ -3,6 +3,17 @@
     --primary: #A083D5; /* Purple from logo */
     --secondary: #EFCF20; /* Yellow from logo */
     --dark: #000000; /* Black from logo */
+
+    /* Premium button depth: same-colour gradient (light top, deeper base),
+       a thin top highlight and a soft colour-matched glow */
+    --btn-yellow-bg: linear-gradient(180deg, #ffe03d 0%, #ffd814 55%, #f5cb00 100%);
+    --btn-yellow-bg-hover: linear-gradient(180deg, #ffe45c 0%, #ffd000 55%, #efc300 100%);
+    --btn-yellow-depth: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 2px 6px rgba(230, 180, 0, 0.22);
+    --btn-yellow-depth-hover: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 12px rgba(230, 180, 0, 0.32);
+    --btn-purple-bg: linear-gradient(180deg, #ad92de 0%, #a083d5 55%, #9476cc 100%);
+    --btn-purple-bg-hover: linear-gradient(180deg, #b79ee3 0%, #a68ada 55%, #987bcf 100%);
+    --btn-purple-depth: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 8px rgba(160, 131, 213, 0.28);
+    --btn-purple-depth-hover: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 4px 14px rgba(160, 131, 213, 0.38);
     --light: #FFFFFF;
     --gray: #F5F5F5;
     --gray-dark: #333333;
@@ -92,27 +103,29 @@ a:hover {
 }
 
 .btn-primary {
-    background-color: var(--primary);
+    background: var(--btn-purple-bg);
     color: var(--light);
+    box-shadow: var(--btn-purple-depth);
 }
 
 .btn-primary:hover {
-    background-color: var(--dark);
+    background: var(--btn-purple-bg-hover);
     color: var(--light);
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--btn-purple-depth-hover);
 }
 
 .btn-secondary {
-    background-color: var(--secondary);
+    background: var(--btn-yellow-bg);
     color: var(--dark);
+    box-shadow: var(--btn-yellow-depth);
 }
 
 .btn-secondary:hover {
-    background-color: var(--dark);
-    color: var(--light);
+    background: var(--btn-yellow-bg-hover);
+    color: var(--dark);
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--btn-yellow-depth-hover);
 }
 
 /* Header & Navigation */
@@ -310,6 +323,119 @@ header .container {
     color: var(--primary);
 }
 
+/* Festive hero (HERO_FESTIVE in scripts/build-shop.js) */
+.hero-eyebrow--festive {
+    background: linear-gradient(90deg, #e8a020, #ff7a1a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Festive rows get the same card look as the seasonal nav chips */
+.hero-services { position: relative; z-index: 0; }
+
+.hero-service-link--diwali,
+.hero-service-link--halloween {
+    position: relative;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+}
+
+.hero-service-link--diwali {
+    background: linear-gradient(135deg, #fff6dc 0%, #ffe39a 100%);
+    border-color: #e8a020;
+    color: #7f3c00;
+    box-shadow: 0 0 12px rgba(232, 160, 32, 0.3);
+}
+.hero-service-link--diwali .hero-service-desc { color: #9a5a1a; }
+.hero-service-link--diwali:hover {
+    color: #5e2c00;
+    box-shadow: 0 0 18px rgba(232, 160, 32, 0.5);
+}
+
+.hero-service-link--halloween {
+    background: #1f1729;
+    border-color: #ff7a1a;
+    color: #ffa24d;
+    box-shadow: 0 0 12px rgba(255, 122, 26, 0.25);
+}
+.hero-service-link--halloween .hero-service-desc { color: #d8cce6; }
+.hero-service-link--halloween:hover {
+    color: #ffb877;
+    box-shadow: 0 0 18px rgba(255, 122, 26, 0.45);
+}
+
+/* The card is the background, so the icon sits on it without a tile */
+.hero-service-link--diwali .hero-service-icon,
+.hero-service-link--halloween .hero-service-icon { background: none; }
+
+/* Moving shine (two glints + glow) shared by the Diwali nav chip in
+   shop.css and the Diwali hero card. */
+@property --diwali-shine-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@keyframes diwali-shine {
+    to { --diwali-shine-angle: 360deg; }
+}
+
+.hero-service-link--diwali::before,
+.hero-service-link--diwali::after {
+    content: '';
+    position: absolute;
+    border-radius: inherit;
+    pointer-events: none;
+    animation: diwali-shine 4s linear infinite;
+}
+
+.hero-service-link--diwali::before {
+    inset: -1px;
+    padding: 1px;
+    background: repeating-conic-gradient(
+        from var(--diwali-shine-angle),
+        #e8a020 0deg,
+        #e8a020 110deg,
+        #ffd66b 130deg,
+        #fff8dc 145deg,
+        #ffffff 155deg,
+        #fff8dc 165deg,
+        #ffd66b 172deg,
+        #e8a020 180deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.hero-service-link--diwali::after {
+    inset: -5px;
+    z-index: -1;
+    background: repeating-conic-gradient(
+        from var(--diwali-shine-angle),
+        transparent 0deg,
+        transparent 120deg,
+        rgba(255, 196, 60, 0.85) 142deg,
+        rgba(255, 244, 200, 1) 155deg,
+        rgba(255, 196, 60, 0.85) 167deg,
+        transparent 180deg
+    );
+    filter: blur(7px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-service-link--diwali::before,
+    .hero-service-link--diwali::after { animation: none; }
+}
+
+.hero-service-icon span {
+    font-size: 24px;
+    line-height: 1;
+}
+
 .hero-service-info {
     display: flex;
     flex-direction: column;
@@ -334,14 +460,36 @@ header .container {
     font-size: 1rem;
     letter-spacing: 1.5px;
     white-space: nowrap;
-    background-color: var(--secondary);
+    background: var(--btn-yellow-bg);
     color: var(--dark);
-    box-shadow: 0 6px 28px rgba(239, 207, 32, 0.4);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 24px rgba(239, 207, 32, 0.38);
 }
 
 .hero-left .hero-shop-btn:hover {
-    background-color: #d4b800;
+    background: var(--btn-yellow-bg-hover);
     color: var(--dark);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 30px rgba(239, 207, 32, 0.48);
+}
+
+/* Premium gold CTA for the festive Diwali hero */
+.hero-left .hero-shop-btn--diwali {
+    background: linear-gradient(135deg, #fbe3a0 0%, #eab042 35%, #d18a1c 70%, #b86a0c 100%);
+    color: #3b1600;
+    border: 1px solid #fff0c2;
+    text-shadow: 0 1px 0 rgba(255, 238, 190, 0.6);
+    box-shadow:
+        0 8px 28px rgba(201, 120, 14, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -3px 8px rgba(120, 55, 0, 0.25);
+}
+
+.hero-left .hero-shop-btn--diwali:hover {
+    background: linear-gradient(135deg, #fde9b0 0%, #efb94d 35%, #d99322 70%, #c07210 100%);
+    color: #2a0f00;
+    box-shadow:
+        0 12px 36px rgba(201, 120, 14, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -3px 8px rgba(120, 55, 0, 0.25);
 }
 
 .hero-rating-badge {
@@ -445,6 +593,18 @@ header .container {
     background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%);
 }
 
+.hero-carousel-icon { margin-right: 12px; }
+
+.hero-carousel-slide--diwali .hero-carousel-caption {
+    background: linear-gradient(to top, rgba(92, 42, 0, 0.8) 0%, transparent 100%);
+}
+.hero-carousel-slide--diwali .hero-carousel-title { color: #ffd66b; }
+
+.hero-carousel-slide--halloween .hero-carousel-caption {
+    background: linear-gradient(to top, rgba(31, 23, 41, 0.85) 0%, transparent 100%);
+}
+.hero-carousel-slide--halloween .hero-carousel-title { color: #ffa24d; }
+
 .hero-carousel-title {
     font-family: var(--font-primary);
     font-weight: 700;
@@ -533,7 +693,7 @@ header .container {
     align-items: center;
     gap: 10px;
     padding: 20px 56px;
-    background-color: var(--primary);
+    background: var(--btn-purple-bg);
     color: var(--light);
     border-radius: 50px;
     font-family: var(--font-primary);
@@ -542,14 +702,14 @@ header .container {
     text-transform: uppercase;
     letter-spacing: 2px;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 28px rgba(160, 131, 213, 0.4);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 6px 24px rgba(160, 131, 213, 0.36);
     margin-top: 0.5rem;
 }
 
 .hero-shop-btn:hover {
-    background-color: var(--dark);
+    background: var(--btn-purple-bg-hover);
     transform: translateY(-3px);
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 10px 30px rgba(160, 131, 213, 0.45);
 }
 
 .hero-shop-btn i {
@@ -2202,16 +2362,17 @@ footer {
 
 /* Button Styles */
 .btn-catalog {
-    background-color: var(--secondary);
+    background: var(--btn-yellow-bg);
     color: var(--dark);
     border: none;
+    box-shadow: var(--btn-yellow-depth);
 }
 
 .btn-catalog:hover {
-    background-color: var(--dark);
-    color: var(--light);
+    background: var(--btn-yellow-bg-hover);
+    color: var(--dark);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--btn-yellow-depth-hover);
 }
 
 .btn-instagram {
