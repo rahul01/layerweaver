@@ -1,30 +1,40 @@
 (function captureAttribution() {
+  // Mirrors nextAttribution() in shop/cart-utils.js (unit-tested there).
+  // An ad click (any utm_* or an fbclid) always replaces what's stored - the
+  // latest click wins. Otherwise an external referrer only counts when
+  // nothing is stored or it's over 30 days old; on-site browsing never does.
   const KEY = 'lw_attribution';
   const TTL_DAYS = 30;
   try {
     const existing = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (existing && (Date.now() - existing.capturedAt) < TTL_DAYS * 86400000) return;
-
+    const now = Date.now();
     const params = new URLSearchParams(location.search);
     const utm = {};
     ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(k => {
       const v = params.get(k);
       if (v) utm[k] = v;
     });
+    const fbclid = params.get('fbclid') || '';
+    const isClick = Object.keys(utm).length > 0 || !!fbclid;
 
     const ref = document.referrer || '';
     let refHost = '';
     try { refHost = ref ? new URL(ref).hostname.replace(/^www\./, '') : ''; } catch {}
-    const isOwnDomain = refHost && refHost === location.hostname.replace(/^www\./, '');
+    const isOwnDomain = !!refHost && refHost === location.hostname.replace(/^www\./, '');
+    const fresh = existing && (now - existing.capturedAt) < TTL_DAYS * 86400000;
 
-    if (!Object.keys(utm).length && (!ref || isOwnDomain) && existing) return;
+    if (!isClick) {
+      if (fresh) return;
+      if ((!ref || isOwnDomain) && existing) return;
+    }
 
     localStorage.setItem(KEY, JSON.stringify({
-      source: utm.utm_source || (isOwnDomain ? '' : (refHost || 'direct')),
+      source: utm.utm_source || (fbclid ? 'facebook' : (isOwnDomain ? '' : (refHost || 'direct'))),
       ...utm,
+      ...(fbclid ? { fbclid } : {}),
       referrer: (!isOwnDomain && ref) ? ref : '',
       landingPage: location.pathname,
-      capturedAt: Date.now(),
+      capturedAt: now,
     }));
   } catch (e) { /* localStorage unavailable - best effort only */ }
 })();

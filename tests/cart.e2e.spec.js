@@ -695,15 +695,26 @@ test.describe('Attribution capture', () => {
     expect(attribution.referrer).toBe('');
   });
 
-  test('first-touch attribution persists across a later visit with different UTM params', async ({ page }) => {
+  // Diwali spec item 0: the latest ad click wins (was: first touch kept for
+  // 30 days, so a returning visitor from a new ad kept the old campaign).
+  test('a later ad click replaces the stored attribution', async ({ page }) => {
     await page.goto(`${PRODUCT_OCTOPUS}?utm_source=newsletter&utm_medium=email`);
     await page.waitForFunction(() => localStorage.getItem('lw_attribution') !== null);
 
     await page.goto(`${SHOP}?utm_source=google&utm_medium=cpc`);
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('lw_attribution')).source === 'google');
+    const attribution = await page.evaluate(() => JSON.parse(localStorage.getItem('lw_attribution')));
+    expect(attribution.utm_medium).toBe('cpc');
+  });
+
+  test('a later visit without an ad click keeps the stored ad click', async ({ page }) => {
+    await page.goto(`${PRODUCT_OCTOPUS}?utm_source=facebook&utm_medium=paid_social`);
+    await page.waitForFunction(() => localStorage.getItem('lw_attribution') !== null);
+
+    await page.goto(SHOP);
     await page.waitForTimeout(200); // let captureAttribution's IIFE run and (not) write
     const attribution = await page.evaluate(() => JSON.parse(localStorage.getItem('lw_attribution')));
-    expect(attribution.source).toBe('newsletter');
-    expect(attribution.utm_medium).toBe('email');
+    expect(attribution.source).toBe('facebook');
   });
 
   test('attaches captured attribution to the cart on first add-to-cart', async ({ page }) => {
@@ -737,6 +748,40 @@ test.describe('Attribution capture', () => {
     expect(map['Attribution Source']).toBe('instagram');
     expect(map['Attribution Medium']).toBe('social');
     expect(map['Landing Page']).toBe(PRODUCT_OCTOPUS);
+  });
+});
+
+// ── Ad and Meta click fields reach the cart at checkout (Diwali spec item 0) ─
+
+test.describe('Checkout attribution refresh', () => {
+  test('pressing Checkout writes utm_content, fbclid, _fbc and _fbp onto the cart', async ({ page, context }) => {
+    await context.addCookies([{ name: '_fbp', value: 'fb.1.1790000000000.123456789', domain: 'localhost', path: '/' }]);
+    // Never actually go to Shopify's checkout - no checkout record is created.
+    await page.route(/shop\.layerweaver\.com\/(checkouts|cart\/c)\//, route => route.abort());
+
+    await page.goto(`${PRODUCT_OCTOPUS}?utm_source=facebook&utm_medium=paid_social&utm_campaign=lw-test&utm_content=ghost-reel-1&utm_term=lamps&fbclid=IwARtest123`);
+    await waitForCartReady(page);
+    await page.click('#add-to-cart-btn');
+    await page.waitForFunction(() => document.getElementById('cart-badge')?.textContent === '1', { timeout: 10_000 });
+    await openDrawer(page);
+
+    // Read before the click - the page then heads to (blocked) checkout.
+    const cartId = await page.evaluate(() => localStorage.getItem('lw_cart_id'));
+    const updated = page.waitForResponse(r => r.url().includes('/api/2025-01/graphql.json') && (r.request().postData() || '').includes('cartAttributesUpdate'));
+    await page.click('#cart-checkout-btn');
+    await updated;
+
+    const res = await page.request.post('https://shop.layerweaver.com/api/2025-01/graphql.json', {
+      headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': '7f0eafeb115e99a4a917e044a1fb4125' },
+      data: { query: 'query getCart($id: ID!) { cart(id: $id) { attributes { key value } } }', variables: { id: cartId } },
+    });
+    const map = Object.fromEntries((await res.json()).data.cart.attributes.map(a => [a.key, a.value]));
+    expect(map['Attribution Source']).toBe('facebook');
+    expect(map['Attribution Content']).toBe('ghost-reel-1');
+    expect(map['Attribution Term']).toBe('lamps');
+    expect(map['_fbclid']).toBe('IwARtest123');
+    expect(map['_fbc']).toMatch(/^fb\.1\.\d+\.IwARtest123$/);
+    expect(map['_fbp']).toBe('fb.1.1790000000000.123456789');
   });
 });
 

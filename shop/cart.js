@@ -34,19 +34,69 @@
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // Mirrors attributionCartAttributes() / metaCookies() / fbcFromClick() in
+  // shop/cart-utils.js (unit-tested there). "_" keys are hidden from the
+  // customer by Shopify but land on the order: which ad (Content/Term) and
+  // the Meta click IDs, so orders Meta can't see itself can be matched later.
+  function metaCookies() {
+    const out = {};
+    for (const part of String(document.cookie || '').split(';')) {
+      const i = part.indexOf('=');
+      if (i < 0) continue;
+      const k = part.slice(0, i).trim();
+      if (k === '_fbc' || k === '_fbp') { try { out[k] = decodeURIComponent(part.slice(i + 1).trim()); } catch {} }
+    }
+    return out;
+  }
+
   function attributionCartAttributes() {
     let attribution;
     try { attribution = JSON.parse(localStorage.getItem('lw_attribution') || 'null'); } catch { return []; }
     if (!attribution) return [];
+    const cookies = metaCookies();
+    const fbc = cookies._fbc || (attribution.fbclid ? `fb.1.${attribution.capturedAt || Date.now()}.${attribution.fbclid}` : null);
     const map = {
       'Attribution Source':   attribution.source,
       'Attribution Medium':   attribution.utm_medium,
       'Attribution Campaign': attribution.utm_campaign,
       'Landing Page':         attribution.landingPage,
       'Referrer':             attribution.referrer,
+      'Attribution Content':  attribution.utm_content,
+      'Attribution Term':     attribution.utm_term,
+      '_fbclid':              attribution.fbclid,
+      '_fbc':                 fbc,
+      '_fbp':                 cookies._fbp,
     };
-    return Object.entries(map).filter(([, v]) => v).map(([key, value]) => ({ key, value }));
+    return Object.entries(map).filter(([, v]) => v).map(([key, value]) => ({ key, value: String(value) }));
   }
+
+  // Rewrites the cart's attributes with the latest values just before
+  // checkout: a newer ad click, or pixel cookies set after the cart was made.
+  // Never holds checkout up - gives up after 1.5 s or on any error.
+  async function refreshCartAttributes(cartId) {
+    const attributes = attributionCartAttributes();
+    if (!cartId || !attributes.length) return;
+    const update = gql(`
+      mutation cartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
+        cartAttributesUpdate(cartId: $cartId, attributes: $attributes) { userErrors { message } }
+      }`, { cartId, attributes });
+    await Promise.race([update, new Promise(r => setTimeout(r, 1500))]).catch(() => {});
+  }
+
+  // Checkout is a plain link to Shopify's checkout; refresh the attributes
+  // on the way there. Modified clicks (new tab/window) are left alone.
+  let goingToCheckout = false;
+  // Back from checkout via the browser's back button restores this page from
+  // cache with the flag still set - reset it so the button works again.
+  window.addEventListener('pageshow', () => { goingToCheckout = false; });
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest?.('#cart-checkout-btn');
+    if (!link || !link.href || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    if (goingToCheckout) return;
+    goingToCheckout = true;
+    refreshCartAttributes(loadCartId()).finally(() => { window.location.href = link.href; });
+  });
 
   async function gql(query, variables = {}) {
     const res = await fetch(API, {
@@ -865,27 +915,34 @@
     }
     refreshUI();
 
+    // Only what this add changed: new lines, or the extra quantity on a line
+    // already there (mirrors addedLines() in shop/cart-utils.js). Matching
+    // every line of the added variant re-fired for a personalised item that
+    // was already in the cart on its own line.
     const addedGids = new Set(lines.map(l => l.merchandiseId));
-    const newLines = cart?.lines.edges
+    const beforeQty = new Map((cartBefore?.lines?.edges || []).map(e => [e.node.id, e.node.quantity]));
+    const added = (cart?.lines.edges || [])
       .map(e => e.node)
-      .filter(node => addedGids.has(node.merchandise.id)) || [];
-    for (const newLine of newLines) {
+      .filter(node => addedGids.has(node.merchandise.id))
+      .map(node => ({ node, quantity: node.quantity - (beforeQty.get(node.id) || 0) }))
+      .filter(x => x.quantity > 0);
+    for (const { node } of added) {
       if (typeof fbq === 'function') fbq('track', 'AddToCart', {
-        content_name: newLine.merchandise.product.title,
-        content_ids:  [newLine.merchandise.id.split('/').pop()],
+        content_name: node.merchandise.product.title,
+        content_ids:  [node.merchandise.id.split('/').pop()],
         content_type: 'product',
-        value:        parseFloat(newLine.merchandise.price.amount),
-        currency:     newLine.merchandise.price.currencyCode,
+        value:        parseFloat(node.merchandise.price.amount),
+        currency:     node.merchandise.price.currencyCode,
       });
     }
-    if (newLines.length && typeof gtag === 'function') gtag('event', 'add_to_cart', {
-      currency: newLines[0].merchandise.price.currencyCode,
-      value:    newLines.reduce((sum, l) => sum + parseFloat(l.merchandise.price.amount) * l.quantity, 0),
-      items: newLines.map(l => ({
-        item_id:   l.merchandise.id.split('/').pop(),
-        item_name: l.merchandise.product.title,
-        price:     parseFloat(l.merchandise.price.amount),
-        quantity:  l.quantity,
+    if (added.length && typeof gtag === 'function') gtag('event', 'add_to_cart', {
+      currency: added[0].node.merchandise.price.currencyCode,
+      value:    added.reduce((sum, a) => sum + parseFloat(a.node.merchandise.price.amount) * a.quantity, 0),
+      items: added.map(a => ({
+        item_id:   a.node.merchandise.id.split('/').pop(),
+        item_name: a.node.merchandise.product.title,
+        price:     parseFloat(a.node.merchandise.price.amount),
+        quantity:  a.quantity,
       })),
     });
     return cart;
