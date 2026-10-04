@@ -1,5 +1,5 @@
 {
-  "_about": "Creator short links: layerweaver.com/<slug> forwards to <landing> tagged utm_source=creator&utm_content=<slug>. WhatsApp code LW-CR-<SLUG>. Add a line, then run: npm run creator-links (and publish). First names only - this file is public.",
+  "_about": "Creator short links: www.layerweaver.com/<slug> forwards to <landing> tagged utm_source=creator&utm_content=<slug>. WhatsApp code LW-CR-<SLUG>. Add a line, then run: npm run creator-links (and publish). First names only - this file is public.",
   "creators": [
     { "slug": "dhaval",   "name": "Dhaval",   "landing": "shop/products/die-cast-car-garage-key-hanger/", "since": "2026-10-02" },
     { "slug": "poojitha", "name": "Poojitha", "landing": "shop/products/sardine-fishbone-jewelry-organizer/", "since": "2026-10-02" },

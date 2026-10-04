@@ -1,5 +1,5 @@
 // Builds the creator short links from scripts/creators.json:
-// layerweaver.com/<slug>/ forwards to the creator's landing page tagged
+// www.layerweaver.com/<slug>/ forwards to the creator's landing page tagged
 // utm_source=creator&utm_medium=social&utm_campaign=creators&utm_content=<slug>,
 // so the sale is credited to them whatever they (or Instagram) add to the link.
 //   npm run creator-links
@@ -49,6 +49,6 @@ for (const c of creators) {
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(file, page(c));
   built++;
-  console.log(`  layerweaver.com/${c.slug}  ->  /${c.landing}  (WhatsApp code LW-CR-${c.slug.toUpperCase()})`);
+  console.log(`  www.layerweaver.com/${c.slug}  ->  /${c.landing}  (WhatsApp code LW-CR-${c.slug.toUpperCase()})`);
 }
 console.log(`Built ${built} creator short link(s).`);
