@@ -354,7 +354,7 @@ async function fetchAllReviews(products) {
   }
   if (!JUDGEME_TOKEN) {
     console.warn('  ⚠️  WARNING: JUDGEME_API_TOKEN not set — skipping reviews, shop will build with no ratings/reviews.');
-    return { map: {}, storeReviews: [], overall: null };
+    return { map: {}, storeReviews: [], overall: null, seenIds: null };
   }
   console.log('Fetching reviews from Judge.me...');
   const replies = loadReviewReplies();
@@ -364,6 +364,10 @@ async function fetchAllReviews(products) {
   // instead fetch every review once and group client-side by product_external_id,
   // which each review object reports correctly.
   const byExternalId = {};
+  // Every published review this build dealt with, shown or deliberately
+  // excluded - written to shop/reviews-built.json so the ops dashboard can
+  // list reviews posted since the last build (not on the site yet).
+  const seenIds = [];
   let page = 1;
   const PER_PAGE = 100;
   try {
@@ -372,12 +376,13 @@ async function fetchAllReviews(products) {
       const res = await fetch(url);
       if (!res.ok) {
         console.warn(`  ⚠️  WARNING: Judge.me request failed: HTTP ${res.status} ${await res.text()}`);
-        return { map: {}, storeReviews: [], overall: null };
+        return { map: {}, storeReviews: [], overall: null, seenIds: null };
       }
       const data = await res.json();
       const reviews = data.reviews || [];
       for (const r of reviews) {
         if (r.published === false || r.hidden === true) continue;
+        seenIds.push(r.id);
         if (EXCLUDED_REVIEW_IDS.has(r.id)) continue;
         const replyKey = `${r.product_external_id}|${Math.round(new Date(r.created_at).getTime() / 1000)}|${r.reviewer?.email || ''}`;
         const match = replies.get(replyKey);
@@ -389,7 +394,7 @@ async function fetchAllReviews(products) {
     }
   } catch (err) {
     console.warn(`  ⚠️  WARNING: Judge.me request failed: ${err.message}`);
-    return { map: {}, storeReviews: [], overall: null };
+    return { map: {}, storeReviews: [], overall: null, seenIds: null };
   }
 
   const map = {};
@@ -417,7 +422,7 @@ async function fetchAllReviews(products) {
     ? { rating: allReviews.reduce((s, r) => s + r.rating, 0) / allReviews.length, count: allReviews.length }
     : null;
 
-  return { map, storeReviews, overall };
+  return { map, storeReviews, overall, seenIds };
 }
 
 function starsHtml(rating, count, size = 'sm') {
@@ -2147,7 +2152,7 @@ async function main() {
   const collections = await fetchCollections();
   console.log(`Found ${collections.length} collection(s)`);
 
-  const { map: reviewsMap, storeReviews, overall } = await fetchAllReviews(products);
+  const { map: reviewsMap, storeReviews, overall, seenIds } = await fetchAllReviews(products);
 
   const shopDir        = path.join(__dirname, '..', 'shop');
   const productsDir    = path.join(shopDir, 'products');
@@ -2168,6 +2173,14 @@ async function main() {
   }));
   fs.writeFileSync(path.join(shopDir, 'search-index.json'), JSON.stringify(searchIndex));
   console.log('Generated shop/search-index.json');
+
+  // Review IDs baked into this build (ids only, nothing personal). The ops
+  // dashboard compares them with Judge.me to show reviews not on the site
+  // yet. fetched:false = Judge.me failed, so the site has no reviews at all.
+  fs.writeFileSync(path.join(shopDir, 'reviews-built.json'), JSON.stringify({
+    builtAt: new Date().toISOString(), fetched: seenIds !== null, ids: seenIds ?? [],
+  }));
+  console.log(`Generated shop/reviews-built.json (${seenIds?.length ?? 0} reviews)`);
 
   const accountDir = path.join(shopDir, 'account');
   fs.mkdirSync(accountDir, { recursive: true });
