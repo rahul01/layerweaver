@@ -1,12 +1,59 @@
 {
   "_about": "Creator short links: www.layerweaver.com/<slug> forwards to <landing> tagged utm_source=creator&utm_content=<slug>. WhatsApp code LW-CR-<SLUG>. Add a line, then run: npm run creator-links (and publish). First names only - this file is public.",
   "creators": [
-    { "slug": "dhaval",   "name": "Dhaval",   "landing": "shop/products/die-cast-car-garage-key-hanger/", "since": "2026-10-02" },
-    { "slug": "poojitha", "name": "Poojitha", "landing": "shop/products/sardine-fishbone-jewelry-organizer/", "since": "2026-10-02" },
-    { "slug": "vikash",   "name": "Vikash",   "landing": "shop/collections/diwali/", "since": "2026-10-01" },
-    { "slug": "ananya",   "name": "Ananya",   "landing": "shop/collections/diwali/", "since": "2026-10-01" },
-    { "slug": "rupal",    "name": "Rupal",    "landing": "shop/products/peacock-led-decor-lamp/", "since": "2026-10-03" },
-    { "slug": "khushboo", "name": "Khushboo", "landing": "shop/products/peacock-led-decor-lamp/", "since": "2026-09-27" },
-    { "slug": "megha",    "name": "Megha",    "landing": "shop/products/tulip-single-flower/", "since": "2026-08-17" }
+    {
+      "slug": "dhaval",
+      "name": "Dhaval",
+      "landing": "shop/products/die-cast-car-garage-key-hanger/",
+      "since": "2026-10-02"
+    },
+    {
+      "slug": "poojitha",
+      "name": "Poojitha",
+      "landing": "shop/products/sardine-fishbone-jewelry-organizer/",
+      "since": "2026-10-02"
+    },
+    {
+      "slug": "vikash",
+      "name": "Vikash",
+      "landing": "shop/collections/diwali/",
+      "since": "2026-10-01"
+    },
+    {
+      "slug": "ananya",
+      "name": "Ananya",
+      "landing": "shop/collections/diwali/",
+      "since": "2026-10-01"
+    },
+    {
+      "slug": "rupal",
+      "name": "Rupal",
+      "landing": "shop/products/peacock-led-decor-lamp/",
+      "since": "2026-10-03"
+    },
+    {
+      "slug": "khushboo",
+      "name": "Khushboo",
+      "landing": "shop/products/peacock-led-decor-lamp/",
+      "since": "2026-09-27"
+    },
+    {
+      "slug": "megha",
+      "name": "Megha",
+      "landing": "shop/products/tulip-single-flower/",
+      "since": "2026-08-17"
+    },
+    {
+      "slug": "sushree",
+      "name": "Sushree",
+      "landing": "shop/products/snail-lamp/",
+      "since": "2026-10-04"
+    },
+    {
+      "slug": "vaishnavi",
+      "name": "Vaishnavi",
+      "landing": "shop/collections/diwali/",
+      "since": "2026-10-05"
+    }
   ]
 }
