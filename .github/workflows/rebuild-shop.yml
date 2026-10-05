@@ -1,0 +1,82 @@
+# Rebuild shop: regenerates the static shop (products from Shopify, reviews
+# from Judge.me), commits the output to main and asks GitHub Pages to publish.
+# Started by hand only - the "Rebuild site" button in the ops dashboard
+# (LayerWeaverDashboard, Tools tab) or Actions -> Rebuild shop -> Run workflow.
+# There is deliberately no schedule. See CLAUDE.md "Shop build and GitHub Actions".
+name: Rebuild shop
+run-name: Rebuild shop - ${{ inputs.requested_by || github.actor }}${{ inputs.reason && format(' - {0}', inputs.reason) || '' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why (shown in the run name and commit message)
+        required: false
+        default: ''
+      requested_by:
+        description: Who asked (the dashboard sends the username)
+        required: false
+        default: ''
+
+permissions:
+  contents: write   # commit the build output
+  pages: write      # request a Pages build
+
+# One rebuild at a time; a second request waits for the first.
+concurrency:
+  group: rebuild-shop
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # build-shop.js needs only Node built-ins - no npm install.
+      - name: Build shop (Shopify products + Judge.me reviews)
+        env:
+          JUDGEME_API_TOKEN: ${{ secrets.JUDGEME_API_TOKEN }}
+          REQUIRE_REVIEWS: 'true'
+        run: node scripts/build-shop.js
+
+      - name: Commit and push the output
+        id: push
+        env:
+          REASON: ${{ inputs.reason }}
+        run: |
+          git add -A shop team/review index.html sitemap.xml
+          if git diff --cached --quiet; then
+            echo "Nothing changed - the site is already up to date."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Files changed:"; git diff --cached --stat | tail -1
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -q -m "chore: rebuild shop output (from dashboard${REASON:+ - $REASON})"
+          if ! git pull -q --rebase origin main; then
+            git rebase --abort
+            echo "::error::main changed under this build in the same files (someone pushed a rebuild?). Run it again."
+            exit 1
+          fi
+          git push -q origin HEAD:main
+          echo "Pushed $(git rev-parse --short HEAD)."
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # A push made with the workflow's own token may not start a Pages
+      # build by itself, so ask for one explicitly.
+      - name: Publish to GitHub Pages
+        if: steps.push.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" --jq '"Pages build requested: " + .status' \
+            || echo "::warning::Couldn't request a Pages build - the push may still publish by itself; check Settings -> Pages."

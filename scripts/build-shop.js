@@ -348,13 +348,26 @@ function loadReviewReplies() {
 // for the homepage feedback section, and `overall` is {rating, count} across
 // every published review site-wide (all products + store reviews, unfiltered
 // by rating) — the conventional "★ 4.7 (42 reviews)" trust-badge number.
+// REQUIRE_REVIEWS=true (set by the "Rebuild shop" GitHub Actions workflow):
+// a Judge.me failure stops the build instead of publishing a shop with every
+// rating and review missing. Run by hand, the build still warns and carries on.
+const REVIEWS_REQUIRED = process.env.REQUIRE_REVIEWS === 'true';
+function noReviews(message) {
+  if (REVIEWS_REQUIRED) {
+    const err = new Error(`${message} - stopping (REQUIRE_REVIEWS=true), nothing was published`);
+    err.reviewsRequired = true;
+    throw err;
+  }
+  console.warn(`  ⚠️  WARNING: ${message}`);
+  return { map: {}, storeReviews: [], overall: null, seenIds: null };
+}
+
 async function fetchAllReviews(products) {
   if (!JUDGEME_TOKEN && process.stdin.isTTY) {
     JUDGEME_TOKEN = await promptForJudgemeToken();
   }
   if (!JUDGEME_TOKEN) {
-    console.warn('  ⚠️  WARNING: JUDGEME_API_TOKEN not set — skipping reviews, shop will build with no ratings/reviews.');
-    return { map: {}, storeReviews: [], overall: null, seenIds: null };
+    return noReviews('JUDGEME_API_TOKEN not set — skipping reviews, shop will build with no ratings/reviews.');
   }
   console.log('Fetching reviews from Judge.me...');
   const replies = loadReviewReplies();
@@ -375,8 +388,7 @@ async function fetchAllReviews(products) {
       const url = `https://judge.me/api/v1/reviews?api_token=${JUDGEME_TOKEN}&shop_domain=${JUDGEME_SHOP}&per_page=${PER_PAGE}&page=${page}`;
       const res = await fetch(url);
       if (!res.ok) {
-        console.warn(`  ⚠️  WARNING: Judge.me request failed: HTTP ${res.status} ${await res.text()}`);
-        return { map: {}, storeReviews: [], overall: null, seenIds: null };
+        return noReviews(`Judge.me request failed: HTTP ${res.status} ${await res.text()}`);
       }
       const data = await res.json();
       const reviews = data.reviews || [];
@@ -393,8 +405,8 @@ async function fetchAllReviews(products) {
       page += 1;
     }
   } catch (err) {
-    console.warn(`  ⚠️  WARNING: Judge.me request failed: ${err.message}`);
-    return { map: {}, storeReviews: [], overall: null, seenIds: null };
+    if (err.reviewsRequired) throw err;
+    return noReviews(`Judge.me request failed: ${err.message}`);
   }
 
   const map = {};
@@ -410,6 +422,7 @@ async function fetchAllReviews(products) {
   }
   console.log(`  Got reviews for ${Object.keys(map).length} product(s)`);
   if (Object.keys(map).length === 0) {
+    if (REVIEWS_REQUIRED) noReviews('Judge.me returned 0 reviews for every product — check JUDGEME_API_TOKEN/JUDGEME_SHOP are correct.');
     console.warn('  ⚠️  WARNING: Judge.me returned 0 reviews for every product — check JUDGEME_API_TOKEN/JUDGEME_SHOP are correct.');
   }
 
