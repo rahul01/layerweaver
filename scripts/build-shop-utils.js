@@ -167,4 +167,20 @@ function buildSitemapXml(urls) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`;
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts };
+// Homepage "What our customers say" carousel: best reviews first. What a
+// review says matters most (words written, up to 50), a customer photo adds
+// 15, each missing star costs 20; ties go to the newer review. A one-word
+// "Great" or a three-word line with a photo sinks below a real story.
+function testimonialScore(review, hasPhoto) {
+  const words = String(review.body || '').trim().split(/\s+/).filter(Boolean).length;
+  return Math.min(words, 50) + (hasPhoto ? 15 : 0) - (5 - (review.rating || 0)) * 20;
+}
+
+function rankTestimonials(reviews, hasPhoto = () => false) {
+  return reviews
+    .map(r => ({ r, score: testimonialScore(r, hasPhoto(r)), at: new Date(r.created_at || 0).getTime() }))
+    .sort((a, b) => b.score - a.score || b.at - a.at)
+    .map(x => x.r);
+}
+
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials };

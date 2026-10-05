@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts } = require('./build-shop-utils');
+const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -1723,7 +1723,8 @@ function heroCarouselSlidesHtml(collections) {
 }
 
 // ── Homepage hero rating badge (index.html) ────────────────────────────────────
-// Small "★ 4.7 (42 reviews)" trust badge, linking down to the Feedback section.
+// Small "★ 4.7 (42 reviews)" trust badge, linking down to the "What our
+// customers say" section (#testimonials).
 
 function heroRatingBadgeHtml(overall) {
   if (!overall || !overall.count) return '';
@@ -1737,13 +1738,13 @@ function heroRatingBadgeHtml(overall) {
 // ── Homepage feedback/testimonial slides (index.html) ─────────────────────────
 // Generates text quote cards from Judge.me store-level reviews (product_
 // external_id 0), replacing what used to be hand-picked screenshot images.
-// Reviews with a customer photo attached show it alongside the quote.
+// Reviews with a customer photo attached show it alongside the quote. The
+// best ones lead (rankTestimonials in build-shop-utils.js: what the review
+// says, a photo, the stars).
 
 function testimonialSlidesHtml(storeReviews) {
   const MAX_SLIDES = 8;
-  const withPhotos = storeReviews.filter(hasVisiblePicture);
-  const withoutPhotos = storeReviews.filter(r => !hasVisiblePicture(r));
-  const reviews = [...withPhotos, ...withoutPhotos].slice(0, MAX_SLIDES);
+  const reviews = rankTestimonials(storeReviews, hasVisiblePicture).slice(0, MAX_SLIDES);
 
   const slides = reviews.map((r, i) => {
     const pictureUrls = r.pictures?.find(p => !p.hidden)?.urls;

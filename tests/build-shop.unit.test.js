@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -160,5 +160,32 @@ describe('buildSitemapXml', () => {
       { loc: 'https://www.layerweaver.com/shop/collections/lamps-and-decor/', priority: '0.8', changefreq: 'weekly', lastmod: '2026-07-19' },
     ]);
     expect(xml).toContain('<changefreq>weekly</changefreq><priority>0.8</priority>');
+  });
+});
+
+// ── rankTestimonials (homepage "What our customers say") ─────────────────────
+
+describe('rankTestimonials', () => {
+  const r = (id, rating, words, created_at, photo = false) => ({ id, rating, body: Array(words).fill('word').join(' '), created_at, photo });
+  const hasPhoto = x => x.photo;
+
+  it('puts real stories above one-liners, even one-liners with a photo', () => {
+    const ranked = rankTestimonials([
+      r('nice-with-photo', 5, 3, '2026-08-27', true),
+      r('great', 5, 1, '2026-09-03'),
+      r('story', 5, 80, '2026-10-01'),
+      r('photo-and-text', 5, 27, '2026-08-11', true),
+      r('text', 5, 31, '2026-08-05'),
+    ], hasPhoto);
+    expect(ranked.map(x => x.id)).toEqual(['story', 'photo-and-text', 'text', 'nice-with-photo', 'great']);
+  });
+
+  it('ranks fewer stars lower and breaks ties by the newer review', () => {
+    const ranked = rankTestimonials([
+      r('four-star-story', 4, 40, '2026-09-01'),
+      r('older', 5, 30, '2026-07-01'),
+      r('newer', 5, 30, '2026-09-01'),
+    ], hasPhoto);
+    expect(ranked.map(x => x.id)).toEqual(['newer', 'older', 'four-star-story']);
   });
 });
