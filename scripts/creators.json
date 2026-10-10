@@ -54,6 +54,24 @@
       "name": "Vaishnavi",
       "landing": "shop/collections/diwali/",
       "since": "2026-10-05"
+    },
+    {
+      "slug": "shivna",
+      "name": "Shivna",
+      "landing": "shop/products/sardine-fishbone-jewelry-organizer/",
+      "since": "2026-10-07"
+    },
+    {
+      "slug": "nimisha",
+      "name": "Nimisha",
+      "landing": "shop/collections/plants-and-nature/",
+      "since": "2026-10-10"
+    },
+    {
+      "slug": "bhavishya",
+      "name": "Bhavishya",
+      "landing": "shop/collections/diwali/",
+      "since": "2026-10-10"
     }
   ]
 }
