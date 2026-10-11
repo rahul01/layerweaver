@@ -11,13 +11,12 @@
       gtag('config', 'GT-NC682MJG');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Ad - Dino Box (Green)</title>
+    <title>Instagram Ad - Ghost with Balloon Lamp</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #A083D5;
             --secondary: #EFCF20;
-            --green: #3a8c4a;
             --dark: #000000;
             --light: #FFFFFF;
             --font-primary: 'Montserrat', sans-serif;
@@ -58,26 +57,22 @@
             flex-direction: column;
         }
 
-        /* Image grid - fills space above copy band with all colour variants */
+        /* Ghost image section - fills space above copy band */
         .image-section {
             flex: 1;
-            min-height: 0;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            overflow: hidden;
-        }
-
-        .image-section .cell {
-            overflow: hidden;
             position: relative;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .image-section .cell img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center center;
+        .ghost-img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             display: block;
         }
 
@@ -87,6 +82,7 @@
             z-index: 3;
             background: linear-gradient(135deg, #EFCF20 0%, #f5dc40 100%);
             padding: 40px 64px 46px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -94,7 +90,7 @@
             flex-shrink: 0;
         }
 
-        /* Purple accent stripe */
+        /* Purple accent stripe at top of copy band */
         .copy-band::before {
             content: '';
             position: absolute;
@@ -243,36 +239,32 @@
     </style>
 </head>
 <body>
-    <p class="ad-label">Instagram Ad - Dino Box Green - 1080 × 1080 px</p>
+    <p class="ad-label">Instagram Ad - Ghost with Balloon Lamp - 1080 × 1080 px</p>
 
     <div class="ad">
-
         <!-- Top bar -->
         <div class="top-bar">
             <div class="brand">
                 <img class="brand-logo"
-                     src="../../images/layerweaver-logo-white.svg"
+                     src="../../../images/layerweaver-logo-white.svg"
                      alt="LayerWeaver">
                 <span class="brand-name">LayerWeaver.com</span>
             </div>
             <span class="tag">3D Printed</span>
         </div>
 
-        <!-- All dino colour variants as a grid -->
+        <!-- Ghost product image -->
         <div class="image-section">
-            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_29_54PM.png?v=1777374131" alt="Green"></div>
-            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_04_10_00_PM.png?v=1777372973" alt="Yellow"></div>
-            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/pink-dinosaur.png?v=1777812942" alt="Pink"></div>
-            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/blue-dinosaur.png?v=1777812945" alt="Blue"></div>
-            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/orange-dinosaur.png?v=1777812938" alt="Orange"></div>
-            <div class="cell"><img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/bright-pastel-lavender-dinosaur-pen-holder.png?v=1777817208" alt="Purple"></div>
+            <img class="ghost-img"
+                 src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Product_Jun_9_2026_12_40_29_PM.png?v=1780989063"
+                 alt="Ghost with Balloon Lamp">
         </div>
 
         <!-- Copy band -->
         <div class="copy-band">
             <div class="copy-left">
-                <p class="eyebrow">Desk &amp; Bathroom Organiser</p>
-                <h2 class="headline">Tidy Up<br>Dino Style.</h2>
+                <p class="eyebrow">LED Tea Light Decor</p>
+                <h2 class="headline">Haunt Your<br>Space.</h2>
                 
             </div>
             <div class="copy-right">

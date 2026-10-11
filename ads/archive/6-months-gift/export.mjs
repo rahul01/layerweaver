@@ -9,7 +9,7 @@ const ads = [
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 2000 } });
-await page.goto('http://localhost:8080/ads/6-months-gift/', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:8080/ads/archive/6-months-gift/', { waitUntil: 'networkidle' });
 await page.waitForTimeout(2000);
 
 const outDir = new URL('.', import.meta.url).pathname;

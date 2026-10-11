@@ -12,7 +12,7 @@ const context = await browser.newContext({
 });
 
 const page = await context.newPage();
-await page.goto('http://localhost:8080/ads/6-months-gift/reel-video.html', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:8080/ads/archive/6-months-gift/reel-video.html', { waitUntil: 'networkidle' });
 
 // Wait for full animation to play + hold at the end
 await page.waitForTimeout(7000);

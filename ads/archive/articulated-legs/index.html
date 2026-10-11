@@ -11,7 +11,7 @@
       gtag('config', 'GT-NC682MJG');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Ad - T-Rex Skeleton</title>
+    <title>Instagram Ad - Articulated Legs Collection</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -57,22 +57,67 @@
             flex-direction: column;
         }
 
-        /* Product image - fills space above copy band */
+        /* Scattered product layout */
         .image-section {
             flex: 1;
             min-height: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .product-img {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
+        .panel {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .panel img {
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            filter: drop-shadow(0 12px 32px rgba(0,0,0,0.18));
             display: block;
+        }
+
+        /* product label */
+        .panel-label {
+            margin-top: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            color: rgba(0,0,0,0.22);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        /* Tree - top-left, leaning left */
+        .panel-tree {
+            width: 340px;
+            height: 400px;
+            top: 190px;
+            left: -20px;
+            transform: rotate(-12deg);
+            z-index: 1;
+        }
+
+        /* Pumpkin - center, slightly bigger, front */
+        .panel-pumpkin {
+            width: 400px;
+            height: 460px;
+            top: 160px;
+            left: 50%;
+            transform: translateX(-50%) rotate(5deg);
+            z-index: 3;
+        }
+
+        /* Pineapple - right, leaning right, slightly behind */
+        .panel-pineapple {
+            width: 340px;
+            height: 400px;
+            top: 210px;
+            right: -10px;
+            transform: rotate(10deg);
+            z-index: 2;
         }
 
         /* ── COPY BAND ── */
@@ -80,7 +125,7 @@
             position: relative;
             z-index: 3;
             background: linear-gradient(135deg, #EFCF20 0%, #f5dc40 100%);
-            padding: 40px 64px 46px;
+            padding: 38px 64px 44px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -88,7 +133,6 @@
             flex-shrink: 0;
         }
 
-        /* Purple accent stripe */
         .copy-band::before {
             content: '';
             position: absolute;
@@ -109,7 +153,7 @@
         }
 
         .headline {
-            font-size: 76px;
+            font-size: 72px;
             font-weight: 900;
             color: var(--dark);
             line-height: 0.93;
@@ -118,7 +162,7 @@
         }
 
         .sub {
-            font-size: 22px;
+            font-size: 21px;
             color: rgba(0,0,0,0.50);
             font-weight: 500;
             line-height: 1.5;
@@ -184,7 +228,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: transparent;
         }
 
         .brand {
@@ -193,10 +236,7 @@
             gap: 16px;
         }
 
-        .brand-logo {
-            height: 48px;
-            width: auto;
-        }
+        .brand-logo { height: 48px; width: auto; }
 
         .brand-name {
             font-family: var(--font-brand);
@@ -204,7 +244,6 @@
             font-weight: 700;
             color: var(--dark);
             letter-spacing: 0.04em;
-            text-shadow: none;
         }
 
         .tag {
@@ -225,19 +264,20 @@
             .brand-logo { height: min(48px, 4.4vw); }
             .brand-name { font-size: min(34px, 3.1vw); }
             .tag { font-size: min(20px, 1.85vw); padding: min(10px, 0.9vw) min(26px, 2.4vw); }
-            .copy-band { padding: min(40px, 3.7%) min(64px, 5.9%) min(46px, 4.3%); }
+            .copy-band { padding: min(38px, 3.5%) min(64px, 5.9%) min(44px, 4.1%); }
             .eyebrow { font-size: min(19px, 1.76vw); }
-            .headline { font-size: min(76px, 7.03vw); }
-            .sub { font-size: min(22px, 2.04vw); }
+            .headline { font-size: min(72px, 6.67vw); }
+            .sub { font-size: min(21px, 1.94vw); }
             .price-badge { font-size: min(30px, 2.78vw); padding: min(12px, 1.1vw) min(32px, 2.96vw); }
             .shipping-badge { font-size: min(16px, 1.48vw); padding: min(9px, 0.83vw) min(22px, 2.04vw); }
             .cta-btn { font-size: min(24px, 2.2vw); padding: min(20px, 1.85vw) min(44px, 4.07vw); }
             .url { font-size: min(15px, 1.39vw); }
+            .panel-label { font-size: min(20px, 1.85vw); }
         }
     </style>
 </head>
 <body>
-    <p class="ad-label">Instagram Ad - T-Rex Skeleton - 1080 × 1080 px</p>
+    <p class="ad-label">Instagram Ad - Articulated Legs Collection - 1080 × 1080 px</p>
 
     <div class="ad">
 
@@ -245,29 +285,38 @@
         <div class="top-bar">
             <div class="brand">
                 <img class="brand-logo"
-                     src="../../images/layerweaver-logo.svg"
+                     src="../../../images/layerweaver-logo.svg"
                      alt="LayerWeaver">
                 <span class="brand-name">LayerWeaver.com</span>
             </div>
             <span class="tag">3D Printed</span>
         </div>
 
-        <!-- Product image -->
+        <!-- Products scattered playfully -->
         <div class="image-section">
-            <img class="product-img"
-                 src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productApr28_2026_04_09_45PM.png?v=1777374131"
-                 alt="T-Rex Skeleton">
+            <div class="panel panel-tree">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPT_Image_Apr_28_2026_07_22_45_PM.png?v=1777384378"
+                     alt="Tree">
+            </div>
+            <div class="panel panel-pumpkin">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_42_38_PM.png?v=1777371560"
+                     alt="Pumpkin">
+            </div>
+            <div class="panel panel-pineapple">
+                <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Apr_28_2026_03_44_26_PM.png?v=1777371560"
+                     alt="Pineapple">
+            </div>
         </div>
 
         <!-- Copy band -->
         <div class="copy-band">
             <div class="copy-left">
-                <p class="eyebrow">3D Printed Collectible</p>
-                <h2 class="headline">King of<br>the Desk.</h2>
+                <p class="eyebrow">Articulated Desk Buddies</p>
+                <h2 class="headline">They Wiggle.<br>You'll Love It.</h2>
                 
             </div>
             <div class="copy-right">
-                <span class="price-badge">Just ₹199</span>
+                <span class="price-badge">From ₹99</span>
                 <span class="shipping-badge">Free Shipping on ₹500+</span>
                 <button class="cta-btn">Shop Now →</button>
                 <span class="url">LayerWeaver.com/shop</span>
