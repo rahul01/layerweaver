@@ -150,5 +150,5 @@ export function orderByForPincode(pin, now = Date.now(), cfg = ORDER_BY) {
   const z = cfg.zones[zone];
   return today <= z.by
     ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
-    : { zone, open: false, text: 'Orders to your pincode now arrive after Diwali.' };
+    : { zone, open: false, text: 'Orders to your pincode might arrive after Diwali. Check with us on WhatsApp.' };
 }

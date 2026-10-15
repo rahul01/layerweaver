@@ -447,7 +447,7 @@
     const z = ORDER_BY_ZONES[zone];
     return today <= z.by
       ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
-      : { zone, open: false, text: 'Orders to your pincode now arrive after Diwali.' };
+      : { zone, open: false, text: 'Orders to your pincode might arrive after Diwali.' };
   }
 
   function savedPincode() {
@@ -459,8 +459,11 @@
     const r = orderByForPincode(pin);
     if (!pin) { res.textContent = ''; res.className = 'orderby-result'; return; }
     if (!r) { res.textContent = 'Enter a 6-digit pincode.'; res.className = 'orderby-result orderby-error'; return; }
-    res.textContent = r.text;
     res.className = `orderby-result ${r.open ? 'orderby-open' : 'orderby-closed'}`;
+    if (r.open) { res.textContent = r.text; return; }
+    // Past the date: we may still make it, so point them to the chat.
+    const wa = `https://wa.me/917558783018?text=${encodeURIComponent(`Hi! Can you deliver to ${pin} before Diwali?`)}`;
+    res.innerHTML = `${esc(r.text)} <a href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Check with us on WhatsApp</a>`;
   }
 
   function renderOrderBy() {

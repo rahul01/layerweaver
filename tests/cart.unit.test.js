@@ -275,7 +275,7 @@ describe('orderByForPincode', () => {
   });
   it('stays open through the date in IST, then says after Diwali', () => {
     expect(orderByForPincode('781001', at('2026-10-26T23:59:00+05:30')).open).toBe(true);
-    expect(orderByForPincode('781001', at('2026-10-27T00:01:00+05:30'))).toEqual({ zone: 'india', open: false, text: 'Orders to your pincode now arrive after Diwali.' });
+    expect(orderByForPincode('781001', at('2026-10-27T00:01:00+05:30'))).toEqual({ zone: 'india', open: false, text: 'Orders to your pincode might arrive after Diwali. Check with us on WhatsApp.' });
     expect(orderByForPincode('411001', at('2026-10-27T00:01:00+05:30')).open).toBe(true);
   });
   it('null for a bad pincode, and from Diwali day', () => {

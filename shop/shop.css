@@ -3158,3 +3158,4 @@ body.seasonal--halloween {
 .orderby-cart { margin: 0 0 14px; max-width: none; }
 .orderby-cart .orderby-label { font-size: 0.85rem; margin-bottom: 6px; }
 .orderby-cart .orderby-row input, .orderby-cart .orderby-row button { padding: 8px 14px; font-size: 0.85rem; }
+.orderby-closed a { color: #1f8f4e; font-weight: 600; white-space: nowrap; }
