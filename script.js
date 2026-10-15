@@ -39,6 +39,34 @@
   } catch (e) { /* localStorage unavailable - best effort only */ }
 })();
 
+(function passUtmToWhatsApp() {
+  // Mirrors withUtmTags() in shop/cart-utils.js (unit-tested there). A
+  // WhatsApp chat carries only its text, so when someone taps a WhatsApp
+  // link the original utm_* tags they arrived with go on our site link in
+  // the typed message (the current page's link if it has none). The
+  // dashboard reads them back from the chat. At tap time, so links built
+  // later (product variants, the order-by box) get them too.
+  const KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+  document.addEventListener('click', function (e) {
+    const link = e.target.closest && e.target.closest('a[href]');
+    if (!link) return;
+    let url;
+    try { url = new URL(link.href); } catch (err) { return; }
+    if (!/(^|\.)wa\.me$/.test(url.hostname) && url.hostname !== 'api.whatsapp.com') return;
+    let attr = null;
+    try { attr = JSON.parse(localStorage.getItem('lw_attribution') || 'null'); } catch (err) {}
+    const tags = KEYS.filter(function (k) { return attr && attr[k]; });
+    if (!tags.length) return;
+    const text = url.searchParams.get('text') || '';
+    if (/utm_[a-z]+=/i.test(text)) return;
+    const tag = function (l) { const u = new URL(l); tags.forEach(function (k) { u.searchParams.set(k, attr[k]); }); return u.toString(); };
+    const ours = /https?:\/\/(?:www\.)?layerweaver\.com\/[^\s]*/i;
+    const page = location.origin + location.pathname;
+    url.searchParams.set('text', ours.test(text) ? text.replace(ours, tag) : (text.trim() || 'Hi!') + '\n' + tag(page));
+    link.href = url.toString();
+  }, true);
+})();
+
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile navigation toggle

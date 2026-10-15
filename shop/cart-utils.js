@@ -152,3 +152,31 @@ export function orderByForPincode(pin, now = Date.now(), cfg = ORDER_BY) {
     ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
     : { zone, open: false, text: 'Orders to your pincode might arrive after Diwali. Check with us on WhatsApp.' };
 }
+
+// Mirrors script.js's passUtmToWhatsApp(). A WhatsApp chat carries nothing
+// but its text, so the visitor's original utm_* tags (lw_attribution) go on
+// our site link inside the typed message: added to a layerweaver.com link
+// already in it, or the current page's link added when there isn't one.
+// The dashboard's webhook reads them back from the chat. No tags stored, or
+// a message that already has them: the link is left alone.
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+export function withUtmTags(href, attr, pageUrl) {
+  const tags = UTM_KEYS.filter(k => attr?.[k]).map(k => [k, attr[k]]);
+  if (!tags.length) return href;
+  let url;
+  try { url = new URL(href); } catch { return href; }
+  if (!/(^|\.)wa\.me$/.test(url.hostname) && url.hostname !== 'api.whatsapp.com') return href;
+  const text = url.searchParams.get('text') ?? '';
+  if (/utm_[a-z]+=/i.test(text)) return href;
+  const tag = link => {
+    const u = new URL(link);
+    for (const [k, v] of tags) u.searchParams.set(k, v);
+    return u.toString();
+  };
+  const ours = /https?:\/\/(?:www\.)?layerweaver\.com\/[^\s]*/i;
+  const next = ours.test(text)
+    ? text.replace(ours, m => tag(m))
+    : `${text.trim() || 'Hi!'}\n${tag(pageUrl)}`;
+  url.searchParams.set('text', next);
+  return url.toString();
+}

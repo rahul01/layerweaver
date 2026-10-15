@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -281,5 +281,28 @@ describe('orderByForPincode', () => {
   it('null for a bad pincode, and from Diwali day', () => {
     expect(orderByForPincode('123', at('2026-10-15T12:00:00+05:30'))).toBeNull();
     expect(orderByForPincode('411001', at('2026-11-08T00:00:00+05:30'))).toBeNull();
+  });
+});
+
+describe('withUtmTags', () => {
+  const ad = { source: 'facebook', utm_source: 'facebook', utm_medium: 'paid_social', utm_campaign: 'LW Diwali Prospecting', utm_content: 'P-sardine', fbclid: 'x' };
+  const page = 'https://www.layerweaver.com/shop/products/sardine-fishbone-jewelry-organizer/';
+  const text = h => new URL(h).searchParams.get('text');
+  it('adds the original tags to our link already in the message', () => {
+    const t = text(withUtmTags(`https://wa.me/917558783018?text=${encodeURIComponent(`Hi! I'm interested in Sardine\n${page}`)}`, ad, page));
+    expect(t).toBe(`Hi! I'm interested in Sardine\n${page}?utm_source=facebook&utm_medium=paid_social&utm_campaign=LW+Diwali+Prospecting&utm_content=P-sardine`);
+    expect(t).not.toMatch(/fbclid/);
+  });
+  it('adds the current page link when the message has none', () => {
+    expect(text(withUtmTags('https://wa.me/917558783018', { utm_source: 'creator', utm_content: 'shivna' }, 'https://www.layerweaver.com/')))
+      .toBe('Hi!\nhttps://www.layerweaver.com/?utm_source=creator&utm_content=shivna');
+  });
+  it('leaves the link alone with no stored tags, tags already there, or not WhatsApp', () => {
+    const h = 'https://wa.me/917558783018?text=Hi';
+    expect(withUtmTags(h, null, page)).toBe(h);
+    expect(withUtmTags(h, { source: 'direct' }, page)).toBe(h);
+    const tagged = `https://wa.me/917558783018?text=${encodeURIComponent(`${page}?utm_source=facebook`)}`;
+    expect(withUtmTags(tagged, ad, page)).toBe(tagged);
+    expect(withUtmTags(page, ad, page)).toBe(page);
   });
 });
