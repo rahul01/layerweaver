@@ -118,3 +118,37 @@ export function shippingProgress(total, min) {
     : `🚚 Add ₹${(min - total).toFixed(0)} more for free shipping`;
   return { isUnlocked, pct, message };
 }
+
+// Mirrors shop/cart.js's orderByForPincode(). Diwali order-by date for a
+// pincode (Diwali 2026 plan, section 7). Zones by the first three digits:
+// Maharashtra 400-445 except 403 (Goa); metro cities Delhi 110, Faridabad
+// 121, Gurugram 122, Noida/Ghaziabad 201, Bengaluru 560, Hyderabad 500,
+// Chennai 600, Kolkata 700; everything else is the rest of India. A zone
+// stays open through its date (IST). Returns null for a pincode that isn't
+// 6 digits, or from Diwali day on.
+export const ORDER_BY = {
+  diwali: '2026-11-08',
+  zones: {
+    maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
+    metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },
+    india:       { by: '2026-10-26', date: 'Mon, Oct 26' },
+  },
+};
+const METRO_PREFIXES = new Set([110, 121, 122, 201, 560, 500, 600, 700]);
+export function pincodeZone(pin) {
+  const p = String(pin ?? '').trim();
+  if (!/^[1-9]\d{5}$/.test(p)) return null;
+  const p3 = Number(p.slice(0, 3));
+  if (p3 >= 400 && p3 <= 445 && p3 !== 403) return 'maharashtra';
+  if (METRO_PREFIXES.has(p3)) return 'metro';
+  return 'india';
+}
+export function orderByForPincode(pin, now = Date.now(), cfg = ORDER_BY) {
+  const zone = pincodeZone(pin);
+  const today = new Date(now).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+  if (!zone || today >= cfg.diwali) return null;
+  const z = cfg.zones[zone];
+  return today <= z.by
+    ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
+    : { zone, open: false, text: 'Orders to your pincode now arrive after Diwali.' };
+}

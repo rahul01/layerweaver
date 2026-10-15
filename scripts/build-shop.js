@@ -1339,6 +1339,8 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                         </a>
                     </div>
 
+                    ${isContactOnly(product) || isCustomPrice(product) ? '' : '<div class="orderby" data-orderby hidden></div>'}
+
                     <div class="product-description">
                         <h3>About this product</h3>
                         ${sanitizeDescriptionHtml(product.descriptionHtml) || `<p>${product.description}</p>`}

@@ -3114,3 +3114,47 @@ body.seasonal--halloween {
 @media (prefers-reduced-motion: reduce) {
     .seasonal--diwali .collection-banner::after { animation: none; }
 }
+
+/* Diwali order-by date by pincode (filled by cart.js renderOrderBy) */
+.orderby {
+    margin: -16px 0 32px;
+    max-width: 420px;
+}
+.orderby[hidden] { display: none; }
+.orderby-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: var(--dark);
+}
+.orderby-label i { color: var(--primary); margin-right: 6px; }
+.orderby-row { display: flex; gap: 8px; }
+.orderby-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 14px;
+    border: 1px solid #d9d2e6;
+    border-radius: 50px;
+    font: inherit;
+    font-size: 0.95rem;
+}
+.orderby-row input:focus { outline: none; border-color: var(--primary); }
+.orderby-row button {
+    padding: 10px 20px;
+    border: 1px solid var(--primary);
+    border-radius: 50px;
+    background: transparent;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+}
+.orderby-row button:hover { background: var(--primary); color: #fff; }
+.orderby-result { margin: 8px 0 0; font-size: 0.9rem; min-height: 0; }
+.orderby-result:empty { display: none; }
+.orderby-open { color: #2f7a3e; font-weight: 600; }
+.orderby-closed { color: #666; }
+.orderby-error { color: #b23a3a; }
+.orderby-cart { margin: 0 0 14px; max-width: none; }
+.orderby-cart .orderby-label { font-size: 0.85rem; margin-bottom: 6px; }
+.orderby-cart .orderby-row input, .orderby-cart .orderby-row button { padding: 8px 14px; font-size: 0.85rem; }

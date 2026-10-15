@@ -415,6 +415,86 @@
     badge.style.display = qty > 0 ? 'flex' : 'none';
   }
 
+  // ── Diwali order-by date by pincode ──────────────────────────────────────
+  // Mirrors orderByForPincode() in shop/cart-utils.js (unit-tested there).
+  // Fills every [data-orderby] box (product pages, cart drawer): the buyer
+  // types a pincode and sees their own date, worked out from their clock in
+  // IST, so a passed date flips without a rebuild. The pincode is remembered
+  // on this device only (lw_pincode). Hidden from Diwali day on.
+  const ORDER_BY_DIWALI = '2026-11-08';
+  const ORDER_BY_ZONES = {
+    maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
+    metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },
+    india:       { by: '2026-10-26', date: 'Mon, Oct 26' },
+  };
+  const METRO_PREFIXES = new Set([110, 121, 122, 201, 560, 500, 600, 700]);
+  const PIN_KEY = 'lw_pincode';
+  const istToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
+  function pincodeZone(pin) {
+    const p = String(pin ?? '').trim();
+    if (!/^[1-9]\d{5}$/.test(p)) return null;
+    const p3 = Number(p.slice(0, 3));
+    if (p3 >= 400 && p3 <= 445 && p3 !== 403) return 'maharashtra';
+    if (METRO_PREFIXES.has(p3)) return 'metro';
+    return 'india';
+  }
+
+  function orderByForPincode(pin) {
+    const zone = pincodeZone(pin);
+    const today = istToday();
+    if (!zone || today >= ORDER_BY_DIWALI) return null;
+    const z = ORDER_BY_ZONES[zone];
+    return today <= z.by
+      ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
+      : { zone, open: false, text: 'Orders to your pincode now arrive after Diwali.' };
+  }
+
+  function savedPincode() {
+    try { return localStorage.getItem(PIN_KEY) || ''; } catch { return ''; }
+  }
+
+  function showOrderBy(box, pin) {
+    const res = box.querySelector('.orderby-result');
+    const r = orderByForPincode(pin);
+    if (!pin) { res.textContent = ''; res.className = 'orderby-result'; return; }
+    if (!r) { res.textContent = 'Enter a 6-digit pincode.'; res.className = 'orderby-result orderby-error'; return; }
+    res.textContent = r.text;
+    res.className = `orderby-result ${r.open ? 'orderby-open' : 'orderby-closed'}`;
+  }
+
+  function renderOrderBy() {
+    if (istToday() >= ORDER_BY_DIWALI) return;
+    const pin = savedPincode();
+    document.querySelectorAll('[data-orderby]').forEach(box => {
+      box.innerHTML = `
+        <form class="orderby-form" novalidate>
+          <label class="orderby-label"><i class="fa-solid fa-gift"></i> Want it before Diwali?</label>
+          <div class="orderby-row">
+            <input type="text" inputmode="numeric" autocomplete="postal-code" maxlength="6" placeholder="Your pincode" aria-label="Your pincode" value="${esc(pin)}">
+            <button type="submit">Check</button>
+          </div>
+        </form>
+        <p class="orderby-result" aria-live="polite"></p>`;
+      box.hidden = false;
+      showOrderBy(box, pin);
+    });
+  }
+
+  document.addEventListener('submit', (e) => {
+    const form = e.target.closest?.('.orderby-form');
+    if (!form) return;
+    e.preventDefault();
+    const pin = form.querySelector('input').value.replace(/\D/g, '');
+    if (pincodeZone(pin)) { try { localStorage.setItem(PIN_KEY, pin); } catch {} }
+    // Every box on the page shows the same pincode (product page + cart).
+    document.querySelectorAll('[data-orderby]').forEach(box => {
+      const input = box.querySelector('input');
+      if (input) input.value = pin;
+      showOrderBy(box, pin);
+    });
+  });
+
   // ── DOM: drawer ───────────────────────────────────────────────────────────
 
   function injectDrawer() {
@@ -437,6 +517,7 @@
       <div class="cart-body" id="cart-body"></div>
       <div class="cart-footer" id="cart-footer">
         <div id="cart-checkout-section" style="display:none">
+          <div class="orderby orderby-cart" data-orderby hidden></div>
           <div id="rewards-progress" class="rewards-progress" style="display:none">
             <div class="rewards-bar-track">
               <div class="rewards-bar-fill" id="rewards-bar-fill"></div>
@@ -1225,6 +1306,7 @@
   async function init() {
     injectCartIcon();
     injectDrawer();
+    renderOrderBy();
     injectRewardsBubble();
 
     // Restore cart from previous session

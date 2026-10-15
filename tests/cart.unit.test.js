@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -246,5 +246,40 @@ describe('addedLines (AddToCart fires once per real add)', () => {
 
   it('a first add into an empty cart counts the whole line; other products are ignored', () => {
     expect(addedLines([], [line('L1', 'V1', 2), line('L9', 'V9', 1)], ['V1']).map(x => [x.node.id, x.quantity])).toEqual([['L1', 2]]);
+  });
+});
+
+describe('pincodeZone', () => {
+  it('maps pincodes to zones by their first three digits', () => {
+    expect(pincodeZone('411001')).toBe('maharashtra'); // Pune
+    expect(pincodeZone('400001')).toBe('maharashtra'); // Mumbai
+    expect(pincodeZone('440001')).toBe('maharashtra'); // Nagpur
+    expect(pincodeZone('403001')).toBe('india');       // Goa, not Maharashtra
+    for (const p of ['110001', '121001', '122001', '201301', '560001', '500001', '600001', '700001']) expect(pincodeZone(p)).toBe('metro');
+    expect(pincodeZone('380001')).toBe('india');       // Ahmedabad
+    expect(pincodeZone('781001')).toBe('india');       // Guwahati
+  });
+  it('rejects anything that is not a 6-digit pincode', () => {
+    for (const p of ['', '41100', '4110011', '011001', 'abcdef', null]) expect(pincodeZone(p)).toBeNull();
+    expect(pincodeZone(' 411001 ')).toBe('maharashtra');
+  });
+});
+
+describe('orderByForPincode', () => {
+  const at = s => new Date(s).getTime();
+  it('gives each zone its own date', () => {
+    const now = at('2026-10-15T12:00:00+05:30');
+    expect(orderByForPincode('411001', now).text).toBe('Order by Sun, Nov 1 to get it before Diwali.');
+    expect(orderByForPincode('560001', now).text).toBe('Order by Fri, Oct 30 to get it before Diwali.');
+    expect(orderByForPincode('781001', now).text).toBe('Order by Mon, Oct 26 to get it before Diwali.');
+  });
+  it('stays open through the date in IST, then says after Diwali', () => {
+    expect(orderByForPincode('781001', at('2026-10-26T23:59:00+05:30')).open).toBe(true);
+    expect(orderByForPincode('781001', at('2026-10-27T00:01:00+05:30'))).toEqual({ zone: 'india', open: false, text: 'Orders to your pincode now arrive after Diwali.' });
+    expect(orderByForPincode('411001', at('2026-10-27T00:01:00+05:30')).open).toBe(true);
+  });
+  it('null for a bad pincode, and from Diwali day', () => {
+    expect(orderByForPincode('123', at('2026-10-15T12:00:00+05:30'))).toBeNull();
+    expect(orderByForPincode('411001', at('2026-11-08T00:00:00+05:30'))).toBeNull();
   });
 });
