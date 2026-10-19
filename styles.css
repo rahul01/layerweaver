@@ -789,17 +789,6 @@ section {
     transform: scale(1.05);
 }
 
-.image-frame::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(160, 131, 213, 0.2) 0%, rgba(239, 207, 32, 0.2) 100%);
-    pointer-events: none;
-}
-
 .about-text {
     flex: 2;
     min-width: 300px;
