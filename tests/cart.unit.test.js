@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags, giftCardRecipientAttributes } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -304,5 +304,40 @@ describe('withUtmTags', () => {
     const tagged = `https://wa.me/917558783018?text=${encodeURIComponent(`${page}?utm_source=facebook`)}`;
     expect(withUtmTags(tagged, ad, page)).toBe(tagged);
     expect(withUtmTags(page, ad, page)).toBe(page);
+  });
+});
+
+describe('giftCardRecipientAttributes', () => {
+  const now = new Date('2026-10-20T15:00:00+05:30').getTime();
+  it('no email: the card goes to the buyer, no properties', () => {
+    expect(giftCardRecipientAttributes({}, now)).toEqual({ attributes: [] });
+    expect(giftCardRecipientAttributes({ email: '  ' }, now)).toEqual({ attributes: [] });
+  });
+  it('asks for the email when other fields are filled', () => {
+    expect(giftCardRecipientAttributes({ message: 'Happy Diwali' }, now)).toMatchObject({ field: 'email' });
+    expect(giftCardRecipientAttributes({ sendOn: '2026-11-08' }, now)).toMatchObject({ field: 'email' });
+  });
+  it("sends Shopify's recipient properties, trimmed, with the time zone offset", () => {
+    expect(giftCardRecipientAttributes({ email: ' a@b.in ', name: ' Asha ', message: ' Happy Diwali! ', sendOn: '2026-11-08' }, now, -330)).toEqual({ attributes: [
+      { key: '__shopify_send_gift_card_to_recipient', value: 'on' },
+      { key: 'Recipient email', value: 'a@b.in' },
+      { key: 'Recipient name', value: 'Asha' },
+      { key: 'Message', value: 'Happy Diwali!' },
+      { key: 'Send on', value: '2026-11-08' },
+      { key: '__shopify_offset', value: '-330' },
+    ] });
+  });
+  it('leaves out empty optional fields (send now)', () => {
+    expect(giftCardRecipientAttributes({ email: 'a@b.in' }, now).attributes.map(a => a.key))
+      .toEqual(['__shopify_send_gift_card_to_recipient', 'Recipient email', '__shopify_offset']);
+  });
+  it('checks the email, message length and date', () => {
+    expect(giftCardRecipientAttributes({ email: 'asha@' }, now)).toMatchObject({ field: 'email' });
+    expect(giftCardRecipientAttributes({ email: 'a@b.in', message: 'x'.repeat(201) }, now)).toMatchObject({ field: 'message' });
+    expect(giftCardRecipientAttributes({ email: 'a@b.in', message: 'x'.repeat(200) }, now).attributes).toBeTruthy();
+    expect(giftCardRecipientAttributes({ email: 'a@b.in', sendOn: '2026-10-19' }, now)).toMatchObject({ field: 'sendOn' });
+    expect(giftCardRecipientAttributes({ email: 'a@b.in', sendOn: '2026-10-20' }, now).attributes).toBeTruthy(); // today (IST) is fine
+    expect(giftCardRecipientAttributes({ email: 'a@b.in', sendOn: '2027-01-18' }, now).attributes).toBeTruthy(); // day 90
+    expect(giftCardRecipientAttributes({ email: 'a@b.in', sendOn: '2027-01-19' }, now)).toMatchObject({ field: 'sendOn' });
   });
 });

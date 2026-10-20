@@ -52,7 +52,7 @@ async function fetchCollectionsUnfiltered() {
           products(first: 50) {
             edges {
               node {
-                id title handle tags description
+                id title handle tags description isGiftCard
                 priceRange {
                   minVariantPrice { amount currencyCode }
                   maxVariantPrice { amount currencyCode }
@@ -146,7 +146,7 @@ async function fetchProducts() {
         pageInfo { hasNextPage endCursor }
         edges {
           node {
-            id title handle tags productType description descriptionHtml updatedAt
+            id title handle tags productType description descriptionHtml updatedAt isGiftCard
             priceRange {
               minVariantPrice { amount currencyCode }
               maxVariantPrice { amount currencyCode }
@@ -557,6 +557,26 @@ function perCharRate(product) {
     throw new Error(`Product "${product.handle}" wants a ₹${rate}/char surcharge, but no surcharge variant is configured for that rate in PER_CHAR_SURCHARGE_VARIANTS`);
   }
   return rate;
+}
+
+// Shopify gift card products (the e-gift card, Oct 20): emailed, never
+// printed or shipped. Their own page has amount buttons, optional recipient
+// fields (cart.js sends Shopify's recipient line properties) and no pincode
+// box; they stay out of collections, the shop grid (a banner links there),
+// "You may also like" and the review links page.
+function isGiftCard(product) {
+  return product.isGiftCard === true;
+}
+
+// "₹1,000" for a gift card amount button (Shopify names them "₹1,000.00").
+function giftCardAmountLabel(variant) {
+  const n = parseFloat(variant.price.amount);
+  return variant.price.currencyCode === 'INR' ? `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : formatPrice(variant.price.amount, variant.price.currencyCode);
+}
+
+// IST date (yyyy-mm-dd) n days from now - bounds for the "Send on" picker.
+function istDatePlus(days) {
+  return new Date(Date.now() + days * 86_400_000).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 }
 
 // Native Shopify Bundles: a bundle variant's `requiresComponents` is true and it
@@ -1014,7 +1034,9 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
   const shopBase = './';
 
   // Bundles are shown only in their own collection, not mixed into the main grid.
-  const singleProducts = products.filter(p => !isBundle(p));
+  // Gift cards get a banner of their own instead of a card in the grid.
+  const singleProducts = products.filter(p => !isBundle(p) && !isGiftCard(p));
+  const giftCard = products.find(isGiftCard);
   const productCards = singleProducts.map((p, i) => productCardHtml(p, 'products/', reviewsMap[p.handle], i < 4)).join('\n');
 
   // Pick the first product image from each collection for the "All" banner
@@ -1049,6 +1071,12 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
 
     <div class="container">
         ${collagebannerHtml('All Products', 'Browse our complete collection of 3D printed creations', allBannerImages)}
+        ${giftCard ? `
+        <a class="giftcard-banner" href="products/${giftCard.handle}/">
+            <i class="fa-solid fa-gift"></i>
+            <span><strong>Can't decide, or too late to ship?</strong> Send an e-gift card - it arrives by email instantly.</span>
+            <span class="giftcard-banner-cta">Gift cards <i class="fa-solid fa-arrow-right"></i></span>
+        </a>` : ''}
     </div>
 
     <section class="shop-products">
@@ -1082,8 +1110,9 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
   // words rare across the catalog count for more than words nearly every
   // listing shares). Sharing this product's Shopify productType only adds a
   // small nudge on top - it is not the primary signal.
+  const giftCard = isGiftCard(product);
   const index = similarityIndex || buildSimilarityIndex(allProducts);
-  const relatedProducts = computeRelatedProducts(product, allProducts, index);
+  const relatedProducts = giftCard ? [] : computeRelatedProducts(product, allProducts, index);
 
   const variants        = product.variants.edges.map(e => e.node);
   const images          = product.images.edges.map(e => e.node);
@@ -1116,7 +1145,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
   const mainImage     = hasVariantImages
     ? { url: firstAvailable.image?.url || images[0]?.url, altText: firstAvailable.title }
     : images[0];
-  const price         = formatPrice(firstAvailable.price.amount, firstAvailable.price.currencyCode);
+  const price         = giftCard ? giftCardAmountLabel(firstAvailable) : formatPrice(firstAvailable.price.amount, firstAvailable.price.currencyCode);
 
   const breadcrumbItems = [
     { '@type': 'ListItem', position: 1, name: 'Home',  item: SITE_URL + '/' },
@@ -1159,7 +1188,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
 
   const variantButtons = hasVariants
     ? variants.map(v => {
-        const vPrice  = formatPrice(v.price.amount, v.price.currencyCode);
+        const vPrice  = giftCard ? giftCardAmountLabel(v) : formatPrice(v.price.amount, v.price.currencyCode);
         const colorHex = swatchMap[v.title];
         const variantImage = v.image?.url || '';
         if (allColors && colorHex) {
@@ -1181,7 +1210,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                     data-price="${vPrice}"
                     data-image="${variantImage}"
                     ${!v.availableForSale ? 'disabled' : ''}>
-                    ${v.title}${!v.availableForSale ? ' (Sold Out)' : ''}
+                    ${giftCard ? giftCardAmountLabel(v) : v.title}${!v.availableForSale ? ' (Sold Out)' : ''}
                 </button>`;
       }).join('\n')
     : '';
@@ -1240,7 +1269,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
 <head>
     ${headHtml(base, shopBase, {
       title: `${escAttr(toTitleCase(product.title))} – LayerWeaver | Pune`,
-      description: escAttr(`${truncateWords(product.description, 140)} 3D printed in Pune, India.`),
+      description: escAttr(giftCard ? truncateWords(product.description, 160) : `${truncateWords(product.description, 140)} 3D printed in Pune, India.`),
       ogImage: resizedImageUrl(mainImage?.url, IMG_WIDTH_OG),
       ogUrl: `${SITE_URL}/shop/products/${product.handle}/`,
       structuredData,
@@ -1299,7 +1328,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
 
                     ${hasVariants ? `
                     <div class="variants-section">
-                        <p class="variants-label">${allColors ? `Colour: <span id="selected-variant-label">${firstAvailable.title}</span>` : 'Select Option:'}</p>
+                        <p class="variants-label">${allColors ? `Colour: <span id="selected-variant-label">${firstAvailable.title}</span>` : giftCard ? 'Amount:' : 'Select Option:'}</p>
                         <div class="variant-buttons" id="variant-buttons">
                             ${variantButtons}
                         </div>
@@ -1314,12 +1343,37 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                           : 'This text will appear on your item exactly as entered.'}</p>
                     </div>` : ''}
 
+                    ${giftCard ? `
+                    <fieldset class="giftcard-recipient">
+                        <legend>Send it to someone <span class="optional">(optional)</span></legend>
+                        <p class="field-hint">Leave this empty and the card comes to your email, to forward or print.</p>
+                        <div class="personalization-field">
+                            <label for="gc-email">Their email</label>
+                            <input type="email" id="gc-email" autocomplete="off" placeholder="name@example.com">
+                        </div>
+                        <div class="personalization-field">
+                            <label for="gc-name">Their name</label>
+                            <input type="text" id="gc-name" autocomplete="off" maxlength="60">
+                        </div>
+                        <div class="personalization-field">
+                            <label for="gc-message">Your message</label>
+                            <textarea id="gc-message" rows="3" maxlength="200" placeholder="Happy Diwali!"></textarea>
+                        </div>
+                        <div class="personalization-field">
+                            <label for="gc-send-on">Send on</label>
+                            <input type="date" id="gc-send-on" min="${istDatePlus(0)}" max="${istDatePlus(90)}">
+                            <p class="field-hint">Leave empty to send it now.${istDatePlus(0) < '2026-11-08' ? ' Pick Nov 8 to send it on Diwali.' : ''}</p>
+                        </div>
+                        <p class="giftcard-error" id="gc-error" role="alert" hidden></p>
+                    </fieldset>` : ''}
+
                     <div class="product-actions">
                         ${isContactOnly(product) || isCustomPrice(product) ? '' : `
                         <button id="add-to-cart-btn"
                                 class="btn-primary add-to-cart-btn"
                                 data-variant-gid="${firstAvailable.id}"
                                 ${product.tags.includes('personalized') ? 'data-personalized="true"' : ''}
+                                ${giftCard ? 'data-gift-card="true"' : ''}
                                 ${charRate ? `data-per-char-rate="${charRate}" data-surcharge-gid="${surchargeGid}" data-base-price="${firstAvailable.price.amount}" data-for-product="${escAttr(toTitleCase(product.title))}"` : ''}>
                             Add to Cart
                         </button>`}
@@ -1339,7 +1393,9 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                         </a>
                     </div>
 
-                    ${isContactOnly(product) || isCustomPrice(product) ? '' : '<div class="orderby" data-orderby hidden></div>'}
+                    ${giftCard
+                      ? '<p class="giftcard-delivery"><i class="fa-solid fa-envelope"></i> Delivered by email - no shipping. Spend it on anything in the store.</p>'
+                      : isContactOnly(product) || isCustomPrice(product) ? '' : '<div class="orderby" data-orderby hidden></div>'}
 
                     <div class="product-description">
                         <h3>About this product</h3>
@@ -1987,7 +2043,7 @@ function generateTeamReviewLinksPage(products) {
   const base = '../../';
   const storeLink = `https://judge.me/product_reviews/${JUDGEME_REVIEW_UUID}/new?store-review-only=true&source=shareable-link`;
 
-  const cards = products.map(p => {
+  const cards = products.filter(p => !isGiftCard(p)).map(p => {
     const numId = getNumericId(p.id);
     const link = `https://judge.me/product_reviews/${JUDGEME_REVIEW_UUID}/new?id=${numId}`;
     const img = p.images.edges[0]?.node.url ? p.images.edges[0].node.url + '&width=300' : '';
@@ -2167,6 +2223,8 @@ async function main() {
   console.log('Fetching collections...');
   const collections = await fetchCollections();
   console.log(`Found ${collections.length} collection(s)`);
+  // A smart collection may pick up the gift card; it only lives on its own page.
+  for (const c of collections) c.products = c.products.filter(p => !isGiftCard(p));
 
   const { map: reviewsMap, storeReviews, overall, seenIds } = await fetchAllReviews(products);
 
@@ -2225,11 +2283,13 @@ async function main() {
     }
   }
 
-  const similarityIndex = buildSimilarityIndex(products);
+  // "You may also like" never suggests the gift card.
+  const relatable = products.filter(p => !isGiftCard(p));
+  const similarityIndex = buildSimilarityIndex(relatable);
   for (const product of products) {
     const productDir = path.join(productsDir, product.handle);
     fs.mkdirSync(productDir, { recursive: true });
-    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap, products, similarityIndex));
+    fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap, relatable, similarityIndex));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
 

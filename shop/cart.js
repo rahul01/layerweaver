@@ -127,7 +127,7 @@
         id quantity
         attributes { key value }
         merchandise { ... on ProductVariant {
-          id title
+          id title requiresShipping
           price { amount currencyCode }
           product { title handle }
           image { url altText }
@@ -375,9 +375,11 @@
   // shipping progress bar. Deliberately sums lines directly rather than
   // trusting cart.cost.subtotalAmount, since that field has been observed to
   // behave inconsistently once a discount code is applied to the cart.
+  // Gift cards (no shipping) don't count towards free shipping.
   function cartSubtotal(cart) {
     return cart.lines.edges
       .map(e => e.node)
+      .filter(l => l.merchandise.requiresShipping !== false)
       .reduce((s, l) => s + parseFloat(l.merchandise.price.amount) * l.quantity, 0);
   }
 
@@ -429,6 +431,7 @@
   };
   const METRO_PREFIXES = new Set([110, 121, 122, 201, 560, 500, 600, 700]);
   const PIN_KEY = 'lw_pincode';
+  const GIFT_CARD_HANDLE = 'layerweaver-e-gift-card';
   const istToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
   function pincodeZone(pin) {
@@ -461,9 +464,10 @@
     if (!r) { res.textContent = 'Enter a 6-digit pincode.'; res.className = 'orderby-result orderby-error'; return; }
     res.className = `orderby-result ${r.open ? 'orderby-open' : 'orderby-closed'}`;
     if (r.open) { res.textContent = r.text; return; }
-    // Past the date: we may still make it, so point them to the chat.
+    // Past the date: offer the e-gift card (arrives instantly), and the chat
+    // in case we can still make it.
     const wa = `https://wa.me/917558783018?text=${encodeURIComponent(`Hi! Can you deliver to ${pin} before Diwali?`)}`;
-    res.innerHTML = `${esc(r.text)} <a href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Check with us on WhatsApp</a>`;
+    res.innerHTML = `${esc(r.text)} <a href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/"><i class="fa-solid fa-gift"></i> Send an e-gift card - it arrives instantly</a> or <a href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> check with us on WhatsApp</a>`;
   }
 
   function renderOrderBy() {
@@ -887,6 +891,11 @@
     chkBtn.href = cart.checkoutUrl;
     const checkoutSection = document.getElementById('cart-checkout-section');
     if (checkoutSection) checkoutSection.style.display = 'contents';
+    // Nothing to deliver (only gift cards): no "before Diwali?" box.
+    const cartOrderBy = document.querySelector('.orderby-cart');
+    if (cartOrderBy && cartOrderBy.innerHTML) {
+      cartOrderBy.hidden = !cart.lines.edges.some(e => e.node.merchandise.requiresShipping !== false);
+    }
     renderRewardsBar();
   }
 
@@ -1036,6 +1045,35 @@
     return addLinesCore([{ merchandiseId: variantGid, quantity: qty, attributes }]);
   }
 
+  // Mirrored in shop/cart-utils.js (tested there): the gift card page's
+  // recipient fields as the line properties Shopify emails a card from.
+  const GIFT_MESSAGE_MAX = 200;
+  function giftCardRecipientAttributes({ email = '', name = '', message = '', sendOn = '' } = {}, now = Date.now(), offsetMinutes = -330) {
+    email = String(email).trim(); name = String(name).trim(); message = String(message).trim(); sendOn = String(sendOn).trim();
+    if (!email) {
+      return name || message || sendOn
+        ? { error: "Add their email, or clear these fields to get the card yourself.", field: 'email' }
+        : { attributes: [] };
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Check the email address.', field: 'email' };
+    if (message.length > GIFT_MESSAGE_MAX) return { error: `Keep the message under ${GIFT_MESSAGE_MAX} characters.`, field: 'message' };
+    if (sendOn) {
+      const today = new Date(now).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+      const last = new Date(new Date(`${today}T00:00:00Z`).getTime() + 90 * 86_400_000).toISOString().slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(sendOn) || sendOn < today) return { error: 'Pick today or a later date.', field: 'sendOn' };
+      if (sendOn > last) return { error: 'Pick a date in the next 90 days.', field: 'sendOn' };
+    }
+    const attributes = [
+      { key: '__shopify_send_gift_card_to_recipient', value: 'on' },
+      { key: 'Recipient email', value: email },
+    ];
+    if (name) attributes.push({ key: 'Recipient name', value: name });
+    if (message) attributes.push({ key: 'Message', value: message });
+    if (sendOn) attributes.push({ key: 'Send on', value: sendOn });
+    attributes.push({ key: '__shopify_offset', value: String(offsetMinutes) });
+    return { attributes };
+  }
+
   async function handleAddToCart(variantGid, qty = 1) {
     const btn = document.getElementById('add-to-cart-btn');
 
@@ -1051,6 +1089,24 @@
         return;
       }
       attributes.push({ key: 'Custom Text', value: text });
+    }
+    if (btn?.dataset.giftCard) {
+      const field = id => document.getElementById(id);
+      const errEl = field('gc-error');
+      const r = giftCardRecipientAttributes({
+        email: field('gc-email')?.value, name: field('gc-name')?.value,
+        message: field('gc-message')?.value, sendOn: field('gc-send-on')?.value,
+      }, Date.now(), new Date().getTimezoneOffset());
+      if (r.error) {
+        if (errEl) { errEl.textContent = r.error; errEl.hidden = false; }
+        const input = field({ email: 'gc-email', message: 'gc-message', sendOn: 'gc-send-on' }[r.field]);
+        input?.focus();
+        input?.classList.add('field-error');
+        input?.addEventListener('input', () => input.classList.remove('field-error'), { once: true });
+        return;
+      }
+      if (errEl) errEl.hidden = true;
+      attributes.push(...r.attributes);
     }
 
     setAddBtnLoading(btn, true);

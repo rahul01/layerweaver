@@ -3159,3 +3159,56 @@ body.seasonal--halloween {
 .orderby-cart .orderby-label { font-size: 0.85rem; margin-bottom: 6px; }
 .orderby-cart .orderby-row input, .orderby-cart .orderby-row button { padding: 8px 14px; font-size: 0.85rem; }
 .orderby-closed a { color: #1f8f4e; font-weight: 600; white-space: nowrap; }
+
+/* E-gift card (product page recipient fields, shop banner) */
+.giftcard-recipient {
+    border: 1px solid #e6e0f0;
+    border-radius: 12px;
+    padding: 16px 18px 4px;
+    margin: 0 0 20px;
+}
+.giftcard-recipient legend {
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--dark);
+    padding: 0 6px;
+}
+.giftcard-recipient .optional { font-weight: 400; color: var(--gray-medium); }
+.giftcard-recipient > .field-hint { font-size: 0.82rem; color: var(--gray-medium); margin: 0 0 14px; }
+.giftcard-recipient .personalization-field { margin-bottom: 14px; }
+.giftcard-recipient textarea {
+    padding: 12px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+    color: var(--dark);
+    resize: vertical;
+    outline: none;
+}
+.giftcard-recipient textarea:focus { border-color: var(--primary); }
+.giftcard-recipient textarea.field-error { border-color: #e53e3e; animation: shake 0.3s ease; }
+.giftcard-error { color: #b23a3a; font-size: 0.9rem; margin: 0 0 14px; }
+.giftcard-delivery { margin: -16px 0 32px; font-size: 0.95rem; color: var(--dark); }
+.giftcard-delivery i { color: var(--primary); margin-right: 6px; }
+
+.giftcard-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 24px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7d5cc0 0%, #5B3E96 100%);
+    color: #fff;
+    text-decoration: none;
+}
+.giftcard-banner > i { font-size: 1.4rem; color: var(--secondary); }
+.giftcard-banner span { flex: 1; font-size: 0.95rem; }
+.giftcard-banner .giftcard-banner-cta { flex: none; font-weight: 700; white-space: nowrap; }
+.giftcard-banner:hover .giftcard-banner-cta { text-decoration: underline; }
+@media (max-width: 640px) {
+    .giftcard-banner { flex-wrap: wrap; gap: 8px 12px; padding: 12px 16px; }
+    .giftcard-banner .giftcard-banner-cta { width: 100%; padding-left: calc(1.4rem + 12px); }
+}

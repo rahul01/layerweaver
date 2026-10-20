@@ -180,3 +180,37 @@ export function withUtmTags(href, attr, pageUrl) {
   url.searchParams.set('text', next);
   return url.toString();
 }
+
+// Mirrors shop/cart.js's giftCardRecipientAttributes(). The gift card page's
+// optional "send it to someone" fields, as the cart line properties Shopify
+// reads to email a gift card to a recipient (the same ones its own themes'
+// recipient form sends): no email = the card goes to the buyer, as before.
+// sendOn is yyyy-mm-dd, today (IST) up to 90 days ahead; empty = send now.
+// offsetMinutes is the buyer's Date#getTimezoneOffset() (-330 in India).
+// Returns { attributes } or { error, field } for the field to fix.
+export const GIFT_MESSAGE_MAX = 200;
+export function giftCardRecipientAttributes({ email = '', name = '', message = '', sendOn = '' } = {}, now = Date.now(), offsetMinutes = -330) {
+  email = String(email).trim(); name = String(name).trim(); message = String(message).trim(); sendOn = String(sendOn).trim();
+  if (!email) {
+    return name || message || sendOn
+      ? { error: "Add their email, or clear these fields to get the card yourself.", field: 'email' }
+      : { attributes: [] };
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Check the email address.', field: 'email' };
+  if (message.length > GIFT_MESSAGE_MAX) return { error: `Keep the message under ${GIFT_MESSAGE_MAX} characters.`, field: 'message' };
+  if (sendOn) {
+    const today = new Date(now).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+    const last = new Date(new Date(`${today}T00:00:00Z`).getTime() + 90 * 86_400_000).toISOString().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(sendOn) || sendOn < today) return { error: 'Pick today or a later date.', field: 'sendOn' };
+    if (sendOn > last) return { error: 'Pick a date in the next 90 days.', field: 'sendOn' };
+  }
+  const attributes = [
+    { key: '__shopify_send_gift_card_to_recipient', value: 'on' },
+    { key: 'Recipient email', value: email },
+  ];
+  if (name) attributes.push({ key: 'Recipient name', value: name });
+  if (message) attributes.push({ key: 'Message', value: message });
+  if (sendOn) attributes.push({ key: 'Send on', value: sendOn });
+  attributes.push({ key: '__shopify_offset', value: String(offsetMinutes) });
+  return { attributes };
+}
