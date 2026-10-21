@@ -148,9 +148,12 @@ test.describe('Light Diwali touch', () => {
     const bg = sel => page.evaluate(s => getComputedStyle(document.querySelector(s)).backgroundColor, sel);
     await onDay(page, '2026-10-25');
     await page.goto('/shop/');
-    expect(await bg('.shop-product-card')).toBe('rgba(255, 255, 255, 0.75)');
+    expect(await bg('.shop-product-card')).toBe('rgba(255, 255, 255, 0.55)');
     await page.goto('/faq/');
-    expect(await bg('.faq-item summary')).toBe('rgba(247, 244, 253, 0.78)');
+    expect(await bg('.faq-item summary')).toBe('rgba(247, 244, 253, 0.6)');
+    // The Halloween page keeps its dark cards, see-through.
+    await page.goto('/shop/collections/halloween/');
+    expect(await bg('.shop-product-card')).toBe('rgba(31, 23, 41, 0.7)');
     await page.clock.setFixedTime(new Date('2026-11-09T12:00:00+05:30'));
     await page.goto('/shop/');
     expect(await bg('.shop-product-card')).toBe('rgb(255, 255, 255)');

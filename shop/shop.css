@@ -1412,7 +1412,7 @@ html.diwali-touch #cart-drawer {
 html.diwali-touch .cart-header h3::after { content: ' 🪔'; font-size: 1rem; }
 /* Cream cards in the cart let its mandala show through. */
 html.diwali-touch .cart-empty-card,
-html.diwali-touch .rewards-progress.rewards-has-marks { background-color: rgba(255, 250, 240, 0.75); }
+html.diwali-touch .rewards-progress.rewards-has-marks { background-color: rgba(255, 250, 240, 0.6); }
 html.diwali-touch .cart-empty > i { color: #f0c36a; }
 
 .drawer-back-link {
