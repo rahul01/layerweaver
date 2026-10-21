@@ -15,13 +15,15 @@
     { min: 299, label: 'Free Shipping', icon: 'fa-truck-fast' },
   ];
 
-  // Next-order codes: orders Oct 22 - Nov 1, 2026 (IST) get a code for the
-  // next order, sent by the dashboard. Shown under the free shipping line and
-  // as the shop banner ([data-nextorder]) on those dates only. Remove in the
-  // Nov 9 cleanup.
-  const NEXT_ORDER_FROM  = '2026-10-22';
+  // Next-order codes: orders Oct 21 - Nov 1, 2026 (IST) get a code for the
+  // next order, sent by the dashboard. Shown in the cart rewards bar on those
+  // dates only (the sitewide announcement bar has its own inline date check).
+  // Remove in the Nov 9 cleanup.
+  const NEXT_ORDER_FROM  = '2026-10-21';
   const NEXT_ORDER_TO    = '2026-11-01';
-  const NEXT_ORDER_TIERS = [{ min: 599, off: 50 }, { min: 999, off: 100 }];
+  // Same numbers as the dashboard (routes/lib/next-order-codes.js) and the
+  // order email - change only together with them.
+  const NEXT_ORDER_TIERS = [{ min: 599, off: 50 }, { min: 949, off: 100 }];
 
   // Derive the path to shop/ root from the current page URL
   const path     = window.location.pathname;
@@ -416,14 +418,39 @@
     const [low, high] = NEXT_ORDER_TIERS;
     const more = min => Math.ceil(min - value);
     if (value < low.min) return `Add ₹${more(low.min)} more to get ₹${low.off} off your next order`;
-    if (value < high.min) return `₹${low.off} off your next order unlocked - add ₹${more(high.min)} more for ₹${high.off}`;
+    if (value < high.min) return `₹${low.off} off your next order unlocked - add ₹${more(high.min)} more for ₹${high.off} off`;
     return `₹${high.off} off your next order unlocked 🪔 - we'll send the code after you order`;
   }
 
-  function showNextOrderBanners() {
-    if (!nextOrderOn()) return;
-    document.querySelectorAll('[data-nextorder]').forEach(el => { el.hidden = false; });
+  // During the offer the free shipping bar becomes one bar with a mark at
+  // free shipping and each tier, spaced evenly (like the Rakhi bar) rather
+  // than by rupees, and filled stage by stage: full up to the last mark
+  // reached, then part of the way to the next. Free shipping is met on its
+  // own calculation (cartSubtotal), the tiers on nextOrderValue; the fill
+  // follows nextOrderValue, never pre-discount prices. Mirrors
+  // rewardsBarMarks() in shop/cart-utils.js. Null outside the offer dates.
+  function rewardsBarMarks(subtotal, value) {
+    if (!nextOrderOn()) return null;
+    const ship = REWARD_TIERS[0].min;
+    const mins = [ship, ...NEXT_ORDER_TIERS.map(t => t.min)];
+    const at   = i => ((i + 1) / mins.length) * 100;
+    const last = mins.reduce((reached, min, i) => (value >= min ? i : reached), -1);
+    let pct = 100;
+    if (last < mins.length - 1) {
+      const from = last < 0 ? 0 : mins[last];
+      const part = Math.min(Math.max((value - from) / (mins[last + 1] - from), 0), 1);
+      const fromPct = last < 0 ? 0 : at(last);
+      pct = fromPct + part * (at(last + 1) - fromPct);
+    }
+    return {
+      pct,
+      marks: [
+        { pct: at(0), label: 'Free shipping', icon: REWARD_TIERS[0].icon, met: subtotal >= ship },
+        ...NEXT_ORDER_TIERS.map((t, i) => ({ pct: at(i + 1), label: `₹${t.off} off`, icon: 'fa-gift', met: value >= t.min })),
+      ],
+    };
   }
+
 
   // ── State ─────────────────────────────────────────────────────────────────
 
@@ -563,26 +590,42 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <div class="cart-body" id="cart-body"></div>
-      <div class="cart-footer" id="cart-footer">
-        <div id="cart-checkout-section" style="display:none">
+      <!-- One scrolling panel under the header: items, order-by box, gift
+           card link, progress, total, checkout, policy links. Opens scrolled
+           to the bottom (see openDrawer), so progress and Checkout show first. -->
+      <div class="cart-scroll" id="cart-scroll">
+        <div class="cart-scroll-hint-wrap">
+          <button type="button" class="cart-scroll-hint" id="cart-scroll-hint" hidden></button>
+        </div>
+        <div class="cart-body" id="cart-body"></div>
+        <div class="cart-extras" id="cart-extras" style="display:none">
           <div class="orderby orderby-cart" data-orderby hidden></div>
-          <div id="rewards-progress" class="rewards-progress" style="display:none">
-            <div class="rewards-bar-track">
-              <div class="rewards-bar-fill" id="rewards-bar-fill"></div>
-            </div>
-            <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
-            <p class="rewards-nextorder-msg" id="rewards-nextorder-msg" hidden></p>
-          </div>
-          <div class="cart-total">
-            <span>Total</span>
-            <span id="cart-total-price"></span>
-          </div>
-          <a id="cart-checkout-btn" class="btn-primary">
-            Checkout <i class="fa-solid fa-arrow-right"></i>
+          <a class="cart-giftcard-link" id="cart-giftcard-link" href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/" hidden>
+            <i class="fa-solid fa-gift"></i> Can't decide? Send an e-gift card instead
           </a>
         </div>
-        <p class="cart-payment-note"><i class="fa-solid fa-lock"></i> UPI · Debit/Credit Cards · Net Banking via Razorpay</p>
+        <div class="cart-footer" id="cart-footer">
+          <div id="cart-checkout-section" style="display:none">
+            <div id="rewards-progress" class="rewards-progress" style="display:none">
+              <div class="rewards-bar">
+                <div class="rewards-bar-track">
+                  <div class="rewards-bar-fill" id="rewards-bar-fill"></div>
+                </div>
+                <div class="rewards-bar-marks" id="rewards-bar-marks"></div>
+              </div>
+              <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
+              <p class="rewards-nextorder-msg" id="rewards-nextorder-msg" hidden></p>
+            </div>
+            <div class="cart-total">
+              <span>Total</span>
+              <span id="cart-total-price"></span>
+            </div>
+            <a id="cart-checkout-btn" class="btn-primary">
+              Checkout <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+          <p class="cart-payment-note"><i class="fa-solid fa-lock"></i> UPI · Debit/Credit Cards · Net Banking via Razorpay</p>
+        </div>
         <div class="cart-policy-links">
           <a href="${SITE_ROOT}shipping-policy/"><i class="fa-solid fa-truck-fast"></i> Shipping Policy</a>
           <a href="${SITE_ROOT}return-and-exchange-policy/"><i class="fa-solid fa-rotate-left"></i> Return and Exchange Policy</a>
@@ -592,6 +635,15 @@
     document.body.appendChild(overlay);
     document.body.appendChild(drawer);
     document.getElementById('cart-close').addEventListener('click', closeDrawer);
+    const scrollEl = document.getElementById('cart-scroll');
+    scrollEl.addEventListener('load', () => { if (_stickToBottom) scrollCartToBottom(); updateScrollHint(); }, true);
+    scrollEl.addEventListener('scroll', updateScrollHint, { passive: true });
+    document.getElementById('cart-scroll-hint').addEventListener('click', () => {
+      _stickToBottom = false;
+      scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    ['wheel', 'touchstart', 'keydown'].forEach(type =>
+      scrollEl.addEventListener(type, () => { _stickToBottom = false; }, { passive: true }));
     drawer.querySelector('.drawer-back-link').addEventListener('click', (e) => {
       e.preventDefault();
       closeDrawer();
@@ -760,36 +812,70 @@
 
     const subtotal = cartSubtotal(cart);
 
+    // E-gift card nudge, unless one's already in the cart or this is its page.
+    const giftLink = document.getElementById('cart-giftcard-link');
+    if (giftLink) {
+      giftLink.hidden = path.includes(`/products/${GIFT_CARD_HANDLE}/`)
+        || cart.lines.edges.some(e => e.node.merchandise.product.handle === GIFT_CARD_HANDLE);
+    }
+
     if (subtotal <= 0) { progressEl.style.display = 'none'; return; }
     progressEl.style.display = '';
 
     const nextTier = REWARD_TIERS.find(t => subtotal < t.min);
-    const metCount = REWARD_TIERS.filter(t => subtotal >= t.min).length;
-    const allUnlocked = !nextTier;
-
-    // Fill width: 100% once every tier is met, otherwise progress toward the
-    // next threshold (proportional, since there's normally just one tier).
-    const pct = allUnlocked
-      ? 100
-      : Math.min(Math.max((subtotal / nextTier.min) * 100, 0), 100);
-    fill.style.width = pct + '%';
+    const shipUnlocked = !nextTier;
 
     let text;
-    if (allUnlocked) {
+    if (shipUnlocked) {
       text = `🎉 Free shipping unlocked!`;
     } else {
       const remaining = (nextTier.min - subtotal).toFixed(0);
       text = `🚚 Add ₹${remaining} more for ${nextTier.label}`;
     }
     msg.textContent = text;
-    progressEl.classList.toggle('rewards-all-unlocked', allUnlocked);
 
-    const nextMsg = document.getElementById('rewards-nextorder-msg');
-    const nextText = nextMsg && nextOrderMessage(nextOrderValue(cart));
-    if (nextMsg) {
-      nextMsg.hidden = !nextText;
-      nextMsg.textContent = nextText || '';
+    const value    = nextOrderValue(cart);
+    const bar      = rewardsBarMarks(subtotal, value);
+    const nextText = nextOrderMessage(value);
+    // One line under the bar: free shipping until the first tier is
+    // unlocked, then only the next-order line (the marks show what's next).
+    const showNext = !!nextText && value >= NEXT_ORDER_TIERS[0].min;
+    msg.hidden = showNext;
+    // Between free shipping and the first tier, the free shipping line
+    // points at the ₹50 too. Mirrors freeShippingLine() in cart-utils.js.
+    if (bar && shipUnlocked && !showNext) {
+      const low = NEXT_ORDER_TIERS[0];
+      msg.textContent = `🎉 Free shipping unlocked - add ₹${Math.ceil(low.min - value)} more for ₹${low.off} off your next order`;
     }
+    const nextMsg  = document.getElementById('rewards-nextorder-msg');
+    if (nextMsg) {
+      nextMsg.hidden = !showNext;
+      nextMsg.textContent = showNext ? nextText : '';
+    }
+
+    // Fill width: one continuous bar over every mark during the next-order
+    // offer, otherwise progress toward free shipping.
+    let pct, metCount, allUnlocked;
+    if (bar) {
+      pct = bar.pct;
+      metCount = bar.marks.filter(m => m.met).length;
+      allUnlocked = metCount === bar.marks.length;
+    } else {
+      pct = shipUnlocked ? 100 : Math.min(Math.max((subtotal / nextTier.min) * 100, 0), 100);
+      metCount = REWARD_TIERS.filter(t => subtotal >= t.min).length;
+      allUnlocked = shipUnlocked;
+    }
+    fill.style.width = pct + '%';
+    const marksEl = document.getElementById('rewards-bar-marks');
+    if (marksEl) {
+      marksEl.innerHTML = (bar?.marks || []).map(m =>
+        `<span class="rewards-bar-mark${m.met ? ' is-met' : ''}" style="left:${m.pct}%"><i class="fa-solid ${m.icon}" aria-hidden="true"></i>${esc(m.label)}</span>`).join('');
+    }
+    progressEl.classList.toggle('rewards-has-marks', !!bar);
+    progressEl.classList.toggle('rewards-ship-unlocked', shipUnlocked);
+    progressEl.classList.toggle('rewards-all-unlocked', allUnlocked);
+    // The bubble names the next thing to chase.
+    if (shipUnlocked && nextText) text = nextText;
 
     const wasMetCount = parseInt(sessionStorage.getItem('lw_rewards_tier_count') || '0');
     if (_cartReady && metCount > wasMetCount) spawnPageConfetti();
@@ -824,14 +910,31 @@
     const lines = cart ? cart.lines.edges.map(e => e.node) : [];
 
     if (!cart || lines.length === 0) {
+      // Empty cart: the next-order offer (on its dates) and the e-gift card,
+      // front and centre in Diwali colours.
+      const offer = nextOrderOn() ? `
+          <a class="cart-empty-card" href="${SHOP_ROOT}collections/diwali/">
+            <span class="cart-empty-card-icon" aria-hidden="true">🪔</span>
+            <span class="cart-empty-card-text">Spend ₹${NEXT_ORDER_TIERS[0].min}, get ₹${NEXT_ORDER_TIERS[0].off} off. Spend ₹${NEXT_ORDER_TIERS[1].min}, get ₹${NEXT_ORDER_TIERS[1].off} off - on your next order.</span>
+            <span class="cart-empty-card-cta">Shop Diwali →</span>
+          </a>` : '';
       body.innerHTML = `
         <div class="cart-empty">
           <i class="fa-solid fa-bag-shopping"></i>
           <p>Your cart is empty</p>
+          <div class="cart-empty-cards">${offer}
+            <a class="cart-empty-card" href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/">
+              <span class="cart-empty-card-icon" aria-hidden="true">🎁</span>
+              <span class="cart-empty-card-text">Can't decide? Send an e-gift card - it arrives by email instantly.</span>
+              <span class="cart-empty-card-cta">Gift cards →</span>
+            </a>
+          </div>
           <a href="${SHOP_ROOT}" class="btn-primary">Browse Shop</a>
         </div>`;
       const checkoutSection = document.getElementById('cart-checkout-section');
       if (checkoutSection) checkoutSection.style.display = 'none';
+      const extras = document.getElementById('cart-extras');
+      if (extras) extras.style.display = 'none';
       return;
     }
 
@@ -941,6 +1044,8 @@
     chkBtn.href = cart.checkoutUrl;
     const checkoutSection = document.getElementById('cart-checkout-section');
     if (checkoutSection) checkoutSection.style.display = 'contents';
+    const extras = document.getElementById('cart-extras');
+    if (extras) extras.style.display = '';
     // Nothing to deliver (only gift cards): no "before Diwali?" box.
     const cartOrderBy = document.querySelector('.orderby-cart');
     if (cartOrderBy && cartOrderBy.innerHTML) {
@@ -951,10 +1056,36 @@
 
   // ── Drawer open / close ───────────────────────────────────────────────────
 
+  // The cart opens scrolled to the bottom (progress, total, Checkout), and
+  // stays there while images load, until the shopper scrolls themselves.
+  let _stickToBottom = false;
+  function scrollCartToBottom() {
+    const el = document.getElementById('cart-scroll');
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  // Since the cart opens at the bottom, a pill at the top says the items are
+  // above ("↑ See your 3 items", tap to scroll up), and the header gets a
+  // shadow whenever anything is scrolled out of view above it.
+  function updateScrollHint() {
+    const el   = document.getElementById('cart-scroll');
+    const hint = document.getElementById('cart-scroll-hint');
+    const firstLine = document.querySelector('#cart-body .cart-line');
+    if (!el || !hint) return;
+    document.getElementById('cart-drawer')?.classList.toggle('cart-scrolled', el.scrollTop > 4);
+    const qty = cart ? cart.totalQuantity : 0;
+    const linesHidden = !!firstLine && firstLine.offsetTop + firstLine.offsetHeight / 2 < el.scrollTop;
+    hint.hidden = !linesHidden || qty <= 0;
+    if (!hint.hidden) hint.textContent = `↑ See your ${qty} item${qty === 1 ? '' : 's'}`;
+  }
+
   function openDrawer() {
     document.getElementById('cart-drawer')?.classList.add('open');
     document.getElementById('cart-overlay')?.classList.add('open');
     document.body.style.overflow = 'hidden';
+    _stickToBottom = true;
+    scrollCartToBottom();
+    requestAnimationFrame(() => { scrollCartToBottom(); updateScrollHint(); });
     if (typeof gtag === 'function') gtag('event', 'view_cart', {
       currency: cart?.cost?.totalAmount?.currencyCode || '',
       value:    parseFloat(cart?.cost?.totalAmount?.amount || 0),
@@ -1020,7 +1151,7 @@
     }
   }
 
-  function refreshUI() { updateBadge(); renderCart(); updateCartBtns(); }
+  function refreshUI() { updateBadge(); renderCart(); updateCartBtns(); updateScrollHint(); }
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -1416,7 +1547,6 @@
     injectCartIcon();
     injectDrawer();
     renderOrderBy();
-    showNextOrderBanners();
     injectRewardsBubble();
 
     // Restore cart from previous session

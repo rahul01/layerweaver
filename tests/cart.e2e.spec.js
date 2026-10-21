@@ -54,7 +54,7 @@ test.describe('Cart basics', () => {
     await openDrawer(page);
     await expect(page.locator('.cart-empty')).toBeVisible();
     await expect(page.locator('.cart-empty')).toContainText('Your cart is empty');
-    await expect(page.locator('.cart-empty a')).toContainText('Browse Shop');
+    await expect(page.locator('.cart-empty a.btn-primary')).toContainText('Browse Shop');
   });
 
   test('add to cart from product page', async ({ page }) => {

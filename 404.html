@@ -86,12 +86,23 @@
     </style>
 </head>
 <body>
+    <!-- Announcement bar: next-order codes Oct 21 - Nov 1, e-gift card till Nov 7, 2026 (shown by the script below). Remove in the Nov 9 cleanup. -->
+    <div class="announcement-bar" hidden>
+        <div class="announcement-bar-track">
+            <a href="/shop/collections/diwali/" data-from="2026-10-21" data-to="2026-11-01" hidden>🪔 Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order. <span class="announcement-cta">Shop Diwali →</span></a>
+            <a href="/shop/products/layerweaver-e-gift-card/" data-to="2026-11-07" hidden>🎁 Can't decide, or too late to ship? Send an e-gift card - it arrives by email instantly. <span class="announcement-cta">Gift cards →</span></a>
+        </div>
+    </div>
+    <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
     <header>
         <div class="container">
-            <a href="/" class="logo-container logo-link">
-                <img src="/images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
-                <span class="logo-text">LayerWeaver</span>
-            </a>
+            <div class="logo-container">
+                <a href="/" class="logo-link">
+                    <img src="/images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
+                    <span class="logo-text">LayerWeaver</span>
+                </a>
+                <a href="/shop/collections/diwali/" class="logo-diwali-ribbon">Shop Diwali Gifts 🪔</a>
+            </div>
             <nav>
                 <ul class="nav-links">
                     <li><a href="/shop/" class="btn-primary">Shop</a></li>

@@ -216,16 +216,16 @@ export function giftCardRecipientAttributes({ email = '', name = '', message = '
 }
 
 // Mirrors shop/cart.js's nextOrderValue() / nextOrderProgress(). Next-order
-// codes (orders Oct 22 - Nov 1, 2026 IST): ₹599+ gets ₹50 off the next order,
-// ₹999+ gets ₹100 off, sent by the dashboard after the order. The cart must
+// codes (orders Oct 21 - Nov 1, 2026 IST): ₹599+ gets ₹50 off the next order,
+// ₹949+ gets ₹100 off, sent by the dashboard after the order. The cart must
 // count the value the way the dashboard does - products after discounts,
 // before shipping, gift cards left out - so it never says "unlocked" for an
 // order that won't get a code. Line cost.totalAmount is after line-level
 // discounts; order-level discounts sit in cart.discountAllocations.
 export const NEXT_ORDER = {
-  from: '2026-10-22',
+  from: '2026-10-21',
   to:   '2026-11-01',
-  tiers: [{ min: 599, off: 50 }, { min: 999, off: 100 }],
+  tiers: [{ min: 599, off: 50 }, { min: 949, off: 100 }],
 };
 export function nextOrderValue(cart) {
   const lines = (cart?.lines?.edges || []).map(e => e.node)
@@ -243,6 +243,43 @@ export function nextOrderProgress(value, today, cfg = NEXT_ORDER) {
   const [low, high] = cfg.tiers;
   const more = min => Math.ceil(min - value);
   if (value < low.min) return { unlocked: 0, message: `Add ₹${more(low.min)} more to get ₹${low.off} off your next order` };
-  if (value < high.min) return { unlocked: low.off, message: `₹${low.off} off your next order unlocked - add ₹${more(high.min)} more for ₹${high.off}` };
+  if (value < high.min) return { unlocked: low.off, message: `₹${low.off} off your next order unlocked - add ₹${more(high.min)} more for ₹${high.off} off` };
   return { unlocked: high.off, message: `₹${high.off} off your next order unlocked 🪔 - we'll send the code after you order` };
+}
+
+// Mirrors shop/cart.js's rewardsBarMarks(). During the offer the cart's free
+// shipping bar becomes one bar with a mark at free shipping (met on the
+// pre-discount subtotal, like the free shipping line) and at each tier (met
+// on nextOrderValue, which also drives the fill). Marks are spaced evenly,
+// like the Rakhi bar; the fill is full up to the last mark reached, then part
+// of the way to the next.
+export function rewardsBarMarks(subtotal, value, today, shipMin = 299, cfg = NEXT_ORDER) {
+  if (today < cfg.from || today > cfg.to) return null;
+  const mins = [shipMin, ...cfg.tiers.map(t => t.min)];
+  const at = i => ((i + 1) / mins.length) * 100;
+  const last = mins.reduce((reached, min, i) => (value >= min ? i : reached), -1);
+  let pct = 100;
+  if (last < mins.length - 1) {
+    const from = last < 0 ? 0 : mins[last];
+    const part = Math.min(Math.max((value - from) / (mins[last + 1] - from), 0), 1);
+    const fromPct = last < 0 ? 0 : at(last);
+    pct = fromPct + part * (at(last + 1) - fromPct);
+  }
+  return {
+    pct,
+    marks: [
+      { pct: at(0), label: 'Free shipping', icon: 'fa-truck-fast', met: subtotal >= shipMin },
+      ...cfg.tiers.map((t, i) => ({ pct: at(i + 1), label: `₹${t.off} off`, icon: 'fa-gift', met: value >= t.min })),
+    ],
+  };
+}
+
+// Mirrors the free shipping line in shop/cart.js's renderRewardsBar() during
+// the offer: once free shipping is unlocked but the first tier isn't, it also
+// says how far the ₹50 is. Null when the next-order line shows instead (or
+// outside the offer dates, when the plain free shipping line shows).
+export function freeShippingLine(subtotal, value, today, shipMin = 299, cfg = NEXT_ORDER) {
+  if (today < cfg.from || today > cfg.to || subtotal < shipMin || value >= cfg.tiers[0].min) return null;
+  const low = cfg.tiers[0];
+  return `🎉 Free shipping unlocked - add ₹${Math.ceil(low.min - value)} more for ₹${low.off} off your next order`;
 }

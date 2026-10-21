@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags, giftCardRecipientAttributes, nextOrderValue, nextOrderProgress } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags, giftCardRecipientAttributes, nextOrderValue, nextOrderProgress, rewardsBarMarks, freeShippingLine } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -343,7 +343,8 @@ describe('giftCardRecipientAttributes', () => {
 });
 
 // ── next-order codes ─────────────────────────────────────────────────────────
-// Orders Oct 22 - Nov 1, 2026: ₹599+ gets ₹50 off the next order, ₹999+ ₹100.
+// Orders Oct 21 - Nov 1, 2026: ₹599+ gets ₹50 off the next order, ₹949+ ₹100
+// (the dashboard's numbers, routes/lib/next-order-codes.js).
 // Value counted like the dashboard: after discounts, gift cards out.
 
 function costLine(price, qty, total = price * qty, requiresShipping = true) {
@@ -380,24 +381,82 @@ describe('nextOrderProgress', () => {
     expect(nextOrderProgress(598, day)).toEqual({ unlocked: 0, message: 'Add ₹1 more to get ₹50 off your next order' });
   });
 
-  it('unlocks ₹50 from ₹599 to ₹998', () => {
-    expect(nextOrderProgress(599, day).message).toBe('₹50 off your next order unlocked - add ₹400 more for ₹100');
-    expect(nextOrderProgress(998, day).unlocked).toBe(50);
+  it('unlocks ₹50 from ₹599 to ₹948', () => {
+    expect(nextOrderProgress(599, day).message).toBe('₹50 off your next order unlocked - add ₹350 more for ₹100 off');
+    expect(nextOrderProgress(948, day)).toEqual({ unlocked: 50, message: '₹50 off your next order unlocked - add ₹1 more for ₹100 off' });
   });
 
-  it('unlocks ₹100 from ₹999', () => {
-    expect(nextOrderProgress(999, day)).toEqual({ unlocked: 100, message: "₹100 off your next order unlocked 🪔 - we'll send the code after you order" });
+  it('unlocks ₹100 from ₹949 (two ₹499 items make ₹998)', () => {
+    expect(nextOrderProgress(949, day)).toEqual({ unlocked: 100, message: "₹100 off your next order unlocked 🪔 - we'll send the code after you order" });
+    expect(nextOrderProgress(998, day).unlocked).toBe(100);
   });
 
   it('rounds a fractional shortfall up so the amount is enough', () => {
     expect(nextOrderProgress(598.5, day).message).toBe('Add ₹1 more to get ₹50 off your next order');
   });
 
-  it('shows only Oct 22 - Nov 1 (IST dates) and not for an empty cart', () => {
-    expect(nextOrderProgress(700, '2026-10-21')).toBeNull();
-    expect(nextOrderProgress(700, '2026-10-22')).not.toBeNull();
+  it('shows only Oct 21 - Nov 1 (IST dates) and not for an empty cart', () => {
+    expect(nextOrderProgress(700, '2026-10-20')).toBeNull();
+    expect(nextOrderProgress(700, '2026-10-21')).not.toBeNull();
     expect(nextOrderProgress(700, '2026-11-01')).not.toBeNull();
     expect(nextOrderProgress(700, '2026-11-02')).toBeNull();
     expect(nextOrderProgress(0, day)).toBeNull();
+  });
+});
+
+describe('rewardsBarMarks', () => {
+  const day = '2026-10-25';
+
+  it('spaces the ₹299, ₹599 and ₹949 marks evenly, like the Rakhi bar', () => {
+    const bar = rewardsBarMarks(450, 450, day);
+    expect(bar.marks.map(m => m.label)).toEqual(['Free shipping', '₹50 off', '₹100 off']);
+    expect(bar.marks.map(m => Math.round(m.pct))).toEqual([33, 67, 100]);
+    expect(bar.marks.map(m => m.met)).toEqual([true, false, false]);
+  });
+
+  it('fills stage by stage: part of the way from one mark to the next', () => {
+    expect(rewardsBarMarks(150, 150, day).pct).toBeCloseTo((150 / 299) * (100 / 3));
+    expect(rewardsBarMarks(450, 450, day).pct).toBeCloseTo(100 / 3 + ((450 - 299) / 300) * (100 / 3));
+    expect(rewardsBarMarks(799, 799, day).pct).toBeCloseTo(200 / 3 + ((799 - 599) / 350) * (100 / 3));
+  });
+
+  it('sits exactly on a mark when its amount is reached', () => {
+    expect(rewardsBarMarks(299, 299, day).pct).toBeCloseTo(100 / 3);
+    expect(rewardsBarMarks(599, 599, day).pct).toBeCloseTo(200 / 3);
+  });
+
+  it('meets free shipping on the subtotal and the tiers on the discounted value', () => {
+    const bar = rewardsBarMarks(650, 585, day);
+    expect(bar.marks.map(m => m.met)).toEqual([true, false, false]);
+    expect(bar.pct).toBeCloseTo(100 / 3 + ((585 - 299) / 300) * (100 / 3));
+  });
+
+  it('fills completely from ₹949', () => {
+    const bar = rewardsBarMarks(949, 949, day);
+    expect(bar.pct).toBe(100);
+    expect(bar.marks.every(m => m.met)).toBe(true);
+  });
+
+  it('is null outside Oct 21 - Nov 1', () => {
+    expect(rewardsBarMarks(500, 500, '2026-10-20')).toBeNull();
+    expect(rewardsBarMarks(500, 500, '2026-11-02')).toBeNull();
+  });
+});
+
+describe('freeShippingLine', () => {
+  const day = '2026-10-25';
+
+  it('points at the ₹50 once free shipping is unlocked', () => {
+    expect(freeShippingLine(450, 450, day)).toBe('🎉 Free shipping unlocked - add ₹149 more for ₹50 off your next order');
+  });
+
+  it('counts the ₹50 on the discounted value', () => {
+    expect(freeShippingLine(650, 585, day)).toBe('🎉 Free shipping unlocked - add ₹14 more for ₹50 off your next order');
+  });
+
+  it('is null below free shipping, from ₹599, and outside the offer dates', () => {
+    expect(freeShippingLine(200, 200, day)).toBeNull();
+    expect(freeShippingLine(599, 599, day)).toBeNull();
+    expect(freeShippingLine(450, 450, '2026-11-02')).toBeNull();
   });
 });

@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1792574153297">
+    <link rel="stylesheet" href="../../shop.css?v=1792583565093">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -81,12 +81,23 @@
 </head>
 <body>
     
+    <!-- Announcement bar: next-order codes Oct 21 - Nov 1, e-gift card till Nov 7, 2026 (shown by the script below). Remove in the Nov 9 cleanup. -->
+    <div class="announcement-bar" hidden>
+        <div class="announcement-bar-track">
+            <a href="../../collections/diwali/" data-from="2026-10-21" data-to="2026-11-01" hidden>🪔 Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order. <span class="announcement-cta">Shop Diwali →</span></a>
+            <a href="../../products/layerweaver-e-gift-card/" data-to="2026-11-07" hidden>🎁 Can't decide, or too late to ship? Send an e-gift card - it arrives by email instantly. <span class="announcement-cta">Gift cards →</span></a>
+        </div>
+    </div>
+    <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
     <header class="shop-header">
         <div class="container">
-            <a href="../../../" class="logo-container logo-link">
-                <img src="../../../images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
-                <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
-            </a>
+            <div class="logo-container">
+                <a href="../../../" class="logo-link">
+                    <img src="../../../images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
+                    <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
+                </a>
+                <a href="../../collections/diwali/" class="logo-diwali-ribbon">Shop Diwali Gifts 🪔</a>
+            </div>
             <div class="search-container" data-index-url="../../search-index.json" data-products-url="../../products/">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -670,10 +681,10 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"articulated-dilophosaurus-skeleton":{"bone white":"#dbd5c8","ivory white":"#f2ede0"}};</script>
-    <script src="../../auth.js?v=1792574153297"></script>
-    <script src="../../cart.js?v=1792574153297"></script>
-    <script src="../../search.js?v=1792574153297"></script>
-    <script src="../../wishlist.js?v=1792574153297"></script>
+    <script src="../../auth.js?v=1792583565093"></script>
+    <script src="../../cart.js?v=1792583565093"></script>
+    <script src="../../search.js?v=1792583565093"></script>
+    <script src="../../wishlist.js?v=1792583565093"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

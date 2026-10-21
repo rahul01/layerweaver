@@ -5,7 +5,7 @@
 /* ------- Shop Header (minimal) ------- */
 .shop-header {
     position: fixed;
-    top: 0;
+    top: var(--announcement-height);
     left: 0;
     right: 0;
     z-index: 100;
@@ -28,6 +28,54 @@
     min-width: 0;
     flex-shrink: 1;
     overflow: hidden;
+}
+
+.logo-container {
+    position: relative;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+/* Diwali 2026 logo ribbon (like the Rakhi one): sits under the wordmark on
+   every page, links to the Diwali collection. Remove in the Nov 9 cleanup
+   (the ribbon markup in build-shop.js shopHeaderHtml() and the hand-written
+   pages too - grep logo-diwali-ribbon). */
+.logo-diwali-ribbon {
+    position: absolute;
+    top: 100%;
+    right: 4px;
+    margin-top: -6px;
+    background: linear-gradient(90deg, #f4b53f 0%, #e8a020 100%);
+    color: #5a2d00;
+    font-family: var(--font-primary);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    padding: 4px 12px;
+    text-decoration: none;
+    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
+    transform: rotate(-5deg);
+    clip-path: polygon(0% 0%, 3% 20%, 0% 40%, 2% 60%, 0% 80%, 1% 100%, 100% 100%, 98% 80%, 100% 60%, 97% 40%, 100% 20%, 99% 0%);
+    transition: background 0.2s ease, color 0.2s ease;
+    z-index: 1;
+}
+
+.logo-diwali-ribbon:hover {
+    background: #5a2d00;
+    color: #ffd66b;
+}
+
+@media (max-width: 480px) {
+    .logo-diwali-ribbon {
+        font-size: 0.5rem;
+        padding: 3px 8px;
+        right: 0;
+    }
+}
+@media (max-width: 370px) {
+    /* The wordmark stacks here and the logo gets narrower than the ribbon. */
+    .logo-diwali-ribbon { right: auto; left: 0; margin-top: 2px; }
 }
 
 .logo-link:hover { opacity: 0.8; }
@@ -338,6 +386,10 @@
 
 .collection-dropdown .collection-dropdown-item--halloween { color: #c2560a; }
 .collection-dropdown .collection-dropdown-item--diwali { color: #a35a08; }
+.collection-dropdown .collection-dropdown-item--giftcard { color: #5B3E96; }
+
+/* E-gift card, first in the Gifts menu: the gift card purple. */
+.collection-nav-menu-item--giftcard { color: #5B3E96; font-weight: 700; }
 
 .collection-nav-mobile { display: none; }
 
@@ -440,13 +492,13 @@
 
 /* ------- Header spacer (pushes page content below fixed header) ------- */
 .header-spacer {
-    height: 80px;
+    height: calc(80px + var(--announcement-height));
 }
 
 /* ------- Collection Topbar (nav above banner) ------- */
 .collection-topbar {
     position: sticky;
-    top: 80px;
+    top: calc(80px + var(--announcement-height));
     z-index: 50;
     background: var(--light);
     padding: 0;
@@ -1269,7 +1321,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
-    z-index: 999;
+    z-index: 1002; /* above the announcement bar (1001) */
 }
 
 #cart-overlay.open { display: block; }
@@ -1285,7 +1337,7 @@
     height: 100dvh;
     background: var(--light);
     box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 1003;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
@@ -1303,6 +1355,42 @@
     flex-wrap: wrap;
     gap: 6px;
 }
+
+.cart-header { position: relative; z-index: 3; transition: box-shadow 0.2s ease; }
+#cart-drawer.cart-scrolled .cart-header { box-shadow: 0 6px 12px -8px rgba(0, 0, 0, 0.25); }
+
+/* "↑ See your N items" pill (cart opens scrolled to the bottom). The wrap is
+   sticky with no height, so showing the pill never moves the content. */
+.cart-scroll-hint-wrap {
+    position: sticky;
+    top: 0;
+    height: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+}
+.cart-scroll-hint {
+    margin-top: 10px;
+    height: 30px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 50px;
+    background: var(--dark);
+    color: #fff;
+    font-family: var(--font-primary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: cart-hint-in 0.25s ease;
+}
+.cart-scroll-hint[hidden] { display: none; }
+.cart-scroll-hint:hover { background: #333; }
+@keyframes cart-hint-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .cart-scroll-hint { animation: none; } }
 
 .cart-header h3 {
     font-family: var(--font-primary);
@@ -1333,13 +1421,55 @@
 
 #cart-close:hover { color: var(--dark); }
 
-.cart-body {
+.cart-scroll {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-body {
+    flex: 1 0 auto;
     padding: 16px 24px;
 }
 
+.cart-extras {
+    padding: 4px 24px 8px;
+    border-top: 1px solid var(--gray);
+    padding-top: 16px;
+}
+.cart-extras .orderby-cart { margin-bottom: 12px; }
+
 /* Empty state */
+/* Empty cart offer cards (next-order codes Oct 21 - Nov 1, e-gift card).
+   Diwali colours from .seasonal--diwali; remove in the Nov 9 cleanup. */
+.cart-empty-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+.cart-empty-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 12px;
+    align-items: center;
+    padding: 14px 16px;
+    background: #fffaf0;
+    border: 1px solid rgba(232, 160, 32, 0.45);
+    border-radius: 12px;
+    color: #9a5a1a;
+    text-align: left;
+    text-decoration: none;
+    font-family: var(--font-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cart-empty-card:hover { border-color: #e8a020; box-shadow: 0 0 0 3px rgba(232, 160, 32, 0.15); }
+.cart-empty-card-icon { grid-row: span 2; font-size: 1.6rem; line-height: 1; }
+.cart-empty-card-text { font-size: 0.88rem; font-weight: 600; line-height: 1.4; }
+.cart-empty-card-cta { font-size: 0.82rem; font-weight: 700; color: #b8650a; text-decoration: underline; text-underline-offset: 2px; }
+
 .cart-empty {
     display: flex;
     flex-direction: column;
@@ -1500,17 +1630,81 @@
 
 /* Cart footer */
 .cart-footer {
-    padding: 20px 24px;
+    padding: 14px 24px 12px;
     border-top: 1px solid var(--gray);
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
-/* Cart rewards progress bar (free shipping) */
+/* Cart rewards progress bar (free shipping; plus next-order marks Oct 21 -
+   Nov 1, 2026 - remove the marks in the Nov 9 cleanup) */
 .rewards-progress {
-    padding: 4px 0 20px;
+    padding: 4px 0 6px;
 }
+
+.rewards-bar { position: relative; }
+.rewards-has-marks .rewards-bar { padding: 9px 0 32px; margin: 0 2px; }
+.rewards-has-marks .rewards-bar-msg { margin-top: 4px; }
+.rewards-bar-marks { position: absolute; inset: 0; pointer-events: none; }
+.rewards-bar-mark {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #888;
+    white-space: nowrap;
+}
+.rewards-bar-mark i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #d6cdea;
+    box-sizing: border-box;
+    font-size: 0.7rem;
+    color: #a99bc9;
+}
+.rewards-bar-mark.is-met { color: #b8650a; }
+.rewards-bar-mark.is-met i { border-color: var(--primary); background: var(--primary); color: #fff; }
+.rewards-all-unlocked .rewards-bar-mark.is-met i { border-color: #22c55e; background: #22c55e; }
+.rewards-bar-mark:last-child { transform: translateX(-100%); align-items: flex-end; }
+
+/* Diwali look while the marks show (the offer dates). Colours from
+   .seasonal--diwali. */
+.rewards-progress.rewards-has-marks {
+    margin-bottom: 0;
+    padding: 12px 14px;
+    background: #fffaf0;
+    border: 1px solid rgba(232, 160, 32, 0.45);
+    border-radius: 12px;
+}
+.rewards-has-marks .rewards-bar-track { background: #f6e6c4; }
+.rewards-has-marks .rewards-bar-fill,
+.rewards-has-marks.rewards-all-unlocked .rewards-bar-fill {
+    background: linear-gradient(90deg, #f4b53f 0%, #e8a020 55%, #d1741c 100%);
+}
+.rewards-has-marks .rewards-bar-mark { color: #b89a6a; }
+.rewards-has-marks .rewards-bar-mark i { border-color: #ecd3a0; color: #d9b77a; }
+.rewards-has-marks .rewards-bar-mark.is-met { color: #9a5a1a; }
+.rewards-has-marks .rewards-bar-mark.is-met i,
+.rewards-has-marks.rewards-all-unlocked .rewards-bar-mark.is-met i {
+    border-color: #e8a020;
+    background: #e8a020;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(232, 160, 32, 0.2);
+}
+.rewards-has-marks .rewards-bar-msg,
+.rewards-has-marks.rewards-ship-unlocked .rewards-bar-msg,
+.rewards-has-marks .rewards-nextorder-msg { color: #9a5a1a; }
 
 .rewards-bar-track {
     position: relative;
@@ -1540,16 +1734,30 @@
     text-align: center;
 }
 
-.rewards-all-unlocked .rewards-bar-msg {
+.rewards-all-unlocked .rewards-bar-msg,
+.rewards-ship-unlocked .rewards-bar-msg {
     color: #22c55e;
     animation: rewards-pop 0.4s ease;
 }
 
-.rewards-nextorder-msg {
+.cart-giftcard-link {
+    display: block;
+    margin: 0 0 4px;
     font-size: 0.8rem;
     font-weight: 600;
+    color: #5B3E96;
+    text-align: center;
+    text-decoration: none;
+}
+.cart-giftcard-link[hidden] { display: none; }
+.cart-giftcard-link i { color: #e8a020; margin-right: 4px; }
+.cart-giftcard-link:hover { text-decoration: underline; }
+
+.rewards-nextorder-msg {
+    font-size: 0.85rem;
+    font-weight: 600;
     color: #b8650a;
-    margin: 6px 0 0;
+    margin: 4px 0 0;
     text-align: center;
 }
 
@@ -1674,7 +1882,7 @@
     display: flex;
     justify-content: center;
     gap: 20px;
-    padding-top: 2px;
+    padding: 8px 24px 16px;
 }
 
 .cart-policy-links a {
@@ -1769,7 +1977,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
-    z-index: 999;
+    z-index: 1002; /* above the announcement bar (1001) */
 }
 
 #wishlist-overlay.open { display: block; }
@@ -1785,7 +1993,7 @@
     height: 100dvh;
     background: var(--light);
     box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 1003;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
@@ -2849,7 +3057,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.85);
-    z-index: 1000;
+    z-index: 1003; /* above the announcement bar (1001) */
     align-items: center;
     justify-content: center;
     padding: 32px;
@@ -3167,6 +3375,14 @@ body.seasonal--halloween {
 .orderby-cart .orderby-label { font-size: 0.85rem; margin-bottom: 6px; }
 .orderby-cart .orderby-row input, .orderby-cart .orderby-row button { padding: 8px 14px; font-size: 0.85rem; }
 .orderby-closed a { color: #1f8f4e; font-weight: 600; white-space: nowrap; }
+/* Cart: match the Diwali rewards card below it (colours from .seasonal--diwali). */
+.orderby-cart .orderby-label i { color: #e8a020; }
+.orderby-cart .orderby-row input:focus { border-color: #e8a020; }
+.orderby-cart .orderby-row button { border-color: #e8a020; color: #9a5a1a; }
+.orderby-cart .orderby-row button:hover { background: #e8a020; color: #fff; }
+.orderby-cart .orderby-result { margin-top: 6px; font-size: 0.8rem; line-height: 1.45; }
+.orderby-cart .orderby-open { color: #9a5a1a; }
+.orderby-cart .orderby-closed a { color: #b8650a; }
 
 /* E-gift card (product page recipient fields, shop banner) */
 .giftcard-recipient {
@@ -3200,34 +3416,3 @@ body.seasonal--halloween {
 .giftcard-error { color: #b23a3a; font-size: 0.9rem; margin: 0 0 14px; }
 .giftcard-delivery { margin: -16px 0 32px; font-size: 0.95rem; color: var(--dark); }
 .giftcard-delivery i { color: var(--primary); margin-right: 6px; }
-
-.giftcard-banner {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin: 0 0 24px;
-    padding: 14px 20px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #7d5cc0 0%, #5B3E96 100%);
-    color: #fff;
-    text-decoration: none;
-}
-.giftcard-banner > i { font-size: 1.4rem; color: var(--secondary); }
-.giftcard-banner span { flex: 1; font-size: 0.95rem; }
-.giftcard-banner .giftcard-banner-cta { flex: none; font-weight: 700; white-space: nowrap; }
-.giftcard-banner:hover .giftcard-banner-cta { text-decoration: underline; }
-/* Next-order codes banner (Oct 22 - Nov 1, 2026; shown by cart.js). Diwali
-   colours from .seasonal--diwali. Remove in the Nov 9 cleanup. */
-.nextorder-banner {
-    background: #fffaf0;
-    border: 1px solid rgba(232, 160, 32, 0.45);
-    color: #9a5a1a;
-    padding: 10px 20px;
-}
-.nextorder-banner[hidden] { display: none; }
-.giftcard-banner + .nextorder-banner { margin-top: -12px; }
-.nextorder-banner > span[aria-hidden] { flex: none; font-size: 1.2rem; }
-@media (max-width: 640px) {
-    .giftcard-banner { flex-wrap: wrap; gap: 8px 12px; padding: 12px 16px; }
-    .giftcard-banner .giftcard-banner-cta { width: 100%; padding-left: calc(1.4rem + 12px); }
-}

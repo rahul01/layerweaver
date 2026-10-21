@@ -562,8 +562,9 @@ function perCharRate(product) {
 // Shopify gift card products (the e-gift card, Oct 20): emailed, never
 // printed or shipped. Their own page has amount buttons, optional recipient
 // fields (cart.js sends Shopify's recipient line properties) and no pincode
-// box; they stay out of collections, the shop grid (a banner links there),
+// box; they stay out of collections, the shop grid (they're first in the strip's Gifts menu),
 // "You may also like" and the review links page.
+const GIFT_CARD_HANDLE = 'layerweaver-e-gift-card';
 function isGiftCard(product) {
   return product.isGiftCard === true;
 }
@@ -682,12 +683,23 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
 
 function shopHeaderHtml(base, shopBase) {
   return `
+    <!-- Announcement bar: next-order codes Oct 21 - Nov 1, e-gift card till Nov 7, 2026 (shown by the script below). Remove in the Nov 9 cleanup. -->
+    <div class="announcement-bar" hidden>
+        <div class="announcement-bar-track">
+            <a href="${shopBase}collections/diwali/" data-from="2026-10-21" data-to="2026-11-01" hidden>🪔 Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order. <span class="announcement-cta">Shop Diwali →</span></a>
+            <a href="${shopBase}products/${GIFT_CARD_HANDLE}/" data-to="2026-11-07" hidden>🎁 Can't decide, or too late to ship? Send an e-gift card - it arrives by email instantly. <span class="announcement-cta">Gift cards →</span></a>
+        </div>
+    </div>
+    <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
     <header class="shop-header">
         <div class="container">
-            <a href="${base}" class="logo-container logo-link">
-                <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
-                <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
-            </a>
+            <div class="logo-container">
+                <a href="${base}" class="logo-link">
+                    <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
+                    <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
+                </a>
+                <a href="${shopBase}collections/diwali/" class="logo-diwali-ribbon">Shop Diwali Gifts 🪔</a>
+            </div>
             <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -962,7 +974,12 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
     { handle: null, title: 'All', href: allHref },
     ...collectionNavTree(collections, handle => `${shopBase}${basePath}/${handle}/`),
   ];
-  const flatItems = tree.flatMap(node => node.items || [node]);
+  // The e-gift card isn't in any collection, so it goes first in the Gifts
+  // group (desktop menu and phone dropdown), linking to its product page.
+  const giftItem = { handle: '__giftcard', gift: true, title: 'E-gift card', href: `${shopBase}products/${GIFT_CARD_HANDLE}/` };
+  const giftsGroup = tree.find(node => node.items && node.label === 'Gifts');
+  if (giftsGroup) giftsGroup.items = [giftItem, ...giftsGroup.items];
+  const flatItems = tree.flatMap(node => node.items || [node]).filter(i => !i.gift);
   const activeTitle = flatItems.find(i => i.handle === activeHandle)?.title || 'All';
   const isActive = handle => handle === activeHandle ? ' active' : '';
   const themeClass = (base, handle) => SEASONAL_THEMES[handle] ? ` ${base}--${SEASONAL_THEMES[handle].theme}` : '';
@@ -975,8 +992,9 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
       return `<a href="${node.href}" class="collection-nav-chip${themeClass('collection-nav-chip', node.handle)}${isActive(node.handle)}">${themedTitle(node)}</a>`;
     }
     const groupActive = node.items.some(i => i.handle === activeHandle) ? ' active' : '';
-    const links = node.items.map(i =>
-      `<a href="${i.href}" class="collection-nav-menu-item${isActive(i.handle)}">${i.title}</a>`
+    const links = node.items.map(i => i.gift
+      ? `<a href="${i.href}" class="collection-nav-menu-item collection-nav-menu-item--giftcard"><span class="collection-nav-icon" aria-hidden="true">🎁</span>${i.title}</a>`
+      : `<a href="${i.href}" class="collection-nav-menu-item${isActive(i.handle)}">${i.title}</a>`
     ).join('\n                  ');
     return `<div class="collection-nav-group">
               <button type="button" class="collection-nav-chip collection-nav-group-btn${groupActive}" aria-expanded="false" aria-haspopup="true">
@@ -989,7 +1007,9 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
   }).join('\n          ');
 
   const dropdownItems = tree.map(node => {
-    const itemHtml = i => `<a href="${i.href}" class="collection-dropdown-item${themeClass('collection-dropdown-item', i.handle)}${isActive(i.handle)}">${themedTitle(i)}</a>`;
+    const itemHtml = i => i.gift
+      ? `<a href="${i.href}" class="collection-dropdown-item collection-dropdown-item--giftcard"><span class="collection-nav-icon" aria-hidden="true">🎁</span>${i.title}</a>`
+      : `<a href="${i.href}" class="collection-dropdown-item${themeClass('collection-dropdown-item', i.handle)}${isActive(i.handle)}">${themedTitle(i)}</a>`;
     if (!node.items) return itemHtml(node);
     return [`<div class="collection-dropdown-heading">${node.label}</div>`, ...node.items.map(itemHtml)].join('\n          ');
   }).join('\n          ');
@@ -1034,9 +1054,9 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
   const shopBase = './';
 
   // Bundles are shown only in their own collection, not mixed into the main grid.
-  // Gift cards get a banner of their own instead of a card in the grid.
+  // Gift cards aren't in the grid either: they're first in the collection
+  // strip's Gifts menu (collectionNavHtml), in the announcement bar and the cart.
   const singleProducts = products.filter(p => !isBundle(p) && !isGiftCard(p));
-  const giftCard = products.find(isGiftCard);
   const productCards = singleProducts.map((p, i) => productCardHtml(p, 'products/', reviewsMap[p.handle], i < 4)).join('\n');
 
   // Pick the first product image from each collection for the "All" banner
@@ -1071,16 +1091,6 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
 
     <div class="container">
         ${collagebannerHtml('All Products', 'Browse our complete collection of 3D printed creations', allBannerImages)}
-        ${giftCard ? `
-        <a class="giftcard-banner" href="products/${giftCard.handle}/">
-            <i class="fa-solid fa-gift"></i>
-            <span><strong>Can't decide, or too late to ship?</strong> Send an e-gift card - it arrives by email instantly.</span>
-            <span class="giftcard-banner-cta">Gift cards <i class="fa-solid fa-arrow-right"></i></span>
-        </a>` : ''}
-        <div class="giftcard-banner nextorder-banner" data-nextorder hidden>
-            <span aria-hidden="true">🪔</span>
-            <span>Spend ₹599, get ₹50 off your next order. Spend ₹999, get ₹100 off. Sent to your email and WhatsApp.</span>
-        </div>
     </div>
 
     <section class="shop-products">

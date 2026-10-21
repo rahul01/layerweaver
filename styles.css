@@ -128,10 +128,100 @@ a:hover {
     box-shadow: var(--btn-yellow-depth-hover);
 }
 
+/* ------- Announcement bar (sitewide, above the fixed header) -------
+   Next-order codes (Oct 21 - Nov 1, 2026) and the e-gift card (till Nov 7):
+   each page's inline script shows the messages whose data-from/data-to
+   dates include today (IST), and adds html.has-announcement if any do. Two
+   at once take turns on desktop and share one marquee on phones. Diwali
+   colours from .seasonal--diwali. Remove in the Nov 9 cleanup (grep
+   announcement-bar). */
+:root { --announcement-height: 0px; }
+html.has-announcement { --announcement-height: 36px; }
+
+.announcement-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    height: var(--announcement-height);
+    background: linear-gradient(90deg, #f4b53f 0%, #e8a020 55%, #d1741c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 16px;
+    overflow: hidden;
+}
+.announcement-bar[hidden] { display: none; }
+
+.announcement-bar a {
+    color: #3d1f00;
+    text-decoration: none;
+    font-family: var(--font-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.announcement-bar a:hover { text-decoration: none; }
+/* Says where the link goes ("Shop Diwali →", "Gift cards →"). */
+.announcement-cta {
+    margin-left: 6px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+}
+.announcement-bar a:hover .announcement-cta { text-decoration-thickness: 2px; }
+.announcement-dup { display: none; }
+.announcement-rotate .announcement-bar-track { display: grid; }
+.announcement-rotate .announcement-bar-track > a { grid-area: 1 / 1; animation: announcement-swap 12s infinite; }
+.announcement-rotate .announcement-bar-track > a:nth-child(2) { animation-delay: -6s; }
+
+@keyframes announcement-swap {
+    0%, 46%   { opacity: 1; visibility: visible; }
+    50%, 96%  { opacity: 0; visibility: hidden; }
+    100%      { opacity: 1; visibility: visible; }
+}
+
+@media (max-width: 900px) {
+    .announcement-bar { justify-content: flex-start; padding: 0; }
+    /* One marquee of every message (the script appends a copy of each for a
+       seamless loop); no turn-taking. */
+    .announcement-bar-track,
+    .announcement-rotate .announcement-bar-track {
+        display: inline-flex;
+        align-items: center;
+        animation: announcement-marquee 22s linear infinite;
+        will-change: transform;
+    }
+    .announcement-rotate .announcement-bar-track { animation-duration: 40s; }
+    .announcement-rotate .announcement-bar-track > a { animation: none; }
+    .announcement-dup { display: inline; }
+    .announcement-bar a {
+        font-size: 0.72rem;
+        overflow: visible;
+        text-overflow: clip;
+        padding: 0 32px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .announcement-bar-track,
+    .announcement-rotate .announcement-bar-track > a { animation: none; }
+    .announcement-rotate .announcement-bar-track > a:nth-child(2) { visibility: hidden; }
+}
+
+@keyframes announcement-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
 /* Header & Navigation */
 header {
     position: fixed;
-    top: 0;
+    top: var(--announcement-height);
     left: 0;
     width: 100%;
     background-color: rgba(255, 255, 255, 0.95);
@@ -171,6 +261,36 @@ header .container {
     color: var(--dark);
     font-family: var(--font-brand);
     letter-spacing: 0.5px;
+}
+
+/* Diwali 2026 logo ribbon (like the Rakhi one): sits under the wordmark on
+   every page, links to the Diwali collection. Remove in the Nov 9 cleanup
+   (the ribbon markup in build-shop.js shopHeaderHtml() and the hand-written
+   pages too - grep logo-diwali-ribbon). */
+.logo-diwali-ribbon {
+    position: absolute;
+    top: 100%;
+    right: 4px;
+    margin-top: -6px;
+    background: linear-gradient(90deg, #f4b53f 0%, #e8a020 100%);
+    color: #5a2d00;
+    font-family: var(--font-primary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    padding: 4px 12px;
+    text-decoration: none;
+    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
+    transform: rotate(-5deg);
+    clip-path: polygon(0% 0%, 3% 20%, 0% 40%, 2% 60%, 0% 80%, 1% 100%, 100% 100%, 98% 80%, 100% 60%, 97% 40%, 100% 20%, 99% 0%);
+    transition: background 0.2s ease, color 0.2s ease;
+    z-index: 1;
+}
+
+.logo-diwali-ribbon:hover {
+    background: #5a2d00;
+    color: #ffd66b;
 }
 
 .nav-links {
@@ -237,7 +357,7 @@ header .container {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 32px 0 0;
+    padding: calc(32px + var(--announcement-height)) 0 0;
 }
 
 .hero-split {
@@ -641,7 +761,7 @@ header .container {
 
 @media (max-width: 900px) {
     .hero {
-        padding-top: 88px;
+        padding-top: calc(88px + var(--announcement-height));
     }
     .hero-split {
         flex-direction: column;
@@ -2065,10 +2185,10 @@ footer {
     .nav-links {
         display: flex;
         position: fixed;
-        top: 80px;
+        top: calc(80px + var(--announcement-height));
         left: -100%;
         width: 100%;
-        height: calc(100vh - 80px);
+        height: calc(100vh - 80px - var(--announcement-height));
         background-color: var(--light);
         flex-direction: column;
         align-items: center;
@@ -2531,7 +2651,7 @@ footer {
 /* ================= SERVICE PAGE STYLES ================= */
 
 .service-page-hero {
-    padding: 100px 0 20px;
+    padding: calc(100px + var(--announcement-height)) 0 20px;
     background: linear-gradient(135deg, rgba(160, 131, 213, 0.08) 0%, rgba(239, 207, 32, 0.08) 100%);
     text-align: center;
 }
@@ -2786,7 +2906,7 @@ footer {
         padding: 24px 20px;
     }
     .service-page-hero {
-        padding: 90px 0 24px;
+        padding: calc(90px + var(--announcement-height)) 0 24px;
     }
 }
 

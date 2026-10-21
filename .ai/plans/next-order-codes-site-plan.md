@@ -14,6 +14,18 @@ Status Oct 21: plan written; wording below needs Rahul's OK before building. The
 (email block, code creation, WhatsApp) went live Oct 21, so the site lines can go live whenever
 Rahul approves them.
 
+Built Oct 21 (wording approved in the session; it changed from the lines below):
+- Sitewide fixed bar (all shop pages + the 15 hand-written pages), taking turns with an e-gift card
+  line (till Nov 7): "🪔 Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order.
+  Shop Diwali →" (links to the Diwali collection). Replaces the shop banner (item 2) and the shop
+  page's gift card banner. Each page's inline script shows it by IST date.
+- Cart: one Diwali-styled bar with evenly spaced marks (free shipping, ₹50, ₹100), one line under
+  it; empty cart shows the offer and the e-gift card as cards. Cart is one scrolling panel, opened
+  at the bottom, with a "↑ See your N items" pill.
+- Also: "Shop Diwali Gifts 🪔" logo ribbon on every page; e-gift card first in the Gifts menu.
+- Tests: tests/campaign.unit.test.js (the 17 copies stay in step with the generator and the cart's
+  dates) and tests/campaign.e2e.spec.js (fake clock + stubbed cart). Item 3 (product pages) skipped.
+
 ## Why
 
 Without site messaging, customers only learn of the offer after paying (email + WhatsApp). The site
