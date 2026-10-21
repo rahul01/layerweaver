@@ -21,9 +21,9 @@ lines make it a reason to add one more item now.
 
 ## The offer (must match the dashboard exactly)
 
-- Orders placed **Oct 22 - Nov 1, 2026** (IST).
+- Orders placed **Oct 21 - Nov 1, 2026** (IST).
 - Order value = products **after discounts, before shipping, gift cards left out**.
-  - ₹599+ -> ₹50 off the next order; ₹999+ -> ₹100 off.
+  - ₹599+ -> ₹50 off the next order; ₹949+ -> ₹100 off (lowered from ₹999 on Oct 21 - two ₹499 items make ₹998).
 - Code: next order of ₹399+, once, works at once, till Dec 15. Sent by email and WhatsApp right
   after the order.
 - The site promises nothing the dashboard won't give: if the cart says "unlocked", the order must
@@ -33,11 +33,11 @@ lines make it a reason to add one more item now.
 
 ### 1. Cart progress (shop/cart.js, the existing rewards progress bar)
 - `REWARD_TIERS` today is free shipping only (₹299). Add the two offer tiers, shown only while
-  `istToday()` is between `2026-10-22` and `2026-11-01` (constants at the top, like
+  `istToday()` is between `2026-10-21` and `2026-11-01` (constants at the top, like
   `ORDER_BY_DIWALI`):
   - below ₹599: "Add ₹X more to get ₹50 off your next order"
-  - ₹599 - ₹998: "₹50 off your next order unlocked - add ₹X more for ₹100"
-  - ₹999+: "₹100 off your next order unlocked 🪔 - we'll send the code after you order"
+  - ₹599 - ₹948: "₹50 off your next order unlocked - add ₹X more for ₹100"
+  - ₹949+: "₹100 off your next order unlocked 🪔 - we'll send the code after you order"
 - Value: **after discounts**, gift cards out. `cartSubtotal()` sums pre-discount line prices and
   skips only non-shipping lines (gift cards). For this tier use the lines' discounted cost
   (`line.cost.totalAmount`, or subtract `cart.discountAllocations`) so an applied code can't make
@@ -47,8 +47,8 @@ lines make it a reason to add one more item now.
 - Mirror the pure logic in `shop/cart-utils.js` with a test, like `shippingProgress()`.
 
 ### 2. Shop banner (shop/index.html, near the gift card banner)
-- One slim banner, shown Oct 22 - Nov 1 only (hide by date in JS, not by hand):
-  "🪔 Spend ₹599, get ₹50 off your next order. Spend ₹999, get ₹100 off. Sent to your email and WhatsApp."
+- One slim banner, shown Oct 21 - Nov 1 only (hide by date in JS, not by hand):
+  "🪔 Spend ₹599, get ₹50 off your next order. Spend ₹949, get ₹100 off. Sent to your email and WhatsApp."
 - Diwali look: reuse the `seasonal--diwali` / gift card banner styles; no new colours.
 - From Nov 2 the gift card banner stays as the only offer (per the Diwali plan).
 
@@ -64,8 +64,8 @@ lines make it a reason to add one more item now.
 
 ## Checks before asking to push
 - Local server (`http://localhost:8080`, per the repo memory), desktop and phone width.
-- Cart at ₹598 / ₹599 / ₹998 / ₹999, with and without a discount code applied, with a gift card.
-- Date switch: fake `istToday()` to Oct 21, Oct 22, Nov 1, Nov 2 - lines appear and disappear.
+- Cart at ₹598 / ₹599 / ₹948 / ₹949 / ₹998, with and without a discount code applied, with a gift card.
+- Date switch: fake `istToday()` to Oct 20, Oct 21, Nov 1, Nov 2 - lines appear and disappear.
 - Tests green; commit; ask Rahul to push. Go live together with or after the dashboard go-live
   (the site must not promise codes before the email/WhatsApp are live; they went live Oct 21) - check
   with Rahul.
