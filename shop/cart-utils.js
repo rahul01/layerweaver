@@ -214,3 +214,35 @@ export function giftCardRecipientAttributes({ email = '', name = '', message = '
   attributes.push({ key: '__shopify_offset', value: String(offsetMinutes) });
   return { attributes };
 }
+
+// Mirrors shop/cart.js's nextOrderValue() / nextOrderProgress(). Next-order
+// codes (orders Oct 22 - Nov 1, 2026 IST): ₹599+ gets ₹50 off the next order,
+// ₹999+ gets ₹100 off, sent by the dashboard after the order. The cart must
+// count the value the way the dashboard does - products after discounts,
+// before shipping, gift cards left out - so it never says "unlocked" for an
+// order that won't get a code. Line cost.totalAmount is after line-level
+// discounts; order-level discounts sit in cart.discountAllocations.
+export const NEXT_ORDER = {
+  from: '2026-10-22',
+  to:   '2026-11-01',
+  tiers: [{ min: 599, off: 50 }, { min: 999, off: 100 }],
+};
+export function nextOrderValue(cart) {
+  const lines = (cart?.lines?.edges || []).map(e => e.node)
+    .filter(l => l.merchandise.requiresShipping !== false);
+  const total = lines.reduce((s, l) => s + parseFloat(l.cost?.totalAmount?.amount
+    ?? parseFloat(l.merchandise.price.amount) * l.quantity), 0);
+  const orderOff = (cart?.discountAllocations || [])
+    .reduce((s, d) => s + parseFloat(d.discountedAmount?.amount || 0), 0);
+  return Math.max(total - orderOff, 0);
+}
+// Message for a cart of `value` on IST day `today` (yyyy-mm-dd), or null
+// outside the offer dates or for an empty cart.
+export function nextOrderProgress(value, today, cfg = NEXT_ORDER) {
+  if (value <= 0 || today < cfg.from || today > cfg.to) return null;
+  const [low, high] = cfg.tiers;
+  const more = min => Math.ceil(min - value);
+  if (value < low.min) return { unlocked: 0, message: `Add ₹${more(low.min)} more to get ₹${low.off} off your next order` };
+  if (value < high.min) return { unlocked: low.off, message: `₹${low.off} off your next order unlocked - add ₹${more(high.min)} more for ₹${high.off}` };
+  return { unlocked: high.off, message: `₹${high.off} off your next order unlocked 🪔 - we'll send the code after you order` };
+}

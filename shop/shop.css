@@ -1545,6 +1545,14 @@
     animation: rewards-pop 0.4s ease;
 }
 
+.rewards-nextorder-msg {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #b8650a;
+    margin: 6px 0 0;
+    text-align: center;
+}
+
 @keyframes rewards-pop {
     0%   { transform: scale(1); }
     50%  { transform: scale(1.12); }
@@ -3208,6 +3216,17 @@ body.seasonal--halloween {
 .giftcard-banner span { flex: 1; font-size: 0.95rem; }
 .giftcard-banner .giftcard-banner-cta { flex: none; font-weight: 700; white-space: nowrap; }
 .giftcard-banner:hover .giftcard-banner-cta { text-decoration: underline; }
+/* Next-order codes banner (Oct 22 - Nov 1, 2026; shown by cart.js). Diwali
+   colours from .seasonal--diwali. Remove in the Nov 9 cleanup. */
+.nextorder-banner {
+    background: #fffaf0;
+    border: 1px solid rgba(232, 160, 32, 0.45);
+    color: #9a5a1a;
+    padding: 10px 20px;
+}
+.nextorder-banner[hidden] { display: none; }
+.giftcard-banner + .nextorder-banner { margin-top: -12px; }
+.nextorder-banner > span[aria-hidden] { flex: none; font-size: 1.2rem; }
 @media (max-width: 640px) {
     .giftcard-banner { flex-wrap: wrap; gap: 8px 12px; padding: 12px 16px; }
     .giftcard-banner .giftcard-banner-cta { width: 100%; padding-left: calc(1.4rem + 12px); }

@@ -1077,6 +1077,10 @@ function generateShopIndex(products, collections, reviewsMap = {}) {
             <span><strong>Can't decide, or too late to ship?</strong> Send an e-gift card - it arrives by email instantly.</span>
             <span class="giftcard-banner-cta">Gift cards <i class="fa-solid fa-arrow-right"></i></span>
         </a>` : ''}
+        <div class="giftcard-banner nextorder-banner" data-nextorder hidden>
+            <span aria-hidden="true">🪔</span>
+            <span>Spend ₹599, get ₹50 off your next order. Spend ₹999, get ₹100 off. Sent to your email and WhatsApp.</span>
+        </div>
     </div>
 
     <section class="shop-products">

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags, giftCardRecipientAttributes } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags, giftCardRecipientAttributes, nextOrderValue, nextOrderProgress } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -339,5 +339,65 @@ describe('giftCardRecipientAttributes', () => {
     expect(giftCardRecipientAttributes({ email: 'a@b.in', sendOn: '2026-10-20' }, now).attributes).toBeTruthy(); // today (IST) is fine
     expect(giftCardRecipientAttributes({ email: 'a@b.in', sendOn: '2027-01-18' }, now).attributes).toBeTruthy(); // day 90
     expect(giftCardRecipientAttributes({ email: 'a@b.in', sendOn: '2027-01-19' }, now)).toMatchObject({ field: 'sendOn' });
+  });
+});
+
+// ── next-order codes ─────────────────────────────────────────────────────────
+// Orders Oct 22 - Nov 1, 2026: ₹599+ gets ₹50 off the next order, ₹999+ ₹100.
+// Value counted like the dashboard: after discounts, gift cards out.
+
+function costLine(price, qty, total = price * qty, requiresShipping = true) {
+  const l = makeLine(`gid://shopify/ProductVariant/${price}`, price, qty);
+  l.node.merchandise.requiresShipping = requiresShipping;
+  l.node.cost = { totalAmount: { amount: String(total) } };
+  return l;
+}
+
+describe('nextOrderValue', () => {
+  it('sums line totals after line discounts', () => {
+    expect(nextOrderValue({ lines: { edges: [costLine(399, 2, 700), costLine(200, 1)] } })).toBe(900);
+  });
+
+  it('subtracts order-level discounts', () => {
+    const cart = { lines: { edges: [costLine(649, 1)] }, discountAllocations: [{ discountedAmount: { amount: '65.00' } }] };
+    expect(nextOrderValue(cart)).toBe(584);
+  });
+
+  it('leaves gift cards out', () => {
+    expect(nextOrderValue({ lines: { edges: [costLine(299, 1), costLine(1000, 1, 1000, false)] } })).toBe(299);
+  });
+
+  it('falls back to price x quantity when a line has no cost', () => {
+    const l = makeLine('v', 350, 2);
+    expect(nextOrderValue({ lines: { edges: [l] } })).toBe(700);
+  });
+});
+
+describe('nextOrderProgress', () => {
+  const day = '2026-10-25';
+
+  it('asks for the rest to ₹599 below the first tier', () => {
+    expect(nextOrderProgress(598, day)).toEqual({ unlocked: 0, message: 'Add ₹1 more to get ₹50 off your next order' });
+  });
+
+  it('unlocks ₹50 from ₹599 to ₹998', () => {
+    expect(nextOrderProgress(599, day).message).toBe('₹50 off your next order unlocked - add ₹400 more for ₹100');
+    expect(nextOrderProgress(998, day).unlocked).toBe(50);
+  });
+
+  it('unlocks ₹100 from ₹999', () => {
+    expect(nextOrderProgress(999, day)).toEqual({ unlocked: 100, message: "₹100 off your next order unlocked 🪔 - we'll send the code after you order" });
+  });
+
+  it('rounds a fractional shortfall up so the amount is enough', () => {
+    expect(nextOrderProgress(598.5, day).message).toBe('Add ₹1 more to get ₹50 off your next order');
+  });
+
+  it('shows only Oct 22 - Nov 1 (IST dates) and not for an empty cart', () => {
+    expect(nextOrderProgress(700, '2026-10-21')).toBeNull();
+    expect(nextOrderProgress(700, '2026-10-22')).not.toBeNull();
+    expect(nextOrderProgress(700, '2026-11-01')).not.toBeNull();
+    expect(nextOrderProgress(700, '2026-11-02')).toBeNull();
+    expect(nextOrderProgress(0, day)).toBeNull();
   });
 });

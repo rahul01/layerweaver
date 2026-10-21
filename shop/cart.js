@@ -15,6 +15,14 @@
     { min: 299, label: 'Free Shipping', icon: 'fa-truck-fast' },
   ];
 
+  // Next-order codes: orders Oct 22 - Nov 1, 2026 (IST) get a code for the
+  // next order, sent by the dashboard. Shown under the free shipping line and
+  // as the shop banner ([data-nextorder]) on those dates only. Remove in the
+  // Nov 9 cleanup.
+  const NEXT_ORDER_FROM  = '2026-10-22';
+  const NEXT_ORDER_TO    = '2026-11-01';
+  const NEXT_ORDER_TIERS = [{ min: 599, off: 50 }, { min: 999, off: 100 }];
+
   // Derive the path to shop/ root from the current page URL
   const path     = window.location.pathname;
   const shopIdx  = path.indexOf('/shop/');
@@ -126,6 +134,7 @@
       edges { node {
         id quantity
         attributes { key value }
+        cost { totalAmount { amount } }
         merchandise { ... on ProductVariant {
           id title requiresShipping
           price { amount currencyCode }
@@ -136,6 +145,7 @@
     }
     cost { totalAmount { amount currencyCode } subtotalAmount { amount currencyCode } }
     discountCodes { code applicable }
+    discountAllocations { discountedAmount { amount } }
   `;
 
   // ── API calls ─────────────────────────────────────────────────────────────
@@ -383,6 +393,38 @@
       .reduce((s, l) => s + parseFloat(l.merchandise.price.amount) * l.quantity, 0);
   }
 
+  // Mirrors nextOrderValue() / nextOrderProgress() in shop/cart-utils.js
+  // (unit-tested there). Counted the way the dashboard counts the order:
+  // products after discounts (line cost.totalAmount is after line discounts,
+  // order-level ones are in cart.discountAllocations), gift cards out - so
+  // an applied code can't make the cart claim a tier the order won't get.
+  function nextOrderValue(cart) {
+    const total = cart.lines.edges
+      .map(e => e.node)
+      .filter(l => l.merchandise.requiresShipping !== false)
+      .reduce((s, l) => s + parseFloat(l.cost?.totalAmount?.amount
+        ?? parseFloat(l.merchandise.price.amount) * l.quantity), 0);
+    const orderOff = (cart.discountAllocations || [])
+      .reduce((s, d) => s + parseFloat(d.discountedAmount?.amount || 0), 0);
+    return Math.max(total - orderOff, 0);
+  }
+
+  const nextOrderOn = () => { const t = istToday(); return t >= NEXT_ORDER_FROM && t <= NEXT_ORDER_TO; };
+
+  function nextOrderMessage(value) {
+    if (value <= 0 || !nextOrderOn()) return null;
+    const [low, high] = NEXT_ORDER_TIERS;
+    const more = min => Math.ceil(min - value);
+    if (value < low.min) return `Add ₹${more(low.min)} more to get ₹${low.off} off your next order`;
+    if (value < high.min) return `₹${low.off} off your next order unlocked - add ₹${more(high.min)} more for ₹${high.off}`;
+    return `₹${high.off} off your next order unlocked 🪔 - we'll send the code after you order`;
+  }
+
+  function showNextOrderBanners() {
+    if (!nextOrderOn()) return;
+    document.querySelectorAll('[data-nextorder]').forEach(el => { el.hidden = false; });
+  }
+
   // ── State ─────────────────────────────────────────────────────────────────
 
   let cart = null;
@@ -530,6 +572,7 @@
               <div class="rewards-bar-fill" id="rewards-bar-fill"></div>
             </div>
             <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
+            <p class="rewards-nextorder-msg" id="rewards-nextorder-msg" hidden></p>
           </div>
           <div class="cart-total">
             <span>Total</span>
@@ -740,6 +783,13 @@
     }
     msg.textContent = text;
     progressEl.classList.toggle('rewards-all-unlocked', allUnlocked);
+
+    const nextMsg = document.getElementById('rewards-nextorder-msg');
+    const nextText = nextMsg && nextOrderMessage(nextOrderValue(cart));
+    if (nextMsg) {
+      nextMsg.hidden = !nextText;
+      nextMsg.textContent = nextText || '';
+    }
 
     const wasMetCount = parseInt(sessionStorage.getItem('lw_rewards_tier_count') || '0');
     if (_cartReady && metCount > wasMetCount) spawnPageConfetti();
@@ -1366,6 +1416,7 @@
     injectCartIcon();
     injectDrawer();
     renderOrderBy();
+    showNextOrderBanners();
     injectRewardsBubble();
 
     // Restore cart from previous session
