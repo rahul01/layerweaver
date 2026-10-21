@@ -121,26 +121,26 @@ test.describe('Announcement bar by date', () => {
 // ── Light Diwali touch ──────────────────────────────────────────────────────
 
 test.describe('Light Diwali touch', () => {
-  const toran = page => page.evaluate(() => getComputedStyle(document.querySelector('header'), '::after').backgroundImage);
+  const mandala = page => page.evaluate(() => getComputedStyle(document.body).backgroundImage);
 
   for (const path of ['/', '/shop/', '/faq/']) {
-    test(`${path} - toran under the header through Diwali day, gone after`, async ({ page }) => {
+    test(`${path} - mandala behind the page through Diwali day, gone after`, async ({ page }) => {
       await onDay(page, '2026-11-08');
       await page.goto(path);
       await expect(page.locator('html')).toHaveClass(/diwali-touch/);
-      expect(await toran(page)).toContain('radial-gradient');
+      expect(await mandala(page)).toContain('data:image/svg+xml');
       await page.clock.setFixedTime(new Date('2026-11-09T12:00:00+05:30'));
       await page.reload();
       await expect(page.locator('html')).not.toHaveClass(/diwali-touch/);
-      expect(await toran(page)).toBe('none');
+      expect(await mandala(page)).toBe('none');
     });
   }
 
-  test('cart gets a toran and a diya after the title', async ({ page }) => {
+  test('cart gets the mandala and a diya after the title', async ({ page }) => {
     await openCart(page, '2026-10-25', [line(450)]);
     const after = await page.evaluate(() => getComputedStyle(document.querySelector('.cart-header h3'), '::after').content);
     expect(after).toContain('🪔');
-    expect(await page.evaluate(() => getComputedStyle(document.querySelector('.cart-header'), '::after').backgroundImage)).toContain('radial-gradient');
+    expect(await page.evaluate(() => getComputedStyle(document.getElementById('cart-drawer')).backgroundImage)).toContain('data:image/svg+xml');
   });
 });
 
