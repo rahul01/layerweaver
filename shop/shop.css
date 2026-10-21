@@ -1644,7 +1644,9 @@
 }
 
 .rewards-bar { position: relative; }
-.rewards-has-marks .rewards-bar { padding: 9px 0 32px; margin: 0 2px; }
+/* Inset by half a dot each side so every dot, the last one too, sits
+   centred on its mark and the gaps between them are equal. */
+.rewards-has-marks .rewards-bar { padding: 9px 0 32px; margin: 0 12px; }
 .rewards-has-marks .rewards-bar-msg { margin-top: 4px; }
 .rewards-bar-marks { position: absolute; inset: 0; pointer-events: none; }
 .rewards-bar-mark {
@@ -1676,7 +1678,6 @@
 .rewards-bar-mark.is-met { color: #b8650a; }
 .rewards-bar-mark.is-met i { border-color: var(--primary); background: var(--primary); color: #fff; }
 .rewards-all-unlocked .rewards-bar-mark.is-met i { border-color: #22c55e; background: #22c55e; }
-.rewards-bar-mark:last-child { transform: translateX(-100%); align-items: flex-end; }
 
 /* Diwali look while the marks show (the offer dates). Colours from
    .seasonal--diwali. */

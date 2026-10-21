@@ -175,6 +175,27 @@ test.describe('Cart next-order progress', () => {
     await expect(nextMsg(page)).toBeHidden();
   });
 
+  for (const width of [340, 375, 1280]) {
+    test(`marks are evenly spaced on screen at ${width}px, labels inside the card`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await openCart(page, '2026-10-25', [line(650)]);
+      const { gaps, inside } = await page.evaluate(() => {
+        const track = document.querySelector('.rewards-bar-track').getBoundingClientRect();
+        const card = document.querySelector('#rewards-progress').getBoundingClientRect();
+        const centres = [...document.querySelectorAll('.rewards-bar-mark i')]
+          .map(i => { const r = i.getBoundingClientRect(); return r.left + r.width / 2 - track.left; });
+        return {
+          gaps: centres.map((c, i) => c - (i ? centres[i - 1] : 0)),
+          inside: [...document.querySelectorAll('.rewards-bar-mark')]
+            .every(m => { const r = m.getBoundingClientRect(); return r.left >= card.left && r.right <= card.right; }),
+        };
+      });
+      expect(gaps).toHaveLength(3);
+      for (const g of gaps) expect(Math.abs(g - gaps[0])).toBeLessThanOrEqual(1.5);
+      expect(inside).toBe(true);
+    });
+  }
+
   test('₹299 - ₹598: free shipping line points at the ₹50', async ({ page }) => {
     await openCart(page, '2026-10-25', [line(450)]);
     await expect(metMarks(page)).toHaveCount(1);
