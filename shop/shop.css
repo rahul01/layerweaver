@@ -1399,12 +1399,15 @@
 }
 
 /* Light Diwali touch in the cart (html.diwali-touch, till Nov 8 - see
-   styles.css): the faint mandala behind the cart, a diya after the title, a
+   styles.css): a mandala in the cart's corner, a diya after the title, a
    warm empty-bag icon. Remove in the Nov 9 cleanup. */
 html.diwali-touch #cart-drawer {
-    /* Lighter than the page: the cart is busier. */
-    background-image: linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), var(--diwali-mandala);
-    background-size: 140px 140px;
+    /* The cart's own mandala in its bottom-right corner, washed lighter than
+       the page's a touch: the cart is busier. */
+    background-image: linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), var(--diwali-mandala);
+    background-position: 0 0, right -230px bottom -230px;
+    background-size: auto, 460px 460px;
+    background-repeat: no-repeat;
 }
 html.diwali-touch .cart-header h3::after { content: ' 🪔'; font-size: 1rem; }
 html.diwali-touch .cart-empty > i { color: #f0c36a; }

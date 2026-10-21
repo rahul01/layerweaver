@@ -121,18 +121,26 @@ test.describe('Announcement bar by date', () => {
 // ── Light Diwali touch ──────────────────────────────────────────────────────
 
 test.describe('Light Diwali touch', () => {
-  const mandala = page => page.evaluate(() => getComputedStyle(document.body).backgroundImage);
+  // One large mandala centred on the bottom-right corner of the window.
+  const mandala = page => page.evaluate(() => {
+    const st = getComputedStyle(document.body, '::before');
+    return { image: st.backgroundImage, position: st.position, right: st.right, width: st.width };
+  });
 
   for (const path of ['/', '/shop/', '/faq/']) {
-    test(`${path} - mandala behind the page through Diwali day, gone after`, async ({ page }) => {
+    test(`${path} - corner mandala through Diwali day, gone after`, async ({ page }) => {
       await onDay(page, '2026-11-08');
       await page.goto(path);
       await expect(page.locator('html')).toHaveClass(/diwali-touch/);
-      expect(await mandala(page)).toContain('data:image/svg+xml');
+      const on = await mandala(page);
+      expect(on.image).toContain('data:image/svg+xml');
+      expect(on.position).toBe('fixed');
+      // Centred on the corner: pushed out by half its own width.
+      expect(parseFloat(on.right)).toBe(-parseFloat(on.width) / 2);
       await page.clock.setFixedTime(new Date('2026-11-09T12:00:00+05:30'));
       await page.reload();
       await expect(page.locator('html')).not.toHaveClass(/diwali-touch/);
-      expect(await mandala(page)).toBe('none');
+      expect((await mandala(page)).image).toBe('none');
     });
   }
 
