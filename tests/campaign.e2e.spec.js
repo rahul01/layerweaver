@@ -133,7 +133,7 @@ test.describe('Light Diwali touch', () => {
       await page.goto(path);
       await expect(page.locator('html')).toHaveClass(/diwali-touch/);
       const on = await mandala(page);
-      expect(on.image).toContain('data:image/svg+xml');
+      expect(on.image).toContain('/images/diwali-mandala.webp');
       expect(on.position).toBe('fixed');
       // Centred on the corner: pushed out by half its own width.
       expect(parseFloat(on.right)).toBe(-parseFloat(on.width) / 2);
@@ -144,11 +144,17 @@ test.describe('Light Diwali touch', () => {
     });
   }
 
+  test('the mandala image is served', async ({ page }) => {
+    const res = await page.request.get('/images/diwali-mandala.webp');
+    expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toContain('image/webp');
+  });
+
   test('cart gets the mandala and a diya after the title', async ({ page }) => {
     await openCart(page, '2026-10-25', [line(450)]);
     const after = await page.evaluate(() => getComputedStyle(document.querySelector('.cart-header h3'), '::after').content);
     expect(after).toContain('🪔');
-    expect(await page.evaluate(() => getComputedStyle(document.getElementById('cart-drawer')).backgroundImage)).toContain('data:image/svg+xml');
+    expect(await page.evaluate(() => getComputedStyle(document.getElementById('cart-drawer')).backgroundImage)).toContain('/images/diwali-mandala.webp');
   });
 });
 

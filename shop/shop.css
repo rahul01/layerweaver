@@ -1404,7 +1404,7 @@
 html.diwali-touch #cart-drawer {
     /* The cart's own mandala in its bottom-right corner, washed lighter than
        the page's a touch: the cart is busier. */
-    background-image: linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), var(--diwali-mandala);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.75)), var(--diwali-mandala);
     background-position: 0 0, right -230px bottom -230px;
     background-size: auto, 460px 460px;
     background-repeat: no-repeat;
