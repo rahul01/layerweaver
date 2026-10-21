@@ -241,6 +241,25 @@ html.diwali-touch body::before {
 @media (max-width: 600px) {
     html.diwali-touch body::before { right: -220px; bottom: -220px; width: 440px; height: 440px; }
 }
+/* Cards let the mandala show through: white ones at 75%, tinted ones keep
+   their tint (the FAQ, policy and delivery boxes set theirs in the page). */
+html.diwali-touch .shop-product-card,
+html.diwali-touch .testimonial-card,
+html.diwali-touch .contact-card,
+html.diwali-touch .course-card,
+html.diwali-touch .connect-card,
+html.diwali-touch .service-form-card,
+html.diwali-touch .order-card {
+    background-color: rgba(255, 255, 255, 0.75);
+}
+html.diwali-touch .review-card { background-color: rgba(250, 250, 250, 0.75); }
+html.diwali-touch .faq-item summary,
+html.diwali-touch .faq-answer,
+html.diwali-touch .highlight-box,
+html.diwali-touch .delivery-card {
+    background-color: rgba(247, 244, 253, 0.78);
+}
+html.diwali-touch .faq-item summary:hover { background-color: rgba(239, 233, 250, 0.85); }
 
 /* Header & Navigation */
 header {

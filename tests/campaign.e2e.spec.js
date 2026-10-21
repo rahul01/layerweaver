@@ -144,6 +144,18 @@ test.describe('Light Diwali touch', () => {
     });
   }
 
+  test('cards are see-through during the touch, solid after', async ({ page }) => {
+    const bg = sel => page.evaluate(s => getComputedStyle(document.querySelector(s)).backgroundColor, sel);
+    await onDay(page, '2026-10-25');
+    await page.goto('/shop/');
+    expect(await bg('.shop-product-card')).toBe('rgba(255, 255, 255, 0.75)');
+    await page.goto('/faq/');
+    expect(await bg('.faq-item summary')).toBe('rgba(247, 244, 253, 0.78)');
+    await page.clock.setFixedTime(new Date('2026-11-09T12:00:00+05:30'));
+    await page.goto('/shop/');
+    expect(await bg('.shop-product-card')).toBe('rgb(255, 255, 255)');
+  });
+
   test('the mandala image is served', async ({ page }) => {
     const res = await page.request.get('/images/diwali-mandala.webp');
     expect(res.status()).toBe(200);
