@@ -93,8 +93,35 @@
     await Promise.race([update, new Promise(r => setTimeout(r, 1500))]).catch(() => {});
   }
 
-  // Checkout is a plain link to Shopify's checkout; refresh the attributes
-  // on the way there. Modified clicks (new tab/window) are left alone.
+  // Signed in on the site? Put the customer on the cart so Shopify's checkout
+  // opens as them and the order lands in their account. Without it every
+  // checkout is a guest checkout: on Oct 23, 2026 a customer signed in with
+  // Google, paid with a phone number, and the order went to a new phone-only
+  // customer their account couldn't see. The site's Customer Account token
+  // works here as is (checked live Oct 23). Returns the cart's checkout URL,
+  // or null if not signed in or Shopify said no - checkout then goes ahead as
+  // a guest, same as before. Gives up after 1.5 s.
+  async function linkCartToCustomer(cartId) {
+    if (!cartId || !window.LW_AUTH) return null;
+    const link = (async () => {
+      const token = await window.LW_AUTH.getValidToken();
+      if (!token) return null;
+      const data = await gql(`
+        mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+          cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+            cart { checkoutUrl buyerIdentity { customer { id } } }
+            userErrors { message }
+          }
+        }`, { cartId, buyerIdentity: { customerAccessToken: token } });
+      const cart = data.cartBuyerIdentityUpdate?.cart;
+      return cart?.buyerIdentity?.customer ? cart.checkoutUrl : null;
+    })();
+    return Promise.race([link, new Promise(r => setTimeout(() => r(null), 1500))]).catch(() => null);
+  }
+
+  // Checkout is a plain link to Shopify's checkout; link the signed-in
+  // customer and refresh the attributes on the way there. Modified clicks
+  // (new tab/window) are left alone.
   let goingToCheckout = false;
   // Back from checkout via the browser's back button restores this page from
   // cache with the flag still set - reset it so the button works again.
@@ -105,7 +132,11 @@
     e.preventDefault();
     if (goingToCheckout) return;
     goingToCheckout = true;
-    refreshCartAttributes(loadCartId()).finally(() => { window.location.href = link.href; });
+    const cartId = loadCartId();
+    let checkoutUrl = null;
+    linkCartToCustomer(cartId)
+      .then(url => { checkoutUrl = url; return refreshCartAttributes(cartId); })
+      .finally(() => { window.location.href = checkoutUrl || link.href; });
   });
 
   async function gql(query, variables = {}) {

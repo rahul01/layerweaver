@@ -785,6 +785,85 @@ test.describe('Checkout attribution refresh', () => {
   });
 });
 
+// ── Signed-in customer goes to checkout as themselves (Oct 23 fix) ──────────
+// The real token was checked live by hand; here a fake one stands in and
+// Shopify's answer to cartBuyerIdentityUpdate is stubbed, since a fake token
+// would be refused. Everything else (cart, lines) is the real Storefront API.
+
+const FAKE_TOKEN = 'shcat_e2e-fake-token';
+const LINKED_URL = 'https://shop.layerweaver.com/cart/c/linked-e2e?key=linked';
+
+// identity: 'linked' | 'rejected' | 'hang'
+async function checkoutWith(page, { signedIn, identity = 'linked' }) {
+  const identityCalls = [];
+  await page.route('https://account.layerweaver.com/**', route =>
+    route.fulfill({ json: { data: { customer: { metafield: null }, metafieldsSet: { userErrors: [] } } } }));
+  await page.route('**/api/2025-01/graphql.json', async route => {
+    const body = route.request().postDataJSON() || {};
+    if (!String(body.query).includes('cartBuyerIdentityUpdate')) return route.continue();
+    identityCalls.push(body.variables);
+    if (identity === 'hang') return; // never answers
+    const cart = identity === 'linked'
+      ? { checkoutUrl: LINKED_URL, buyerIdentity: { customer: { id: 'gid://shopify/Customer/1' } } }
+      : { checkoutUrl: 'https://shop.layerweaver.com/cart/c/should-not-use', buyerIdentity: { customer: null } };
+    return route.fulfill({ json: { data: { cartBuyerIdentityUpdate: { cart, userErrors: identity === 'linked' ? [] : [{ message: 'Invalid token' }] } } } });
+  });
+  // Never actually go to Shopify's checkout - no checkout record is created.
+  await page.route(/shop\.layerweaver\.com\/(checkouts|cart\/c)\//, route => route.abort());
+
+  await page.goto(PRODUCT_OCTOPUS);
+  await clearCart(page);
+  await page.evaluate(({ signedIn, token }) => {
+    if (signedIn) {
+      localStorage.setItem('lw_ca_token', token);
+      localStorage.setItem('lw_ca_expires', String(Date.now() + 3600_000));
+    } else {
+      ['lw_ca_token', 'lw_ca_expires', 'lw_ca_refresh', 'lw_ca_id_token'].forEach(k => localStorage.removeItem(k));
+    }
+  }, { signedIn, token: FAKE_TOKEN });
+  await page.reload();
+  await waitForCartReady(page);
+  await page.click('#add-to-cart-btn');
+  await page.waitForFunction(() => document.getElementById('cart-badge')?.textContent === '1', { timeout: 10_000 });
+  await openDrawer(page);
+  const cartUrl = await page.getAttribute('#cart-checkout-btn', 'href');
+  const cartId = await page.evaluate(() => localStorage.getItem('lw_cart_id'));
+
+  const started = Date.now();
+  const nav = page.waitForRequest(r => /shop\.layerweaver\.com\/cart\/c\//.test(r.url()), { timeout: 8_000 });
+  await page.click('#cart-checkout-btn');
+  const wentTo = (await nav).url();
+  return { identityCalls, cartUrl, cartId, wentTo, waitedMs: Date.now() - started };
+}
+
+test.describe('Checkout as the signed-in customer', () => {
+  test('signed in: the cart gets their token and checkout opens as them', async ({ page }) => {
+    const r = await checkoutWith(page, { signedIn: true });
+    expect(r.identityCalls).toHaveLength(1);
+    expect(r.identityCalls[0]).toEqual({ cartId: r.cartId, buyerIdentity: { customerAccessToken: FAKE_TOKEN } });
+    expect(r.wentTo).toBe(LINKED_URL);
+  });
+
+  test('signed out: no customer on the cart, checkout as a guest like before', async ({ page }) => {
+    const r = await checkoutWith(page, { signedIn: false });
+    expect(r.identityCalls).toHaveLength(0);
+    expect(r.wentTo).toBe(r.cartUrl);
+  });
+
+  test('Shopify refuses the token: checkout still opens, as a guest', async ({ page }) => {
+    const r = await checkoutWith(page, { signedIn: true, identity: 'rejected' });
+    expect(r.identityCalls).toHaveLength(1);
+    expect(r.wentTo).toBe(r.cartUrl);
+  });
+
+  test('Shopify never answers: checkout still opens within a few seconds', async ({ page }) => {
+    const r = await checkoutWith(page, { signedIn: true, identity: 'hang' });
+    expect(r.identityCalls).toHaveLength(1);
+    expect(r.wentTo).toBe(r.cartUrl);
+    expect(r.waitedMs).toBeLessThan(4_500);
+  });
+});
+
 // ── Edge cases ──────────────────────────────────────────────────────────────
 
 test.describe('Edge cases', () => {
