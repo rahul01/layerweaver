@@ -382,5 +382,16 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (el.classList.contains('btn-primary') || el.classList.contains('btn-secondary'))   type = 'cta';
 
         if (type) gtag('event', 'click', { type, label, page, section });
+
+        // Homepage hero: its own event so GA4 reports it with no custom
+        // dimensions - link_url / link_text are GA4's built-in parameters.
+        if (section === 'hero') {
+            const part = el.closest('.hero-carousel-slide') ? 'carousel'
+                : el.closest('.hero-service-link')         ? 'collection_link'
+                : el.closest('.hero-shop-btn')             ? 'shop_button'
+                : el.closest('.hero-rating-badge')         ? 'rating'
+                : 'other';
+            gtag('event', 'hero_click', { link_url: href, link_text: `${part}: ${label}` });
+        }
     });
 });
