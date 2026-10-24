@@ -153,6 +153,16 @@ export function orderByForPincode(pin, now = Date.now(), cfg = ORDER_BY) {
     : { zone, open: false, text: 'Orders to your pincode might arrive after Diwali. Check with us on WhatsApp.' };
 }
 
+// Mirrors shop/cart.js's arrivesInForPincode(). Order-to-door time by zone,
+// p50-p90 of 319 delivered orders (Sep 15 - Oct 24, 2026) - the same ranges
+// as the FAQ, the Shipping Policy and the checkout's rate description.
+// Shown all year, unlike the Diwali order-by line.
+export const ARRIVES_IN = { maharashtra: '4-6', metro: '5-7', india: '6-9' };
+export function arrivesInForPincode(pin, cfg = ARRIVES_IN) {
+  const zone = pincodeZone(pin);
+  return zone ? `Usually arrives in ${cfg[zone]} days.` : null;
+}
+
 // Mirrors script.js's passUtmToWhatsApp(). A WhatsApp chat carries nothing
 // but its text, so the visitor's original utm_* tags (lw_attribution) go on
 // our site link inside the typed message: added to a layerweaver.com link

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, withUtmTags, giftCardRecipientAttributes, nextOrderValue, nextOrderProgress, rewardsBarMarks, freeShippingLine } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, arrivesInForPincode, withUtmTags, giftCardRecipientAttributes, nextOrderValue, nextOrderProgress, rewardsBarMarks, freeShippingLine } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -281,6 +281,19 @@ describe('orderByForPincode', () => {
   it('null for a bad pincode, and from Diwali day', () => {
     expect(orderByForPincode('123', at('2026-10-15T12:00:00+05:30'))).toBeNull();
     expect(orderByForPincode('411001', at('2026-11-08T00:00:00+05:30'))).toBeNull();
+  });
+});
+
+describe('arrivesInForPincode', () => {
+  it('gives the measured order-to-door range for the pincode\'s zone', () => {
+    expect(arrivesInForPincode('411045')).toBe('Usually arrives in 4-6 days.'); // Pune
+    expect(arrivesInForPincode('560102')).toBe('Usually arrives in 5-7 days.'); // Bengaluru
+    expect(arrivesInForPincode('781001')).toBe('Usually arrives in 6-9 days.'); // Guwahati
+    expect(arrivesInForPincode('403001')).toBe('Usually arrives in 6-9 days.'); // Goa is not Maharashtra
+  });
+  it('nothing for a pincode that isn\'t 6 digits', () => {
+    expect(arrivesInForPincode('4110')).toBeNull();
+    expect(arrivesInForPincode('')).toBeNull();
   });
 });
 

@@ -3388,6 +3388,7 @@ body.seasonal--halloween {
 .orderby-result:empty { display: none; }
 .orderby-open { color: #2f7a3e; font-weight: 600; }
 .orderby-closed { color: #666; }
+.orderby-eta { color: #333; font-weight: 600; }
 .orderby-error { color: #b23a3a; }
 .orderby-cart { margin: 0 0 14px; max-width: none; }
 .orderby-cart .orderby-label { font-size: 0.85rem; margin-bottom: 6px; }

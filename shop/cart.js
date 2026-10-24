@@ -517,12 +517,13 @@
     badge.style.display = qty > 0 ? 'flex' : 'none';
   }
 
-  // ── Diwali order-by date by pincode ──────────────────────────────────────
-  // Mirrors orderByForPincode() in shop/cart-utils.js (unit-tested there).
-  // Fills every [data-orderby] box (product pages, cart drawer): the buyer
-  // types a pincode and sees their own date, worked out from their clock in
-  // IST, so a passed date flips without a rebuild. The pincode is remembered
-  // on this device only (lw_pincode). Hidden from Diwali day on.
+  // ── Delivery time and Diwali order-by date by pincode ──────────────────
+  // Mirrors orderByForPincode() and arrivesInForPincode() in
+  // shop/cart-utils.js (unit-tested there). Fills every [data-orderby] box
+  // (product pages, cart drawer): the buyer types a pincode and sees how long
+  // delivery usually takes there, plus, until Diwali, their own order-by
+  // date, worked out from their clock in IST, so a passed date flips without
+  // a rebuild. The pincode is remembered on this device only (lw_pincode).
   const ORDER_BY_DIWALI = '2026-11-08';
   const ORDER_BY_ZONES = {
     maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
@@ -530,6 +531,7 @@
     india:       { by: '2026-10-26', date: 'Mon, Oct 26' },
   };
   const METRO_PREFIXES = new Set([110, 121, 122, 201, 560, 500, 600, 700]);
+  const ARRIVES_IN = { maharashtra: '4-6', metro: '5-7', india: '6-9' };
   const PIN_KEY = 'lw_pincode';
   const GIFT_CARD_HANDLE = 'layerweaver-e-gift-card';
   const istToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
@@ -553,30 +555,39 @@
       : { zone, open: false, text: 'Orders to your pincode might arrive after Diwali.' };
   }
 
+  function arrivesInForPincode(pin) {
+    const zone = pincodeZone(pin);
+    return zone ? `Usually arrives in ${ARRIVES_IN[zone]} days.` : null;
+  }
+
   function savedPincode() {
     try { return localStorage.getItem(PIN_KEY) || ''; } catch { return ''; }
   }
 
   function showOrderBy(box, pin) {
     const res = box.querySelector('.orderby-result');
+    const eta = arrivesInForPincode(pin);
     const r = orderByForPincode(pin);
     if (!pin) { res.textContent = ''; res.className = 'orderby-result'; return; }
-    if (!r) { res.textContent = 'Enter a 6-digit pincode.'; res.className = 'orderby-result orderby-error'; return; }
+    if (!eta) { res.textContent = 'Enter a 6-digit pincode.'; res.className = 'orderby-result orderby-error'; return; }
+    if (!r) { res.textContent = eta; res.className = 'orderby-result orderby-eta'; return; } // after Diwali
     res.className = `orderby-result ${r.open ? 'orderby-open' : 'orderby-closed'}`;
-    if (r.open) { res.textContent = r.text; return; }
+    if (r.open) { res.textContent = `${r.text} ${eta}`; return; }
     // Past the date: offer the e-gift card (arrives instantly), and the chat
     // in case we can still make it.
     const wa = `https://wa.me/917558783018?text=${encodeURIComponent(`Hi! Can you deliver to ${pin} before Diwali?`)}`;
-    res.innerHTML = `${esc(r.text)} <a href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/"><i class="fa-solid fa-gift"></i> Send an e-gift card - it arrives instantly</a> or <a href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> check with us on WhatsApp</a>`;
+    res.innerHTML = `${esc(r.text)} ${esc(eta)} <a href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/"><i class="fa-solid fa-gift"></i> Send an e-gift card - it arrives instantly</a> or <a href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> check with us on WhatsApp</a>`;
   }
 
   function renderOrderBy() {
-    if (istToday() >= ORDER_BY_DIWALI) return;
     const pin = savedPincode();
+    const label = istToday() < ORDER_BY_DIWALI
+      ? '<i class="fa-solid fa-gift"></i> Want it before Diwali?'
+      : '<i class="fa-solid fa-truck-fast"></i> When will it arrive?';
     document.querySelectorAll('[data-orderby]').forEach(box => {
       box.innerHTML = `
         <form class="orderby-form" novalidate>
-          <label class="orderby-label"><i class="fa-solid fa-gift"></i> Want it before Diwali?</label>
+          <label class="orderby-label">${label}</label>
           <div class="orderby-row">
             <input type="text" inputmode="numeric" autocomplete="postal-code" maxlength="6" placeholder="Your pincode" aria-label="Your pincode" value="${esc(pin)}">
             <button type="submit">Check</button>
@@ -1077,7 +1088,7 @@
     if (checkoutSection) checkoutSection.style.display = 'contents';
     const extras = document.getElementById('cart-extras');
     if (extras) extras.style.display = '';
-    // Nothing to deliver (only gift cards): no "before Diwali?" box.
+    // Nothing to deliver (only gift cards): no pincode box.
     const cartOrderBy = document.querySelector('.orderby-cart');
     if (cartOrderBy && cartOrderBy.innerHTML) {
       cartOrderBy.hidden = !cart.lines.edges.some(e => e.node.merchandise.requiresShipping !== false);
