@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials } = require('./build-shop-utils');
+const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -32,6 +32,11 @@ const JUDGEME_REVIEW_UUID = 'f101c8b2-8f4d-4a3a-9acb-d51832084fe8';
 // Remove the ID once resolved so the review comes back automatically.
 const EXCLUDED_REVIEW_IDS = new Set([]);
 const SITE_URL = 'https://www.layerweaver.com';
+// Google Merchant Center feed (Oct 25, 2026). Excluded: the Chill Guy lamp
+// until its 3D model licence is in place. The test feed's 5 products go to
+// Merchant Center first (www product pages, checkout on shop.layerweaver.com).
+const GOOGLE_FEED_EXCLUDE = ['chill-guy-lamp'];
+const GOOGLE_FEED_TEST = ['ghost-balloon-lamp', 'sardine-fishbone-jewelry-organizer', 'octopus-table-lamp', 'kumiko-tea-light-lantern', 'ghost-lamp-t-rex-gift-set'];
 const BUILD_VER = Date.now();
 
 const IMG_WIDTH_GRID = 500;
@@ -1191,6 +1196,9 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
           priceCurrency: v.price.currencyCode,
           availability: v.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           url: `${SITE_URL}/shop/products/${product.handle}/`,
+          // Google merchant listings: shipping and returns (Oct 25, 2026).
+          // A gift card is emailed, so it has neither.
+          ...(giftCard ? {} : { itemCondition: 'https://schema.org/NewCondition', ...offerShippingAndReturns(v.price.amount, { personalised: isPersonalised(product) }) }),
         })),
       },
       {
@@ -2306,6 +2314,31 @@ async function main() {
     fs.writeFileSync(path.join(productDir, 'index.html'), generateProductPage(product, productCollectionMap[product.handle], reviewsMap[product.handle], reviewsMap, relatable, similarityIndex));
     console.log(`Generated shop/products/${product.handle}/index.html`);
   }
+
+  // Google Merchant Center feed (Oct 25, 2026): one item per product at the
+  // price its page shows first, linking to www (our own pages, not the
+  // Shopify theme's). Gift cards and GOOGLE_FEED_EXCLUDE stay out.
+  // google-feed-test.xml holds GOOGLE_FEED_TEST only - submit it first to
+  // check Merchant Center accepts www pages with checkout on shop.
+  const feedItem = product => {
+    const variants = product.variants.edges.map(e => e.node);
+    const first = variants.find(v => v.availableForSale) || variants[0];
+    const images = product.images.edges.map(e => e.node.url);
+    return {
+      id: getNumericId(product.id),
+      title: toTitleCase(product.title),
+      description: (product.description || toTitleCase(product.title)).slice(0, 5000),
+      link: `${SITE_URL}/shop/products/${product.handle}/`,
+      imageLink: first.image?.url || images[0],
+      extraImages: images.filter(u => u !== (first.image?.url || images[0])),
+      price: parseFloat(first.price.amount),
+      available: variants.some(v => v.availableForSale),
+    };
+  };
+  const feedProducts = products.filter(p => !isGiftCard(p) && !GOOGLE_FEED_EXCLUDE.includes(p.handle) && p.images.edges.length);
+  fs.writeFileSync(path.join(shopDir, 'google-feed.xml'), buildGoogleFeedXml(feedProducts.map(feedItem), { siteUrl: SITE_URL }));
+  fs.writeFileSync(path.join(shopDir, 'google-feed-test.xml'), buildGoogleFeedXml(feedProducts.filter(p => GOOGLE_FEED_TEST.includes(p.handle)).map(feedItem), { siteUrl: SITE_URL, title: 'LayerWeaver products (test)' }));
+  console.log(`Generated shop/google-feed.xml (${feedProducts.length} products) and shop/google-feed-test.xml`);
 
   // Remove stale product/collection directories no longer in Shopify
   const productHandles = new Set(products.map(p => p.handle));

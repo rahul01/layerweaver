@@ -183,4 +183,67 @@ function rankTestimonials(reviews, hasPhoto = () => false) {
     .map(x => x.r);
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials };
+// ── Google product data (Oct 25, 2026) ───────────────────────────────────────
+// Shipping and returns as Google's merchant-listing structured data and the
+// Merchant Center feed expect them. Facts, keep in step with the site:
+// - shipping: flat ₹49 anywhere in India below ₹299, free from ₹299 (shipping
+//   policy; cart-utils.js freeShippingLine), made to order in 1-2 days, then
+//   3-7 days in transit ("usually arrives in 4-9 days" across India).
+// - returns: 7 days from delivery (return-and-exchange-policy), except
+//   personalised or custom-made items, which can't be returned.
+const SHIPPING_FEE = 49;
+const FREE_SHIPPING_FROM = 299;
+const HANDLING_DAYS = [1, 2];
+const TRANSIT_DAYS = [3, 7];
+const RETURN_DAYS = 7;
+
+function shippingPriceFor(price) {
+  return Number(price) >= FREE_SHIPPING_FROM ? 0 : SHIPPING_FEE;
+}
+
+function isPersonalised(product) {
+  const text = `${product.title || ''} ${(product.tags || []).join(' ')}`;
+  return /personali[sz]|custom[- ]made|nameplate|name plate/i.test(text);
+}
+
+// schema.org OfferShippingDetails + MerchantReturnPolicy for one offer.
+function offerShippingAndReturns(price, { personalised = false } = {}) {
+  const days = ([min, max]) => ({ '@type': 'QuantitativeValue', minValue: min, maxValue: max, unitCode: 'DAY' });
+  return {
+    shippingDetails: {
+      '@type': 'OfferShippingDetails',
+      shippingRate: { '@type': 'MonetaryAmount', value: shippingPriceFor(price).toFixed(2), currency: 'INR' },
+      shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'IN' },
+      deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: days(HANDLING_DAYS), transitTime: days(TRANSIT_DAYS) },
+    },
+    hasMerchantReturnPolicy: personalised
+      ? { '@type': 'MerchantReturnPolicy', applicableCountry: 'IN', returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted' }
+      : { '@type': 'MerchantReturnPolicy', applicableCountry: 'IN', returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow', merchantReturnDays: RETURN_DAYS },
+  };
+}
+
+const xmlEsc = s => String(s ?? '')
+  .replace(/—/g, '-')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// Google Merchant Center product feed (RSS 2.0 with the g: namespace). One
+// item per variant; variants of one product share item_group_id. Items:
+// { id, groupId, title, description, link, imageLink, extraImages, price
+// (number, INR), available, color }. Custom 3D prints have no GTIN/MPN, so
+// identifier_exists is "no" and the brand is LayerWeaver.
+function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } = {}) {
+  const tag = (name, value) => (value === undefined || value === null || value === '' ? '' : `\n      <${name}>${xmlEsc(value)}</${name}>`);
+  const entries = items.map(it => `    <item>${tag('g:id', it.id)}${tag('g:item_group_id', it.groupId)}${tag('g:title', it.title)}${tag('g:description', it.description)}${tag('g:link', it.link)}${tag('g:image_link', it.imageLink)}${(it.extraImages || []).slice(0, 10).map(u => tag('g:additional_image_link', u)).join('')}${tag('g:availability', it.available ? 'in_stock' : 'out_of_stock')}${tag('g:price', `${Number(it.price).toFixed(2)} INR`)}${tag('g:brand', 'LayerWeaver')}${tag('g:condition', 'new')}${tag('g:identifier_exists', 'no')}${tag('g:color', it.color)}
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>${shippingPriceFor(it.price).toFixed(2)} INR</g:price>
+        <g:min_handling_time>${HANDLING_DAYS[0]}</g:min_handling_time>
+        <g:max_handling_time>${HANDLING_DAYS[1]}</g:max_handling_time>
+        <g:min_transit_time>${TRANSIT_DAYS[0]}</g:min_transit_time>
+        <g:max_transit_time>${TRANSIT_DAYS[1]}</g:max_transit_time>
+      </g:shipping>
+    </item>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>${xmlEsc(title)}</title>\n    <link>${xmlEsc(siteUrl)}</link>\n    <description>${xmlEsc(title)}</description>\n${entries}\n  </channel>\n</rss>\n`;
+}
+
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml };

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -187,5 +187,63 @@ describe('rankTestimonials', () => {
       r('newer', 5, 30, '2026-09-01'),
     ], hasPhoto);
     expect(ranked.map(x => x.id)).toEqual(['newer', 'older', 'four-star-story']);
+  });
+});
+
+// ── Google product data (Oct 25, 2026) ───────────────────────────────────────
+
+describe('shippingPriceFor', () => {
+  it('charges ₹49 below ₹299 and nothing from ₹299 (the site\'s shipping rule)', () => {
+    expect(shippingPriceFor('249.00')).toBe(49);
+    expect(shippingPriceFor(298.99)).toBe(49);
+    expect(shippingPriceFor('299.00')).toBe(0);
+    expect(shippingPriceFor(1599)).toBe(0);
+  });
+});
+
+describe('isPersonalised', () => {
+  it('spots personalised and custom-made items by title or tag', () => {
+    expect(isPersonalised({ title: 'Personalized Number plate keychain', tags: [] })).toBe(true);
+    expect(isPersonalised({ title: 'Name clicker', tags: ['Personalised'] })).toBe(true);
+    expect(isPersonalised({ title: 'Ghost balloon lamp', tags: ['lamp'] })).toBe(false);
+  });
+});
+
+describe('offerShippingAndReturns', () => {
+  it('gives Google the shipping rate, delivery time and 7-day returns', () => {
+    const o = offerShippingAndReturns('399.00');
+    expect(o.shippingDetails.shippingRate).toEqual({ '@type': 'MonetaryAmount', value: '0.00', currency: 'INR' });
+    expect(o.shippingDetails.shippingDestination.addressCountry).toBe('IN');
+    expect(o.shippingDetails.deliveryTime.handlingTime).toMatchObject({ minValue: 1, maxValue: 2, unitCode: 'DAY' });
+    expect(o.shippingDetails.deliveryTime.transitTime).toMatchObject({ minValue: 3, maxValue: 7, unitCode: 'DAY' });
+    expect(o.hasMerchantReturnPolicy).toMatchObject({ returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow', merchantReturnDays: 7, applicableCountry: 'IN' });
+    expect(offerShippingAndReturns('199').shippingDetails.shippingRate.value).toBe('49.00');
+  });
+  it('marks personalised items as not returnable', () => {
+    const o = offerShippingAndReturns('499', { personalised: true });
+    expect(o.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted');
+    expect(o.hasMerchantReturnPolicy.merchantReturnDays).toBeUndefined();
+  });
+});
+
+describe('buildGoogleFeedXml', () => {
+  const item = { id: '123', title: 'Ghost Balloon Lamp', description: 'Glows — all evening & more <3', link: 'https://www.layerweaver.com/shop/products/ghost-balloon-lamp/', imageLink: 'https://cdn.shopify.com/a.png', extraImages: ['https://cdn.shopify.com/b.png'], price: 399, available: true };
+  it('writes one escaped item with price, brand, no GTIN and India shipping', () => {
+    const xml = buildGoogleFeedXml([item], { siteUrl: 'https://www.layerweaver.com' });
+    expect(xml).toContain('xmlns:g="http://base.google.com/ns/1.0"');
+    expect(xml).toContain('<g:id>123</g:id>');
+    expect(xml).toContain('<g:price>399.00 INR</g:price>');
+    expect(xml).toContain('<g:availability>in_stock</g:availability>');
+    expect(xml).toContain('<g:brand>LayerWeaver</g:brand>');
+    expect(xml).toContain('<g:identifier_exists>no</g:identifier_exists>');
+    expect(xml).toContain('<g:additional_image_link>https://cdn.shopify.com/b.png</g:additional_image_link>');
+    expect(xml).toContain('Glows - all evening &amp; more &lt;3');
+    expect(xml).toMatch(/<g:shipping>\s*<g:country>IN<\/g:country>\s*<g:price>0.00 INR<\/g:price>/);
+    expect(xml).not.toContain('—');
+  });
+  it('charges ₹49 shipping on a sub-₹299 item and marks sold-out items', () => {
+    const xml = buildGoogleFeedXml([{ ...item, price: 199, available: false }], { siteUrl: 'https://www.layerweaver.com' });
+    expect(xml).toContain('<g:availability>out_of_stock</g:availability>');
+    expect(xml).toMatch(/<g:shipping>\s*<g:country>IN<\/g:country>\s*<g:price>49.00 INR<\/g:price>/);
   });
 });
