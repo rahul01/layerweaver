@@ -1,3 +1,5 @@
+> **Archived Oct 25, 2026.** Vetted against the Oct 25 research and folded into the scaling plan: `/Users/rahul/StudioProjects/LayerWeaverDashboard/.ai/opus plans/scale-30-orders-plan.md`, section 9 ("Storefront work: homepage and Instagram feed"). That section decides what is built, what changed and in which order; where it differs from this file, it wins. Kept here for the build details (files, functions, page markers).
+
 # Homepage redesign plan
 
 Drafted 2026-10-24. Status: approved by Rahul 2026-10-24 (decisions at the end), nothing built yet.
