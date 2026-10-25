@@ -33,9 +33,11 @@ const JUDGEME_REVIEW_UUID = 'f101c8b2-8f4d-4a3a-9acb-d51832084fe8';
 const EXCLUDED_REVIEW_IDS = new Set([]);
 const SITE_URL = 'https://www.layerweaver.com';
 // Google Merchant Center feed (Oct 25, 2026). Excluded: the Chill Guy lamp
-// until its 3D model licence is in place. The test feed's 5 products go to
-// Merchant Center first (www product pages, checkout on shop.layerweaver.com).
-const GOOGLE_FEED_EXCLUDE = ['chill-guy-lamp'];
+// until its 3D model licence is in place, and items based on other
+// companies' characters (Cubone, The Mask), which Google can flag as
+// counterfeit. The test feed's 5 products go to Merchant Center first (www
+// product pages, checkout on shop.layerweaver.com).
+const GOOGLE_FEED_EXCLUDE = ['chill-guy-lamp', 'cubone-keychain', 'the-mask-wooden-loki-mask'];
 const GOOGLE_FEED_TEST = ['ghost-balloon-lamp', 'sardine-fishbone-jewelry-organizer', 'octopus-table-lamp', 'kumiko-tea-light-lantern', 'ghost-lamp-t-rex-gift-set'];
 const BUILD_VER = Date.now();
 
