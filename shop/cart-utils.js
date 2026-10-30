@@ -125,11 +125,11 @@ export function shippingProgress(total, min) {
 // 121, Gurugram 122, Noida/Ghaziabad 201, Bengaluru 560, Hyderabad 500,
 // Chennai 600, Kolkata 700; everything else is the rest of India. A zone
 // stays open through its date (IST). Returns null for a pincode that isn't
-// 6 digits, or from `ends` on (Oct 31 00:00 IST: Diwali ads are halted, so every zone,
+// 6 digits, or from `ends` on (Oct 30 00:00 IST: Diwali ads are halted, so every zone,
 // Maharashtra included, gets the year-round "usually arrives in X days"
 // wording only - no order-by date, no "after Diwali" line).
 export const ORDER_BY = {
-  ends: '2026-10-31',
+  ends: '2026-10-30',
   zones: {
     maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
     metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },

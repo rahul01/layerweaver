@@ -521,10 +521,10 @@
   // Mirrors orderByForPincode() and arrivesInForPincode() in
   // shop/cart-utils.js (unit-tested there). Fills every [data-orderby] box
   // (product pages, cart drawer): the buyer types a pincode and sees how long
-  // delivery usually takes there, plus, until Oct 30, their own order-by
+  // delivery usually takes there, plus, until Oct 29, their own order-by
   // date, worked out from their clock in IST, so a passed date flips without
   // a rebuild. The pincode is remembered on this device only (lw_pincode).
-  const ORDER_BY_ENDS = '2026-10-31'; // from this IST day: delivery time only, no order-by / Diwali wording
+  const ORDER_BY_ENDS = '2026-10-30'; // from this IST day: delivery time only, no order-by / Diwali wording
   const ORDER_BY_ZONES = {
     maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
     metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },

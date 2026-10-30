@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 // The pincode box on a product page and in the cart, before and after the
-// Oct 31 (IST) switch to the year-round delivery wording. The date is faked in
+// Oct 30 (IST) switch to the year-round delivery wording. The date is faked in
 // the browser. Screenshots go to SHOTS when it is set.
 const PRODUCT = '/shop/products/articulated-octopus/';
-const BEFORE = '2026-10-30T12:00:00+05:30';
-const AFTER = '2026-10-31T00:00:00+05:30';
+const BEFORE = '2026-10-29T12:00:00+05:30';
+const AFTER = '2026-10-30T00:00:00+05:30';
 const SHOTS = process.env.PINCODE_SHOTS;
 
 const WIDTHS = [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop', width: 1280, height: 900 }];
@@ -17,7 +17,7 @@ async function fillPincode(page, scope, pin) {
 
 for (const vp of WIDTHS) {
   for (const [when, iso] of [['before', BEFORE], ['after', AFTER]]) {
-    test.describe(`pincode box ${vp.name} ${when} the Oct 31 switch`, () => {
+    test.describe(`pincode box ${vp.name} ${when} the Oct 30 switch`, () => {
       test.use({ viewport: { width: vp.width, height: vp.height } });
 
       test.beforeEach(async ({ page }) => {
