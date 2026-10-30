@@ -521,10 +521,10 @@
   // Mirrors orderByForPincode() and arrivesInForPincode() in
   // shop/cart-utils.js (unit-tested there). Fills every [data-orderby] box
   // (product pages, cart drawer): the buyer types a pincode and sees how long
-  // delivery usually takes there, plus, until Diwali, their own order-by
+  // delivery usually takes there, plus, until Oct 30, their own order-by
   // date, worked out from their clock in IST, so a passed date flips without
   // a rebuild. The pincode is remembered on this device only (lw_pincode).
-  const ORDER_BY_DIWALI = '2026-11-08';
+  const ORDER_BY_ENDS = '2026-10-31'; // from this IST day: delivery time only, no order-by / Diwali wording
   const ORDER_BY_ZONES = {
     maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
     metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },
@@ -548,7 +548,7 @@
   function orderByForPincode(pin) {
     const zone = pincodeZone(pin);
     const today = istToday();
-    if (!zone || today >= ORDER_BY_DIWALI) return null;
+    if (!zone || today >= ORDER_BY_ENDS) return null;
     const z = ORDER_BY_ZONES[zone];
     return today <= z.by
       ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
@@ -570,7 +570,7 @@
     const r = orderByForPincode(pin);
     if (!pin) { res.textContent = ''; res.className = 'orderby-result'; return; }
     if (!eta) { res.textContent = 'Enter a 6-digit pincode.'; res.className = 'orderby-result orderby-error'; return; }
-    if (!r) { res.textContent = eta; res.className = 'orderby-result orderby-eta'; return; } // after Diwali
+    if (!r) { res.textContent = eta; res.className = 'orderby-result orderby-eta'; return; } // from ORDER_BY_ENDS on
     res.className = `orderby-result ${r.open ? 'orderby-open' : 'orderby-closed'}`;
     if (r.open) { res.textContent = `${r.text} ${eta}`; return; }
     // Past the date: offer the e-gift card (arrives instantly), and the chat
@@ -581,7 +581,7 @@
 
   function renderOrderBy() {
     const pin = savedPincode();
-    const label = istToday() < ORDER_BY_DIWALI
+    const label = istToday() < ORDER_BY_ENDS
       ? '<i class="fa-solid fa-gift"></i> Want it before Diwali?'
       : '<i class="fa-solid fa-truck-fast"></i> When will it arrive?';
     document.querySelectorAll('[data-orderby]').forEach(box => {

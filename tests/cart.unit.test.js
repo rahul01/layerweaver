@@ -278,9 +278,24 @@ describe('orderByForPincode', () => {
     expect(orderByForPincode('781001', at('2026-10-27T00:01:00+05:30'))).toEqual({ zone: 'india', open: false, text: 'Orders to your pincode might arrive after Diwali. Check with us on WhatsApp.' });
     expect(orderByForPincode('411001', at('2026-10-27T00:01:00+05:30')).open).toBe(true);
   });
-  it('null for a bad pincode, and from Diwali day', () => {
+  it('null for a bad pincode', () => {
     expect(orderByForPincode('123', at('2026-10-15T12:00:00+05:30'))).toBeNull();
-    expect(orderByForPincode('411001', at('2026-11-08T00:00:00+05:30'))).toBeNull();
+  });
+  it('switches to the year-round wording (null) from Oct 31 00:00 IST, every zone', () => {
+    for (const pin of ['411001', '560001', '781001']) {
+      expect(orderByForPincode(pin, at('2026-10-30T23:59:00+05:30'))).not.toBeNull();
+      expect(orderByForPincode(pin, at('2026-10-31T00:00:00+05:30'))).toBeNull();
+      expect(orderByForPincode(pin, at('2026-11-01T12:00:00+05:30'))).toBeNull();
+      expect(orderByForPincode(pin, at('2026-11-08T00:00:00+05:30'))).toBeNull();
+    }
+    // Last minute before the switch: Maharashtra and metros open (Oct 30), the rest past their date.
+    expect(orderByForPincode('411001', at('2026-10-30T23:59:00+05:30')).open).toBe(true);
+    expect(orderByForPincode('560001', at('2026-10-30T23:59:00+05:30')).open).toBe(true);
+    expect(orderByForPincode('781001', at('2026-10-30T23:59:00+05:30')).open).toBe(false);
+  });
+  it('the switch follows IST, not UTC (Oct 30 18:30 UTC is already Oct 31 in IST)', () => {
+    expect(orderByForPincode('411001', at('2026-10-30T18:30:00Z'))).toBeNull();
+    expect(orderByForPincode('411001', at('2026-10-30T18:29:00Z')).open).toBe(true);
   });
 });
 
