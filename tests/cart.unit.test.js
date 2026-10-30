@@ -251,8 +251,12 @@ describe('addedLines (AddToCart fires once per real add)', () => {
 
 describe('pincodeZone', () => {
   it('maps pincodes to zones by their first three digits', () => {
-    expect(pincodeZone('411001')).toBe('maharashtra'); // Pune
-    expect(pincodeZone('400001')).toBe('maharashtra'); // Mumbai
+    expect(pincodeZone('411001')).toBe('pune');
+    expect(pincodeZone('412101')).toBe('pune');        // Pune district (412)
+    expect(pincodeZone('400001')).toBe('mumbai');
+    expect(pincodeZone('401101')).toBe('mumbai');      // Vasai-Virar (401)
+    expect(pincodeZone('422001')).toBe('maharashtra'); // Nashik
+    expect(pincodeZone('410206')).toBe('maharashtra'); // Navi Mumbai side (410) is rest of Maharashtra
     expect(pincodeZone('440001')).toBe('maharashtra'); // Nagpur
     expect(pincodeZone('403001')).toBe('india');       // Goa, not Maharashtra
     for (const p of ['110001', '121001', '122001', '201301', '560001', '500001', '600001', '700001']) expect(pincodeZone(p)).toBe('metro');
@@ -261,7 +265,7 @@ describe('pincodeZone', () => {
   });
   it('rejects anything that is not a 6-digit pincode', () => {
     for (const p of ['', '41100', '4110011', '011001', 'abcdef', null]) expect(pincodeZone(p)).toBeNull();
-    expect(pincodeZone(' 411001 ')).toBe('maharashtra');
+    expect(pincodeZone(' 411001 ')).toBe('pune');
   });
 });
 
@@ -301,10 +305,12 @@ describe('orderByForPincode', () => {
 
 describe('arrivesInForPincode', () => {
   it('gives the measured order-to-door range for the pincode\'s zone', () => {
-    expect(arrivesInForPincode('411045')).toBe('Usually arrives in 4-6 days.'); // Pune
+    expect(arrivesInForPincode('411045')).toBe('Usually arrives in 3-5 days.'); // Pune
+    expect(arrivesInForPincode('400001')).toBe('Usually arrives in 3-5 days.'); // Mumbai
+    expect(arrivesInForPincode('422001')).toBe('Usually arrives in 3-6 days.'); // Nashik, rest of Maharashtra
     expect(arrivesInForPincode('560102')).toBe('Usually arrives in 5-7 days.'); // Bengaluru
-    expect(arrivesInForPincode('781001')).toBe('Usually arrives in 6-9 days.'); // Guwahati
-    expect(arrivesInForPincode('403001')).toBe('Usually arrives in 6-9 days.'); // Goa is not Maharashtra
+    expect(arrivesInForPincode('781001')).toBe('Usually arrives in 6-8 days.'); // Guwahati
+    expect(arrivesInForPincode('403001')).toBe('Usually arrives in 6-8 days.'); // Goa is not Maharashtra
   });
   it('nothing for a pincode that isn\'t 6 digits', () => {
     expect(arrivesInForPincode('4110')).toBeNull();

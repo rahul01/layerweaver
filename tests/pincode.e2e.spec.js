@@ -35,17 +35,24 @@ for (const vp of WIDTHS) {
         const res = box.locator('.orderby-result');
         if (when === 'before') {
           await expect(res).toContainText('might arrive after Diwali');
-          await expect(res).toContainText('Usually arrives in 6-9 days.');
+          await expect(res).toContainText('Usually arrives in 6-8 days.');
           await expect(box.locator('.orderby-label')).toContainText('before Diwali');
         } else {
-          await expect(res).toHaveText('Usually arrives in 6-9 days.');
+          await expect(res).toHaveText('Usually arrives in 6-8 days.');
           await expect(box.locator('.orderby-label')).toContainText('When will it arrive?');
           await expect(box).not.toContainText(/Diwali|Order by|e-gift/);
         }
         // Maharashtra (Pune): order-by date before, plain after.
         await fillPincode(page, '[data-orderby]:visible', '411001');
-        if (when === 'before') await expect(res).toContainText('Order by Sun, Nov 1 to get it before Diwali. Usually arrives in 4-6 days.');
-        else await expect(res).toHaveText('Usually arrives in 4-6 days.');
+        if (when === 'before') await expect(res).toContainText('Order by Sun, Nov 1 to get it before Diwali. Usually arrives in 3-5 days.');
+        else await expect(res).toHaveText('Usually arrives in 3-5 days.');
+        // Mumbai, rest of Maharashtra (Nashik), Goa.
+        if (when === 'after') {
+          for (const [pin, days] of [['400001', '3-5'], ['422001', '3-6'], ['403001', '6-8']]) {
+            await fillPincode(page, '[data-orderby]:visible', pin);
+            await expect(res).toHaveText(`Usually arrives in ${days} days.`);
+          }
+        }
         // Metro (Bengaluru): last day Oct 30.
         await fillPincode(page, '[data-orderby]:visible', '560001');
         if (when === 'before') await expect(res).toContainText('Order by Fri, Oct 30 to get it before Diwali. Usually arrives in 5-7 days.');
@@ -67,7 +74,7 @@ for (const vp of WIDTHS) {
         const res = box.locator('.orderby-result');
         if (when === 'before') await expect(res).toContainText('might arrive after Diwali');
         else {
-          await expect(res).toHaveText('Usually arrives in 6-9 days.');
+          await expect(res).toHaveText('Usually arrives in 6-8 days.');
           await expect(box).not.toContainText(/Diwali|Order by|e-gift/);
         }
         if (SHOTS) await page.locator('#cart-drawer').screenshot({ path: `${SHOTS}/cart-${vp.name}-${when}.png` });

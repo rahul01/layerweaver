@@ -526,12 +526,14 @@
   // a rebuild. The pincode is remembered on this device only (lw_pincode).
   const ORDER_BY_ENDS = '2026-10-30'; // from this IST day: delivery time only, no order-by / Diwali wording
   const ORDER_BY_ZONES = {
+    pune:        { by: '2026-11-01', date: 'Sun, Nov 1' },
+    mumbai:      { by: '2026-11-01', date: 'Sun, Nov 1' },
     maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
     metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },
     india:       { by: '2026-10-26', date: 'Mon, Oct 26' },
   };
   const METRO_PREFIXES = new Set([110, 121, 122, 201, 560, 500, 600, 700]);
-  const ARRIVES_IN = { maharashtra: '4-6', metro: '5-7', india: '6-9' };
+  const ARRIVES_IN = { pune: '3-5', mumbai: '3-5', maharashtra: '3-6', metro: '5-7', india: '6-8' };
   const PIN_KEY = 'lw_pincode';
   const GIFT_CARD_HANDLE = 'layerweaver-e-gift-card';
   const istToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
@@ -540,6 +542,8 @@
     const p = String(pin ?? '').trim();
     if (!/^[1-9]\d{5}$/.test(p)) return null;
     const p3 = Number(p.slice(0, 3));
+    if (p3 === 411 || p3 === 412) return 'pune';
+    if (p3 === 400 || p3 === 401) return 'mumbai';
     if (p3 >= 400 && p3 <= 445 && p3 !== 403) return 'maharashtra';
     if (METRO_PREFIXES.has(p3)) return 'metro';
     return 'india';
