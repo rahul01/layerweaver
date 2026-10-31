@@ -10,7 +10,7 @@ const read = f => readFileSync(new URL('../' + f, import.meta.url), 'utf8');
 const OWN_PAGES = [
   'faq/index.html', 'index.html', 'shop/index.html', 'shop/account/index.html',
   'shipping-policy/index.html', 'return-and-exchange-policy/index.html', 'terms-of-service/index.html',
-  'workshop/index.html', 'services/on-demand/index.html', 'scripts/generate-syllabus.js', 'workshops/june-kids/kids-weekend-course-flyer.html', 'workshops/july-kids/kids-weekend-course-july-flyer.html',
+  'shop/promise-row.js', 'workshop/index.html', 'services/on-demand/index.html', 'scripts/generate-syllabus.js', 'workshops/june-kids/kids-weekend-course-flyer.html', 'workshops/july-kids/kids-weekend-course-july-flyer.html',
   ...readdirSync(new URL('../shop/collections', import.meta.url)).map(d => `shop/collections/${d}/index.html`),
 ];
 
