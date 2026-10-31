@@ -3,7 +3,7 @@
 // the cart drawer (shop/cart.js); the homepage can use it later. One source for
 // the wording and the numbers - change them here only. Facts: the delivery rate
 // in Shopify admin (Rs 49, free from Rs 299 on shippable items, gift cards do
-// not count) and return-and-exchange-policy/. Works as a plain script
+// not count) and return-and-exchange-policy/ (which holds the strict rules). Works as a plain script
 // (window.LWPromise), with require() and with import.
 (function (root, factory) {
   const api = factory();
@@ -14,11 +14,15 @@
   const FREE_FROM = 299;
   const RETURN_DAYS = 7;
 
+  const POLICY_PATH = 'return-and-exchange-policy/'; // relative to the site root; callers add their own prefix
   const COPY = {
-    delivery: `Delivery ₹${DELIVERY_FEE}, free above ₹${FREE_FROM}.`,
-    damaged: `Damaged or wrong item? Replacement or full refund within ${RETURN_DAYS} days, with photos.`,
-    damagedShort: `Damaged or wrong item? Replacement or full refund within ${RETURN_DAYS} days.`,
-    personalised: "Personalised items can't be returned if you change your mind.",
+    deliveryFree: 'Free delivery.',
+    delivery: `Delivery ₹${DELIVERY_FEE}, free on orders above ₹${FREE_FROM}.`,
+    returns: `${RETURN_DAYS}-day easy returns. Damaged in transit? We'll make it right.`,
+    returnsShort: `${RETURN_DAYS}-day easy returns.`,
+    personalised: 'Made just for you.',
+    policyLink: 'Return policy',
+    policyLinkPersonalised: 'See our return policy.',
   };
 
   // Delivery charge for the shippable items' total (gift cards left out).
@@ -26,18 +30,18 @@
     return shippableTotal >= FREE_FROM ? 0 : DELIVERY_FEE;
   }
 
-  // Lines of the row. context 'product' (under the pincode box) or 'cart' (the
-  // returns note under Checkout; the delivery cost is its own line there).
-  // Gift cards get no row: the caller passes giftCard and gets [].
-  function promiseLines({ context = 'product', personalised = false, giftCard = false } = {}) {
+  // Lines of the row, each { icon, text, link? } where link is { text, path }.
+  // context 'product' (under the pincode box; price = the lowest variant price)
+  // or 'cart' (the returns note under Checkout; the delivery cost is its own
+  // line there). Gift cards get no row: the caller passes giftCard and gets [].
+  // The strict returns rules stay on the policy page, which the link opens.
+  function promiseLines({ context = 'product', personalised = false, giftCard = false, price = 0 } = {}) {
     if (giftCard) return [];
+    const policy = { text: COPY.policyLink, path: POLICY_PATH };
     const lines = [];
-    if (context === 'product') {
-      lines.push({ icon: 'fa-truck-fast', text: COPY.delivery });
-      lines.push({ icon: 'fa-rotate-left', text: personalised ? `${COPY.damaged} ${COPY.personalised}` : COPY.damaged });
-    } else if (context === 'cart') {
-      lines.push({ icon: 'fa-rotate-left', text: personalised ? `${COPY.damagedShort} ${COPY.personalised}` : COPY.damagedShort });
-    }
+    if (context === 'product') lines.push({ icon: 'fa-truck-fast', text: price >= FREE_FROM ? COPY.deliveryFree : COPY.delivery });
+    if (personalised) lines.push({ icon: 'fa-rotate-left', text: COPY.personalised, link: { ...policy, text: COPY.policyLinkPersonalised } });
+    else lines.push({ icon: 'fa-rotate-left', text: context === 'cart' ? COPY.returnsShort : COPY.returns, link: policy });
     return lines;
   }
 
@@ -51,5 +55,5 @@
     return { delivery, total: itemsTotal + delivery, label: 'Total with delivery' };
   }
 
-  return { DELIVERY_FEE, FREE_FROM, RETURN_DAYS, COPY, deliveryCost, promiseLines, cartTotals };
+  return { DELIVERY_FEE, FREE_FROM, RETURN_DAYS, POLICY_PATH, COPY, deliveryCost, promiseLines, cartTotals };
 });

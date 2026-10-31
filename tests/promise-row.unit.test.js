@@ -14,27 +14,47 @@ describe('deliveryCost', () => {
 });
 
 describe('promiseLines', () => {
-  it('product page: delivery cost, then the damage line', () => {
-    expect(promiseLines({ context: 'product' }).map(l => l.text)).toEqual([
-      'Delivery ₹49, free above ₹299.',
-      'Damaged or wrong item? Replacement or full refund within 7 days, with photos.',
+  const texts = o => promiseLines(o).map(l => l.text);
+  it('product under Rs 299: delivery fee line, then easy returns', () => {
+    expect(texts({ context: 'product', price: 249 })).toEqual([
+      'Delivery ₹49, free on orders above ₹299.',
+      "7-day easy returns. Damaged in transit? We'll make it right.",
     ]);
+    expect(texts({ context: 'product', price: 298.99 })[0]).toBe('Delivery ₹49, free on orders above ₹299.');
   });
-  it('personalised: damage line stays, change-of-mind returns are excluded', () => {
-    const [, second] = promiseLines({ context: 'product', personalised: true });
-    expect(second.text).toBe("Damaged or wrong item? Replacement or full refund within 7 days, with photos. Personalised items can't be returned if you change your mind.");
+  it('product at or over Rs 299: free delivery', () => {
+    expect(texts({ context: 'product', price: 299 })[0]).toBe('Free delivery.');
+    expect(texts({ context: 'product', price: 1200 })[0]).toBe('Free delivery.');
+  });
+  it('variants spanning 299: the caller passes the lowest price, so the fee line shows', () => {
+    const lowest = Math.min(249, 349);
+    expect(texts({ context: 'product', price: lowest })[0]).toBe('Delivery ₹49, free on orders above ₹299.');
+    expect(texts({ context: 'product', price: Math.min(299, 349) })[0]).toBe('Free delivery.');
+  });
+  it('every returns line links to the policy page', () => {
+    for (const o of [{ context: 'product', price: 100 }, { context: 'cart' }, { context: 'product', personalised: true }]) {
+      expect(promiseLines(o).at(-1).link.path).toBe('return-and-exchange-policy/');
+    }
+  });
+  it('personalised: made just for you, no easy-returns line', () => {
+    const full = o => promiseLines(o).map(l => `${l.text}${l.link ? ' ' + l.link.text : ''}`);
+    expect(full({ context: 'product', personalised: true, price: 149 })).toEqual(['Delivery ₹49, free on orders above ₹299.', 'Made just for you. See our return policy.']);
+    expect(full({ context: 'cart', personalised: true })).toEqual(['Made just for you. See our return policy.']);
+    expect(JSON.stringify(promiseLines({ context: 'product', personalised: true }))).not.toMatch(/easy returns/i);
   });
   it('cart: only the returns note (the delivery cost is its own line)', () => {
-    expect(promiseLines({ context: 'cart' }).map(l => l.text)).toEqual(['Damaged or wrong item? Replacement or full refund within 7 days.']);
-    expect(promiseLines({ context: 'cart', personalised: true })[0].text).toContain("Personalised items can't be returned if you change your mind.");
+    expect(texts({ context: 'cart' })).toEqual(['7-day easy returns.']);
+  });
+  it('the strict rules are not in the row (they live on the policy page)', () => {
+    const all = JSON.stringify(COPY);
+    expect(all).not.toMatch(/full refund|with photos|change your mind/i);
   });
   it('gift card: nothing', () => {
     expect(promiseLines({ context: 'product', giftCard: true })).toEqual([]);
     expect(promiseLines({ context: 'cart', giftCard: true })).toEqual([]);
   });
   it('never makes a material or safety claim and has no em dash', () => {
-    const all = JSON.stringify(COPY);
-    expect(all).not.toMatch(/non-?toxic|\beco|PLA\b|plastic|child-?safe|—/i);
+    expect(JSON.stringify(COPY)).not.toMatch(/non-?toxic|\beco|PLA\b|plastic|child-?safe|—/i);
   });
 });
 

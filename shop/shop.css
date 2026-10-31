@@ -3384,6 +3384,7 @@ body.seasonal--halloween {
 }
 .promise-row li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
 .promise-row i { color: var(--primary); width: 16px; text-align: center; margin-top: 2px; flex-shrink: 0; }
+.promise-row a, .cart-returns-note a { color: inherit; text-decoration: underline; }
 .promise-row + .age-warning { margin-top: 0; }
 /* Age warning under the pincode box, on a few product pages (ageWarningFor in build-shop-utils.js) */
 .age-warning {

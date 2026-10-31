@@ -8,9 +8,11 @@ const OCTOPUS = P('articulated-octopus');          // Rs 249
 const KEYCHAIN = P('personalized-number-plate-keychain');
 const GIFT = P('layerweaver-e-gift-card');
 const LAMP = P('chill-guy-lamp');
-const DELIVERY = 'Delivery ₹49, free above ₹299.';
-const DAMAGED = 'Damaged or wrong item? Replacement or full refund within 7 days, with photos.';
-const PERSONAL = "Personalised items can't be returned if you change your mind.";
+const DELIVERY = 'Delivery ₹49, free on orders above ₹299.';
+const RETURNS = "7-day easy returns. Damaged in transit? We'll make it right. Return policy";
+const PERSONAL = 'Made just for you. See our return policy.';
+const BIG = P('ghost-balloon-lamp');                 // Rs 299 or more
+const HOODIE = P('hoodie-pen-pot-with-personalisation');
 const WIDTHS = [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop', width: 1280, height: 900 }];
 
 async function fresh(page, path) {
@@ -37,7 +39,7 @@ for (const vp of WIDTHS) {
     test('product page: delivery cost and damage line under the pincode box', async ({ page }) => {
       await page.goto(OCTOPUS);
       const items = page.locator('.promise-row li');
-      await expect(items).toHaveText([DELIVERY, DAMAGED]);
+      await expect(items).toHaveText([DELIVERY, RETURNS]);
       expect(await noOverflow(page)).toBe(true);
       // order: Add to Cart, pincode box, promise row, age line
       const y = async s => (await page.locator(s).first().boundingBox()).y;
@@ -50,7 +52,7 @@ for (const vp of WIDTHS) {
 
     test('product page: personalised keeps the damage line and excludes change-of-mind returns', async ({ page }) => {
       await page.goto(KEYCHAIN);
-      await expect(page.locator('.promise-row li').nth(1)).toHaveText(`${DAMAGED} ${PERSONAL}`);
+      await expect(page.locator('.promise-row li').nth(1)).toHaveText(PERSONAL);
       await page.locator('.promise-row').scrollIntoViewIfNeeded();
       await shot(page, `product-personalised-${vp.name}`);
     });
@@ -64,6 +66,28 @@ for (const vp of WIDTHS) {
       await expect(page.locator('.age-warning')).toHaveCount(0);
     });
 
+    test('product at or over Rs 299 says free delivery; a personalised pen pot has the made-for-you line', async ({ page }) => {
+      await page.goto(BIG);
+      await expect(page.locator('.promise-row li').first()).toHaveText('Free delivery.');
+      await expect(page.locator('.promise-row li').nth(1)).toHaveText(RETURNS);
+      await page.locator('.promise-row').scrollIntoViewIfNeeded();
+      await shot(page, `product-299-plus-${vp.name}`);
+      await page.goto(HOODIE);
+      await expect(page.locator('.promise-row li').nth(1)).toHaveText(PERSONAL);
+      await expect(page.locator('.promise-row')).not.toContainText('easy returns');
+    });
+
+    test('the Return policy link opens the policy page, from the product page and from the cart', async ({ page }) => {
+      await page.goto(OCTOPUS);
+      await page.locator('.promise-row a').click();
+      await expect(page).toHaveURL(/\/return-and-exchange-policy\/$/);
+      await expect(page.locator('body')).toContainText('Refund Process');
+      await fresh(page, OCTOPUS);
+      await page.click('#add-to-cart-btn'); await added(page); await openCart(page);
+      await page.locator('#cart-returns-note a').click();
+      await expect(page).toHaveURL(/\/return-and-exchange-policy\/$/);
+    });
+
     test('cart under Rs 299: delivery Rs 49, total with delivery, returns note, checkout link intact', async ({ page }) => {
       await fresh(page, OCTOPUS);
       await page.click('#add-to-cart-btn'); await added(page); await openCart(page);
@@ -71,7 +95,7 @@ for (const vp of WIDTHS) {
       await expect(page.locator('#cart-delivery-price')).toHaveText('₹49');
       await expect(page.locator('#cart-total-label')).toHaveText('Total with delivery');
       await expect(page.locator('#cart-total-price')).toHaveText('₹298');
-      await expect(page.locator('#cart-returns-note')).toHaveText('Damaged or wrong item? Replacement or full refund within 7 days.');
+      await expect(page.locator('#cart-returns-note')).toHaveText('7-day easy returns. Return policy');
       const href = await page.locator('#cart-checkout-btn').getAttribute('href');
       expect(href).toMatch(/^https:\/\/.+/);
       await shot(page, `cart-under299-${vp.name}`, page.locator('#cart-drawer'));
@@ -92,8 +116,8 @@ for (const vp of WIDTHS) {
       await fresh(page, KEYCHAIN);
       await page.fill('#custom-text', 'MH12AB1234');
       await page.click('#add-to-cart-btn'); await added(page); await openCart(page);
-      await expect(page.locator('#cart-returns-note')).toContainText('Damaged or wrong item?');
-      await expect(page.locator('#cart-returns-note')).toContainText(PERSONAL);
+      await expect(page.locator('#cart-returns-note')).toHaveText(PERSONAL);
+      await expect(page.locator('#cart-returns-note')).not.toContainText('easy returns');
       await expect(page.locator('#cart-total-label')).toHaveText('Total with delivery');
       await shot(page, `cart-personalised-${vp.name}`, page.locator('#cart-drawer'));
     });

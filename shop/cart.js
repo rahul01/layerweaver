@@ -988,7 +988,10 @@
         label.textContent = t.label;
         totalEl.textContent = fmt(t.total, costAmt.currencyCode);
       }
-      if (returns) { note.textContent = returns.text; note.hidden = false; }
+      if (returns) {
+        note.innerHTML = `${esc(returns.text)}${returns.link ? ` <a href="${SITE_ROOT}${returns.link.path}">${esc(returns.link.text)}</a>` : ''}`;
+        note.hidden = false;
+      }
     } catch (err) {
       console.warn('[Cart] Promise row skipped:', err);
       if (row) row.hidden = true;

@@ -723,10 +723,13 @@ function shopHeaderHtml(base, shopBase) {
     </header>`;
 }
 
-// Product page promise row (delivery cost + damage line), text from shop/promise-row.js.
-function promiseRowHtml(personalised) {
-  const lines = LWPromise.promiseLines({ context: 'product', personalised });
-  return `<ul class="promise-row">${lines.map(l => `<li><i class="fa-solid ${l.icon}" aria-hidden="true"></i><span>${l.text}</span></li>`).join('')}</ul>`;
+// Product page promise row (delivery line + returns line with a policy link), text
+// from shop/promise-row.js. price = the lowest variant price. The page sits in
+// shop/products/<handle>/, so the policy link is three levels up.
+function promiseRowHtml(personalised, price) {
+  const lines = LWPromise.promiseLines({ context: 'product', personalised, price });
+  const link = l => l ? ` <a href="../../../${l.path}">${l.text}</a>` : '';
+  return `<ul class="promise-row">${lines.map(l => `<li><i class="fa-solid ${l.icon}" aria-hidden="true"></i><span>${l.text}${link(l.link)}</span></li>`).join('')}</ul>`;
 }
 
 function shopTrustStripHtml(base) {
@@ -1429,7 +1432,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                       ? '<p class="giftcard-delivery"><i class="fa-solid fa-envelope"></i> Delivered by email - no shipping. Spend it on anything in the store.</p>'
                       : isContactOnly(product) || isCustomPrice(product) ? '' : '<div class="orderby" data-orderby hidden></div>'}
 
-                    ${isContactOnly(product) || isCustomPrice(product) || giftCard ? '' : promiseRowHtml(isPersonalised(product))}
+                    ${isContactOnly(product) || isCustomPrice(product) || giftCard ? '' : promiseRowHtml(isPersonalised(product), parseFloat(product.priceRange.minVariantPrice.amount))}
 
                     ${ageWarningFor(product.handle) ? `<p class="age-warning">${ageWarningFor(product.handle)}</p>` : ''}
 
