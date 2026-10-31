@@ -99,6 +99,38 @@ for (const vp of WIDTHS) {
       await expect(page).toHaveURL(/\/return-and-exchange-policy\/$/);
     });
 
+    test('product details box: only the facts we have, above the description, no age row', async ({ page }) => {
+      const rows = async handle => { await page.goto(P(handle)); return page.locator('.product-facts dl').evaluate(dl => [...dl.querySelectorAll('dt')].map((dt, i) => [dt.textContent, dl.querySelectorAll('dd')[i].textContent])); };
+      // colours and a stated size
+      const dilo = await rows('articulated-dilophosaurus-skeleton');
+      expect(dilo.slice(0, 2)).toEqual([['Material', 'Plant-based filament, 3D printed'], ['Made', 'Printed to order in Pune']]);
+      expect(dilo.map(r => r[0])).toEqual(['Material', 'Made', 'Colours', 'Size']);
+      expect(dilo[3][1]).toBe('17cm');
+      await page.locator('.product-facts').scrollIntoViewIfNeeded();
+      await shot(page, `details-colours-size-${vp.name}`);
+      // above the description and below the age line
+      const y = async s => (await page.locator(s).first().boundingBox()).y;
+      expect(await y('.age-warning')).toBeLessThan(await y('.product-facts'));
+      expect(await y('.product-facts')).toBeLessThan(await y('.product-description'));
+      // colours but no stated size
+      expect((await rows('articulated-octopus')).map(r => r[0])).toEqual(['Material', 'Made', 'Colours']);
+      await page.locator('.product-facts').scrollIntoViewIfNeeded();
+      await shot(page, `details-colours-only-${vp.name}`);
+      // single colour, no size
+      expect((await rows('cat-bookmark')).map(r => r[0])).toEqual(['Material', 'Made']);
+      await page.locator('.product-facts').scrollIntoViewIfNeeded();
+      await shot(page, `details-single-colour-${vp.name}`);
+      // size variants (not colours) are not listed as colours
+      expect((await rows('sardine-fishbone-jewelry-organizer')).map(r => r[0])).not.toContain('Colours');
+      for (const r of [...dilo]) expect(r[1]).not.toMatch(/N\/A/);
+      await expect(page.locator('.product-facts')).not.toContainText(/under 5|age/i);
+    });
+
+    test('product details box: none on a gift card', async ({ page }) => {
+      await page.goto(GIFT);
+      await expect(page.locator('.product-facts')).toHaveCount(0);
+    });
+
     test('cart footer links: Shipping Policy and FAQ (the FAQ works from every page depth), no second returns link', async ({ page }) => {
       for (const start of [OCTOPUS, '/shop/', '/shop/collections/diwali/']) {
         await fresh(page, start);

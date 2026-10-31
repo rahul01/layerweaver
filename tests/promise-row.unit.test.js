@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
-const { DELIVERY_FEE, FREE_FROM, COPY, deliveryCost, promiseLines, iconRow, cartTotals } = createRequire(import.meta.url)('../shop/promise-row.js');
+const { DELIVERY_FEE, FREE_FROM, COPY, deliveryCost, promiseLines, iconRow, productDetails, cartTotals } = createRequire(import.meta.url)('../shop/promise-row.js');
 
 describe('deliveryCost', () => {
   it('is Rs 49 below Rs 299 and free from Rs 299', () => {
@@ -100,5 +100,22 @@ describe('iconRow', () => {
   });
   it('no banned wording or em dash in any label or tooltip', () => {
     expect(JSON.stringify([iconRow({ price: 100 }), iconRow({ price: 500, personalised: true })])).not.toMatch(/non-?toxic|\beco|PLA\b|plastic|child-?safe|biodegradable|sustainable|renewable|—/i);
+  });
+});
+
+describe('productDetails', () => {
+  it('material and made always; colours only when there is a choice; size only when known', () => {
+    expect(productDetails()).toEqual([
+      { label: 'Material', value: 'Plant-based filament, 3D printed' },
+      { label: 'Made', value: 'Printed to order in Pune' },
+    ]);
+    expect(productDetails({ colours: ['Purple'] }).map(r => r.label)).toEqual(['Material', 'Made']);
+    expect(productDetails({ colours: ['Purple', 'Pink'], size: '25 cm' }).slice(2)).toEqual([
+      { label: 'Colours', value: 'Purple, Pink' }, { label: 'Size', value: '25 cm' },
+    ]);
+  });
+  it('no age row, no N/A, no banned wording', () => {
+    const all = JSON.stringify(productDetails({ colours: ['A', 'B'], size: '1 cm' }));
+    expect(all).not.toMatch(/age|N\/A|non-?toxic|\beco|PLA\b|plastic|child-?safe|biodegradable|sustainable|renewable/i);
   });
 });

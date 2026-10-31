@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -265,5 +265,35 @@ describe('ageWarningFor', () => {
   });
   it('never makes a safety claim', () => {
     expect(LINE).not.toMatch(/safe for|child-safe|non-toxic|\beco|sustainable|PLA|plastic/i);
+  });
+});
+
+// ── parseSize (Product details box) ───────────────────────────────────────────
+
+describe('parseSize', () => {
+  const p = html => parseSize(html);
+  it('reads the size a description already states', () => {
+    expect(p('<p><strong>Size : 17cm</strong></p>')).toBe('17cm');
+    expect(p('<p><strong>Size:</strong> 25 cm</p>')).toBe('25 cm');
+    expect(p('<p><strong>Dimensions:</strong> 10 × 20 × 13 cm.</p>')).toBe('10 × 20 × 13 cm');
+    expect(p('<p><strong>Length: </strong>15 cm</p>')).toBe('Length 15 cm');
+    expect(p('<p><strong>Size</strong>: Measuring approximately <strong>7 cm × 6 cm</strong>,</p>')).toBe('Measuring approximately 7 cm × 6 cm');
+  });
+  it('keeps every piece of a multi-part size, stops at the next label', () => {
+    expect(p('<p><strong>Size : Wingspan 18 cm | nose to tail 11 cm</strong></p>')).toBe('Wingspan 18 cm, nose to tail 11 cm');
+    expect(p('<p>Size: Height 3 cm | Width 8 cm | Material: Plant-based filament, 3D printed</p>')).toBe('Height 3 cm, Width 8 cm');
+    expect(p('<p><strong>Size:</strong> 9cm | <strong>Material:</strong> Plant-based filament \u00a0|\u00a0 <strong>Great for:</strong> gifts</p>')).toBe('9cm');
+    expect(p('<p>Size : Height 8cm | width : 7cm</p>')).toBe('Height 8cm, width: 7cm');
+  });
+  it('stops at a double-space label', () => {
+    expect(p('<p>Size : about 15 x 20 cm &nbsp; &nbsp;Finish : wood brown</p>')).toBe('about 15 x 20 cm');
+  });
+  it('null when no size is stated: no label, no digit, or Length mid-line', () => {
+    expect(p('<p>A great desk toy.</p>')).toBeNull();
+    expect(p('<p>Size: large</p>')).toBeNull();
+    expect(p('<p>Great for: fans <strong>Length: </strong>15 cm</p>')).toBeNull();
+    expect(p('<p>Base: 19 x 22 cm | Height: 25 cm</p>')).toBeNull();
+    expect(p('')).toBeNull();
+    expect(p(undefined)).toBeNull();
   });
 });

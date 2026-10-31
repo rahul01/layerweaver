@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const LWPromise = require('../shop/promise-row.js');
-const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor } = require('./build-shop-utils');
+const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, parseSize } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -745,6 +745,15 @@ function iconRowHtml(personalised, price) {
     : `<li><div class="promise-icon-item">${inner(i)}</div></li>`).join('')}</ul>`;
 }
 
+// "Product details" box above the description (Amazon-style label/value list). Rows
+// only where we have the fact: colours from colour variants, size parsed from the
+// Shopify description (parseSize). Off switch: PRODUCT_DETAILS_BOX = false.
+const PRODUCT_DETAILS_BOX = true;
+function productDetailsHtml(colours, size) {
+  const rows = LWPromise.productDetails({ colours, size });
+  return `<div class="product-facts"><h3>Product details</h3><dl>${rows.map(r => `<dt>${escAttr(r.label)}</dt><dd>${escAttr(r.value)}</dd>`).join('')}</dl></div>`;
+}
+
 function shopTrustStripHtml(base) {
   const items = [
     { href: `${base}shipping-policy/`,           icon: 'fa-truck-fast',       color: '#2196F3', label: 'Free Shipping Above ₹299' },
@@ -1449,6 +1458,8 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                     ${PRODUCT_ICON_ROW || isContactOnly(product) || isCustomPrice(product) || giftCard ? '' : promiseRowHtml(isPersonalised(product), parseFloat(product.priceRange.minVariantPrice.amount))}
 
                     ${ageWarningFor(product.handle) ? `<p class="age-warning">${ageWarningFor(product.handle)}</p>` : ''}
+
+                    ${PRODUCT_DETAILS_BOX && !giftCard ? productDetailsHtml(hasVariants && allColors ? variants.map(v => toTitleCase(v.title)) : [], parseSize(product.descriptionHtml)) : ''}
 
                     <div class="product-description">
                         <h3>About this product</h3>

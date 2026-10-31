@@ -225,6 +225,34 @@ function ageWarningFor(handle) {
   return AGE_WARNING_HANDLES.has(handle) ? AGE_WARNING : '';
 }
 
+// The size a product's Shopify description already states, for the "Product details"
+// box (Oct 31, 2026). Conservative: only a "Size:", "Dimensions:" or (at the start of
+// its own line) "Length:" label counts; the value runs across " | " pieces until the
+// next known label (Material, Great for, Feature, ...) or a double space + "Label:";
+// it must hold a digit and be short, else null. Never invents a size.
+function parseSize(descriptionHtml) {
+  if (!descriptionHtml) return null;
+  const text = String(descriptionHtml)
+    .replace(/<\/(p|div|li|h\d)>|<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;|\u00a0/g, ' ').replace(/&times;/g, '×').replace(/&amp;/g, '&').replace(/&#39;|&apos;/g, "'");
+  const STOP = /^(material|great for|feature|use|includes|type|finish|fully|fits|colou?r|weight|note)\b/i;
+  const cut = x => x.split(/\s{2,}[A-Za-z][A-Za-z ]*\s*:/)[0];
+  for (const line of text.split('\n')) {
+    const segs = line.split('|').map(x => x.trim());
+    for (let i = 0; i < segs.length; i++) {
+      const m = segs[i].match(/^(size|dimensions|length)\s*:\s*(.*)$/i);
+      if (!m || (/^length$/i.test(m[1]) && i !== 0)) continue;
+      const parts = [cut(m[2])];
+      for (let j = i + 1; j < segs.length && segs[j] && !STOP.test(segs[j]); j++) parts.push(cut(segs[j]));
+      let v = parts.map(x => x.trim()).filter(Boolean).join(', ')
+        .replace(/\s+/g, ' ').replace(/\s+:/g, ':').replace(/[\s,;.]+$/, '').trim();
+      if (/^length$/i.test(m[1])) v = `Length ${v}`;
+      if (v && /\d/.test(v) && v.length <= 120) return v;
+    }
+  }
+  return null;
+}
+
 // schema.org OfferShippingDetails + MerchantReturnPolicy for one offer.
 function offerShippingAndReturns(price, { personalised = false } = {}) {
   const days = ([min, max]) => ({ '@type': 'QuantitativeValue', minValue: min, maxValue: max, unitCode: 'DAY' });
@@ -265,4 +293,4 @@ function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } =
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>${xmlEsc(title)}</title>\n    <link>${xmlEsc(siteUrl)}</link>\n    <description>${xmlEsc(title)}</description>\n${entries}\n  </channel>\n</rss>\n`;
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES };
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize };

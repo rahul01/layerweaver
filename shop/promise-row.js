@@ -59,6 +59,18 @@
     ];
   }
 
+  // "Product details" box rows (label/value), only facts we have: Material and Made
+  // are the same for every product; colours and size are passed in when known.
+  function productDetails({ colours = [], size = '' } = {}) {
+    const rows = [
+      { label: 'Material', value: 'Plant-based filament, 3D printed' },
+      { label: 'Made', value: 'Printed to order in Pune' },
+    ];
+    if (colours.length > 1) rows.push({ label: 'Colours', value: colours.join(', ') });
+    if (size) rows.push({ label: 'Size', value: size });
+    return rows;
+  }
+
   // Cart footer numbers. shippableTotal: shippable items' total, gift cards out.
   // itemsTotal: the cart's own total (gift cards in). needsShipping: any line
   // ships. hasDiscount: a code or automatic discount is on the cart - then we do
@@ -69,5 +81,5 @@
     return { delivery, total: itemsTotal + delivery, label: 'Total with delivery' };
   }
 
-  return { DELIVERY_FEE, FREE_FROM, RETURN_DAYS, POLICY_PATH, COPY, deliveryCost, promiseLines, iconRow, cartTotals };
+  return { DELIVERY_FEE, FREE_FROM, RETURN_DAYS, POLICY_PATH, COPY, deliveryCost, promiseLines, iconRow, productDetails, cartTotals };
 });

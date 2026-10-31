@@ -3373,6 +3373,18 @@ body.seasonal--halloween {
     max-width: 420px;
 }
 .orderby[hidden] { display: none; }
+/* Product details box above the description (shop/promise-row.js productDetails) */
+.product-facts { margin: 0 0 24px; max-width: 480px; }
+.product-facts h3 { font-size: 1rem; margin: 0 0 8px; }
+.product-facts dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(80px, 110px) 1fr;
+    font-size: 0.9rem;
+}
+.product-facts dt, .product-facts dd { margin: 0; padding: 8px 0; border-top: 1px solid #eee; }
+.product-facts dt { color: var(--gray-medium); padding-right: 12px; }
+.product-facts dd { color: var(--dark); }
 /* Icon row under the price on product pages (shop/promise-row.js iconRow) */
 .promise-icons {
     list-style: none;
