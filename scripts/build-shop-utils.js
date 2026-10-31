@@ -270,6 +270,15 @@ function parseSize(descriptionHtml) {
   return null;
 }
 
+// Size for the Product details box: the Shopify metafield custom.size (fetched as
+// product.sizeField) wins; until it is filled, the size parsed from the description
+// (parseSize). fallback=false makes the metafield the only source.
+function sizeFor(product, { fallback = true } = {}) {
+  const fromField = String(product?.sizeField?.value ?? '').trim();
+  if (fromField) return fromField;
+  return fallback ? parseSize(product?.descriptionHtml) : null;
+}
+
 // schema.org OfferShippingDetails + MerchantReturnPolicy for one offer.
 function offerShippingAndReturns(price, { personalised = false } = {}) {
   const days = ([min, max]) => ({ '@type': 'QuantitativeValue', minValue: min, maxValue: max, unitCode: 'DAY' });
@@ -310,4 +319,4 @@ function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } =
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>${xmlEsc(title)}</title>\n    <link>${xmlEsc(siteUrl)}</link>\n    <description>${xmlEsc(title)}</description>\n${entries}\n  </channel>\n</rss>\n`;
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, pickCustomerPhotos };
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, pickCustomerPhotos };

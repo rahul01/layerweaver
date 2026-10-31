@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, pickCustomerPhotos } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, pickCustomerPhotos } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -321,5 +321,28 @@ describe('pickCustomerPhotos', () => {
   it('skips hidden pictures, ones without a thumbnail and low-rated reviews', () => {
     const reviews = [rev(1, 5, '2026-10-01', [pic(1, { hidden: true }), { urls: {} }]), rev(2, 2, '2026-10-02', [pic(2)])];
     expect(pickCustomerPhotos(reviews)).toEqual([]);
+  });
+});
+
+// ── sizeFor (metafield first, description as fallback) ─────────────────────────
+
+describe('sizeFor', () => {
+  const html = '<p><strong>Size : 17cm</strong></p>';
+  it('the custom.size metafield wins when it has a value', () => {
+    expect(sizeFor({ sizeField: { value: '17 cm' }, descriptionHtml: '<p>Size: 20 cm</p>' })).toBe('17 cm');
+    expect(sizeFor({ sizeField: { value: '  Regular 10 x 5.5 x 2 cm, Large 14.5 x 8.5 x 3.5 cm ' }, descriptionHtml: '' })).toBe('Regular 10 x 5.5 x 2 cm, Large 14.5 x 8.5 x 3.5 cm');
+  });
+  it('a missing definition (null field) or empty value falls back to the description', () => {
+    expect(sizeFor({ sizeField: null, descriptionHtml: html })).toBe('17cm');
+    expect(sizeFor({ descriptionHtml: html })).toBe('17cm');
+    expect(sizeFor({ sizeField: { value: '   ' }, descriptionHtml: html })).toBe('17cm');
+  });
+  it('fallback off: only the metafield counts', () => {
+    expect(sizeFor({ sizeField: null, descriptionHtml: html }, { fallback: false })).toBeNull();
+    expect(sizeFor({ sizeField: { value: '17 cm' }, descriptionHtml: html }, { fallback: false })).toBe('17 cm');
+  });
+  it('no size anywhere: null', () => {
+    expect(sizeFor({ sizeField: null, descriptionHtml: '<p>A desk toy.</p>' })).toBeNull();
+    expect(sizeFor(undefined)).toBeNull();
   });
 });
