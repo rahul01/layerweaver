@@ -25,6 +25,22 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
       await expect(page.locator('#review-photos.review-photo-strip .review-strip-photo').first()).toBeAttached();
     });
 
+    test('ghost-balloon-lamp shows its 3 picked photos in file order; bunny-keychain and floating-cat show none', async ({ page }) => {
+      const idOf = u => u.split('?')[0].split('/').pop().replace(/\.[a-z0-9]+$/i, '').replace(/__[a-z]+$/i, '');
+      await page.goto(P('ghost-balloon-lamp'));
+      const ids = (await page.locator('.customer-photos .customer-photo').evaluateAll(els => els.map(e => e.dataset.full))).map(idOf);
+      expect(ids).toEqual(picks['ghost-balloon-lamp']);
+      await expect(page.locator('.customer-photos .customer-photos-all')).toBeVisible();   // it has 7 photos in all
+      await page.locator('.customer-photos').scrollIntoViewIfNeeded();
+      await shot(page, `photos-ghost-balloon-lamp-${vp.name}`);
+      for (const h of ['bunny-keychain', 'floating-cat']) {
+        await page.goto(P(h));
+        await expect(page.locator('.customer-photos')).toHaveCount(0);
+        await expect(page.locator('#review-photos .review-strip-photo').first()).toBeAttached();   // the full strip stays
+        if (h === 'bunny-keychain') await shot(page, `photos-bunny-keychain-${vp.name}`);
+      }
+    });
+
     test('the row markup: labelled, three fixed 72px tiles, right order, no overflow, existing viewer', async ({ page }) => {
       await page.goto(P('floating-cat'));
       // reuse three real photos from the full strip as the picks
