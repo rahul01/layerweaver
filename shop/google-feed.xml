@@ -171,9 +171,11 @@
       <g:title>Hoodie Pen Pot</g:title>
       <g:description>A functional and stylish hoodie-shaped pen pot, 3D printed with a realistic hoodie design complete with drawstrings and front pocket. Keeps your desk organised with a fun twist.Material: Plant-based filament, 3D printed | Use: Pen/pencil holder, desk organizer</g:description>
       <g:link>https://www.layerweaver.com/shop/products/hoodie-pen-pot/</g:link>
-      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-3.png?v=1783875049</g:image_link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Teal_Hoodie_Planter_with_456_Patch.png?v=1793446432</g:image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Turquoise_Hoodie_Pen_Holder_Collection.png?v=1793446432</g:additional_image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-1.png?v=1783875047</g:additional_image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-2.jpeg?v=1783875048</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-3.png?v=1783875049</g:additional_image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-4.png?v=1783875050</g:additional_image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-5.png?v=1783875051</g:additional_image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-6.png?v=1783875052</g:additional_image_link>
@@ -181,7 +183,7 @@
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-8.png?v=1783875055</g:additional_image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/hoodie-pen-pot-9.png?v=1783875056</g:additional_image_link>
       <g:availability>in_stock</g:availability>
-      <g:price>549.00 INR</g:price>
+      <g:price>899.00 INR</g:price>
       <g:brand>LayerWeaver</g:brand>
       <g:condition>new</g:condition>
       <g:identifier_exists>no</g:identifier_exists>
@@ -1667,6 +1669,26 @@
       <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-pumpkin-halloween-set.jpg?v=1791656925</g:image_link>
       <g:availability>in_stock</g:availability>
       <g:price>749.00 INR</g:price>
+      <g:brand>LayerWeaver</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0.00 INR</g:price>
+        <g:min_handling_time>1</g:min_handling_time>
+        <g:max_handling_time>2</g:max_handling_time>
+        <g:min_transit_time>3</g:min_transit_time>
+        <g:max_transit_time>7</g:max_transit_time>
+      </g:shipping>
+    </item>
+    <item>
+      <g:id>9404293316830</g:id>
+      <g:title>Snowman Clicker</g:title>
+      <g:description>A little snowman in a knitted beanie and scarf. Press the pom-pom and he clicks. Keep him on your desk and click away. Size: about 4 x 4 x 6 cmFinish: white with an aqua beanie and scarfClick: blue mechanical key switch</g:description>
+      <g:link>https://www.layerweaver.com/shop/products/snowman-clicker/</g:link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Minimal_Aqua-Hatted_Snowman_Figurine.png?v=1793442261</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>349.00 INR</g:price>
       <g:brand>LayerWeaver</g:brand>
       <g:condition>new</g:condition>
       <g:identifier_exists>no</g:identifier_exists>
