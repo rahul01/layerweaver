@@ -117,7 +117,7 @@ for (const vp of WIDTHS) {
       const dilo = await rows('articulated-dilophosaurus-skeleton');
       expect(dilo.slice(0, 2)).toEqual([['Material', 'Plant-based filament, 3D printed'], ['Made', 'Printed to order in Pune']]);
       expect(dilo.map(r => r[0])).toEqual(['Material', 'Made', 'Colours', 'Size']);
-      expect(dilo[3][1]).toBe('17cm');
+      expect(dilo[3][1]).toMatch(/^17 ?cm$/);   // '17 cm' from the metafield, '17cm' from the description
       await page.locator('.product-facts').scrollIntoViewIfNeeded();
       await shot(page, `details-colours-size-${vp.name}`);
       // above the description and below the age line

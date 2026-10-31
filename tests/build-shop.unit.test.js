@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, pickCustomerPhotos } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, photoId, curatedCustomerPhotos, customerPhotosHtml } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -298,29 +298,48 @@ describe('parseSize', () => {
   });
 });
 
-// ── pickCustomerPhotos (Photos from customers) ────────────────────────────────
+// ── Photos from customers: curated by shop/customer-photo-picks.json ───────────
 
-describe('pickCustomerPhotos', () => {
-  const pic = (id, extra = {}) => ({ hidden: false, urls: { compact: `c${id}`, original: `o${id}` }, ...extra });
-  const rev = (id, rating, date, pictures) => ({ rating, created_at: date, body: `b${id}`, reviewer: { name: `N${id}` }, pictures });
-  it('the 3 most recent photos from reviews rated 4 or 5', () => {
-    const reviews = [
-      rev(1, 5, '2026-09-01', [pic(1)]), rev(2, 4, '2026-10-20', [pic(2)]), rev(3, 5, '2026-10-25', [pic(3)]),
-      rev(4, 5, '2026-10-30', [pic(4)]), rev(5, 3, '2026-10-31', [pic(5)]),
-    ];
-    expect(pickCustomerPhotos(reviews).map(p => p.thumb)).toEqual(['c4', 'c3', 'c2']);
-    expect(pickCustomerPhotos(reviews, 3)[0]).toEqual({ thumb: 'c4', full: 'o4', rating: 5, name: 'N4', body: 'b4' });
+describe('photoId', () => {
+  it('is the file name without size, format or query', () => {
+    expect(photoId({ original: 'https://review-images.judgeme.com/layerweaver-com/1787421355__1787421337916-86055__original.jpg?quality=80&width=1024' })).toBe('1787421355__1787421337916-86055');
+    expect(photoId({ compact: 'https://review-images.judgeme.com/layerweaver-com/1787421355__1787421337916-86055__compact.jpg?width=160' })).toBe('1787421355__1787421337916-86055');
+    expect(photoId({})).toBe('');
   });
-  it('1 or 2 photos: shows those; none: empty', () => {
-    expect(pickCustomerPhotos([rev(1, 5, '2026-10-01', [pic(1)])]).length).toBe(1);
-    expect(pickCustomerPhotos([rev(1, 5, '2026-10-01', [pic(1), pic(2)])]).length).toBe(2);
-    expect(pickCustomerPhotos([rev(1, 5, '2026-10-01', [])])).toEqual([]);
-    expect(pickCustomerPhotos([])).toEqual([]);
-    expect(pickCustomerPhotos(undefined)).toEqual([]);
+});
+
+describe('curatedCustomerPhotos', () => {
+  const pic = (id, extra = {}) => ({ hidden: false, urls: { compact: `https://x/${id}__compact.jpg`, original: `https://x/${id}__original.jpg` }, ...extra });
+  const rev = (rating, pictures, name = 'N') => ({ rating, body: 'b', reviewer: { name }, pictures });
+  const reviews = [rev(5, [pic('a'), pic('b')]), rev(4, [pic('c')]), rev(2, [pic('d')]), rev(5, [pic('e', { hidden: true })])];
+  it('only the picked photos, in file order, at most 3', () => {
+    expect(curatedCustomerPhotos(reviews, ['c', 'a']).map(p => p.id)).toEqual(['c', 'a']);
+    expect(curatedCustomerPhotos(reviews, ['a', 'b', 'c', 'd']).map(p => p.id)).toEqual(['a', 'b', 'c']);
+    expect(curatedCustomerPhotos(reviews, ['a'])[0]).toEqual({ id: 'a', thumb: 'https://x/a__compact.jpg', full: 'https://x/a__original.jpg', rating: 5, name: 'N', body: 'b' });
   });
-  it('skips hidden pictures, ones without a thumbnail and low-rated reviews', () => {
-    const reviews = [rev(1, 5, '2026-10-01', [pic(1, { hidden: true }), { urls: {} }]), rev(2, 2, '2026-10-02', [pic(2)])];
-    expect(pickCustomerPhotos(reviews)).toEqual([]);
+  it('no picks, missing handle or a bad value: nothing, even when the product has photos', () => {
+    for (const picks of [undefined, null, [], {}, 'a', 7]) expect(curatedCustomerPhotos(reviews, picks)).toEqual([]);
+    expect(curatedCustomerPhotos(undefined, ['a'])).toEqual([]);
+  });
+  it('unknown ids and hidden photos are skipped; a low-rated review is allowed when picked', () => {
+    expect(curatedCustomerPhotos(reviews, ['zzz', 'e', 'd']).map(p => p.id)).toEqual(['d']);
+  });
+});
+
+describe('customerPhotosHtml', () => {
+  const photos = [{ id: 'a', thumb: 'https://x/a.jpg?w=160', full: 'https://x/a.jpg?w=1024', rating: 5, name: 'N <b>', body: 'say "hi"' }];
+  it('nothing for no photos', () => { expect(customerPhotosHtml([], 5, 'Customer photo of X')).toBe(''); });
+  it('heading, a viewer-ready button with a fixed-size lazy image, escaped data', () => {
+    const html = customerPhotosHtml(photos, 1, 'Customer photo of Floating Cat');
+    expect(html).toContain('Photos from customers');
+    expect(html).toContain('class="review-strip-photo customer-photo"');
+    expect(html).toContain('alt="Customer photo of Floating Cat" width="72" height="72" loading="lazy"');
+    expect(html).toContain('data-name="N &lt;b&gt;"');
+    expect(html).not.toContain('See all');
+  });
+  it('See all N photos only when the product has more than are shown', () => {
+    expect(customerPhotosHtml(photos, 4, 'a')).toContain('href="#review-photos" class="customer-photos-all">See all 4 photos');
+    expect(customerPhotosHtml(photos, 1, 'a')).not.toContain('customer-photos-all');
   });
 });
 

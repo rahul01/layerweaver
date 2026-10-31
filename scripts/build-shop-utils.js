@@ -225,21 +225,46 @@ function ageWarningFor(handle) {
   return AGE_WARNING_HANDLES.has(handle) ? AGE_WARNING : '';
 }
 
-// Up to `max` customer photos for the gallery (Oct 31, 2026): the most recent photos
-// from reviews rated 4 or 5, real Judge.me pictures only (not hidden, with a thumb).
-// Fewer than max is fine, none gives []. Raw values; the caller escapes them.
-function pickCustomerPhotos(reviews, max = 3) {
-  const out = [];
-  const sorted = [...(reviews || [])].filter(r => r.rating >= 4)
-    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  for (const r of sorted) {
+// Stable id of a Judge.me photo: the image file name without size/format suffix and query
+// ("1787421355__1787421337916-86055" from ".../1787421355__1787421337916-86055__original.jpg?width=160").
+function photoId(urls) {
+  const u = urls?.original || urls?.huge || urls?.compact || '';
+  const base = String(u).split('?')[0].split('/').pop().replace(/\.[a-z0-9]+$/i, '');
+  return base.replace(/__[a-z]+$/i, '');
+}
+
+// Customer photos for the gallery row (Oct 31, 2026, curated): only the photos listed in
+// shop/customer-photo-picks.json for this product, in file order, at most `max`. Photos are
+// matched by photoId() against the product's real Judge.me pictures (not hidden, with a
+// thumb); an unknown id is skipped. No picks, or none found, gives []. Raw values; the
+// caller escapes them.
+function curatedCustomerPhotos(reviews, pickIds, max = 3) {
+  const byId = new Map();
+  for (const r of reviews || []) {
     for (const p of r.pictures || []) {
       if (p.hidden || !p.urls?.compact) continue;
-      out.push({ thumb: p.urls.compact, full: p.urls.original || p.urls.huge || p.urls.compact, rating: r.rating, name: r.reviewer?.name || 'Customer', body: r.body || '' });
-      if (out.length >= max) return out;
+      const id = photoId(p.urls);
+      if (id && !byId.has(id)) byId.set(id, { id, thumb: p.urls.compact, full: p.urls.original || p.urls.huge || p.urls.compact, rating: r.rating, name: r.reviewer?.name || 'Customer', body: r.body || '' });
     }
   }
-  return out;
+  return (Array.isArray(pickIds) ? pickIds : []).map(id => byId.get(id)).filter(Boolean).slice(0, max);
+}
+
+// "Photos from customers" row markup. photos from curatedCustomerPhotos(); total = every
+// photo the product has (for the "See all N photos" link to the full strip, #review-photos);
+// alt = the alt text / label. Empty string when there are no photos.
+function customerPhotosHtml(photos, total, alt) {
+  if (!photos.length) return '';
+  const a = escAttr(alt);
+  return `<div class="customer-photos">
+                        <p class="customer-photos-label">Photos from customers</p>
+                        <div class="customer-photos-row">
+                        ${photos.map(p => `<button type="button" class="review-strip-photo customer-photo" data-full="${escAttr(p.full)}" data-rating="${p.rating}" data-name="${escAttr(p.name)}" data-body="${escAttr(p.body)}" aria-label="${a}">
+                            <img src="${escAttr(p.thumb)}" alt="${a}" width="72" height="72" loading="lazy">
+                        </button>`).join('\n                        ')}
+                        ${total > photos.length ? `<a href="#review-photos" class="customer-photos-all">See all ${total} photos</a>` : ''}
+                        </div>
+                    </div>`;
 }
 
 // The size a product's Shopify description already states, for the "Product details"
@@ -319,4 +344,4 @@ function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } =
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>${xmlEsc(title)}</title>\n    <link>${xmlEsc(siteUrl)}</link>\n    <description>${xmlEsc(title)}</description>\n${entries}\n  </channel>\n</rss>\n`;
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, pickCustomerPhotos };
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, photoId, curatedCustomerPhotos, customerPhotosHtml };
