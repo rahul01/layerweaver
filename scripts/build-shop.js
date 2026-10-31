@@ -732,7 +732,7 @@ function promiseRowHtml(personalised, price) {
   return `<ul class="promise-row">${lines.map(l => `<li><i class="fa-solid ${l.icon}" aria-hidden="true"></i><span>${l.text}${link(l.link)}</span></li>`).join('')}</ul>`;
 }
 
-// Product page icon row under the price (replaces the two text lines of the promise
+// Product page icon row, below the pincode box and above the details box (replaces the two text lines of the promise
 // row, so nothing shows twice). Off switch: PRODUCT_ICON_ROW = false brings the text
 // lines back. Links are three levels up, like promiseRowHtml.
 const PRODUCT_ICON_ROW = true;
@@ -1388,7 +1388,6 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                     <h1>${toTitleCase(product.title)}</h1>
                     ${reviewData?.count ? starsHtml(reviewData.rating, reviewData.count, 'lg') : ''}
                     ${isContactOnly(product) ? '' : `<p class="product-price${isCustomPrice(product) ? ' custom-price' : ''}" id="product-price">${price}${isCustomPrice(product) ? '<span class="indicative-label">Final price varies with customization</span>' : ''}</p>`}
-                    ${PRODUCT_ICON_ROW && !isContactOnly(product) && !isCustomPrice(product) && !giftCard ? iconRowHtml(isPersonalised(product), parseFloat(product.priceRange.minVariantPrice.amount)) : ''}
 
                     ${isBundle(product) ? `
                     <div class="bundle-includes">
@@ -1482,6 +1481,8 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                     ${PRODUCT_ICON_ROW || isContactOnly(product) || isCustomPrice(product) || giftCard ? '' : promiseRowHtml(isPersonalised(product), parseFloat(product.priceRange.minVariantPrice.amount))}
 
                     ${ageWarningFor(product.handle) ? `<p class="age-warning">${ageWarningFor(product.handle)}</p>` : ''}
+
+                    ${PRODUCT_ICON_ROW && !isContactOnly(product) && !isCustomPrice(product) && !giftCard ? iconRowHtml(isPersonalised(product), parseFloat(product.priceRange.minVariantPrice.amount)) : ''}
 
                     ${PRODUCT_DETAILS_BOX && !giftCard ? productDetailsHtml(hasVariants && allColors ? variants.map(v => toTitleCase(v.title)) : [], parseSize(product.descriptionHtml)) : ''}
 

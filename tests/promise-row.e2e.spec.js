@@ -43,11 +43,15 @@ for (const vp of WIDTHS) {
       await expect(page.locator('.promise-icons li')).toHaveText(LABELS);
       await expect(page.locator('.promise-row')).toHaveCount(0);        // nothing shown twice
       expect(await noOverflow(page)).toBe(true);
-      // order: price, icon row, Add to Cart, pincode box, age line
+      // order: price, Add to Cart, pincode box, age line, icon row, Product details, description
       const y = async s => (await page.locator(s).first().boundingBox()).y;
-      expect(await y('#product-price')).toBeLessThan(await y('.promise-icons'));
-      expect(await y('.promise-icons')).toBeLessThan(await y('#add-to-cart-btn'));
+      expect(await y('#product-price')).toBeLessThan(await y('#add-to-cart-btn'));
       expect(await y('#add-to-cart-btn')).toBeLessThan(await y('[data-orderby]'));
+      expect(await y('[data-orderby]')).toBeLessThan(await y('.promise-icons'));
+      expect(await y('.age-warning')).toBeLessThan(await y('.promise-icons'));
+      expect(await y('.promise-icons')).toBeLessThan(await y('.product-facts'));
+      // nothing sits between the icon row and the details box
+      expect(await page.locator('.promise-icons').evaluate(el => el.nextElementSibling.className)).toBe('product-facts');
       // four items on one row, tap targets at least 44px tall, links go to the right pages
       const boxes = await page.locator('.promise-icons li > *').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { top: Math.round(r.top), h: r.height }; }));
       expect(new Set(boxes.map(b => b.top)).size).toBe(1);
@@ -60,8 +64,6 @@ for (const vp of WIDTHS) {
       // the third item is a location pin, not a link
       await expect(page.locator('.promise-icons li').nth(2).locator('i')).toHaveClass(/fa-location-dot/);
       await expect(page.locator('.promise-icons li').nth(2).locator('a')).toHaveCount(0);
-      // order: icon row, then the details box, then the description
-      expect(await y('.promise-icons')).toBeLessThan(await y('.product-facts'));
       expect(await y('.product-facts')).toBeLessThan(await y('.product-description'));
       await page.locator('.promise-icons').scrollIntoViewIfNeeded();
       await shot(page, `product-plain-${vp.name}`);

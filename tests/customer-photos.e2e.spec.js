@@ -29,13 +29,13 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
         const b = await tiles.nth(i).boundingBox();
         expect(Math.round(b.width)).toBe(72); expect(Math.round(b.height)).toBe(72);
       }
-      // order: gallery, customer photos, then title, price, icon row, Add to Cart
+      // order: gallery, customer photos, then title, price, Add to Cart, pincode box, icon row
       const y = async s => (await page.locator(s).first().boundingBox()).y;
       expect(await y('.main-image-wrap')).toBeLessThan(await y('.customer-photos'));
       if (vp.width < 769) {
         expect(await y('.customer-photos')).toBeLessThan(await y('.product-details h1'));
-        expect(await y('#product-price')).toBeLessThan(await y('.promise-icons'));
-        expect(await y('.promise-icons')).toBeLessThan(await y('#add-to-cart-btn'));
+        expect(await y('#product-price')).toBeLessThan(await y('#add-to-cart-btn'));
+        expect(await y('[data-orderby]')).toBeLessThan(await y('.promise-icons'));
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
       // the existing viewer opens, no second lightbox
