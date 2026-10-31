@@ -679,7 +679,7 @@
         </div>
         <div class="cart-policy-links">
           <a href="${SITE_ROOT}shipping-policy/"><i class="fa-solid fa-truck-fast"></i> Shipping Policy</a>
-          <a href="${SITE_ROOT}return-and-exchange-policy/"><i class="fa-solid fa-rotate-left"></i> Return and Exchange Policy</a>
+          <a href="${SITE_ROOT}faq/"><i class="fa-solid fa-circle-question"></i> FAQ</a>
         </div>
       </div>`;
 

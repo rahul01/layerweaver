@@ -88,6 +88,21 @@ for (const vp of WIDTHS) {
       await expect(page).toHaveURL(/\/return-and-exchange-policy\/$/);
     });
 
+    test('cart footer links: Shipping Policy and FAQ (the FAQ works from every page depth), no second returns link', async ({ page }) => {
+      for (const start of [OCTOPUS, '/shop/', '/shop/collections/diwali/']) {
+        await fresh(page, start);
+        if (start === OCTOPUS) { await page.click('#add-to-cart-btn'); await added(page); }
+        await openCart(page);
+        const links = page.locator('.cart-policy-links a');
+        await expect(links).toHaveText([/Shipping Policy/, /FAQ/]);
+        await expect(page.locator('.cart-policy-links', { hasText: 'Return and Exchange Policy' })).toHaveCount(0);
+        await expect(page.locator('.cart-policy-links a', { hasText: 'FAQ' })).toHaveAttribute('href', '/faq/');
+        if (start === OCTOPUS) await shot(page, `cart-footer-links-${vp.name}`, page.locator('#cart-drawer'));
+        await Promise.all([page.waitForURL(/\/faq\/$/), page.locator('.cart-policy-links a', { hasText: 'FAQ' }).click()]);
+        await expect(page.locator('h1')).toContainText('Frequently Asked Questions');
+      }
+    });
+
     test('cart under Rs 299: delivery Rs 49, total with delivery, returns note, checkout link intact', async ({ page }) => {
       await fresh(page, OCTOPUS);
       await page.click('#add-to-cart-btn'); await added(page); await openCart(page);
