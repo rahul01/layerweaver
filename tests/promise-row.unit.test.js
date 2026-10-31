@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
-const { DELIVERY_FEE, FREE_FROM, COPY, deliveryCost, promiseLines, cartTotals } = createRequire(import.meta.url)('../shop/promise-row.js');
+const { DELIVERY_FEE, FREE_FROM, COPY, deliveryCost, promiseLines, iconRow, cartTotals } = createRequire(import.meta.url)('../shop/promise-row.js');
 
 describe('deliveryCost', () => {
   it('is Rs 49 below Rs 299 and free from Rs 299', () => {
@@ -75,5 +75,30 @@ describe('cartTotals', () => {
   });
   it('a discount on the cart: plain total, no delivery guess', () => {
     expect(cartTotals({ shippableTotal: 400, itemsTotal: 350, needsShipping: true, hasDiscount: true })).toEqual({ delivery: null, total: 350, label: 'Total' });
+  });
+});
+
+describe('iconRow', () => {
+  const labels = o => iconRow(o).map(i => i.label);
+  it('four items: delivery, returns, printed to order, FAQ', () => {
+    expect(labels({ price: 249 })).toEqual(['Delivery ₹49', '7-day easy returns', 'Printed to order in Pune', 'Questions? FAQ']);
+  });
+  it('free delivery from Rs 299 (the lowest variant price), fee line under it', () => {
+    expect(iconRow({ price: 299 })[0].label).toBe('Free delivery');
+    expect(iconRow({ price: 298.99 })[0].label).toBe('Delivery ₹49');
+    expect(iconRow({ price: 298.99 })[0].title).toBe('Delivery ₹49, free on orders above ₹299.');
+  });
+  it('personalised: Made just for you instead of easy returns', () => {
+    expect(iconRow({ price: 149, personalised: true })[1].label).toBe('Made just for you');
+    expect(JSON.stringify(iconRow({ price: 149, personalised: true }))).not.toMatch(/easy returns/i);
+  });
+  it('links: shipping policy, return policy, FAQ; the printer item has none', () => {
+    expect(iconRow({ price: 100 }).map(i => i.path)).toEqual(['shipping-policy/', 'return-and-exchange-policy/', undefined, 'faq/']);
+  });
+  it('gift card: nothing', () => {
+    expect(iconRow({ giftCard: true })).toEqual([]);
+  });
+  it('no banned wording or em dash in any label or tooltip', () => {
+    expect(JSON.stringify([iconRow({ price: 100 }), iconRow({ price: 500, personalised: true })])).not.toMatch(/non-?toxic|\beco|PLA\b|plastic|child-?safe|biodegradable|sustainable|renewable|—/i);
   });
 });

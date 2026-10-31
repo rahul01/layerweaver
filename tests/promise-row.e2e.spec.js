@@ -36,52 +36,63 @@ for (const vp of WIDTHS) {
   test.describe(`promise row ${vp.name}`, () => {
     test.use({ viewport: { width: vp.width, height: vp.height } });
 
-    test('product page: delivery cost and damage line under the pincode box', async ({ page }) => {
+    const LABELS = ['Delivery ₹49', '7-day easy returns', 'Printed to order in Pune', 'Questions? FAQ'];
+
+    test('product page: icon row under the price, replacing the two text lines', async ({ page }) => {
       await page.goto(OCTOPUS);
-      const items = page.locator('.promise-row li');
-      await expect(items).toHaveText([DELIVERY, RETURNS]);
+      await expect(page.locator('.promise-icons li')).toHaveText(LABELS);
+      await expect(page.locator('.promise-row')).toHaveCount(0);        // nothing shown twice
       expect(await noOverflow(page)).toBe(true);
-      // order: Add to Cart, pincode box, promise row, age line
+      // order: price, icon row, Add to Cart, pincode box, age line
       const y = async s => (await page.locator(s).first().boundingBox()).y;
+      expect(await y('#product-price')).toBeLessThan(await y('.promise-icons'));
+      expect(await y('.promise-icons')).toBeLessThan(await y('#add-to-cart-btn'));
       expect(await y('#add-to-cart-btn')).toBeLessThan(await y('[data-orderby]'));
-      expect(await y('[data-orderby]')).toBeLessThan(await y('.promise-row'));
-      expect(await y('.promise-row')).toBeLessThan(await y('.age-warning'));
-      await page.locator('.product-actions').scrollIntoViewIfNeeded();
+      // four items on one row, tap targets at least 44px tall, links go to the right pages
+      const boxes = await page.locator('.promise-icons li > *').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { top: Math.round(r.top), h: r.height }; }));
+      expect(new Set(boxes.map(b => b.top)).size).toBe(1);
+      for (const b of boxes) expect(b.h).toBeGreaterThanOrEqual(44);
+      await expect(page.locator('.promise-icons a')).toHaveCount(3);
+      await expect(page.locator('.promise-icons a').nth(0)).toHaveAttribute('href', /\/shipping-policy\/$/);
+      await expect(page.locator('.promise-icons a').nth(1)).toHaveAttribute('href', /\/return-and-exchange-policy\/$/);
+      await expect(page.locator('.promise-icons a').nth(2)).toHaveAttribute('href', /\/faq\/$/);
+      await expect(page.locator('.promise-icons a').nth(1)).toHaveAttribute('title', "Damaged in transit? We'll make it right.");
+      await page.locator('.promise-icons').scrollIntoViewIfNeeded();
       await shot(page, `product-plain-${vp.name}`);
     });
 
-    test('product page: personalised keeps the damage line and excludes change-of-mind returns', async ({ page }) => {
+    test('product page: personalised says Made just for you instead of easy returns', async ({ page }) => {
       await page.goto(KEYCHAIN);
-      await expect(page.locator('.promise-row li').nth(1)).toHaveText(PERSONAL);
-      await page.locator('.promise-row').scrollIntoViewIfNeeded();
+      await expect(page.locator('.promise-icons li').nth(1)).toHaveText('Made just for you');
+      await expect(page.locator('.promise-icons')).not.toContainText('easy returns');
+      await page.locator('.promise-icons').scrollIntoViewIfNeeded();
       await shot(page, `product-personalised-${vp.name}`);
     });
 
     test('product page: gift card has no row; a lamp has it (no age line)', async ({ page }) => {
       await page.goto(GIFT);
+      await expect(page.locator('.promise-icons')).toHaveCount(0);
       await expect(page.locator('.promise-row')).toHaveCount(0);
       await shot(page, `product-giftcard-${vp.name}`);
       await page.goto(LAMP);
-      await expect(page.locator('.promise-row')).toHaveCount(1);
+      await expect(page.locator('.promise-icons')).toHaveCount(1);
       await expect(page.locator('.age-warning')).toHaveCount(0);
     });
 
-    test('product at or over Rs 299 says free delivery; a personalised pen pot has the made-for-you line', async ({ page }) => {
+    test('product at or over Rs 299 says Free delivery', async ({ page }) => {
       await page.goto(BIG);
-      await expect(page.locator('.promise-row li').first()).toHaveText('Free delivery.');
-      await expect(page.locator('.promise-row li').nth(1)).toHaveText(RETURNS);
-      await page.locator('.promise-row').scrollIntoViewIfNeeded();
+      await expect(page.locator('.promise-icons li').first()).toHaveText('Free delivery');
+      await page.locator('.promise-icons').scrollIntoViewIfNeeded();
       await shot(page, `product-299-plus-${vp.name}`);
       await page.goto(HOODIE);
-      await expect(page.locator('.promise-row li').nth(1)).toHaveText(PERSONAL);
-      await expect(page.locator('.promise-row')).not.toContainText('easy returns');
+      await expect(page.locator('.promise-icons li').nth(1)).toHaveText('Made just for you');
     });
 
-    test('the Return policy link opens the policy page, from the product page and from the cart', async ({ page }) => {
-      await page.goto(OCTOPUS);
-      await page.locator('.promise-row a').click();
-      await expect(page).toHaveURL(/\/return-and-exchange-policy\/$/);
-      await expect(page.locator('body')).toContainText('Refund Process');
+    test('the icon links open the policy pages; the cart line still links to the return policy', async ({ page }) => {
+      for (const [i, re] of [[0, /\/shipping-policy\/$/], [1, /\/return-and-exchange-policy\/$/], [2, /\/faq\/$/]]) {
+        await page.goto(OCTOPUS);
+        await Promise.all([page.waitForURL(re), page.locator('.promise-icons a').nth(i).click()]);
+      }
       await fresh(page, OCTOPUS);
       await page.click('#add-to-cart-btn'); await added(page); await openCart(page);
       await page.locator('#cart-returns-note a').click();

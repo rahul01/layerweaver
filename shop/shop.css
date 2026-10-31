@@ -3373,7 +3373,34 @@ body.seasonal--halloween {
     max-width: 420px;
 }
 .orderby[hidden] { display: none; }
-/* Promise row under the pincode box on product pages (shop/promise-row.js) */
+/* Icon row under the price on product pages (shop/promise-row.js iconRow) */
+.promise-icons {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    max-width: 480px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+.promise-icons a, .promise-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    min-height: 44px;
+    padding: 8px 2px;
+    font-size: 0.75rem;
+    line-height: 1.25;
+    color: var(--gray-medium);
+    text-decoration: none;
+    border-radius: 8px;
+}
+.promise-icons a:hover { color: var(--primary); }
+.promise-icons i { font-size: 1.3rem; color: var(--primary); }
+/* Promise row under the pincode box on product pages (shop/promise-row.js), shown when PRODUCT_ICON_ROW is off */
 .promise-row {
     list-style: none;
     margin: -16px 0 20px;
