@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const LWPromise = require('../shop/promise-row.js');
 const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
@@ -722,6 +723,12 @@ function shopHeaderHtml(base, shopBase) {
     </header>`;
 }
 
+// Product page promise row (delivery cost + damage line), text from shop/promise-row.js.
+function promiseRowHtml(personalised) {
+  const lines = LWPromise.promiseLines({ context: 'product', personalised });
+  return `<ul class="promise-row">${lines.map(l => `<li><i class="fa-solid ${l.icon}" aria-hidden="true"></i><span>${l.text}</span></li>`).join('')}</ul>`;
+}
+
 function shopTrustStripHtml(base) {
   const items = [
     { href: `${base}shipping-policy/`,           icon: 'fa-truck-fast',       color: '#2196F3', label: 'Free Shipping Above ₹299' },
@@ -1111,6 +1118,7 @@ ${productCards}
     ${footerHtml(base)}
     ${swatchDataScript(products)}
     <script src="auth.js?v=${BUILD_VER}"></script>
+    <script src="promise-row.js?v=${BUILD_VER}"></script>
     <script src="cart.js?v=${BUILD_VER}"></script>
     <script src="search.js?v=${BUILD_VER}"></script>
     <script src="wishlist.js?v=${BUILD_VER}"></script>
@@ -1421,6 +1429,8 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                       ? '<p class="giftcard-delivery"><i class="fa-solid fa-envelope"></i> Delivered by email - no shipping. Spend it on anything in the store.</p>'
                       : isContactOnly(product) || isCustomPrice(product) ? '' : '<div class="orderby" data-orderby hidden></div>'}
 
+                    ${isContactOnly(product) || isCustomPrice(product) || giftCard ? '' : promiseRowHtml(isPersonalised(product))}
+
                     ${ageWarningFor(product.handle) ? `<p class="age-warning">${ageWarningFor(product.handle)}</p>` : ''}
 
                     <div class="product-description">
@@ -1658,6 +1668,7 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
     </script>
     ${swatchDataScript([product])}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}promise-row.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>
@@ -1915,6 +1926,7 @@ ${productCards}
     ${footerHtml(base)}
     ${swatchDataScript(collection.products)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}promise-row.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>
@@ -2052,6 +2064,7 @@ function generateAccountPage() {
 
     ${footerHtml(base)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="${shopBase}promise-row.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}wishlist.js?v=${BUILD_VER}"></script>

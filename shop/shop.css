@@ -1863,6 +1863,24 @@ html.diwali-touch .cart-empty > i { color: #f0c36a; }
     100% { transform: scale(1) rotate(0deg); }
 }
 
+.cart-delivery-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--gray-medium);
+    margin-bottom: 6px;
+}
+.cart-delivery-row[hidden] { display: none; }
+.cart-returns-note {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--gray-medium);
+    margin: 10px 0 0;
+    font-family: var(--font-primary);
+}
+.cart-returns-note[hidden] { display: none; }
+
 .cart-total {
     display: flex;
     justify-content: space-between;
@@ -3355,6 +3373,18 @@ body.seasonal--halloween {
     max-width: 420px;
 }
 .orderby[hidden] { display: none; }
+/* Promise row under the pincode box on product pages (shop/promise-row.js) */
+.promise-row {
+    list-style: none;
+    margin: -16px 0 20px;
+    padding: 0;
+    max-width: 420px;
+    font-size: 0.85rem;
+    color: var(--gray-medium);
+}
+.promise-row li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
+.promise-row i { color: var(--primary); width: 16px; text-align: center; margin-top: 2px; flex-shrink: 0; }
+.promise-row + .age-warning { margin-top: 0; }
 /* Age warning under the pincode box, on a few product pages (ageWarningFor in build-shop-utils.js) */
 .age-warning {
     margin: -16px 0 24px;
