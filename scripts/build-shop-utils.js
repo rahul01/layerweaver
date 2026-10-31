@@ -225,6 +225,23 @@ function ageWarningFor(handle) {
   return AGE_WARNING_HANDLES.has(handle) ? AGE_WARNING : '';
 }
 
+// Up to `max` customer photos for the gallery (Oct 31, 2026): the most recent photos
+// from reviews rated 4 or 5, real Judge.me pictures only (not hidden, with a thumb).
+// Fewer than max is fine, none gives []. Raw values; the caller escapes them.
+function pickCustomerPhotos(reviews, max = 3) {
+  const out = [];
+  const sorted = [...(reviews || [])].filter(r => r.rating >= 4)
+    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  for (const r of sorted) {
+    for (const p of r.pictures || []) {
+      if (p.hidden || !p.urls?.compact) continue;
+      out.push({ thumb: p.urls.compact, full: p.urls.original || p.urls.huge || p.urls.compact, rating: r.rating, name: r.reviewer?.name || 'Customer', body: r.body || '' });
+      if (out.length >= max) return out;
+    }
+  }
+  return out;
+}
+
 // The size a product's Shopify description already states, for the "Product details"
 // box (Oct 31, 2026). Conservative: only a "Size:", "Dimensions:" or (at the start of
 // its own line) "Length:" label counts; the value runs across " | " pieces until the
@@ -293,4 +310,4 @@ function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } =
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>${xmlEsc(title)}</title>\n    <link>${xmlEsc(siteUrl)}</link>\n    <description>${xmlEsc(title)}</description>\n${entries}\n  </channel>\n</rss>\n`;
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize };
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, pickCustomerPhotos };

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, pickCustomerPhotos } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -295,5 +295,31 @@ describe('parseSize', () => {
     expect(p('<p>Base: 19 x 22 cm | Height: 25 cm</p>')).toBeNull();
     expect(p('')).toBeNull();
     expect(p(undefined)).toBeNull();
+  });
+});
+
+// ── pickCustomerPhotos (Photos from customers) ────────────────────────────────
+
+describe('pickCustomerPhotos', () => {
+  const pic = (id, extra = {}) => ({ hidden: false, urls: { compact: `c${id}`, original: `o${id}` }, ...extra });
+  const rev = (id, rating, date, pictures) => ({ rating, created_at: date, body: `b${id}`, reviewer: { name: `N${id}` }, pictures });
+  it('the 3 most recent photos from reviews rated 4 or 5', () => {
+    const reviews = [
+      rev(1, 5, '2026-09-01', [pic(1)]), rev(2, 4, '2026-10-20', [pic(2)]), rev(3, 5, '2026-10-25', [pic(3)]),
+      rev(4, 5, '2026-10-30', [pic(4)]), rev(5, 3, '2026-10-31', [pic(5)]),
+    ];
+    expect(pickCustomerPhotos(reviews).map(p => p.thumb)).toEqual(['c4', 'c3', 'c2']);
+    expect(pickCustomerPhotos(reviews, 3)[0]).toEqual({ thumb: 'c4', full: 'o4', rating: 5, name: 'N4', body: 'b4' });
+  });
+  it('1 or 2 photos: shows those; none: empty', () => {
+    expect(pickCustomerPhotos([rev(1, 5, '2026-10-01', [pic(1)])]).length).toBe(1);
+    expect(pickCustomerPhotos([rev(1, 5, '2026-10-01', [pic(1), pic(2)])]).length).toBe(2);
+    expect(pickCustomerPhotos([rev(1, 5, '2026-10-01', [])])).toEqual([]);
+    expect(pickCustomerPhotos([])).toEqual([]);
+    expect(pickCustomerPhotos(undefined)).toEqual([]);
+  });
+  it('skips hidden pictures, ones without a thumbnail and low-rated reviews', () => {
+    const reviews = [rev(1, 5, '2026-10-01', [pic(1, { hidden: true }), { urls: {} }]), rev(2, 2, '2026-10-02', [pic(2)])];
+    expect(pickCustomerPhotos(reviews)).toEqual([]);
   });
 });

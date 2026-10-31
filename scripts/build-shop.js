@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const LWPromise = require('../shop/promise-row.js');
-const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, parseSize } = require('./build-shop-utils');
+const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, parseSize, pickCustomerPhotos } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
 const envPath = path.join(__dirname, '..', '.env');
@@ -496,7 +496,7 @@ function reviewPhotoStripHtml(reviews) {
     }));
   });
   if (!photos.length) return '';
-  return `<div class="review-photo-strip">
+  return `<div class="review-photo-strip" id="review-photos">
       ${photos.map(p => `<button type="button" class="review-strip-photo" data-full="${p.full}" data-rating="${p.rating}" data-name="${p.name}" data-body="${p.body}" aria-label="Photo from ${p.name}'s review">
         <img src="${p.thumb}" alt="Photo from ${p.name}'s review" loading="lazy">
       </button>`).join('\n      ')}
@@ -752,6 +752,28 @@ const PRODUCT_DETAILS_BOX = true;
 function productDetailsHtml(colours, size) {
   const rows = LWPromise.productDetails({ colours, size });
   return `<div class="product-facts"><h3>Product details</h3><dl>${rows.map(r => `<dt>${escAttr(r.label)}</dt><dd>${escAttr(r.value)}</dd>`).join('')}</dl></div>`;
+}
+
+// "Photos from customers" under the product gallery: up to 3 real Judge.me photos
+// (rated 4-5, most recent), each a .review-strip-photo button so the page's one
+// existing photo viewer opens it. "See all" scrolls to the full strip lower down
+// (both are kept). Nothing at all when the product has no photo. Off switch:
+// PRODUCT_CUSTOMER_PHOTOS = false.
+const PRODUCT_CUSTOMER_PHOTOS = true;
+function customerPhotosHtml(reviews, productTitle) {
+  const picks = pickCustomerPhotos(reviews, 3);
+  if (!picks.length) return '';
+  const total = reviews.flatMap(r => (r.pictures || []).filter(p => !p.hidden && p.urls?.compact)).length;
+  const alt = escAttr(`Customer photo of ${toTitleCase(productTitle)}`);
+  return `<div class="customer-photos">
+                        <p class="customer-photos-label">Photos from customers</p>
+                        <div class="customer-photos-row">
+                        ${picks.map(p => `<button type="button" class="review-strip-photo customer-photo" data-full="${escAttr(p.full)}" data-rating="${p.rating}" data-name="${escAttr(p.name)}" data-body="${escAttr(p.body)}" aria-label="${alt}">
+                            <img src="${escAttr(p.thumb)}" alt="${alt}" width="72" height="72" loading="lazy">
+                        </button>`).join('\n                        ')}
+                        ${total > picks.length ? `<a href="#review-photos" class="customer-photos-all">See all ${total} photos</a>` : ''}
+                        </div>
+                    </div>`;
 }
 
 function shopTrustStripHtml(base) {
@@ -1359,6 +1381,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                         <iframe id="main-iframe" style="display:none" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
                     </div>
                     ${showThumbnails ? `<div class="thumbnails">${thumbnails}</div>` : ''}
+                    ${PRODUCT_CUSTOMER_PHOTOS && !giftCard && reviewData?.reviews?.length ? customerPhotosHtml(reviewData.reviews, product.title) : ''}
                 </div>
 
                 <div class="product-details">
