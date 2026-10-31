@@ -92,7 +92,10 @@ describe('iconRow', () => {
     expect(iconRow({ price: 149, personalised: true })[1].label).toBe('Made just for you');
     expect(JSON.stringify(iconRow({ price: 149, personalised: true }))).not.toMatch(/easy returns/i);
   });
-  it('links: shipping policy, return policy, FAQ; the printer item has none', () => {
+  it('icons: truck, arrows, location pin, question mark', () => {
+    expect(iconRow({ price: 100 }).map(i => i.icon)).toEqual(['fa-truck-fast', 'fa-rotate-left', 'fa-location-dot', 'fa-circle-question']);
+  });
+  it('links: shipping policy, return policy, FAQ; the Printed in Pune item has none', () => {
     expect(iconRow({ price: 100 }).map(i => i.path)).toEqual(['shipping-policy/', 'return-and-exchange-policy/', undefined, 'faq/']);
   });
   it('gift card: nothing', () => {

@@ -57,6 +57,12 @@ for (const vp of WIDTHS) {
       await expect(page.locator('.promise-icons a').nth(1)).toHaveAttribute('href', /\/return-and-exchange-policy\/$/);
       await expect(page.locator('.promise-icons a').nth(2)).toHaveAttribute('href', /\/faq\/$/);
       await expect(page.locator('.promise-icons a').nth(1)).toHaveAttribute('title', "Damaged in transit? We'll make it right.");
+      // the third item is a location pin, not a link
+      await expect(page.locator('.promise-icons li').nth(2).locator('i')).toHaveClass(/fa-location-dot/);
+      await expect(page.locator('.promise-icons li').nth(2).locator('a')).toHaveCount(0);
+      // order: icon row, then the details box, then the description
+      expect(await y('.promise-icons')).toBeLessThan(await y('.product-facts'));
+      expect(await y('.product-facts')).toBeLessThan(await y('.product-description'));
       await page.locator('.promise-icons').scrollIntoViewIfNeeded();
       await shot(page, `product-plain-${vp.name}`);
     });
