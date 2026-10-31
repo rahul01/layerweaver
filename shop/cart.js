@@ -662,13 +662,18 @@
               <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
               <p class="rewards-nextorder-msg" id="rewards-nextorder-msg" hidden></p>
             </div>
+            <div class="cart-delivery-row" id="cart-delivery-row" hidden>
+              <span>Delivery</span>
+              <span id="cart-delivery-price"></span>
+            </div>
             <div class="cart-total">
-              <span>Total</span>
+              <span id="cart-total-label">Total</span>
               <span id="cart-total-price"></span>
             </div>
             <a id="cart-checkout-btn" class="btn-primary">
               Checkout <i class="fa-solid fa-arrow-right"></i>
             </a>
+            <p class="cart-returns-note" id="cart-returns-note" hidden></p>
           </div>
           <p class="cart-payment-note"><i class="fa-solid fa-lock"></i> UPI · Debit/Credit Cards · Net Banking via Razorpay</p>
         </div>
@@ -829,6 +834,8 @@
     const fill   = document.getElementById('bubble-fill');
     const msgEl  = document.getElementById('bubble-msg');
     if (!bubble || !fill || !msgEl) return;
+    // Not while the cart is open: it sits over the first item's name.
+    if (document.getElementById('cart-drawer')?.classList.contains('open')) return;
 
     const cartBtn = document.getElementById('cart-icon-btn');
     if (cartBtn) {
@@ -945,6 +952,49 @@
 
   function isSurchargeLine(line) {
     return attrValue(line, '_surcharge') === 'true';
+  }
+
+  // Promise row in the cart (shop/promise-row.js): the delivery charge, "Total
+  // with delivery" and the damage/returns line under Checkout. Additive only: it
+  // never touches the Checkout link, and any error leaves the plain Total. Off
+  // with PROMISE_ROW_CART = false.
+  const PROMISE_ROW_CART = true;
+  function renderPromiseRow(cart, totalEl, costAmt) {
+    const row = document.getElementById('cart-delivery-row');
+    const note = document.getElementById('cart-returns-note');
+    const label = document.getElementById('cart-total-label');
+    try {
+      if (row) row.hidden = true;
+      if (note) note.hidden = true;
+      if (label) label.textContent = 'Total';
+      if (!PROMISE_ROW_CART || !window.LWPromise || !row || !note || !label) return;
+      const lines = cart.lines.edges.map(e => e.node);
+      const needsShipping = lines.some(l => l.merchandise.requiresShipping !== false);
+      if (!needsShipping) return;
+      const hasDiscount = (cart.discountCodes || []).some(d => d.applicable)
+        || (cart.discountAllocations || []).length > 0
+        || lines.some(l => parseFloat(l.cost?.totalAmount?.amount ?? 0) < parseFloat(l.merchandise.price.amount) * l.quantity - 0.005);
+      const t = window.LWPromise.cartTotals({
+        shippableTotal: cartSubtotal(cart),
+        itemsTotal: parseFloat(costAmt.amount),
+        needsShipping,
+        hasDiscount,
+      });
+      const personalised = lines.some(l => l.attributes?.some(a => a.value && !a.key.startsWith('_')));
+      const [returns] = window.LWPromise.promiseLines({ context: 'cart', personalised });
+      if (t.delivery !== null) {
+        document.getElementById('cart-delivery-price').textContent = t.delivery ? fmt(t.delivery, costAmt.currencyCode) : 'Free';
+        row.hidden = false;
+        label.textContent = t.label;
+        totalEl.textContent = fmt(t.total, costAmt.currencyCode);
+      }
+      if (returns) { note.textContent = returns.text; note.hidden = false; }
+    } catch (err) {
+      console.warn('[Cart] Promise row skipped:', err);
+      if (row) row.hidden = true;
+      if (label) label.textContent = 'Total';
+      totalEl.textContent = fmt(costAmt.amount, costAmt.currencyCode);
+    }
   }
 
   function renderCart() {
@@ -1087,6 +1137,7 @@
     // Footer
     const costAmt = cart.cost.totalAmount;
     total.textContent = fmt(costAmt.amount, costAmt.currencyCode);
+    renderPromiseRow(cart, total, costAmt);
     chkBtn.href = cart.checkoutUrl;
     const checkoutSection = document.getElementById('cart-checkout-section');
     if (checkoutSection) checkoutSection.style.display = 'contents';
@@ -1128,6 +1179,7 @@
   function openDrawer() {
     document.getElementById('cart-drawer')?.classList.add('open');
     document.getElementById('cart-overlay')?.classList.add('open');
+    document.getElementById('rewards-bubble')?.classList.remove('bubble-visible');
     document.body.style.overflow = 'hidden';
     _stickToBottom = true;
     scrollCartToBottom();
