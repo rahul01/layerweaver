@@ -206,6 +206,25 @@ function isPersonalised(product) {
   return /personali[sz]|custom[- ]made|nameplate|name plate/i.test(text);
 }
 
+// Age warning (Oct 31, 2026): a small plain line on these product pages only,
+// never a "safe for kids" claim. One list - add or remove a handle to change it.
+// Not on keychains, clickers, lamps, lanterns, pen pots, bookmarks, aquarium
+// items, name plates or gift cards. Bird Ocarina is left out on purpose: the
+// "Not for mouth use" line would contradict the product.
+const AGE_WARNING = 'Not suitable for children under 5. Small parts. Adult supervision recommended.';
+const AGE_WARNING_HANDLES = new Set([
+  't-rex-skeleton', 'articulated-stegosaurus-skeleton', 'articulated-brachiosaurus-skeleton',
+  'articulated-velociraptor-skeleton', 'articulated-triceratops-skeleton', 'articulated-pteranodon-skeleton',
+  'articulated-spinosaurus-skeleton', 'articulated-dilophosaurus-skeleton', 'articulated-wooly-mammoth',
+  'cone-fidget', 'infinity-cube', 'articulated-octopus', 'articulated-cute-spider',
+  'tree-articulated-legs', 'pumpkin-articulated-legs', 'pineapple-articulated-legs',
+  'panda-figurine', 'cute-wobble-penguin-desk-toy', 'floating-cat', 'tetris-balance-game',
+  'uno-box', 'bird-ocarina', 'night-dragon',
+]);
+function ageWarningFor(handle) {
+  return AGE_WARNING_HANDLES.has(handle) ? AGE_WARNING : '';
+}
+
 // schema.org OfferShippingDetails + MerchantReturnPolicy for one offer.
 function offerShippingAndReturns(price, { personalised = false } = {}) {
   const days = ([min, max]) => ({ '@type': 'QuantitativeValue', minValue: min, maxValue: max, unitCode: 'DAY' });
@@ -246,4 +265,4 @@ function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } =
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>${xmlEsc(title)}</title>\n    <link>${xmlEsc(siteUrl)}</link>\n    <description>${xmlEsc(title)}</description>\n${entries}\n  </channel>\n</rss>\n`;
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml };
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES };

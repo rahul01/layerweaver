@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -245,5 +245,25 @@ describe('buildGoogleFeedXml', () => {
     const xml = buildGoogleFeedXml([{ ...item, price: 199, available: false }], { siteUrl: 'https://www.layerweaver.com' });
     expect(xml).toContain('<g:availability>out_of_stock</g:availability>');
     expect(xml).toMatch(/<g:shipping>\s*<g:country>IN<\/g:country>\s*<g:price>49.00 INR<\/g:price>/);
+  });
+});
+
+// ── ageWarningFor ─────────────────────────────────────────────────────────────
+
+describe('ageWarningFor', () => {
+  const LINE = 'Not suitable for children under 5. Small parts. Adult supervision recommended.';
+  it('gives the plain warning line for listed products', () => {
+    for (const h of ['t-rex-skeleton', 'articulated-octopus', 'uno-box', 'night-dragon', 'bird-ocarina']) expect(ageWarningFor(h)).toBe(LINE);
+    expect(AGE_WARNING_HANDLES.size).toBe(23);
+  });
+  it('is empty for keychains, lamps, bookmarks, gift cards and the pen pot box', () => {
+    for (const h of ['bunny-keychain', 'chill-guy-lamp', 'cat-bookmark', 'layerweaver-e-gift-card', 'multi-purpose-box-pen-holder-toothbrush-holder']) expect(ageWarningFor(h)).toBe('');
+  });
+  it('is empty for an unknown or missing handle', () => {
+    expect(ageWarningFor('no-such-product')).toBe('');
+    expect(ageWarningFor(undefined)).toBe('');
+  });
+  it('never makes a safety claim', () => {
+    expect(LINE).not.toMatch(/safe for|child-safe|non-toxic|\beco|sustainable|PLA|plastic/i);
   });
 });

@@ -3355,6 +3355,12 @@ body.seasonal--halloween {
     max-width: 420px;
 }
 .orderby[hidden] { display: none; }
+/* Age warning under the pincode box, on a few product pages (ageWarningFor in build-shop-utils.js) */
+.age-warning {
+    margin: -16px 0 24px;
+    font-size: 0.85rem;
+    color: var(--gray-medium);
+}
 .orderby-label {
     display: block;
     font-weight: 600;
