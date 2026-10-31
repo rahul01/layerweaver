@@ -45,7 +45,7 @@
     return lines;
   }
 
-  // Icon row on product pages (under the price): four short labels. paths are
+  // Icon row on product pages (under the price): three short labels. paths are
   // relative to the site root. Gift cards get none. Personalised products say
   // "Made just for you" instead of "7-day easy returns". title = a tooltip.
   function iconRow({ price = 0, personalised = false, giftCard = false } = {}) {
@@ -54,7 +54,6 @@
     return [
       { icon: 'fa-truck-fast', label: free ? 'Free delivery' : `Delivery ₹${DELIVERY_FEE}`, title: free ? 'Free delivery' : COPY.delivery, path: 'shipping-policy/' },
       { icon: 'fa-rotate-left', label: personalised ? 'Made just for you' : `${RETURN_DAYS}-day easy returns`, title: personalised ? "Made just for you. Damaged in transit? We'll make it right." : "Damaged in transit? We'll make it right.", path: POLICY_PATH },
-      { icon: 'fa-location-dot', label: 'Printed to order in Pune' },
       { icon: 'fa-circle-question', label: 'Questions? FAQ', title: 'Questions? See our FAQ', path: 'faq/' },
     ];
   }

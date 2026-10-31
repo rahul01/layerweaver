@@ -80,8 +80,9 @@ describe('cartTotals', () => {
 
 describe('iconRow', () => {
   const labels = o => iconRow(o).map(i => i.label);
-  it('four items: delivery, returns, printed to order, FAQ', () => {
-    expect(labels({ price: 249 })).toEqual(['Delivery ₹49', '7-day easy returns', 'Printed to order in Pune', 'Questions? FAQ']);
+  it('three items: delivery, returns, FAQ (Printed to order in Pune lives in the details box)', () => {
+    expect(labels({ price: 249 })).toEqual(['Delivery ₹49', '7-day easy returns', 'Questions? FAQ']);
+    expect(JSON.stringify(iconRow({ price: 249 }))).not.toMatch(/Printed to order/);
   });
   it('free delivery from Rs 299 (the lowest variant price), fee line under it', () => {
     expect(iconRow({ price: 299 })[0].label).toBe('Free delivery');
@@ -92,11 +93,11 @@ describe('iconRow', () => {
     expect(iconRow({ price: 149, personalised: true })[1].label).toBe('Made just for you');
     expect(JSON.stringify(iconRow({ price: 149, personalised: true }))).not.toMatch(/easy returns/i);
   });
-  it('icons: truck, arrows, location pin, question mark', () => {
-    expect(iconRow({ price: 100 }).map(i => i.icon)).toEqual(['fa-truck-fast', 'fa-rotate-left', 'fa-location-dot', 'fa-circle-question']);
+  it('icons: truck, arrows, question mark', () => {
+    expect(iconRow({ price: 100 }).map(i => i.icon)).toEqual(['fa-truck-fast', 'fa-rotate-left', 'fa-circle-question']);
   });
-  it('links: shipping policy, return policy, FAQ; the Printed in Pune item has none', () => {
-    expect(iconRow({ price: 100 }).map(i => i.path)).toEqual(['shipping-policy/', 'return-and-exchange-policy/', undefined, 'faq/']);
+  it('links: shipping policy, return policy, FAQ', () => {
+    expect(iconRow({ price: 100 }).map(i => i.path)).toEqual(['shipping-policy/', 'return-and-exchange-policy/', 'faq/']);
   });
   it('gift card: nothing', () => {
     expect(iconRow({ giftCard: true })).toEqual([]);

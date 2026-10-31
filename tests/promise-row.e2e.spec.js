@@ -36,7 +36,7 @@ for (const vp of WIDTHS) {
   test.describe(`promise row ${vp.name}`, () => {
     test.use({ viewport: { width: vp.width, height: vp.height } });
 
-    const LABELS = ['Delivery ₹49', '7-day easy returns', 'Printed to order in Pune', 'Questions? FAQ'];
+    const LABELS = ['Delivery ₹49', '7-day easy returns', 'Questions? FAQ'];
 
     test('product page: icon row under the price, replacing the two text lines', async ({ page }) => {
       await page.goto(OCTOPUS);
@@ -52,18 +52,22 @@ for (const vp of WIDTHS) {
       expect(await y('.promise-icons')).toBeLessThan(await y('.product-facts'));
       // nothing sits between the icon row and the details box
       expect(await page.locator('.promise-icons').evaluate(el => el.nextElementSibling.className)).toBe('product-facts');
-      // four items on one row, tap targets at least 44px tall, links go to the right pages
+      // three items on one row, tap targets at least 44px tall, links go to the right pages
       const boxes = await page.locator('.promise-icons li > *').evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return { top: Math.round(r.top), h: r.height }; }));
       expect(new Set(boxes.map(b => b.top)).size).toBe(1);
       for (const b of boxes) expect(b.h).toBeGreaterThanOrEqual(44);
       await expect(page.locator('.promise-icons a')).toHaveCount(3);
+      await expect(page.locator('.promise-icons li')).toHaveCount(3);
+      await expect(page.locator('.promise-icons')).not.toContainText('Printed to order');
+      await expect(page.locator('.product-facts')).toContainText('Printed to order in Pune');   // stays in the details box
       await expect(page.locator('.promise-icons a').nth(0)).toHaveAttribute('href', /\/shipping-policy\/$/);
       await expect(page.locator('.promise-icons a').nth(1)).toHaveAttribute('href', /\/return-and-exchange-policy\/$/);
       await expect(page.locator('.promise-icons a').nth(2)).toHaveAttribute('href', /\/faq\/$/);
       await expect(page.locator('.promise-icons a').nth(1)).toHaveAttribute('title', "Damaged in transit? We'll make it right.");
-      // the third item is a location pin, not a link
-      await expect(page.locator('.promise-icons li').nth(2).locator('i')).toHaveClass(/fa-location-dot/);
-      await expect(page.locator('.promise-icons li').nth(2).locator('a')).toHaveCount(0);
+      // evenly spaced thirds of the row
+      const lefts = await page.locator('.promise-icons li').evaluateAll(els => els.map(e => e.getBoundingClientRect()));
+      const gaps = [lefts[1].left - lefts[0].right, lefts[2].left - lefts[1].right];
+      expect(Math.abs(gaps[0] - gaps[1])).toBeLessThan(1.5);
       expect(await y('.product-facts')).toBeLessThan(await y('.product-description'));
       await page.locator('.promise-icons').scrollIntoViewIfNeeded();
       await shot(page, `product-plain-${vp.name}`);
