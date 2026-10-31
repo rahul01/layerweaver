@@ -3511,3 +3511,28 @@ body.seasonal--halloween {
 .giftcard-error { color: #b23a3a; font-size: 0.9rem; margin: 0 0 14px; }
 .giftcard-delivery { margin: -16px 0 32px; font-size: 0.95rem; color: var(--dark); }
 .giftcard-delivery i { color: var(--primary); margin-right: 6px; }
+
+/* Sticky Add to Cart bar on product pages, phones only (wireStickyBar in cart.js).
+   Below the cart/wishlist overlays (1002) and the photo viewer (1003). */
+.sticky-add-bar { display: none; }
+@media (max-width: 768px) {
+    .sticky-add-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 900;
+        padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+        background: var(--light);
+        border-top: 1px solid #eee;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+    }
+    .sticky-add-bar[hidden] { display: none; }
+    .sticky-add-img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+    .sticky-add-price { font-weight: 700; color: var(--primary); font-size: 1.1rem; white-space: nowrap; }
+    .sticky-add-btn { flex: 1; justify-content: center; min-height: 48px; margin: 0; padding: 0 16px; }
+    html.has-sticky-add body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+}

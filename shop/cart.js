@@ -1514,6 +1514,74 @@
     if (body) body.style.opacity = on ? '0.5' : '1';
   }
 
+  // ── Sticky "Add to cart" bar (phones, product pages) ───────────────────────
+  // Appears at the bottom once the main Add to Cart button has scrolled up out of
+  // view; hidden while the cart or wishlist drawer is open. Its button reuses the
+  // page's own button (addBtn.click()), so the cart code and the personalisation
+  // check run once, in one place. Not on gift cards or sold-out products (no bar,
+  // rather than a disabled one). Off with STICKY_ADD_BAR = false; CSS shows it only
+  // under 768px (shop.css).
+  const STICKY_ADD_BAR = true;
+  function wireStickyBar() {
+    const addBtn = document.getElementById('add-to-cart-btn');
+    if (!STICKY_ADD_BAR || !addBtn || addBtn.dataset.giftCard || addBtn.dataset.soldOut || !('IntersectionObserver' in window)) return;
+    const mainImg = document.getElementById('main-image');
+    const priceEl = document.getElementById('product-price');
+    const bar = document.createElement('div');
+    bar.id = 'sticky-add-bar';
+    bar.className = 'sticky-add-bar';
+    bar.hidden = true;
+    bar.innerHTML = `
+      ${mainImg ? '<img class="sticky-add-img" alt="" width="48" height="48">' : ''}
+      <span class="sticky-add-price"></span>
+      <button type="button" class="btn-primary add-to-cart-btn sticky-add-btn"></button>`;
+    document.body.appendChild(bar);
+    const img = bar.querySelector('.sticky-add-img');
+    const price = bar.querySelector('.sticky-add-price');
+    const btn = bar.querySelector('.sticky-add-btn');
+
+    // Mirror the page's own price, photo and button state (variant changes, In Cart (n)).
+    const sync = () => {
+      if (img && mainImg) img.src = mainImg.currentSrc || mainImg.src;
+      if (priceEl) price.textContent = priceEl.textContent.trim();
+      btn.innerHTML = addBtn.innerHTML;
+      btn.classList.toggle('btn-in-cart', addBtn.classList.contains('btn-in-cart'));
+    };
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(addBtn, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    if (priceEl) mo.observe(priceEl, { childList: true, characterData: true, subtree: true });
+    if (mainImg) mo.observe(mainImg, { attributes: true, attributeFilter: ['src'] });
+
+    let pastButton = false;
+    const update = () => {
+      const drawerOpen = !!document.querySelector('#cart-drawer.open, #wishlist-drawer.open');
+      const show = pastButton && !drawerOpen;
+      bar.hidden = !show;
+      document.documentElement.classList.toggle('has-sticky-add', show);
+    };
+    new IntersectionObserver(([e]) => {
+      // only once it has gone off the top, not while it is still below the fold
+      pastButton = !e.isIntersecting && e.boundingClientRect.top < 0;
+      update();
+    }).observe(addBtn);
+    const drawers = document.querySelectorAll('#cart-drawer, #wishlist-drawer');
+    drawers.forEach(d => new MutationObserver(update).observe(d, { attributes: true, attributeFilter: ['class'] }));
+
+    btn.addEventListener('click', () => {
+      const field = addBtn.dataset.personalized ? document.getElementById('custom-text') : null;
+      if (field && !field.value.trim()) {
+        // the choice comes first: take them back to the field
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus({ preventScroll: true });
+        field.classList.add('field-error');
+        field.addEventListener('input', () => field.classList.remove('field-error'), { once: true });
+        return;
+      }
+      addBtn.click();
+    });
+  }
+
   // ── Wire up product page ──────────────────────────────────────────────────
 
   function wireProductPage() {
@@ -1670,6 +1738,7 @@
 
     refreshUI();
     wireProductPage();
+    wireStickyBar();
     wireListingPage();
     _cartReady = true;
 

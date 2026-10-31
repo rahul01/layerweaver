@@ -1432,6 +1432,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                                 data-variant-gid="${firstAvailable.id}"
                                 ${product.tags.includes('personalized') ? 'data-personalized="true"' : ''}
                                 ${giftCard ? 'data-gift-card="true"' : ''}
+                                ${variants.every(v => !v.availableForSale) ? 'data-sold-out="true"' : ''}
                                 ${charRate ? `data-per-char-rate="${charRate}" data-surcharge-gid="${surchargeGid}" data-base-price="${firstAvailable.price.amount}" data-for-product="${escAttr(toTitleCase(product.title))}"` : ''}>
                             Add to Cart
                         </button>`}
