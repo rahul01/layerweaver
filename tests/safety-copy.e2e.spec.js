@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 // Screenshots go to SHOTS when it is set.
 const INCLUDED = '/shop/products/articulated-octopus/';
 const EXCLUDED = '/shop/products/bunny-keychain/';
-const LINE = 'Not suitable for children under 5. Small parts. Adult supervision recommended.';
+const LINE = 'Not for children under 5: small parts. Adult supervision recommended.';
 const SHOTS = process.env.SAFETY_SHOTS;
 const WIDTHS = [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop', width: 1280, height: 900 }];
 
@@ -37,7 +37,7 @@ for (const vp of WIDTHS) {
       await item.locator('summary').click();
       const answer = item.locator('.faq-answer');
       await expect(answer).toContainText('EN 71-3');
-      await expect(answer).toContainText('Not suitable for children under 5.');
+      await expect(answer).toContainText('Keep them away from children under 5.');
       await expect(answer).not.toContainText(/eco|plant|non-toxic|safe for/i);
       if (SHOTS) await item.screenshot({ path: `${SHOTS}/faq-${vp.name}.png` });
     });

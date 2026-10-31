@@ -211,7 +211,7 @@ function isPersonalised(product) {
 // Not on keychains, clickers, lamps, lanterns, pen pots, bookmarks, aquarium
 // items, name plates or gift cards. Bird Ocarina is left out on purpose: the
 // "Not for mouth use" line would contradict the product.
-const AGE_WARNING = 'Not suitable for children under 5. Small parts. Adult supervision recommended.';
+const AGE_WARNING = 'Not for children under 5: small parts. Adult supervision recommended.';
 const AGE_WARNING_HANDLES = new Set([
   't-rex-skeleton', 'articulated-stegosaurus-skeleton', 'articulated-brachiosaurus-skeleton',
   'articulated-velociraptor-skeleton', 'articulated-triceratops-skeleton', 'articulated-pteranodon-skeleton',

@@ -725,7 +725,7 @@ function shopHeaderHtml(base, shopBase) {
 function shopTrustStripHtml(base) {
   const items = [
     { href: `${base}shipping-policy/`,           icon: 'fa-truck-fast',       color: '#2196F3', label: 'Free Shipping Above ₹299' },
-    { href: `${base}faq/#material`,                icon: 'fa-leaf',             color: '#4CAF50', label: 'Eco-Friendly &amp; Renewable PLA' },
+    { href: `${base}faq/#material`,                icon: 'fa-leaf',             color: '#4CAF50', label: 'Plant-based. Printed to order in Pune.' },
     { href: `${base}return-and-exchange-policy/`,icon: 'fa-rotate-left',      color: '#2196F3', label: 'Easy Returns &amp; Exchanges' },
     { href: `${base}workshop/`,                  icon: 'fa-chalkboard-user',  color: '#FF7043', label: '3D Printing Workshops for All Ages' },
     { href: `https://wa.me/917558783018`,        icon: 'fa-whatsapp',         color: '#25D366', label: 'Chat with Us on WhatsApp', target: '_blank', brand: true },

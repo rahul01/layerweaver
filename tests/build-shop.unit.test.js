@@ -251,7 +251,7 @@ describe('buildGoogleFeedXml', () => {
 // ── ageWarningFor ─────────────────────────────────────────────────────────────
 
 describe('ageWarningFor', () => {
-  const LINE = 'Not suitable for children under 5. Small parts. Adult supervision recommended.';
+  const LINE = 'Not for children under 5: small parts. Adult supervision recommended.';
   it('gives the plain warning line for listed products', () => {
     for (const h of ['t-rex-skeleton', 'articulated-octopus', 'uno-box', 'night-dragon', 'bird-ocarina']) expect(ageWarningFor(h)).toBe(LINE);
     expect(AGE_WARNING_HANDLES.size).toBe(23);

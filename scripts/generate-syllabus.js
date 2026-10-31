@@ -162,7 +162,7 @@ const html = `<!DOCTYPE html>
     <li>Use a 3D printer safely and with confidence.</li>
     <li>Spot what went wrong with a print - and fix it.</li>
     <li>Design a simple object that actually fits and works in real life.</li>
-    <li>Pick the right plastic and settings for whatever you want to make.</li>
+    <li>Pick the right filament and settings for whatever you want to make.</li>
     <li>Understand how 3D printing fits into today's world of making things.</li>
   </ul>
 </div>
@@ -206,11 +206,11 @@ const html = `<!DOCTYPE html>
   <div class="session">
     <div class="session-header">
       <div class="session-num">3</div>
-      <div class="session-title">Choosing the Right Plastic for the Job</div>
+      <div class="session-title">Choosing the Right Material for the Job</div>
     </div>
     <div class="session-body">
       <ul>
-        <li>PLA - the everyday beginner-friendly material</li>
+        <li>Standard filament - the everyday beginner-friendly material</li>
         <li>PETG - stronger, more flexible, and heat-resistant</li>
         <li>Specialty filaments: flexible, glow-in-the-dark, wood-filled, and more</li>
         <li>How infill pattern and wall count affect strength and weight</li>
@@ -372,7 +372,7 @@ const htmlWeekend = `<!DOCTYPE html>
         <li>Finding and downloading designs from Thingiverse and Printables</li>
         <li>Slicing a model: key settings explained in plain English</li>
         <li>Watching and understanding your first print as it happens</li>
-        <li>PLA vs PETG vs specialty filaments - which to use when</li>
+        <li>Standard vs PETG vs specialty filaments - which to use when</li>
       </ul>
     </div>
   </div>
