@@ -335,13 +335,13 @@ describe('customerPhotosHtml', () => {
     expect(html).toContain('class="review-strip-photo customer-photo"');
     expect(html).toContain('alt="Customer photo of Floating Cat" width="72" height="72" loading="lazy"');
     expect(html).toContain('data-name="N &lt;b&gt;"');
-    expect(html).not.toContain('See all');
   });
-  it('no "See all" link and no pointer to a separate strip (that strip is gone)', () => {
+  it('ends with a See all reviews link to the reviews section, when the row shows', () => {
     const html = customerPhotosHtml(photos, 'a');
-    expect(html).not.toContain('See all');
+    expect(html).toContain('<a href="#customer-reviews" class="customer-photos-all" data-own-scroll>See all reviews</a>');
+    expect(html).not.toContain('See all photos');
     expect(html).not.toContain('review-photos');
-    expect(html).not.toContain('customer-photos-all');
+    expect(customerPhotosHtml([], 'a')).toBe('');            // no row, no link
   });
 });
 

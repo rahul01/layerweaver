@@ -251,7 +251,8 @@ function curatedCustomerPhotos(reviews, pickIds, max = 3) {
 }
 
 // "Photos from customers" row markup. photos from curatedCustomerPhotos(); alt = the alt
-// text / label. Empty string when there are no photos.
+// text / label. Ends with a "See all reviews" link to the reviews section (#customer-reviews,
+// the page script expands a collapsed list and scrolls, honouring scroll-margin-top). Empty string when there are no photos.
 function customerPhotosHtml(photos, alt) {
   if (!photos.length) return '';
   const a = escAttr(alt);
@@ -261,6 +262,7 @@ function customerPhotosHtml(photos, alt) {
                         ${photos.map(p => `<button type="button" class="review-strip-photo customer-photo" data-full="${escAttr(p.full)}" data-rating="${p.rating}" data-name="${escAttr(p.name)}" data-body="${escAttr(p.body)}" aria-label="${a}">
                             <img src="${escAttr(p.thumb)}" alt="${a}" width="72" height="72" loading="lazy">
                         </button>`).join('\n                        ')}
+                        <a href="#customer-reviews" class="customer-photos-all" data-own-scroll>See all reviews</a>
                         </div>
                     </div>`;
 }

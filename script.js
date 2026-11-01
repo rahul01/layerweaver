@@ -209,8 +209,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    // Smooth scrolling for anchor links (links with data-own-scroll do their own scrolling)
+    document.querySelectorAll('a[href^="#"]:not([data-own-scroll])').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             

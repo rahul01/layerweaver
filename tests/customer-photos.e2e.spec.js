@@ -28,7 +28,7 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
         await page.goto(P(h));
         await expect(page.locator('#review-photos')).toHaveCount(0);
         await expect(page.locator('.review-photo-strip')).toHaveCount(0);
-        await expect(page.locator('.customer-photos-all')).toHaveCount(0);
+        await expect(page.getByText('See all photos')).toHaveCount(0);
         await expect(page.locator('.review-card').first()).toBeAttached();      // review cards below are untouched
       }
     });
@@ -65,9 +65,39 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
       const y = async s => (await page.locator(s).first().boundingBox()).y;
       expect(await y('.main-image-wrap')).toBeLessThan(await y('.customer-photos'));
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await expect(box.locator('a')).toHaveCount(0);
+      await expect(box.locator('a')).toHaveCount(1);
+      await expect(box.locator('a.customer-photos-all')).toHaveAttribute('href', '#customer-reviews');
       await page.locator('.customer-photos').scrollIntoViewIfNeeded();
       await shot(page, `photos-row-markup-${vp.name}`);
+    });
+
+    test('See all reviews: on the row only, 44px tap target, jumps to the reviews and expands the list', async ({ page }) => {
+      await page.goto(P('ghost-balloon-lamp'));
+      const link = page.locator('.customer-photos .customer-photos-all');
+      await expect(link).toHaveText('See all reviews');
+      expect((await link.boundingBox()).height).toBeGreaterThanOrEqual(44);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      await shot(page, `photos-see-all-reviews-${vp.name}`);
+      const total = await page.locator('.review-card').count();
+      expect(total).toBeGreaterThan(3);                                    // the list starts collapsed
+      await expect(page.locator('.reviews-show-all')).toHaveCount(1);
+      await link.click();
+      await expect(page.locator('.reviews-show-all')).toHaveCount(0);       // expanded, like the Show all button
+      await expect(page.locator('.reviews-section.reviews-section--expanded')).toHaveCount(1);
+      await expect(page.locator('.review-card').last()).toBeAttached();
+      await page.waitForTimeout(1500);                                      // smooth scrolling settles
+      const top = (await page.locator('#customer-reviews').boundingBox()).y;
+      const header = (await page.locator('.shop-header').boundingBox());
+      expect(top).toBeGreaterThanOrEqual(header.y + header.height - 2);     // not hidden under the fixed header
+      expect(top).toBeLessThan(vp.height / 2);                              // and on screen
+      await expect(page.locator('#customer-reviews h3')).toBeInViewport();
+      await expect(page.locator('.review-card').nth(3)).toBeVisible();      // a review that was collapsed is readable now
+      await shot(page, `reviews-after-see-all-${vp.name}`);
+      // products without a row have no link
+      for (const h of ['bunny-keychain', 'floating-cat']) {
+        await page.goto(P(h));
+        await expect(page.locator('.customer-photos-all')).toHaveCount(0);
+      }
     });
 
     test('tapping a row photo opens the photo viewer', async ({ page }) => {

@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1793544325260">
+    <link rel="stylesheet" href="../../shop.css?v=1793549050486">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -302,7 +302,7 @@
 
         
         <div class="container">
-        <div class="reviews-section">
+        <div class="reviews-section" id="customer-reviews">
             <h3>Customer Reviews</h3>
             <div class="reviews-aggregate">
                 <div class="product-stars product-stars--lg">
@@ -672,6 +672,17 @@
             if (lightbox) lightbox.classList.remove('review-lightbox--open');
         }
 
+        // "See all reviews" in the photos row: show the whole list (what the Show all button does), then
+        // scroll to the section (the href stays as a no-script fallback).
+        document.querySelectorAll('.customer-photos-all').forEach(a => a.addEventListener('click', e => {
+            const section = document.querySelector('.reviews-section');
+            if (!section) return;
+            e.preventDefault();
+            section.classList.add('reviews-section--expanded');
+            section.querySelector('.reviews-show-all')?.remove();
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });   // keeps scroll-margin-top (header offset)
+        }));
+
         document.querySelectorAll('.review-pictures img, .review-strip-photo').forEach(el => {
             el.addEventListener('click', () => {
                 const d = el.dataset;
@@ -810,11 +821,11 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"tulip-single-flower":{"Pink":"#ffc0cb","Purple":"#a54dcf","Red":"#f61f1f","Yellow":"#ffe500","White":"#ffffff"}};</script>
-    <script src="../../auth.js?v=1793544325260"></script>
-    <script src="../../promise-row.js?v=1793544325260"></script>
-    <script src="../../cart.js?v=1793544325260"></script>
-    <script src="../../search.js?v=1793544325260"></script>
-    <script src="../../wishlist.js?v=1793544325260"></script>
+    <script src="../../auth.js?v=1793549050486"></script>
+    <script src="../../promise-row.js?v=1793549050486"></script>
+    <script src="../../cart.js?v=1793549050486"></script>
+    <script src="../../search.js?v=1793549050486"></script>
+    <script src="../../wishlist.js?v=1793549050486"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

@@ -1473,7 +1473,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
 
         ${reviewData?.reviews?.length ? `
         <div class="container">
-        <div class="reviews-section">
+        <div class="reviews-section" id="customer-reviews">
             <h3>Customer Reviews</h3>
             <div class="reviews-aggregate">
                 ${starsHtml(reviewData.rating, reviewData.count, 'lg')}
@@ -1539,6 +1539,17 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
             const lightbox = document.getElementById('review-lightbox');
             if (lightbox) lightbox.classList.remove('review-lightbox--open');
         }
+
+        // "See all reviews" in the photos row: show the whole list (what the Show all button does), then
+        // scroll to the section (the href stays as a no-script fallback).
+        document.querySelectorAll('.customer-photos-all').forEach(a => a.addEventListener('click', e => {
+            const section = document.querySelector('.reviews-section');
+            if (!section) return;
+            e.preventDefault();
+            section.classList.add('reviews-section--expanded');
+            section.querySelector('.reviews-show-all')?.remove();
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });   // keeps scroll-margin-top (header offset)
+        }));
 
         document.querySelectorAll('.review-pictures img, .review-strip-photo').forEach(el => {
             el.addEventListener('click', () => {
