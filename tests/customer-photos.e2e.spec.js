@@ -21,8 +21,16 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
         await expect(page.locator('.customer-photos')).toHaveCount(has ? 1 : 0);
         if (!has) await expect(page.getByText('Photos from customers')).toHaveCount(0);
       }
-      await page.goto(P('floating-cat'));
-      await expect(page.locator('#review-photos.review-photo-strip .review-strip-photo').first()).toBeAttached();
+    });
+
+    test('the lower "all photos" strip is gone on every page', async ({ page }) => {
+      for (const h of ['ghost-balloon-lamp', 'bunny-keychain', 'floating-cat']) {
+        await page.goto(P(h));
+        await expect(page.locator('#review-photos')).toHaveCount(0);
+        await expect(page.locator('.review-photo-strip')).toHaveCount(0);
+        await expect(page.locator('.customer-photos-all')).toHaveCount(0);
+        await expect(page.locator('.review-card').first()).toBeAttached();      // review cards below are untouched
+      }
     });
 
     test('ghost-balloon-lamp shows its 3 picked photos in file order; bunny-keychain and floating-cat show none', async ({ page }) => {
@@ -30,22 +38,20 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
       await page.goto(P('ghost-balloon-lamp'));
       const ids = (await page.locator('.customer-photos .customer-photo').evaluateAll(els => els.map(e => e.dataset.full))).map(idOf);
       expect(ids).toEqual(picks['ghost-balloon-lamp']);
-      await expect(page.locator('.customer-photos .customer-photos-all')).toBeVisible();   // it has 7 photos in all
       await page.locator('.customer-photos').scrollIntoViewIfNeeded();
       await shot(page, `photos-ghost-balloon-lamp-${vp.name}`);
       for (const h of ['bunny-keychain', 'floating-cat']) {
         await page.goto(P(h));
         await expect(page.locator('.customer-photos')).toHaveCount(0);
-        await expect(page.locator('#review-photos .review-strip-photo').first()).toBeAttached();   // the full strip stays
         if (h === 'bunny-keychain') await shot(page, `photos-bunny-keychain-${vp.name}`);
       }
     });
 
     test('the row markup: labelled, three fixed 72px tiles, right order, no overflow, existing viewer', async ({ page }) => {
-      await page.goto(P('floating-cat'));
-      // reuse three real photos from the full strip as the picks
-      const real = await page.locator('#review-photos .review-strip-photo').evaluateAll(els => els.slice(0, 3).map(e => ({ full: e.dataset.full, thumb: e.querySelector('img').src, rating: Number(e.dataset.rating), name: e.dataset.name, body: '' })));
-      const html = customerPhotosHtml(real, real.length + 2, 'Customer photo of Floating Cat');
+      await page.goto(P('ghost-balloon-lamp'));
+      // reuse the three real photos of a picked product's row, re-rendered by the build's own markup
+      const real = await page.locator('.customer-photos .customer-photo').evaluateAll(els => els.map(e => ({ full: e.dataset.full, thumb: e.querySelector('img').src, rating: Number(e.dataset.rating), name: e.dataset.name, body: '' })));
+      const html = customerPhotosHtml(real, 'Customer photo of Ghost Balloon Lamp');
       await page.evaluate(h => { document.querySelectorAll('.customer-photos').forEach(e => e.remove()); document.querySelector('.thumbnails').insertAdjacentHTML('afterend', h); }, html);
       const box = page.locator('.customer-photos');
       await expect(box.locator('.customer-photos-label')).toHaveText('Photos from customers');
@@ -54,14 +60,24 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
       for (let i = 0; i < real.length; i++) {
         const b = await tiles.nth(i).boundingBox();
         expect(Math.round(b.width)).toBe(72); expect(Math.round(b.height)).toBe(72);
-        await expect(tiles.nth(i).locator('img')).toHaveAttribute('alt', 'Customer photo of Floating Cat');
+        await expect(tiles.nth(i).locator('img')).toHaveAttribute('alt', 'Customer photo of Ghost Balloon Lamp');
       }
       const y = async s => (await page.locator(s).first().boundingBox()).y;
       expect(await y('.main-image-wrap')).toBeLessThan(await y('.customer-photos'));
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await expect(box.locator('.customer-photos-all')).toHaveAttribute('href', '#review-photos');
+      await expect(box.locator('a')).toHaveCount(0);
       await page.locator('.customer-photos').scrollIntoViewIfNeeded();
       await shot(page, `photos-row-markup-${vp.name}`);
+    });
+
+    test('tapping a row photo opens the photo viewer', async ({ page }) => {
+      await page.goto(P('ghost-balloon-lamp'));
+      await page.locator('.customer-photos .customer-photo').first().click();
+      await expect(page.locator('#review-lightbox.review-lightbox--open')).toBeVisible();
+      await expect(page.locator('#review-lightbox-img')).toHaveAttribute('src', /https?:\/\//);
+      await expect(page.locator('.review-lightbox')).toHaveCount(1);
+      await page.keyboard.press('Escape');
+      await expect(page.locator('#review-lightbox.review-lightbox--open')).toHaveCount(0);
     });
   });
 }

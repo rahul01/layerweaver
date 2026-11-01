@@ -328,18 +328,20 @@ describe('curatedCustomerPhotos', () => {
 
 describe('customerPhotosHtml', () => {
   const photos = [{ id: 'a', thumb: 'https://x/a.jpg?w=160', full: 'https://x/a.jpg?w=1024', rating: 5, name: 'N <b>', body: 'say "hi"' }];
-  it('nothing for no photos', () => { expect(customerPhotosHtml([], 5, 'Customer photo of X')).toBe(''); });
+  it('nothing for no photos', () => { expect(customerPhotosHtml([], 'Customer photo of X')).toBe(''); });
   it('heading, a viewer-ready button with a fixed-size lazy image, escaped data', () => {
-    const html = customerPhotosHtml(photos, 1, 'Customer photo of Floating Cat');
+    const html = customerPhotosHtml(photos, 'Customer photo of Floating Cat');
     expect(html).toContain('Photos from customers');
     expect(html).toContain('class="review-strip-photo customer-photo"');
     expect(html).toContain('alt="Customer photo of Floating Cat" width="72" height="72" loading="lazy"');
     expect(html).toContain('data-name="N &lt;b&gt;"');
     expect(html).not.toContain('See all');
   });
-  it('See all N photos only when the product has more than are shown', () => {
-    expect(customerPhotosHtml(photos, 4, 'a')).toContain('href="#review-photos" class="customer-photos-all">See all 4 photos');
-    expect(customerPhotosHtml(photos, 1, 'a')).not.toContain('customer-photos-all');
+  it('no "See all" link and no pointer to a separate strip (that strip is gone)', () => {
+    const html = customerPhotosHtml(photos, 'a');
+    expect(html).not.toContain('See all');
+    expect(html).not.toContain('review-photos');
+    expect(html).not.toContain('customer-photos-all');
   });
 });
 

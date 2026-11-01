@@ -250,10 +250,9 @@ function curatedCustomerPhotos(reviews, pickIds, max = 3) {
   return (Array.isArray(pickIds) ? pickIds : []).map(id => byId.get(id)).filter(Boolean).slice(0, max);
 }
 
-// "Photos from customers" row markup. photos from curatedCustomerPhotos(); total = every
-// photo the product has (for the "See all N photos" link to the full strip, #review-photos);
-// alt = the alt text / label. Empty string when there are no photos.
-function customerPhotosHtml(photos, total, alt) {
+// "Photos from customers" row markup. photos from curatedCustomerPhotos(); alt = the alt
+// text / label. Empty string when there are no photos.
+function customerPhotosHtml(photos, alt) {
   if (!photos.length) return '';
   const a = escAttr(alt);
   return `<div class="customer-photos">
@@ -262,7 +261,6 @@ function customerPhotosHtml(photos, total, alt) {
                         ${photos.map(p => `<button type="button" class="review-strip-photo customer-photo" data-full="${escAttr(p.full)}" data-rating="${p.rating}" data-name="${escAttr(p.name)}" data-body="${escAttr(p.body)}" aria-label="${a}">
                             <img src="${escAttr(p.thumb)}" alt="${a}" width="72" height="72" loading="lazy">
                         </button>`).join('\n                        ')}
-                        ${total > photos.length ? `<a href="#review-photos" class="customer-photos-all">See all ${total} photos</a>` : ''}
                         </div>
                     </div>`;
 }

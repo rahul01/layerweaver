@@ -480,30 +480,6 @@ function reviewCardHtml(review, index = 0) {
   </div>`;
 }
 
-// Amazon-style strip of every review photo for a product, shown above the
-// review list. Clicking a thumbnail opens it in the lightbox with the
-// review's rating/name/text as a caption - reuses the same data-* attributes
-// reviewCardHtml() already puts on each <img>, just rendered a second time
-// as a compact clickable grid.
-function reviewPhotoStripHtml(reviews) {
-  const photos = reviews.flatMap(r => {
-    const name = escAttr(r.reviewer?.name || 'Customer');
-    return (r.pictures || []).filter(p => !p.hidden && p.urls?.compact).map(p => ({
-      thumb: escAttr(p.urls.compact),
-      full: escAttr(p.urls.original || p.urls.huge || p.urls.compact),
-      rating: r.rating,
-      name,
-      body: escAttr(r.body || ''),
-    }));
-  });
-  if (!photos.length) return '';
-  return `<div class="review-photo-strip" id="review-photos">
-      ${photos.map(p => `<button type="button" class="review-strip-photo" data-full="${p.full}" data-rating="${p.rating}" data-name="${p.name}" data-body="${p.body}" aria-label="Photo from ${p.name}'s review">
-        <img src="${p.thumb}" alt="Photo from ${p.name}'s review" loading="lazy">
-      </button>`).join('\n      ')}
-    </div>`;
-}
-
 // Build a title→hex map from Shopify's swatch data for a product
 function buildSwatchMap(product) {
   const map = {};
@@ -763,8 +739,8 @@ function productDetailsHtml(colours, size) {
 // product in shop/customer-photo-picks.json ({ "<handle>": ["<photo id>", ...] }, max 3, file
 // order; ids as in photoId(), see the review sheets). A missing or invalid file, or a product
 // not in it, shows nothing. Each photo is a .review-strip-photo button, so the page's one
-// existing viewer opens it; "See all" scrolls to the full strip below (both kept). Off switch:
-// PRODUCT_CUSTOMER_PHOTOS = false.
+// photo viewer (the lightbox at the end of the page, also used by the review cards) opens it.
+// There is no separate "all photos" strip any more. Off switch: PRODUCT_CUSTOMER_PHOTOS = false.
 const PRODUCT_CUSTOMER_PHOTOS = true;
 let CUSTOMER_PHOTO_PICKS = {};
 try {
@@ -774,8 +750,7 @@ try {
 function productCustomerPhotosHtml(product, reviews) {
   const photos = curatedCustomerPhotos(reviews, CUSTOMER_PHOTO_PICKS[product.handle], 3);
   if (!photos.length) return '';
-  const total = reviews.flatMap(r => (r.pictures || []).filter(p => !p.hidden && p.urls?.compact)).length;
-  return customerPhotosHtml(photos, total, `Customer photo of ${toTitleCase(product.title)}`);
+  return customerPhotosHtml(photos, `Customer photo of ${toTitleCase(product.title)}`);
 }
 
 function shopTrustStripHtml(base) {
@@ -1503,7 +1478,6 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
             <div class="reviews-aggregate">
                 ${starsHtml(reviewData.rating, reviewData.count, 'lg')}
             </div>
-            ${reviewPhotoStripHtml(reviewData.reviews)}
             <div class="reviews-list">
                 ${reviewData.reviews.map(reviewCardHtml).join('\n')}
             </div>

@@ -3048,14 +3048,7 @@ html.diwali-touch .cart-empty > i { color: #f0c36a; }
     margin: 0;
 }
 
-/* ------- Review photo strip (Amazon-style, above the review list) ------- */
-.review-photo-strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 16px 0 24px;
-}
-
+/* ------- Review photo tiles (used by the "Photos from customers" row) ------- */
 .review-strip-photo {
     width: 68px;
     height: 68px;
@@ -3544,4 +3537,3 @@ body.seasonal--halloween {
 .customer-photos-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .customer-photo { width: 72px; height: 72px; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #f3f0f8; cursor: pointer; flex-shrink: 0; }
 .customer-photo img { width: 100%; height: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
-.customer-photos-all { font-size: 0.8rem; color: var(--gray-medium); text-decoration: underline; min-height: 44px; display: inline-flex; align-items: center; padding: 0 4px; }
