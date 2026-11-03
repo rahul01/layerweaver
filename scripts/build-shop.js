@@ -679,7 +679,7 @@ ${holidayBarHtml(`${base}shipping-policy/`)}
                     <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
                     <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
                 </a>
-                <a href="${shopBase}collections/diwali/" class="logo-diwali-ribbon">Shop Diwali Gifts 🪔</a>
+                <a href="${shopBase}collections/diwali/" class="logo-diwali-ribbon">Shop Lamps &amp; Gifts 🪔</a>
             </div>
             <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
                 <div class="search-bar">
@@ -954,13 +954,15 @@ const SEASONAL_THEMES = {
   halloween: {
     theme: 'halloween',
     icon: '🎃',
-    eyebrow: 'Festive Season 2026',
+    eyebrow: 'Spooky season',
     featured: ['glowing-halloween-pumpkin-lantern-🎃', 'ghost-balloon-lamp', 'pumpkin-articulated-legs', 'articulated-cute-spider', 'skull-brain-clicker-keychain'],
   },
   diwali: {
     theme: 'diwali',
     icon: '🪔',
-    eyebrow: 'Festive Season 2026',
+    eyebrow: 'Lamps & decor',
+    // Shown on the collection page banner and in its meta tags instead of Shopify's collection text (which says "this Diwali").
+    description: '3D printed lamps, nameplates, decor and thoughtful gifts, made in Pune.',
     featured: ['peacock-led-decor-lamp', 'lotus-led-tea-light-holder', 'floating-lotus-flower', 'octopus-table-lamp', 'decorative-vases'],
   },
 };
@@ -1411,12 +1413,12 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                         </div>
                         <div class="personalization-field">
                             <label for="gc-message">Your message</label>
-                            <textarea id="gc-message" rows="3" maxlength="200" placeholder="Happy Diwali!"></textarea>
+                            <textarea id="gc-message" rows="3" maxlength="200" placeholder="Happy birthday!"></textarea>
                         </div>
                         <div class="personalization-field">
                             <label for="gc-send-on">Send on</label>
                             <input type="date" id="gc-send-on" min="${istDatePlus(0)}" max="${istDatePlus(90)}">
-                            <p class="field-hint">Leave empty to send it now.${istDatePlus(0) < '2026-11-08' ? ' Pick Nov 8 to send it on Diwali.' : ''}</p>
+                            <p class="field-hint">Leave empty to send it now.</p>
                         </div>
                         <p class="giftcard-error" id="gc-error" role="alert" hidden></p>
                     </fieldset>` : ''}
@@ -1750,15 +1752,15 @@ function collagebannerHtml(title, description, images, eyebrow = '') {
 // CTA and carousel are all about its collections. Set it to null after the
 // season to restore the evergreen hero below - nothing to hand-edit.
 const HERO_FESTIVE = {
-  eyebrow: 'Festive Season 2026',
-  heading: 'Light Up Diwali, <span class="brand-text">Spook Up Halloween</span>',
+  eyebrow: '3D printed in Pune',
+  heading: 'Lamps, desk toys and gifts, <span class="brand-text">printed to order</span>',
   collections: ['diwali', 'halloween'],
   callouts: [
     { theme: 'diwali', icon: '🪔', name: 'Diwali Collection', desc: 'Lamps, lotus lights &amp; festive decor', href: 'shop/collections/diwali/' },
     { theme: 'halloween', icon: '🎃', name: 'Halloween Collection', desc: 'Glowing pumpkins, spiders &amp; spooky desk buddies', href: 'shop/collections/halloween/' },
     { faIcon: 'fa-truck-fast', name: 'Free Shipping', desc: 'On every order above ₹299', href: 'shop/' },
   ],
-  cta: { label: 'Shop Diwali Gifts', href: 'shop/collections/diwali/', theme: 'diwali' },
+  cta: { label: 'Shop Lamps &amp; Gifts', href: 'shop/collections/diwali/', theme: 'diwali' },
 };
 
 const HERO_EVERGREEN_HEADER = `                    <p class="hero-eyebrow">3D Printed Products</p>
@@ -1925,7 +1927,8 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
     .filter(p => !BANNER_EXCLUDE.includes(p.handle))
     .slice(-5))
     .map(p => p.images.edges[0]?.node);
-  const bannerHtml = collagebannerHtml(collection.title, collection.description, bannerImages, seasonal?.eyebrow);
+  const collectionText = seasonal?.description || collection.description;   // see SEASONAL_THEMES
+  const bannerHtml = collagebannerHtml(collection.title, collectionText, bannerImages, seasonal?.eyebrow);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1933,7 +1936,7 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
     ${headHtml(base, shopBase, {
       title: `${collection.title} – LayerWeaver | Pune, India`,
       description: escAttr(truncateWords(
-        collection.description || `Shop ${collection.title} – unique 3D printed products from LayerWeaver, made in Pune, India.`,
+        collectionText || `Shop ${collection.title} – unique 3D printed products from LayerWeaver, made in Pune, India.`,
         140
       )),
       ogImage: resizedImageUrl(collection.image?.url, IMG_WIDTH_OG),

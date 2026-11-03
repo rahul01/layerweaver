@@ -31,3 +31,26 @@ describe('claims we do not make', () => {
     expect(faq).toContain('id="material"');
   });
 });
+
+// Wording that promises a festival or festival delivery is gone from the pages we write (Nov 3, 2026).
+// The Diwali collection, its look and its name stay; product descriptions come from Shopify.
+describe('no festival promises in our own wording', () => {
+  const FESTIVAL = /Light Up Diwali|Festive Season|Shop Diwali Gifts|this Diwali|in time for Diwali|before Diwali|after Diwali|Diwali delivery|festive delivery|order by [A-Z][a-z]{2} \d/i;
+  const PAGES = ['index.html', 'shop/index.html', 'shop/collections/diwali/index.html', 'shop/collections/halloween/index.html', 'faq/index.html', 'shipping-policy/index.html', 'shop/products/layerweaver-e-gift-card/index.html'];
+  for (const f of PAGES) {
+    it(`${f} has none`, () => {
+      // product descriptions in the e-gift page come from Shopify; check everything before them
+      const html = read(f);
+      const checked = f.includes('e-gift-card') ? html.slice(0, html.indexOf('product-description')) : html;
+      expect(checked.replace(/<meta[^>]*name="description"[^>]*Shopify[^>]*>/g, '')).not.toMatch(FESTIVAL);
+    });
+  }
+  it('the header ribbon still links to the Diwali collection, with neutral words', () => {
+    expect(read('index.html')).toContain('class="logo-diwali-ribbon">Shop Lamps &amp; Gifts 🪔</a>');
+  });
+  it('the gift card page no longer suggests sending on Diwali', () => {
+    const html = read('shop/products/layerweaver-e-gift-card/index.html');
+    expect(html).not.toContain('Happy Diwali');
+    expect(html).not.toContain('send it on Diwali');
+  });
+});

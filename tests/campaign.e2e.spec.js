@@ -110,7 +110,7 @@ test.describe('Logo ribbon and gift card tab', () => {
       await page.goto(path);
       const ribbon = page.locator('.logo-diwali-ribbon');
       await expect(ribbon).toBeVisible();
-      await expect(ribbon).toHaveText('Shop Diwali Gifts 🪔');
+      await expect(ribbon).toHaveText('Shop Lamps & Gifts 🪔');
       expect(await ribbon.evaluate(a => a.href)).toMatch(/\/shop\/collections\/diwali\/$/);
     });
   }

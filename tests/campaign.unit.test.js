@@ -76,7 +76,7 @@ describe('announcement bar copies', () => {
 describe('Diwali logo ribbon', () => {
   it.each([...HAND_PAGES, ...GENERATED_PAGES])('%s has one ribbon to the Diwali collection, outside the logo link', page => {
     const html = read(page);
-    const ribbons = html.match(/<a href="[^"]*collections\/diwali\/" class="logo-diwali-ribbon">Shop Diwali Gifts 🪔<\/a>/g) || [];
+    const ribbons = html.match(/<a href="[^"]*collections\/diwali\/" class="logo-diwali-ribbon">Shop Lamps &amp; Gifts 🪔<\/a>/g) || [];
     expect(ribbons).toHaveLength(1);
     // A link inside the logo link would be invalid HTML: the logo link must
     // close before the ribbon starts.
