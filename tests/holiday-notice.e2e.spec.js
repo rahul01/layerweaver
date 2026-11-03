@@ -22,15 +22,21 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
         await expect(bar(page)).not.toHaveClass(/announcement-rotate/);
         await expect(page.locator('.announcement-dup:visible')).toHaveCount(0);
         const b = await bar(page).boundingBox();
-        expect(b.height).toBe(36);
+        expect(b.height).toBe(vp.width < 901 ? 58 : 48);                         // tall enough to read as a notice
         const textBox = await page.locator('.announcement-bar-track > a:not(.announcement-dup)').boundingBox();
-        expect(textBox.height).toBeLessThanOrEqual(36);                       // one or two lines, never taller than the bar
+        expect(textBox.height).toBeLessThanOrEqual(b.height - 8);                // one or two lines, inside the bar
         expect(textBox.x).toBeGreaterThanOrEqual(0);
-        expect(textBox.x + textBox.width).toBeLessThanOrEqual(vp.width + 1);  // nothing cut off at the right
+        expect(textBox.x + textBox.width).toBeLessThanOrEqual(vp.width + 1);     // nothing cut off at the right
+        const look = await page.locator('.announcement-bar-track > a:not(.announcement-dup)').evaluate(a => { const c = getComputedStyle(a); return { size: parseFloat(c.fontSize), weight: Number(c.fontWeight), color: c.color, anim: getComputedStyle(a.parentElement).animationName }; });
+        expect(look.size).toBeGreaterThanOrEqual(vp.width < 901 ? 16 : 15);
+        expect(look.weight).toBeGreaterThanOrEqual(700);
+        expect(look.color).toBe('rgb(26, 16, 48)');                              // near-black on brand yellow
+        expect(look.anim).toBe('none');                                          // no marquee
+        expect(await bar(page).evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(239, 207, 32)');
+        await expect(page.locator('.announcement-bar-track > a:not(.announcement-dup) i.fa-calendar-days')).toBeVisible();
         const header = await page.locator('header').first().boundingBox();
-        expect(header.y).toBe(36);
+        expect(header.y).toBe(b.height);                                         // the header starts right under the bar
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-        expect(await bar(page).evaluate(el => getComputedStyle(el).backgroundImage)).not.toMatch(/244, 181, 63|232, 160, 32/);   // not the festive gold
       }
       await page.goto('/');
       await shot(page, `home-${vp.name}`);

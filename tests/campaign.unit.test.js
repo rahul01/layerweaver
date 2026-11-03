@@ -49,7 +49,7 @@ describe('announcement bar copies', () => {
   });
 
   it('shows only the ship-date notice, on the dates in holiday.js', () => {
-    const links = [...reference.matchAll(/<a href="" data-from="([\d-]+)" data-to="([\d-]+)" hidden>([^<]*)<\/a>/g)];
+    const links = [...reference.matchAll(/<a href="" data-from="([\d-]+)" data-to="([\d-]+)" hidden><i class="fa-solid fa-calendar-days" aria-hidden="true"><\/i><span>([^<]*)<\/span><\/a>/g)];
     expect(links).toHaveLength(1);
     expect(links[0][1]).toBe(HOLIDAY.from);
     expect(links[0][2]).toBe(HOLIDAY.shipDate);

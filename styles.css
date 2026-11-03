@@ -136,7 +136,8 @@ a:hover {
    (two lines at most on a phone); more than one take turns on desktop and share a
    marquee on phones. */
 :root { --announcement-height: 0px; }
-html.has-announcement { --announcement-height: 36px; }
+html.has-announcement { --announcement-height: 48px; }
+@media (max-width: 900px) { html.has-announcement { --announcement-height: 58px; } }
 
 .announcement-bar {
     position: fixed;
@@ -145,7 +146,8 @@ html.has-announcement { --announcement-height: 36px; }
     right: 0;
     z-index: 1001;
     height: var(--announcement-height);
-    background: linear-gradient(90deg, #8d6cc9 0%, #7a58bb 100%);
+    background: var(--secondary, #EFCF20);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -156,7 +158,7 @@ html.has-announcement { --announcement-height: 36px; }
 .announcement-bar[hidden] { display: none; }
 
 .announcement-bar a {
-    color: #fff;
+    color: #1a1030;
     text-decoration: none;
     font-family: var(--font-primary);
     font-size: 0.8rem;
@@ -213,12 +215,16 @@ html.has-announcement { --announcement-height: 36px; }
     .announcement-bar:not(.announcement-rotate) .announcement-bar-track { display: block; width: 100%; animation: none; }
     .announcement-bar:not(.announcement-rotate) .announcement-dup { display: none; }
     .announcement-bar:not(.announcement-rotate) a {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         white-space: normal;
         padding: 0 12px;
         line-height: 1.2;
-        font-size: 0.72rem;
-        text-align: center;
+        font-size: 1rem;
+        font-weight: 700;
+        text-align: left;
     }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2969,3 +2975,9 @@ footer {
     }
 }
 
+
+/* Ship-date notice: loud on purpose (brand yellow, near-black bold text, calendar icon, still, up to two lines on a phone). */
+.announcement-bar a { font-size: 0.95rem; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
+.announcement-bar a > i { font-size: 1.15em; flex-shrink: 0; }
+.announcement-bar .announcement-dup { display: none; }
+@media (max-width: 900px) { .announcement-bar .announcement-dup { display: inline-flex; } }
