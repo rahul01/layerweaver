@@ -194,6 +194,16 @@ function rankTestimonials(reviews, hasPhoto = () => false) {
 const SHIPPING_FEE = 49;
 const FREE_SHIPPING_FROM = 299;
 const HANDLING_DAYS = [1, 2];
+// While the holiday notice is on (/holiday.js) every order ships on the ship date, so the
+// handling time in structured data and the feed is the days until then (a later rebuild
+// goes back to 1-2 by itself). today = an IST date, for tests.
+function handlingDays(today) {
+  const { HOLIDAY, active, istToday } = require('../holiday.js');
+  const t = today || istToday();
+  if (!active(t)) return HANDLING_DAYS;
+  const d = Math.max(1, Math.round((Date.parse(HOLIDAY.shipDate) - Date.parse(t)) / 86_400_000));
+  return [d, d];
+}
 const TRANSIT_DAYS = [3, 7];
 const RETURN_DAYS = 7;
 
@@ -305,14 +315,15 @@ function sizeFor(product, { fallback = true } = {}) {
 }
 
 // schema.org OfferShippingDetails + MerchantReturnPolicy for one offer.
-function offerShippingAndReturns(price, { personalised = false } = {}) {
+function offerShippingAndReturns(price, { personalised = false, today } = {}) {
+  const handling = handlingDays(today);
   const days = ([min, max]) => ({ '@type': 'QuantitativeValue', minValue: min, maxValue: max, unitCode: 'DAY' });
   return {
     shippingDetails: {
       '@type': 'OfferShippingDetails',
       shippingRate: { '@type': 'MonetaryAmount', value: shippingPriceFor(price).toFixed(2), currency: 'INR' },
       shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'IN' },
-      deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: days(HANDLING_DAYS), transitTime: days(TRANSIT_DAYS) },
+      deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: days(handling), transitTime: days(TRANSIT_DAYS) },
     },
     hasMerchantReturnPolicy: personalised
       ? { '@type': 'MerchantReturnPolicy', applicableCountry: 'IN', returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted' }
@@ -329,14 +340,15 @@ const xmlEsc = s => String(s ?? '')
 // { id, groupId, title, description, link, imageLink, extraImages, price
 // (number, INR), available, color }. Custom 3D prints have no GTIN/MPN, so
 // identifier_exists is "no" and the brand is LayerWeaver.
-function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } = {}) {
+function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products', today } = {}) {
+  const handling = handlingDays(today);
   const tag = (name, value) => (value === undefined || value === null || value === '' ? '' : `\n      <${name}>${xmlEsc(value)}</${name}>`);
   const entries = items.map(it => `    <item>${tag('g:id', it.id)}${tag('g:item_group_id', it.groupId)}${tag('g:title', it.title)}${tag('g:description', it.description)}${tag('g:link', it.link)}${tag('g:image_link', it.imageLink)}${(it.extraImages || []).slice(0, 10).map(u => tag('g:additional_image_link', u)).join('')}${tag('g:availability', it.available ? 'in_stock' : 'out_of_stock')}${tag('g:price', `${Number(it.price).toFixed(2)} INR`)}${tag('g:brand', 'LayerWeaver')}${tag('g:condition', 'new')}${tag('g:identifier_exists', 'no')}${tag('g:color', it.color)}
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>${shippingPriceFor(it.price).toFixed(2)} INR</g:price>
-        <g:min_handling_time>${HANDLING_DAYS[0]}</g:min_handling_time>
-        <g:max_handling_time>${HANDLING_DAYS[1]}</g:max_handling_time>
+        <g:min_handling_time>${handling[0]}</g:min_handling_time>
+        <g:max_handling_time>${handling[1]}</g:max_handling_time>
         <g:min_transit_time>${TRANSIT_DAYS[0]}</g:min_transit_time>
         <g:max_transit_time>${TRANSIT_DAYS[1]}</g:max_transit_time>
       </g:shipping>
@@ -344,4 +356,4 @@ function buildGoogleFeedXml(items, { siteUrl, title = 'LayerWeaver products' } =
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n  <channel>\n    <title>${xmlEsc(title)}</title>\n    <link>${xmlEsc(siteUrl)}</link>\n    <description>${xmlEsc(title)}</description>\n${entries}\n  </channel>\n</rss>\n`;
 }
 
-module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, photoId, curatedCustomerPhotos, customerPhotosHtml };
+module.exports = { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, testimonialScore, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, handlingDays, parseSize, sizeFor, photoId, curatedCustomerPhotos, customerPhotosHtml };

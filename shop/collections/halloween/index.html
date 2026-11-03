@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1793549050486">
+    <link rel="stylesheet" href="../../shop.css?v=1793690272489">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -81,11 +81,10 @@
 </head>
 <body class="seasonal seasonal--halloween">
     
-    <!-- Announcement bar: next-order codes Oct 21 - Nov 1, e-gift card till Nov 7, 2026 (shown by the script below, which also turns on the light Diwali touch till Nov 8). Remove in the Nov 9 cleanup. -->
+    <!-- Announcement bar: ship-date notice (dates and words in /holiday.js; remove with scripts/apply-holiday-notice.js --remove). -->
     <div class="announcement-bar" hidden>
         <div class="announcement-bar-track">
-            <a href="../../collections/diwali/" data-from="2026-10-21" data-to="2026-11-01" hidden>🪔 Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order. <span class="announcement-cta">Shop Diwali →</span></a>
-            <a href="../../products/layerweaver-e-gift-card/" data-to="2026-11-07" hidden>🎁 Can't decide, or too late to ship? Send an e-gift card - it arrives by email instantly. <span class="announcement-cta">Gift cards →</span></a>
+            <a href="../../../shipping-policy/" data-from="2026-11-03" data-to="2026-11-12" hidden>New orders ship on 12 Nov. We're away until then.</a>
         </div>
     </div>
     <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on;if(t<='2026-11-08')document.documentElement.classList.add('diwali-touch');on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
@@ -437,39 +436,6 @@
       </div>
 
       <div class="shop-product-card">
-          <a href="../../products/skull-brain-clicker-keychain/" class="product-card-link">
-              <div class="product-image-wrap">
-                  <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Sep_8_2026_01_24_52_PM.png?v=1788854332&width=500" alt="Skull Brain Clicker Keychain" loading="lazy">
-                  
-                  
-                  <button class="wishlist-btn"
-                          data-handle="skull-brain-clicker-keychain"
-                          data-title="Skull Brain Clicker Keychain"
-                          data-price="₹250"
-                          data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Sep_8_2026_01_24_52_PM.png?v=1788854332"
-                          data-url="https://www.layerweaver.com/shop/products/skull-brain-clicker-keychain/"
-                          aria-label="Add to wishlist">
-                      <i class="fa-regular fa-heart"></i>
-                  </button>
-              </div>
-              <div class="product-card-info">
-                  <h3>Skull Brain Clicker Keychain</h3>
-                  
-                  <p class="product-price">₹250</p>
-              </div>
-          </a>
-          <div class="product-card-actions">
-                  
-                  <div class="product-card-actions-row">
-                      <button class="listing-add-to-cart"
-                                 data-variant-gid="gid://shopify/ProductVariant/48801253032158">
-                                 Add to Cart
-                             </button>
-                  </div>
-              </div>
-      </div>
-
-      <div class="shop-product-card">
           <a href="../../products/one-wish-willow/" class="product-card-link">
               <div class="product-image-wrap">
                   <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productSep29_2026_01_17_52AM.png?v=1790625136&width=500" alt="One Wish Willow" loading="lazy">
@@ -496,6 +462,39 @@
                   <div class="product-card-actions-row">
                       <button class="listing-add-to-cart"
                                  data-variant-gid="gid://shopify/ProductVariant/49121687666910">
+                                 Add to Cart
+                             </button>
+                  </div>
+              </div>
+      </div>
+
+      <div class="shop-product-card">
+          <a href="../../products/skull-brain-clicker-keychain/" class="product-card-link">
+              <div class="product-image-wrap">
+                  <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Sep_8_2026_01_24_52_PM.png?v=1788854332&width=500" alt="Skull Brain Clicker Keychain" loading="lazy">
+                  
+                  
+                  <button class="wishlist-btn"
+                          data-handle="skull-brain-clicker-keychain"
+                          data-title="Skull Brain Clicker Keychain"
+                          data-price="₹250"
+                          data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Sep_8_2026_01_24_52_PM.png?v=1788854332"
+                          data-url="https://www.layerweaver.com/shop/products/skull-brain-clicker-keychain/"
+                          aria-label="Add to wishlist">
+                      <i class="fa-regular fa-heart"></i>
+                  </button>
+              </div>
+              <div class="product-card-info">
+                  <h3>Skull Brain Clicker Keychain</h3>
+                  
+                  <p class="product-price">₹250</p>
+              </div>
+          </a>
+          <div class="product-card-actions">
+                  
+                  <div class="product-card-actions-row">
+                      <button class="listing-add-to-cart"
+                                 data-variant-gid="gid://shopify/ProductVariant/48801253032158">
                                  Add to Cart
                              </button>
                   </div>
@@ -635,11 +634,12 @@
         </div>
     </footer>
     <script>window.LW_SWATCHES = {"ghost-balloon-lamp":{"Red":"#f61f1f","Yellow":"#ffe500","Blue":"#005bd3","Orange":"#ff8a00","Pink":"#ffc0cb","Purple":"#a54dcf"},"articulated-cute-spider":{"Brown":"#9a5630","Purple":"#a54dcf"}};</script>
-    <script src="../../auth.js?v=1793549050486"></script>
-    <script src="../../promise-row.js?v=1793549050486"></script>
-    <script src="../../cart.js?v=1793549050486"></script>
-    <script src="../../search.js?v=1793549050486"></script>
-    <script src="../../wishlist.js?v=1793549050486"></script>
+    <script src="../../auth.js?v=1793690272489"></script>
+    <script src="/holiday.js?v=1793690272489"></script>
+    <script src="../../promise-row.js?v=1793690272489"></script>
+    <script src="../../cart.js?v=1793690272489"></script>
+    <script src="../../search.js?v=1793690272489"></script>
+    <script src="../../wishlist.js?v=1793690272489"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

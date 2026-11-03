@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-// Diwali 2026 campaign: the sitewide announcement bar (next-order codes and
-// the e-gift card, each on its own dates), the logo ribbon, the gift card tab
-// and the cart's next-order progress. The clock is faked to IST dates and the
+// Diwali 2026 campaign: the logo ribbon, the gift card tab and the cart's
+// next-order progress (the announcement bar is now the ship-date notice, see
+// holiday-notice.e2e.spec.js). The clock is faked to IST dates and the
 // cart is stubbed, so these don't depend on today's date or on Shopify.
 // Remove with the campaign in the Nov 9 cleanup.
 
@@ -46,77 +46,6 @@ async function openCart(page, day, lines, { orderOff = 0, path = '/shop/' } = {}
   await page.waitForSelector('#cart-drawer.open');
   await expect(page.locator('#rewards-progress')).toBeVisible();
 }
-
-const visibleMessages = page => page.locator('.announcement-bar-track > a:not(.announcement-dup):not([hidden])');
-
-// ── Announcement bar ────────────────────────────────────────────────────────
-
-test.describe('Announcement bar by date', () => {
-  for (const path of ['/faq/', '/shop/']) {
-    test(`${path} - gift card only before the offer`, async ({ page }) => {
-      await onDay(page, '2026-10-20');
-      await page.goto(path);
-      await expect(page.locator('.announcement-bar')).toBeVisible();
-      await expect(visibleMessages(page)).toHaveCount(1);
-      await expect(visibleMessages(page).first()).toContainText('Send an e-gift card');
-      await expect(page.locator('.announcement-bar')).not.toHaveClass(/announcement-rotate/);
-    });
-
-    test(`${path} - both messages take turns from the first day of the offer`, async ({ page }) => {
-      await onDay(page, '2026-10-21');
-      await page.goto(path);
-      await expect(visibleMessages(page)).toHaveCount(2);
-      await expect(visibleMessages(page).nth(0)).toContainText('Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order.');
-      await expect(page.locator('.announcement-bar')).toHaveClass(/announcement-rotate/);
-    });
-
-    test(`${path} - offer ends after Nov 1, gift card stays till Nov 7`, async ({ page }) => {
-      await onDay(page, '2026-11-02');
-      await page.goto(path);
-      await expect(visibleMessages(page)).toHaveCount(1);
-      await expect(visibleMessages(page).first()).toContainText('e-gift card');
-    });
-
-    test(`${path} - no bar from Diwali day, header back at the top`, async ({ page }) => {
-      await onDay(page, '2026-11-08');
-      await page.goto(path);
-      await expect(page.locator('.announcement-bar')).toBeHidden();
-      await expect(page.locator('html')).not.toHaveClass(/has-announcement/);
-      expect((await page.locator('header').first().boundingBox()).y).toBe(0);
-    });
-  }
-
-  test('the header sits just below the bar', async ({ page }) => {
-    await onDay(page, '2026-10-25');
-    await page.goto('/shop/');
-    const bar = await page.locator('.announcement-bar').boundingBox();
-    const header = await page.locator('header.shop-header').boundingBox();
-    expect(bar.height).toBe(36);
-    expect(header.y).toBe(36);
-  });
-
-  test('each message links where its call to action says', async ({ page }) => {
-    await onDay(page, '2026-10-25');
-    await page.goto('/shop/products/snail-lamp/');
-    const next = visibleMessages(page).nth(0);
-    const gift = visibleMessages(page).nth(1);
-    await expect(next.locator('.announcement-cta')).toHaveText('Shop Diwali →');
-    await expect(gift.locator('.announcement-cta')).toHaveText('Gift cards →');
-    for (const [link, url] of [[next, /\/shop\/collections\/diwali\/$/], [gift, new RegExp(`/shop/products/${GIFT_CARD}/$`)]]) {
-      const href = await link.evaluate(a => a.href);
-      expect(href).toMatch(url);
-      expect((await page.request.get(href)).status()).toBe(200);
-    }
-  });
-
-  test('phones get one marquee with every message', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 700 });
-    await onDay(page, '2026-10-25');
-    await page.goto('/');
-    // Two messages plus a copy of each for a seamless loop.
-    await expect(page.locator('.announcement-bar-track > a:visible')).toHaveCount(4);
-  });
-});
 
 // ── Light Diwali touch ──────────────────────────────────────────────────────
 

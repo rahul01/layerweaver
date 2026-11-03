@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, parseSize, sizeFor, photoId, curatedCustomerPhotos, customerPhotosHtml } from '../scripts/build-shop-utils.js';
+import { resizedImageUrl, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, rankTestimonials, shippingPriceFor, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, AGE_WARNING_HANDLES, handlingDays, parseSize, sizeFor, photoId, curatedCustomerPhotos, customerPhotosHtml } from '../scripts/build-shop-utils.js';
 
 // ── resizedImageUrl ───────────────────────────────────────────────────────────
 
@@ -211,7 +211,7 @@ describe('isPersonalised', () => {
 
 describe('offerShippingAndReturns', () => {
   it('gives Google the shipping rate, delivery time and 7-day returns', () => {
-    const o = offerShippingAndReturns('399.00');
+    const o = offerShippingAndReturns('399.00', { today: '2026-10-01' });
     expect(o.shippingDetails.shippingRate).toEqual({ '@type': 'MonetaryAmount', value: '0.00', currency: 'INR' });
     expect(o.shippingDetails.shippingDestination.addressCountry).toBe('IN');
     expect(o.shippingDetails.deliveryTime.handlingTime).toMatchObject({ minValue: 1, maxValue: 2, unitCode: 'DAY' });
@@ -229,7 +229,7 @@ describe('offerShippingAndReturns', () => {
 describe('buildGoogleFeedXml', () => {
   const item = { id: '123', title: 'Ghost Balloon Lamp', description: 'Glows — all evening & more <3', link: 'https://www.layerweaver.com/shop/products/ghost-balloon-lamp/', imageLink: 'https://cdn.shopify.com/a.png', extraImages: ['https://cdn.shopify.com/b.png'], price: 399, available: true };
   it('writes one escaped item with price, brand, no GTIN and India shipping', () => {
-    const xml = buildGoogleFeedXml([item], { siteUrl: 'https://www.layerweaver.com' });
+    const xml = buildGoogleFeedXml([item], { siteUrl: 'https://www.layerweaver.com', today: '2026-10-01' });
     expect(xml).toContain('xmlns:g="http://base.google.com/ns/1.0"');
     expect(xml).toContain('<g:id>123</g:id>');
     expect(xml).toContain('<g:price>399.00 INR</g:price>');
@@ -242,7 +242,7 @@ describe('buildGoogleFeedXml', () => {
     expect(xml).not.toContain('—');
   });
   it('charges ₹49 shipping on a sub-₹299 item and marks sold-out items', () => {
-    const xml = buildGoogleFeedXml([{ ...item, price: 199, available: false }], { siteUrl: 'https://www.layerweaver.com' });
+    const xml = buildGoogleFeedXml([{ ...item, price: 199, available: false }], { siteUrl: 'https://www.layerweaver.com', today: '2026-10-01' });
     expect(xml).toContain('<g:availability>out_of_stock</g:availability>');
     expect(xml).toMatch(/<g:shipping>\s*<g:country>IN<\/g:country>\s*<g:price>49.00 INR<\/g:price>/);
   });
@@ -365,5 +365,23 @@ describe('sizeFor', () => {
   it('no size anywhere: null', () => {
     expect(sizeFor({ sizeField: null, descriptionHtml: '<p>A desk toy.</p>' })).toBeNull();
     expect(sizeFor(undefined)).toBeNull();
+  });
+});
+
+// ── Holiday notice: handling time in structured data and the feed ─────────────
+
+describe('handlingDays (holiday notice)', () => {
+  it('1-2 days outside the window, the days until the ship date inside it', () => {
+    expect(handlingDays('2026-10-01')).toEqual([1, 2]);
+    expect(handlingDays('2026-11-02')).toEqual([1, 2]);
+    expect(handlingDays('2026-11-03')).toEqual([9, 9]);
+    expect(handlingDays('2026-11-11')).toEqual([1, 1]);
+    expect(handlingDays('2026-11-12')).toEqual([1, 1]);
+    expect(handlingDays('2026-11-13')).toEqual([1, 2]);
+  });
+  it('structured data and the feed carry it', () => {
+    expect(offerShippingAndReturns('399.00', { today: '2026-11-05' }).shippingDetails.deliveryTime.handlingTime).toMatchObject({ minValue: 7, maxValue: 7 });
+    const xml = buildGoogleFeedXml([{ id: 'a', groupId: 'g', title: 't', description: 'd', link: 'https://www.layerweaver.com/x', imageLink: 'https://x/i.jpg', price: 399, available: true }], { siteUrl: 'https://www.layerweaver.com', today: '2026-11-05' });
+    expect(xml).toContain('<g:min_handling_time>7</g:min_handling_time>');
   });
 });

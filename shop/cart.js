@@ -561,7 +561,11 @@
 
   function arrivesInForPincode(pin) {
     const zone = pincodeZone(pin);
-    return zone ? `Usually arrives in ${ARRIVES_IN[zone]} days.` : null;
+    if (!zone) return null;
+    // While the holiday notice is on (/holiday.js), when it ships and how long it takes after that.
+    const holiday = window.LWHoliday;
+    if (holiday && holiday.active()) return holiday.arrivesAfterShip(zone);
+    return `Usually arrives in ${ARRIVES_IN[zone]} days.`;
   }
 
   function savedPincode() {
@@ -662,6 +666,7 @@
               <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
               <p class="rewards-nextorder-msg" id="rewards-nextorder-msg" hidden></p>
             </div>
+            <p class="cart-holiday-note" id="cart-holiday-note" hidden></p>
             <div class="cart-delivery-row" id="cart-delivery-row" hidden>
               <span>Delivery</span>
               <span id="cart-delivery-price"></span>
@@ -1000,6 +1005,19 @@
     }
   }
 
+  // Holiday notice in the cart (/holiday.js): new orders ship on the ship date. Not for carts that
+  // only hold gift cards (nothing ships). Hides itself after the ship date.
+  function renderHolidayNote(cart) {
+    const el = document.getElementById('cart-holiday-note');
+    if (!el) return;
+    try {
+      const holiday = window.LWHoliday;
+      const ships = cart.lines.edges.some(e => e.node.merchandise.requiresShipping !== false);
+      el.hidden = !(holiday && holiday.active() && ships);
+      if (!el.hidden) el.textContent = holiday.COPY.note;
+    } catch { el.hidden = true; }
+  }
+
   function renderCart() {
     const body   = document.getElementById('cart-body');
     const total  = document.getElementById('cart-total-price');
@@ -1141,6 +1159,7 @@
     const costAmt = cart.cost.totalAmount;
     total.textContent = fmt(costAmt.amount, costAmt.currencyCode);
     renderPromiseRow(cart, total, costAmt);
+    renderHolidayNote(cart);
     chkBtn.href = cart.checkoutUrl;
     const checkoutSection = document.getElementById('cart-checkout-section');
     if (checkoutSection) checkoutSection.style.display = 'contents';
@@ -1533,12 +1552,15 @@
     bar.hidden = true;
     bar.innerHTML = `
       ${mainImg ? '<img class="sticky-add-img" alt="" width="48" height="48">' : ''}
-      <span class="sticky-add-price"></span>
+      <span class="sticky-add-info"><span class="sticky-add-price"></span><span class="sticky-add-ship" hidden></span></span>
       <button type="button" class="btn-primary add-to-cart-btn sticky-add-btn"></button>`;
     document.body.appendChild(bar);
     const img = bar.querySelector('.sticky-add-img');
     const price = bar.querySelector('.sticky-add-price');
     const btn = bar.querySelector('.sticky-add-btn');
+    const ship = bar.querySelector('.sticky-add-ship');
+    // Holiday notice (/holiday.js): say when it ships, right under the price.
+    if (window.LWHoliday && window.LWHoliday.active()) { ship.textContent = window.LWHoliday.COPY.short; ship.hidden = false; }
 
     // Mirror the page's own price, photo and button state (variant changes, In Cart (n)).
     const sync = () => {

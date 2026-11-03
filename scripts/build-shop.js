@@ -8,6 +8,8 @@
 const fs = require('fs');
 const path = require('path');
 const LWPromise = require('../shop/promise-row.js');
+const LWHoliday = require('../holiday.js');
+const { holidayBarHtml } = require('./apply-holiday-notice.js');
 const { resizedImageUrl, srcsetFor, escAttr, truncateWords, fontAwesomeLinkHtml, isoDateOnly, buildSitemapXml, buildSimilarityIndex, computeRelatedProducts, rankTestimonials, isPersonalised, offerShippingAndReturns, buildGoogleFeedXml, ageWarningFor, parseSize, sizeFor, curatedCustomerPhotos, customerPhotosHtml } = require('./build-shop-utils');
 
 // Load .env (if present) without adding a dotenv dependency.
@@ -668,13 +670,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
 
 function shopHeaderHtml(base, shopBase) {
   return `
-    <!-- Announcement bar: next-order codes Oct 21 - Nov 1, e-gift card till Nov 7, 2026 (shown by the script below, which also turns on the light Diwali touch till Nov 8). Remove in the Nov 9 cleanup. -->
-    <div class="announcement-bar" hidden>
-        <div class="announcement-bar-track">
-            <a href="${shopBase}collections/diwali/" data-from="2026-10-21" data-to="2026-11-01" hidden>🪔 Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order. <span class="announcement-cta">Shop Diwali →</span></a>
-            <a href="${shopBase}products/${GIFT_CARD_HANDLE}/" data-to="2026-11-07" hidden>🎁 Can't decide, or too late to ship? Send an e-gift card - it arrives by email instantly. <span class="announcement-cta">Gift cards →</span></a>
-        </div>
-    </div>
+${holidayBarHtml(`${base}shipping-policy/`)}
     <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on;if(t<='2026-11-08')document.documentElement.classList.add('diwali-touch');on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
     <header class="shop-header">
         <div class="container">
@@ -1142,6 +1138,7 @@ ${productCards}
     ${footerHtml(base)}
     ${swatchDataScript(products)}
     <script src="auth.js?v=${BUILD_VER}"></script>
+    <script src="/holiday.js?v=${BUILD_VER}"></script>
     <script src="promise-row.js?v=${BUILD_VER}"></script>
     <script src="cart.js?v=${BUILD_VER}"></script>
     <script src="search.js?v=${BUILD_VER}"></script>
@@ -1451,6 +1448,8 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                         </a>
                     </div>
 
+                    ${giftCard || isContactOnly(product) || isCustomPrice(product) || LWHoliday.istToday() > LWHoliday.HOLIDAY.shipDate ? '' : `<p class="holiday-note" data-holiday-from="${LWHoliday.HOLIDAY.from}" data-holiday-to="${LWHoliday.HOLIDAY.shipDate}"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> ${LWHoliday.COPY.note}</p>`}
+
                     ${giftCard
                       ? '<p class="giftcard-delivery"><i class="fa-solid fa-envelope"></i> Delivered by email - no shipping. Spend it on anything in the store.</p>'
                       : isContactOnly(product) || isCustomPrice(product) ? '' : '<div class="orderby" data-orderby hidden></div>'}
@@ -1708,6 +1707,7 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
     </script>
     ${swatchDataScript([product])}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="/holiday.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}promise-row.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
@@ -1966,6 +1966,7 @@ ${productCards}
     ${footerHtml(base)}
     ${swatchDataScript(collection.products)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="/holiday.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}promise-row.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}search.js?v=${BUILD_VER}"></script>
@@ -2104,6 +2105,7 @@ function generateAccountPage() {
 
     ${footerHtml(base)}
     <script src="${shopBase}auth.js?v=${BUILD_VER}"></script>
+    <script src="/holiday.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}promise-row.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}cart.js?v=${BUILD_VER}"></script>
     <script src="${shopBase}search.js?v=${BUILD_VER}"></script>

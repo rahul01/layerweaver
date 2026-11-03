@@ -3525,6 +3525,8 @@ body.seasonal--halloween {
     }
     .sticky-add-bar[hidden] { display: none; }
     .sticky-add-img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+    .sticky-add-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .sticky-add-ship { font-size: 0.72rem; color: var(--gray-medium); white-space: nowrap; }
     .sticky-add-price { font-weight: 700; color: var(--primary); font-size: 1.1rem; white-space: nowrap; }
     .sticky-add-btn { flex: 1; justify-content: center; min-height: 48px; margin: 0; padding: 0 16px; }
     html.has-sticky-add body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
@@ -3540,3 +3542,9 @@ body.seasonal--halloween {
 .customer-photos-all { font-size: 0.8rem; color: var(--gray-medium); text-decoration: underline; min-height: 44px; display: inline-flex; align-items: center; padding: 0 4px; }
 /* Jump target of "See all reviews": clear the fixed header and announcement bar */
 #customer-reviews { scroll-margin-top: calc(var(--announcement-height, 36px) + 90px); }
+
+/* Holiday notice (ship date, /holiday.js): product page note and cart note */
+.holiday-note { margin: 0 0 14px; max-width: 420px; font-size: 0.9rem; font-weight: 600; color: var(--dark); }
+.holiday-note i { color: var(--primary); margin-right: 6px; }
+.holiday-note[hidden], .cart-holiday-note[hidden] { display: none; }
+.cart-holiday-note { margin: 0 0 10px; font-size: 0.85rem; font-weight: 600; color: var(--dark); text-align: center; }

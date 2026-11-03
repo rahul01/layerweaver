@@ -129,12 +129,12 @@ a:hover {
 }
 
 /* ------- Announcement bar (sitewide, above the fixed header) -------
-   Next-order codes (Oct 21 - Nov 1, 2026) and the e-gift card (till Nov 7):
-   each page's inline script shows the messages whose data-from/data-to
-   dates include today (IST), and adds html.has-announcement if any do. Two
-   at once take turns on desktop and share one marquee on phones. Diwali
-   colours from .seasonal--diwali. Remove in the Nov 9 cleanup (grep
-   announcement-bar). */
+   Ship-date notice (dates and words in /holiday.js; scripts/apply-holiday-notice.js
+   writes it into the static pages, scripts/build-shop.js into the shop pages): each
+   page's inline script shows the messages whose data-from/data-to dates include
+   today (IST) and adds html.has-announcement if any do. One message sits still
+   (two lines at most on a phone); more than one take turns on desktop and share a
+   marquee on phones. */
 :root { --announcement-height: 0px; }
 html.has-announcement { --announcement-height: 36px; }
 
@@ -145,7 +145,7 @@ html.has-announcement { --announcement-height: 36px; }
     right: 0;
     z-index: 1001;
     height: var(--announcement-height);
-    background: linear-gradient(90deg, #f4b53f 0%, #e8a020 55%, #d1741c 100%);
+    background: linear-gradient(90deg, #8d6cc9 0%, #7a58bb 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -156,7 +156,7 @@ html.has-announcement { --announcement-height: 36px; }
 .announcement-bar[hidden] { display: none; }
 
 .announcement-bar a {
-    color: #3d1f00;
+    color: #fff;
     text-decoration: none;
     font-family: var(--font-primary);
     font-size: 0.8rem;
@@ -167,7 +167,7 @@ html.has-announcement { --announcement-height: 36px; }
     text-overflow: ellipsis;
 }
 .announcement-bar a:hover { text-decoration: none; }
-/* Says where the link goes ("Shop Diwali →", "Gift cards →"). */
+/* Says where the link goes (an optional call to action inside a message). */
 .announcement-cta {
     margin-left: 6px;
     text-decoration: underline;
@@ -205,6 +205,20 @@ html.has-announcement { --announcement-height: 36px; }
         overflow: visible;
         text-overflow: clip;
         padding: 0 32px;
+    }
+}
+/* One message (the ship-date notice): it sits still, centred, two lines at most, no marquee copy. */
+@media (max-width: 900px) {
+    .announcement-bar:not(.announcement-rotate) { justify-content: center; }
+    .announcement-bar:not(.announcement-rotate) .announcement-bar-track { display: block; width: 100%; animation: none; }
+    .announcement-bar:not(.announcement-rotate) .announcement-dup { display: none; }
+    .announcement-bar:not(.announcement-rotate) a {
+        display: block;
+        white-space: normal;
+        padding: 0 12px;
+        line-height: 1.2;
+        font-size: 0.72rem;
+        text-align: center;
     }
 }
 @media (prefers-reduced-motion: reduce) {

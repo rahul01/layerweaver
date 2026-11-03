@@ -164,9 +164,11 @@ export function orderByForPincode(pin, now = Date.now(), cfg = ORDER_BY) {
 // as the FAQ and the Shipping Policy.
 // Shown all year, unlike the Diwali order-by line.
 export const ARRIVES_IN = { pune: '3-5', mumbai: '3-5', maharashtra: '3-6', metro: '5-7', india: '6-8' };
-export function arrivesInForPincode(pin, cfg = ARRIVES_IN) {
+export function arrivesInForPincode(pin, cfg = ARRIVES_IN, holiday = null) {
   const zone = pincodeZone(pin);
-  return zone ? `Usually arrives in ${cfg[zone]} days.` : null;
+  if (!zone) return null;
+  if (holiday && holiday.active()) return holiday.arrivesAfterShip(zone); // /holiday.js, while the notice is on
+  return `Usually arrives in ${cfg[zone]} days.`;
 }
 
 // Mirrors script.js's passUtmToWhatsApp(). A WhatsApp chat carries nothing
