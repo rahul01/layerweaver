@@ -17,7 +17,7 @@ function holidayBarHtml(href, indent = '    ') {
     `${indent}<!-- Announcement bar: ship-date notice (dates and words in /holiday.js; remove with scripts/apply-holiday-notice.js --remove). -->`,
     `${indent}<div class="announcement-bar" hidden>`,
     `${indent}    <div class="announcement-bar-track">`,
-    `${indent}        <a href="${href}" data-from="${HOLIDAY.from}" data-to="${HOLIDAY.shipDate}" hidden><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span>${COPY.bar}</span></a>`,
+    `${indent}        <a href="${href}" data-from="${HOLIDAY.from}" data-to="${HOLIDAY.until}" hidden><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span>${COPY.bar}</span></a>`,
     `${indent}    </div>`,
     `${indent}</div>`,
   ].join('\n');

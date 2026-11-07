@@ -4,13 +4,13 @@ import { arrivesInForPincode } from '../shop/cart-utils.js';
 const { HOLIDAY, AFTER_SHIP, COPY, active, arrivesAfterShip } = createRequire(import.meta.url)('../holiday.js');
 
 describe('holiday notice dates (IST)', () => {
-  it('on from the start day through the ship day, off before and after', () => {
-    expect(HOLIDAY).toMatchObject({ from: '2026-11-03', shipDate: '2026-11-12' });
+  it('on from the start day through 10 Nov, off before and after', () => {
+    expect(HOLIDAY).toMatchObject({ from: '2026-11-03', shipDate: '2026-11-12', until: '2026-11-10' });
     expect(active('2026-11-02')).toBe(false);
     expect(active('2026-11-03')).toBe(true);
-    expect(active('2026-11-11')).toBe(true);
-    expect(active('2026-11-12')).toBe(true);
-    expect(active('2026-11-13')).toBe(false);
+    expect(active('2026-11-10')).toBe(true);
+    expect(active('2026-11-11')).toBe(false);
+    expect(active('2026-11-12')).toBe(false);
   });
   it('follows IST, not UTC (Nov 2 19:00 UTC is already Nov 3 in India)', () => {
     expect(active(new Date('2026-11-02T19:00:00Z').toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }))).toBe(true);
@@ -21,7 +21,7 @@ describe('holiday copy', () => {
   it('says what ships when, in plain words', () => {
     expect(COPY.bar).toBe("New orders ship on 12 Nov. We're away until then.");
     expect(COPY.short).toBe('Ships 12 Nov');
-    expect(COPY.policy).toContain('Every order placed from 3 Nov ships on 12 Nov');
+    expect(COPY.policy).toContain('Every order placed from 3 Nov to 10 Nov ships on 12 Nov');
   });
   it('no banned wording, no far states, no em dash, no Diwali', () => {
     expect(JSON.stringify(COPY) + JSON.stringify(AFTER_SHIP)).not.toMatch(/far states|PLA\b|plastic|eco-friendly|non-toxic|child-safe|biodegradable|sustainable|renewable|diwali|—/i);

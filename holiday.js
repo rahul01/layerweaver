@@ -10,7 +10,8 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   const HOLIDAY = {
     from: '2026-11-03',        // first IST day the notice shows (orders from now ship on shipDate)
-    shipDate: '2026-11-12',    // orders placed in the window ship on this day; the notice shows through it
+    shipDate: '2026-11-12',    // orders placed in the window ship on this day
+    until: '2026-11-10',       // last IST day the notice shows (an order from this day ships within the normal 2 days)
     shipLabel: '12 Nov',
   };
 
@@ -24,11 +25,11 @@
     bar: `New orders ship on ${HOLIDAY.shipLabel}. We're away until then.`,
     note: `New orders ship on ${HOLIDAY.shipLabel}. We're away until then.`,
     short: `Ships ${HOLIDAY.shipLabel}`,
-    policy: `We are away from ${'3 Nov'} to ${HOLIDAY.shipLabel}. Every order placed from 3 Nov ships on ${HOLIDAY.shipLabel}, then takes the usual transit time. Orders placed before 3 Nov are not affected.`,
+    policy: `We are away from ${'3 Nov'} to ${HOLIDAY.shipLabel}. Every order placed from 3 Nov to 10 Nov ships on ${HOLIDAY.shipLabel}, then takes the usual transit time. Orders placed before 3 Nov are not affected.`,
   };
 
   const istToday = (now = Date.now()) => new Date(now).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-  const active = (today = istToday()) => today >= HOLIDAY.from && today <= HOLIDAY.shipDate;
+  const active = (today = istToday()) => today >= HOLIDAY.from && today <= HOLIDAY.until;
 
   // Pincode line while the notice is on: when it ships, then the transit after that.
   function arrivesAfterShip(zone) {

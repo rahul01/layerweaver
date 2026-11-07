@@ -375,8 +375,8 @@ describe('handlingDays (holiday notice)', () => {
     expect(handlingDays('2026-10-01')).toEqual([1, 2]);
     expect(handlingDays('2026-11-02')).toEqual([1, 2]);
     expect(handlingDays('2026-11-03')).toEqual([9, 9]);
-    expect(handlingDays('2026-11-11')).toEqual([1, 1]);
-    expect(handlingDays('2026-11-12')).toEqual([1, 1]);
+    expect(handlingDays('2026-11-10')).toEqual([2, 2]);
+    expect(handlingDays('2026-11-11')).toEqual([1, 2]);
     expect(handlingDays('2026-11-13')).toEqual([1, 2]);
   });
   it('structured data and the feed carry it', () => {

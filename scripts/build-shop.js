@@ -1450,7 +1450,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                         </a>
                     </div>
 
-                    ${giftCard || isContactOnly(product) || isCustomPrice(product) || LWHoliday.istToday() > LWHoliday.HOLIDAY.shipDate ? '' : `<p class="holiday-note" data-holiday-from="${LWHoliday.HOLIDAY.from}" data-holiday-to="${LWHoliday.HOLIDAY.shipDate}"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> ${LWHoliday.COPY.note}</p>`}
+                    ${giftCard || isContactOnly(product) || isCustomPrice(product) || LWHoliday.istToday() > LWHoliday.HOLIDAY.until ? '' : `<p class="holiday-note" data-holiday-from="${LWHoliday.HOLIDAY.from}" data-holiday-to="${LWHoliday.HOLIDAY.until}"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> ${LWHoliday.COPY.note}</p>`}
 
                     ${giftCard
                       ? '<p class="giftcard-delivery"><i class="fa-solid fa-envelope"></i> Delivered by email - no shipping. Spend it on anything in the store.</p>'
