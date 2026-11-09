@@ -679,7 +679,6 @@ ${holidayBarHtml(`${base}shipping-policy/`)}
                     <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
                     <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
                 </a>
-                <a href="${shopBase}collections/diwali/" class="logo-diwali-ribbon">Shop Lamps &amp; Gifts 🪔</a>
             </div>
             <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
                 <div class="search-bar">
@@ -935,9 +934,11 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
 // dropdowns so the sticky bar fits on one row. Any collection not listed here
 // lands in a trailing "More" group, so a new Shopify collection still shows up
 // until it's given a home. Mobile renders the same tree as a headed list.
+// Off-season collections keep their pages (old WhatsApp and ad links still work) and stay in Shopify
+// for Meta, but get no nav chip, dropdown item or "More" entry. Put a handle back in
+// COLLECTION_NAV (and take it out of NAV_OFF_SEASON) when its season returns.
+const NAV_OFF_SEASON = ['halloween', 'diwali'];
 const COLLECTION_NAV = [
-  'halloween',
-  'diwali',
   { label: 'Gifts', handles: ['gifts-for-her', 'made-for-you', 'gamers-and-geek-gifts', 'bundles'] },
   { label: 'Home & Decor', handles: ['lamps-and-lighting', 'lamps-and-decor', 'plants-and-nature', 'aquarium-tech-and-accessories'] },
   { label: 'Toys & Fidgets', handles: ['toys-games-and-desk-buddies', 'articulated-fidgets', 'dino-skeletons'] },
@@ -997,7 +998,7 @@ function collectionNavTree(collections, hrefFor) {
       if (items.length) tree.push({ label: entry.label, items });
     }
   }
-  const rest = collections.filter(c => !used.has(c.handle)).map(c => itemFor(c.handle));
+  const rest = collections.filter(c => !used.has(c.handle) && !NAV_OFF_SEASON.includes(c.handle)).map(c => itemFor(c.handle));
   if (rest.length) tree.push({ label: 'More', items: rest });
   return tree;
 }
@@ -1751,7 +1752,9 @@ function collagebannerHtml(title, description, images, eyebrow = '') {
 // While HERO_FESTIVE is set, the hero's eyebrow, heading, left-hand callouts,
 // CTA and carousel are all about its collections. Set it to null after the
 // season to restore the evergreen hero below - nothing to hand-edit.
-const HERO_FESTIVE = {
+// Nov 9 2026: set to null after Diwali and Halloween; the previous festive object is in git history (commit before this one).
+const HERO_FESTIVE = null;
+const HERO_FESTIVE_UNUSED = {
   eyebrow: '3D printed in Pune',
   heading: 'Lamps, desk toys and gifts, <span class="brand-text">printed to order</span>',
   collections: ['diwali', 'halloween'],
@@ -2435,7 +2438,7 @@ async function main() {
     /<!-- HERO-LEFT-START -->[\s\S]*?<!-- HERO-LEFT-END -->/,
     `<!-- HERO-LEFT-START -->\n${heroLeftHtml(heroFestive)}\n<!-- HERO-LEFT-END -->`
   );
-  const { slides, dots } = heroCarouselSlidesHtml(heroFestive ? festiveCollections : collections);
+  const { slides, dots } = heroCarouselSlidesHtml(heroFestive ? festiveCollections : collections.filter(c => !NAV_OFF_SEASON.includes(c.handle)));
   indexHtml = indexHtml.replace(
     /<!-- HERO-CAROUSEL-SLIDES-START -->[\s\S]*?<!-- HERO-CAROUSEL-SLIDES-END -->/,
     `<!-- HERO-CAROUSEL-SLIDES-START -->\n${slides}\n<!-- HERO-CAROUSEL-SLIDES-END -->`

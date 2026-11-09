@@ -106,21 +106,11 @@ test.describe('Light Diwali touch', () => {
 
 test.describe('Logo ribbon and gift card tab', () => {
   for (const path of ['/', '/shop/', '/shop/products/snail-lamp/']) {
-    test(`${path} - ribbon links to the Diwali collection`, async ({ page }) => {
+    test(`${path} - no seasonal ribbon (removed Nov 9 2026)`, async ({ page }) => {
       await page.goto(path);
-      const ribbon = page.locator('.logo-diwali-ribbon');
-      await expect(ribbon).toBeVisible();
-      await expect(ribbon).toHaveText('Shop Lamps & Gifts 🪔');
-      expect(await ribbon.evaluate(a => a.href)).toMatch(/\/shop\/collections\/diwali\/$/);
+      await expect(page.locator('.logo-diwali-ribbon')).toHaveCount(0);
     });
   }
-
-  test('ribbon stays on screen on a small phone', async ({ page }) => {
-    await page.setViewportSize({ width: 340, height: 700 });
-    await page.goto('/shop/');
-    const box = await page.locator('.logo-diwali-ribbon').boundingBox();
-    expect(box.x).toBeGreaterThanOrEqual(0);
-  });
 
   test('e-gift card is first in the Gifts menu on desktop', async ({ page }) => {
     await page.goto('/shop/');

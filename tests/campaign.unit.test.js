@@ -73,15 +73,9 @@ describe('announcement bar copies', () => {
   });
 });
 
-describe('Diwali logo ribbon', () => {
-  it.each([...HAND_PAGES, ...GENERATED_PAGES])('%s has one ribbon to the Diwali collection, outside the logo link', page => {
-    const html = read(page);
-    const ribbons = html.match(/<a href="[^"]*collections\/diwali\/" class="logo-diwali-ribbon">Shop Lamps &amp; Gifts 🪔<\/a>/g) || [];
-    expect(ribbons).toHaveLength(1);
-    // A link inside the logo link would be invalid HTML: the logo link must
-    // close before the ribbon starts.
-    const container = html.match(/<div class="logo-container">([\s\S]*?)<\/div>/)?.[1] || '';
-    expect(container).toMatch(/class="logo-link">[\s\S]*?<\/a>\s*<a [^>]*class="logo-diwali-ribbon"/);
+describe('Diwali logo ribbon (removed Nov 9 2026)', () => {
+  it.each([...HAND_PAGES, ...GENERATED_PAGES])('%s has no seasonal ribbon', page => {
+    expect(read(page)).not.toContain('logo-diwali-ribbon');
   });
 });
 

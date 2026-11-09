@@ -45,8 +45,8 @@ describe('no festival promises in our own wording', () => {
       expect(checked.replace(/<meta[^>]*name="description"[^>]*Shopify[^>]*>/g, '')).not.toMatch(FESTIVAL);
     });
   }
-  it('the header ribbon still links to the Diwali collection, with neutral words', () => {
-    expect(read('index.html')).toContain('class="logo-diwali-ribbon">Shop Lamps &amp; Gifts 🪔</a>');
+  it('the home page has no Diwali or Halloween collection link (off season since Nov 9 2026)', () => {
+    expect(read('index.html')).not.toMatch(/collections\/(diwali|halloween)\//);
   });
   it('the gift card page no longer suggests sending on Diwali', () => {
     const html = read('shop/products/layerweaver-e-gift-card/index.html');
