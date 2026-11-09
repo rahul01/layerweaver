@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { NEXT_ORDER } from '../shop/cart-utils.js';
 import { createRequire } from 'node:module';
 const { HOLIDAY, COPY } = createRequire(import.meta.url)('../holiday.js');
 
@@ -60,12 +59,6 @@ describe('announcement bar copies', () => {
   it('has no Diwali wording, order-by dates or festive icons in the bar', () => {
     const markup = reference.slice(0, reference.indexOf('<script>'));
     expect(markup).not.toMatch(/diwali|order by|cut-?off|🪔|🎁|e-gift/i);
-  });
-
-  it('keeps cart.js on the same offer dates as cart-utils.js', () => {
-    const js = read('shop/cart.js');
-    expect(js).toContain(`const NEXT_ORDER_FROM  = '${NEXT_ORDER.from}';`);
-    expect(js).toContain(`const NEXT_ORDER_TO    = '${NEXT_ORDER.to}';`);
   });
 
   it('uses no em dashes', () => {

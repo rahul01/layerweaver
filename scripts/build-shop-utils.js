@@ -187,7 +187,7 @@ function rankTestimonials(reviews, hasPhoto = () => false) {
 // Shipping and returns as Google's merchant-listing structured data and the
 // Merchant Center feed expect them. Facts, keep in step with the site:
 // - shipping: flat ₹49 anywhere in India below ₹299, free from ₹299 (shipping
-//   policy; cart-utils.js freeShippingLine), made to order in 1-2 days, then
+//   policy; the cart, made to order in 1-2 days, then
 //   3-7 days in transit ("usually arrives in 4-9 days" across India).
 // - returns: 7 days from delivery (return-and-exchange-policy), except
 //   personalised or custom-made items, which can't be returned.

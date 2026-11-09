@@ -77,102 +77,6 @@ test.describe('Logo ribbon and gift card tab', () => {
   });
 });
 
-// ── Cart: next-order progress ───────────────────────────────────────────────
-
-test.describe('Cart next-order progress', () => {
-  const shipMsg = page => page.locator('#rewards-bar-msg');
-  const nextMsg = page => page.locator('#rewards-nextorder-msg');
-  const metMarks = page => page.locator('.rewards-bar-mark.is-met');
-
-  test('below free shipping: one bar with three marks, the shipping line only', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(200)]);
-    await expect(page.locator('#rewards-progress')).toHaveClass(/rewards-has-marks/);
-    await expect(page.locator('.rewards-bar-mark')).toHaveText(['Free shipping', '₹50 off', '₹100 off']);
-    await expect(metMarks(page)).toHaveCount(0);
-    await expect(shipMsg(page)).toHaveText('🚚 Add ₹99 more for Free Shipping');
-    await expect(nextMsg(page)).toBeHidden();
-  });
-
-  for (const width of [340, 375, 1280]) {
-    test(`marks are evenly spaced on screen at ${width}px, labels inside the card`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 800 });
-      await openCart(page, '2026-10-25', [line(650)]);
-      const { gaps, inside } = await page.evaluate(() => {
-        const track = document.querySelector('.rewards-bar-track').getBoundingClientRect();
-        const card = document.querySelector('#rewards-progress').getBoundingClientRect();
-        const centres = [...document.querySelectorAll('.rewards-bar-mark i')]
-          .map(i => { const r = i.getBoundingClientRect(); return r.left + r.width / 2 - track.left; });
-        return {
-          gaps: centres.map((c, i) => c - (i ? centres[i - 1] : 0)),
-          inside: [...document.querySelectorAll('.rewards-bar-mark')]
-            .every(m => { const r = m.getBoundingClientRect(); return r.left >= card.left && r.right <= card.right; }),
-        };
-      });
-      expect(gaps).toHaveLength(3);
-      for (const g of gaps) expect(Math.abs(g - gaps[0])).toBeLessThanOrEqual(1.5);
-      expect(inside).toBe(true);
-    });
-  }
-
-  test('₹299 - ₹598: free shipping line points at the ₹50', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(450)]);
-    await expect(metMarks(page)).toHaveCount(1);
-    await expect(shipMsg(page)).toHaveText('🎉 Free shipping unlocked - add ₹149 more for ₹50 off your next order');
-    await expect(nextMsg(page)).toBeHidden();
-  });
-
-  test('₹599: only the next-order line, pointing at the ₹100', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(599)]);
-    await expect(metMarks(page)).toHaveCount(2);
-    await expect(shipMsg(page)).toBeHidden();
-    await expect(nextMsg(page)).toHaveText('₹50 off your next order unlocked - add ₹350 more for ₹100 off');
-  });
-
-  test('₹948 still needs ₹1', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(948)]);
-    await expect(nextMsg(page)).toHaveText('₹50 off your next order unlocked - add ₹1 more for ₹100 off');
-  });
-
-  test('₹949: everything unlocked, bar full', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(949)]);
-    await expect(metMarks(page)).toHaveCount(3);
-    await expect(page.locator('#rewards-progress')).toHaveClass(/rewards-all-unlocked/);
-    await expect(nextMsg(page)).toHaveText("₹100 off your next order unlocked 🪔 - we'll send the code after you order");
-    expect(await page.locator('#rewards-bar-fill').evaluate(el => el.style.width)).toBe('100%');
-  });
-
-  test('an order discount counts: ₹998 with ₹99.80 off is the ₹50 tier', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(998)], { orderOff: 99.8 });
-    await expect(nextMsg(page)).toHaveText('₹50 off your next order unlocked - add ₹51 more for ₹100 off');
-  });
-
-  test('a line discount counts: ₹650 marked down to ₹585 is below ₹599', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(650, { total: 585 })]);
-    await expect(shipMsg(page)).toHaveText('🎉 Free shipping unlocked - add ₹14 more for ₹50 off your next order');
-    await expect(nextMsg(page)).toBeHidden();
-  });
-
-  test('gift cards are left out', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(400), line(1000, { handle: GIFT_CARD })]);
-    await expect(shipMsg(page)).toHaveText('🎉 Free shipping unlocked - add ₹199 more for ₹50 off your next order');
-    await expect(nextMsg(page)).toBeHidden();
-  });
-
-  test('after Nov 1: the plain free shipping bar', async ({ page }) => {
-    await openCart(page, '2026-11-02', [line(999)]);
-    await expect(page.locator('#rewards-progress')).not.toHaveClass(/rewards-has-marks/);
-    await expect(page.locator('.rewards-bar-mark')).toHaveCount(0);
-    await expect(shipMsg(page)).toHaveText('🎉 Free shipping unlocked!');
-    await expect(nextMsg(page)).toBeHidden();
-  });
-
-  test('before Oct 21: the plain free shipping bar', async ({ page }) => {
-    await openCart(page, '2026-10-20', [line(999)]);
-    await expect(page.locator('.rewards-bar-mark')).toHaveCount(0);
-    await expect(nextMsg(page)).toBeHidden();
-  });
-});
-
 
 // ── Cart layout ─────────────────────────────────────────────────────────────
 
@@ -229,19 +133,8 @@ test.describe('Empty cart offer cards', () => {
     await expect(page.locator('.cart-empty')).toBeVisible();
   }
 
-  test('during the offer: next-order card, then gift card', async ({ page }) => {
-    await openEmptyCart(page, '2026-10-25');
-    const cards = page.locator('.cart-empty-card');
-    await expect(cards).toHaveCount(2);
-    await expect(cards.nth(0)).toContainText('Spend ₹599, get ₹50 off. Spend ₹949, get ₹100 off - on your next order.');
-    await expect(cards.nth(0).locator('.cart-empty-card-cta')).toHaveText('Shop Diwali →');
-    expect(await cards.nth(0).evaluate(a => a.href)).toMatch(/\/shop\/collections\/diwali\/$/);
-    await expect(cards.nth(1)).toContainText('Send an e-gift card');
-    expect(await cards.nth(1).evaluate(a => a.href)).toMatch(new RegExp(`/shop/products/${GIFT_CARD}/$`));
-  });
-
-  test('outside the offer: gift card only', async ({ page }) => {
-    await openEmptyCart(page, '2026-11-02');
+  test('shows the gift card', async ({ page }) => {
+    await openEmptyCart(page, '2026-11-12');
     await expect(page.locator('.cart-empty-card')).toHaveCount(1);
     await expect(page.locator('.cart-empty-card')).toContainText('e-gift card');
   });

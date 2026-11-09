@@ -1400,8 +1400,7 @@
 .cart-extras .orderby-cart { margin-bottom: 12px; }
 
 /* Empty state */
-/* Empty cart offer cards (next-order codes Oct 21 - Nov 1, e-gift card).
-   Diwali colours from .seasonal--diwali; remove in the Nov 9 cleanup. */
+/* Empty cart card (e-gift card). */
 .cart-empty-cards {
     display: flex;
     flex-direction: column;
@@ -1595,75 +1594,12 @@
     gap: 14px;
 }
 
-/* Cart rewards progress bar (free shipping; plus next-order marks Oct 21 -
-   Nov 1, 2026 - remove the marks in the Nov 9 cleanup) */
+/* Cart rewards progress bar (free shipping) */
 .rewards-progress {
     padding: 4px 0 6px;
 }
 
 .rewards-bar { position: relative; }
-/* Inset by half a dot each side so every dot, the last one too, sits
-   centred on its mark and the gaps between them are equal. */
-.rewards-has-marks .rewards-bar { padding: 9px 0 32px; margin: 0 12px; }
-.rewards-has-marks .rewards-bar-msg { margin-top: 4px; }
-.rewards-bar-marks { position: absolute; inset: 0; pointer-events: none; }
-.rewards-bar-mark {
-    position: absolute;
-    top: 0;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: #888;
-    white-space: nowrap;
-}
-.rewards-bar-mark i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid #d6cdea;
-    box-sizing: border-box;
-    font-size: 0.7rem;
-    color: #a99bc9;
-}
-.rewards-bar-mark.is-met { color: #b8650a; }
-.rewards-bar-mark.is-met i { border-color: var(--primary); background: var(--primary); color: #fff; }
-.rewards-all-unlocked .rewards-bar-mark.is-met i { border-color: #22c55e; background: #22c55e; }
-
-/* Diwali look while the marks show (the offer dates). Colours from
-   .seasonal--diwali. */
-.rewards-progress.rewards-has-marks {
-    margin-bottom: 0;
-    padding: 12px 14px;
-    background: #fffaf0;
-    border: 1px solid rgba(232, 160, 32, 0.45);
-    border-radius: 12px;
-}
-.rewards-has-marks .rewards-bar-track { background: #f6e6c4; }
-.rewards-has-marks .rewards-bar-fill,
-.rewards-has-marks.rewards-all-unlocked .rewards-bar-fill {
-    background: linear-gradient(90deg, #f4b53f 0%, #e8a020 55%, #d1741c 100%);
-}
-.rewards-has-marks .rewards-bar-mark { color: #b89a6a; }
-.rewards-has-marks .rewards-bar-mark i { border-color: #ecd3a0; color: #d9b77a; }
-.rewards-has-marks .rewards-bar-mark.is-met { color: #9a5a1a; }
-.rewards-has-marks .rewards-bar-mark.is-met i,
-.rewards-has-marks.rewards-all-unlocked .rewards-bar-mark.is-met i {
-    border-color: #e8a020;
-    background: #e8a020;
-    color: #fff;
-    box-shadow: 0 0 0 3px rgba(232, 160, 32, 0.2);
-}
-.rewards-has-marks .rewards-bar-msg,
-.rewards-has-marks.rewards-ship-unlocked .rewards-bar-msg,
-.rewards-has-marks .rewards-nextorder-msg { color: #9a5a1a; }
 
 .rewards-bar-track {
     position: relative;
@@ -1700,13 +1636,6 @@
 }
 
 
-.rewards-nextorder-msg {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #b8650a;
-    margin: 4px 0 0;
-    text-align: center;
-}
 
 @keyframes rewards-pop {
     0%   { transform: scale(1); }

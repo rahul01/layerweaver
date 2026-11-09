@@ -15,16 +15,6 @@
     { min: 299, label: 'Free Shipping', icon: 'fa-truck-fast' },
   ];
 
-  // Next-order codes: orders Oct 21 - Nov 1, 2026 (IST) get a code for the
-  // next order, sent by the dashboard. Shown in the cart rewards bar on those
-  // dates only (the sitewide announcement bar has its own inline date check).
-  // Remove in the Nov 9 cleanup.
-  const NEXT_ORDER_FROM  = '2026-10-21';
-  const NEXT_ORDER_TO    = '2026-11-01';
-  // Same numbers as the dashboard (routes/lib/next-order-codes.js) and the
-  // order email - change only together with them.
-  const NEXT_ORDER_TIERS = [{ min: 599, off: 50 }, { min: 949, off: 100 }];
-
   // Derive the path to shop/ root from the current page URL
   const path     = window.location.pathname;
   const shopIdx  = path.indexOf('/shop/');
@@ -426,62 +416,6 @@
       .reduce((s, l) => s + parseFloat(l.merchandise.price.amount) * l.quantity, 0);
   }
 
-  // Mirrors nextOrderValue() / nextOrderProgress() in shop/cart-utils.js
-  // (unit-tested there). Counted the way the dashboard counts the order:
-  // products after discounts (line cost.totalAmount is after line discounts,
-  // order-level ones are in cart.discountAllocations), gift cards out - so
-  // an applied code can't make the cart claim a tier the order won't get.
-  function nextOrderValue(cart) {
-    const total = cart.lines.edges
-      .map(e => e.node)
-      .filter(l => l.merchandise.requiresShipping !== false)
-      .reduce((s, l) => s + parseFloat(l.cost?.totalAmount?.amount
-        ?? parseFloat(l.merchandise.price.amount) * l.quantity), 0);
-    const orderOff = (cart.discountAllocations || [])
-      .reduce((s, d) => s + parseFloat(d.discountedAmount?.amount || 0), 0);
-    return Math.max(total - orderOff, 0);
-  }
-
-  const nextOrderOn = () => { const t = istToday(); return t >= NEXT_ORDER_FROM && t <= NEXT_ORDER_TO; };
-
-  function nextOrderMessage(value) {
-    if (value <= 0 || !nextOrderOn()) return null;
-    const [low, high] = NEXT_ORDER_TIERS;
-    const more = min => Math.ceil(min - value);
-    if (value < low.min) return `Add ₹${more(low.min)} more to get ₹${low.off} off your next order`;
-    if (value < high.min) return `₹${low.off} off your next order unlocked - add ₹${more(high.min)} more for ₹${high.off} off`;
-    return `₹${high.off} off your next order unlocked 🪔 - we'll send the code after you order`;
-  }
-
-  // During the offer the free shipping bar becomes one bar with a mark at
-  // free shipping and each tier, spaced evenly (like the Rakhi bar) rather
-  // than by rupees, and filled stage by stage: full up to the last mark
-  // reached, then part of the way to the next. Free shipping is met on its
-  // own calculation (cartSubtotal), the tiers on nextOrderValue; the fill
-  // follows nextOrderValue, never pre-discount prices. Mirrors
-  // rewardsBarMarks() in shop/cart-utils.js. Null outside the offer dates.
-  function rewardsBarMarks(subtotal, value) {
-    if (!nextOrderOn()) return null;
-    const ship = REWARD_TIERS[0].min;
-    const mins = [ship, ...NEXT_ORDER_TIERS.map(t => t.min)];
-    const at   = i => ((i + 1) / mins.length) * 100;
-    const last = mins.reduce((reached, min, i) => (value >= min ? i : reached), -1);
-    let pct = 100;
-    if (last < mins.length - 1) {
-      const from = last < 0 ? 0 : mins[last];
-      const part = Math.min(Math.max((value - from) / (mins[last + 1] - from), 0), 1);
-      const fromPct = last < 0 ? 0 : at(last);
-      pct = fromPct + part * (at(last + 1) - fromPct);
-    }
-    return {
-      pct,
-      marks: [
-        { pct: at(0), label: 'Free shipping', icon: REWARD_TIERS[0].icon, met: subtotal >= ship },
-        ...NEXT_ORDER_TIERS.map((t, i) => ({ pct: at(i + 1), label: `₹${t.off} off`, icon: 'fa-gift', met: value >= t.min })),
-      ],
-    };
-  }
-
 
   // ── State ─────────────────────────────────────────────────────────────────
 
@@ -630,10 +564,8 @@
                 <div class="rewards-bar-track">
                   <div class="rewards-bar-fill" id="rewards-bar-fill"></div>
                 </div>
-                <div class="rewards-bar-marks" id="rewards-bar-marks"></div>
               </div>
               <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
-              <p class="rewards-nextorder-msg" id="rewards-nextorder-msg" hidden></p>
             </div>
             <div class="cart-delivery-row" id="cart-delivery-row" hidden>
               <span>Delivery</span>
@@ -852,48 +784,13 @@
     }
     msg.textContent = text;
 
-    const value    = nextOrderValue(cart);
-    const bar      = rewardsBarMarks(subtotal, value);
-    const nextText = nextOrderMessage(value);
-    // One line under the bar: free shipping until the first tier is
-    // unlocked, then only the next-order line (the marks show what's next).
-    const showNext = !!nextText && value >= NEXT_ORDER_TIERS[0].min;
-    msg.hidden = showNext;
-    // Between free shipping and the first tier, the free shipping line
-    // points at the ₹50 too. Mirrors freeShippingLine() in cart-utils.js.
-    if (bar && shipUnlocked && !showNext) {
-      const low = NEXT_ORDER_TIERS[0];
-      msg.textContent = `🎉 Free shipping unlocked - add ₹${Math.ceil(low.min - value)} more for ₹${low.off} off your next order`;
-    }
-    const nextMsg  = document.getElementById('rewards-nextorder-msg');
-    if (nextMsg) {
-      nextMsg.hidden = !showNext;
-      nextMsg.textContent = showNext ? nextText : '';
-    }
-
-    // Fill width: one continuous bar over every mark during the next-order
-    // offer, otherwise progress toward free shipping.
-    let pct, metCount, allUnlocked;
-    if (bar) {
-      pct = bar.pct;
-      metCount = bar.marks.filter(m => m.met).length;
-      allUnlocked = metCount === bar.marks.length;
-    } else {
-      pct = shipUnlocked ? 100 : Math.min(Math.max((subtotal / nextTier.min) * 100, 0), 100);
-      metCount = REWARD_TIERS.filter(t => subtotal >= t.min).length;
-      allUnlocked = shipUnlocked;
-    }
+    // Fill: progress toward free shipping.
+    const pct = shipUnlocked ? 100 : Math.min(Math.max((subtotal / nextTier.min) * 100, 0), 100);
+    const metCount = REWARD_TIERS.filter(t => subtotal >= t.min).length;
+    const allUnlocked = shipUnlocked;
     fill.style.width = pct + '%';
-    const marksEl = document.getElementById('rewards-bar-marks');
-    if (marksEl) {
-      marksEl.innerHTML = (bar?.marks || []).map(m =>
-        `<span class="rewards-bar-mark${m.met ? ' is-met' : ''}" style="left:${m.pct}%"><i class="fa-solid ${m.icon}" aria-hidden="true"></i>${esc(m.label)}</span>`).join('');
-    }
-    progressEl.classList.toggle('rewards-has-marks', !!bar);
     progressEl.classList.toggle('rewards-ship-unlocked', shipUnlocked);
     progressEl.classList.toggle('rewards-all-unlocked', allUnlocked);
-    // The bubble names the next thing to chase.
-    if (shipUnlocked && nextText) text = nextText;
 
     const wasMetCount = parseInt(sessionStorage.getItem('lw_rewards_tier_count') || '0');
     if (_cartReady && metCount > wasMetCount) spawnPageConfetti();
@@ -974,19 +871,12 @@
     const lines = cart ? cart.lines.edges.map(e => e.node) : [];
 
     if (!cart || lines.length === 0) {
-      // Empty cart: the next-order offer (on its dates) and the e-gift card,
-      // front and centre in Diwali colours.
-      const offer = nextOrderOn() ? `
-          <a class="cart-empty-card" href="${SHOP_ROOT}collections/diwali/">
-            <span class="cart-empty-card-icon" aria-hidden="true">🪔</span>
-            <span class="cart-empty-card-text">Spend ₹${NEXT_ORDER_TIERS[0].min}, get ₹${NEXT_ORDER_TIERS[0].off} off. Spend ₹${NEXT_ORDER_TIERS[1].min}, get ₹${NEXT_ORDER_TIERS[1].off} off - on your next order.</span>
-            <span class="cart-empty-card-cta">Shop Diwali →</span>
-          </a>` : '';
+      // Empty cart: the e-gift card.
       body.innerHTML = `
         <div class="cart-empty">
           <i class="fa-solid fa-bag-shopping"></i>
           <p>Your cart is empty</p>
-          <div class="cart-empty-cards">${offer}
+          <div class="cart-empty-cards">
             <a class="cart-empty-card" href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/">
               <span class="cart-empty-card-icon" aria-hidden="true">🎁</span>
               <span class="cart-empty-card-text">Can't decide? Send an e-gift card - it arrives by email instantly.</span>
