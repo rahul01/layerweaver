@@ -28,8 +28,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -50,8 +50,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -72,8 +72,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -94,8 +94,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -119,8 +119,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -140,8 +140,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -162,8 +162,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -192,8 +192,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -219,8 +219,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -245,8 +245,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -266,8 +266,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -287,8 +287,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -309,8 +309,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -330,8 +330,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -352,8 +352,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -372,8 +372,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -402,8 +402,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -425,8 +425,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -446,8 +446,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -467,8 +467,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -497,8 +497,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -519,8 +519,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -541,8 +541,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -563,8 +563,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -584,8 +584,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -605,8 +605,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -625,8 +625,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -646,8 +646,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -667,8 +667,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -695,8 +695,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -718,8 +718,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -739,8 +739,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -760,8 +760,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -781,8 +781,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -802,8 +802,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -828,8 +828,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -849,8 +849,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -873,8 +873,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -896,8 +896,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -919,8 +919,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -942,8 +942,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -972,8 +972,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -994,8 +994,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1014,8 +1014,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1035,8 +1035,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1058,8 +1058,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1081,8 +1081,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1103,8 +1103,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1125,8 +1125,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1147,8 +1147,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1169,8 +1169,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1190,8 +1190,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1210,8 +1210,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1232,8 +1232,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1255,8 +1255,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1277,8 +1277,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1299,8 +1299,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1320,8 +1320,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1342,8 +1342,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1372,8 +1372,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1393,8 +1393,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1415,8 +1415,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1437,8 +1437,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1461,8 +1461,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1470,7 +1470,7 @@
     <item>
       <g:id>9355570249950</g:id>
       <g:title>Lotus LED Tea Light Holder</g:title>
-      <g:description>Drop in the tea light and the petals glow from within. This 3D printed lotus sits on a slim black base, its layered petals softening the light into a warm, even glow. Pick white, pink, yellow or purple - one for every corner of your Diwali. Includes: LED tea light (replaceable batteries)</g:description>
+      <g:description>Drop in the tea light and the petals glow from within. This 3D printed lotus sits on a slim black base, its layered petals softening the light into a warm, even glow. Pick white, pink, yellow or purple - one for every corner of your home. Includes: LED tea light (replaceable batteries)</g:description>
       <g:link>https://www.layerweaver.com/shop/products/lotus-led-tea-light-holder/</g:link>
       <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productSep29_2026_12_15_49AM.png?v=1790621301</g:image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productSep29_2026_12_15_56AM.png?v=1790621301</g:additional_image_link>
@@ -1484,8 +1484,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1493,7 +1493,7 @@
     <item>
       <g:id>9355585552606</g:id>
       <g:title>Floating Lotus Flower</g:title>
-      <g:description>Set it in a bowl of water and watch it float. This 3D printed lotus has layered, pointed petals around a bright yellow centre - made for urli bowls, entrance decor and Diwali tables. Pick pink, white or purple. Floats on water</g:description>
+      <g:description>Set it in a bowl of water and watch it float. This 3D printed lotus has layered, pointed petals around a bright yellow centre - made for urli bowls, entrance decor and festive tables. Pick pink, white or purple. Floats on water</g:description>
       <g:link>https://www.layerweaver.com/shop/products/floating-lotus-flower/</g:link>
       <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productSep29_2026_12_37_42AM.png?v=1790622653</g:image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productSep29_2026_12_37_57AM.png?v=1790622653</g:additional_image_link>
@@ -1506,8 +1506,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1529,8 +1529,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1551,8 +1551,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>49.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1560,7 +1560,7 @@
     <item>
       <g:id>9357153992926</g:id>
       <g:title>Sculptural Flame LED Tea Light Holder</g:title>
-      <g:description>Light it and the whole piece becomes a flame. Sweeping sand-toned curves rise around the LED tea light and glow warm from the inside. Minimal enough for a bedside table, striking enough for your Diwali decor. Includes: LED tea light (replaceable batteries)</g:description>
+      <g:description>Light it and the whole piece becomes a flame. Sweeping sand-toned curves rise around the LED tea light and glow warm from the inside. Minimal enough for a bedside table, striking enough for a festive table. Includes: LED tea light (replaceable batteries)</g:description>
       <g:link>https://www.layerweaver.com/shop/products/sculptural-flame-led-tea-light-holder/</g:link>
       <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Sculptural_Lotus_Candle_Holder.png?v=1791617801</g:image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/productSep29_2026_03_37_08PM.png?v=1790677454</g:additional_image_link>
@@ -1575,8 +1575,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1598,8 +1598,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1607,7 +1607,7 @@
     <item>
       <g:id>9358976516318</g:id>
       <g:title>Kumiko Tea Light Lantern</g:title>
-      <g:description>Light it and the pattern comes alive. This 3D printed lantern wraps the tea light in a Japanese kumiko star lattice that glows warm on every side. Small enough for a desk or bedside, pretty enough for your Diwali table. Includes: LED tea light (replaceable batteries)</g:description>
+      <g:description>Light it and the pattern comes alive. This 3D printed lantern wraps the tea light in a Japanese kumiko star lattice that glows warm on every side. Small enough for a desk or bedside, pretty enough for a dinner table. Includes: LED tea light (replaceable batteries)</g:description>
       <g:link>https://www.layerweaver.com/shop/products/kumiko-tea-light-lantern/</g:link>
       <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/kumiko.png?v=1790778319</g:image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Sep_30_2026_05_23_20_PM.png?v=1790774677</g:additional_image_link>
@@ -1621,8 +1621,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1630,7 +1630,7 @@
     <item>
       <g:id>9358981562590</g:id>
       <g:title>Mini LED Lantern</g:title>
-      <g:description>Small, round and full of light. This 3D printed mini lantern glows through dozens of organic cut-outs, with a mint-green lid and a hook on top so you can hang it anywhere. String a few along a window or balcony for Diwali, or keep one on your desk. Includes: LED tea light (replaceable batteries)</g:description>
+      <g:description>Small, round and full of light. This 3D printed mini lantern glows through dozens of organic cut-outs, with a mint-green lid and a hook on top so you can hang it anywhere. String a few along a window or balcony, or keep one on your desk. Includes: LED tea light (replaceable batteries)</g:description>
       <g:link>https://www.layerweaver.com/shop/products/mini-led-lantern/</g:link>
       <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Sep_30_2026_07_22_57_PM.png?v=1790776636</g:image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product.png?v=1790778226</g:additional_image_link>
@@ -1645,8 +1645,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1665,8 +1665,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1685,8 +1685,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -1705,8 +1705,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>

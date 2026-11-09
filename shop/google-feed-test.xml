@@ -28,8 +28,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -51,8 +51,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -81,8 +81,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -90,7 +90,7 @@
     <item>
       <g:id>9358976516318</g:id>
       <g:title>Kumiko Tea Light Lantern</g:title>
-      <g:description>Light it and the pattern comes alive. This 3D printed lantern wraps the tea light in a Japanese kumiko star lattice that glows warm on every side. Small enough for a desk or bedside, pretty enough for your Diwali table. Includes: LED tea light (replaceable batteries)</g:description>
+      <g:description>Light it and the pattern comes alive. This 3D printed lantern wraps the tea light in a Japanese kumiko star lattice that glows warm on every side. Small enough for a desk or bedside, pretty enough for a dinner table. Includes: LED tea light (replaceable batteries)</g:description>
       <g:link>https://www.layerweaver.com/shop/products/kumiko-tea-light-lantern/</g:link>
       <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/kumiko.png?v=1790778319</g:image_link>
       <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/product_Sep_30_2026_05_23_20_PM.png?v=1790774677</g:additional_image_link>
@@ -104,8 +104,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
@@ -124,8 +124,8 @@
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
-        <g:min_handling_time>5</g:min_handling_time>
-        <g:max_handling_time>5</g:max_handling_time>
+        <g:min_handling_time>3</g:min_handling_time>
+        <g:max_handling_time>3</g:max_handling_time>
         <g:min_transit_time>3</g:min_transit_time>
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
