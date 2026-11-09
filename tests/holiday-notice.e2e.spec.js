@@ -107,14 +107,14 @@ for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop',
       await page.waitForFunction(() => document.getElementById('cart-icon-btn'), { timeout: 10_000 });
       await page.click('#cart-icon-btn');
       await page.waitForSelector('#cart-drawer.open');
-      await expect(page.locator('#cart-holiday-note')).toBeHidden();
+      await expect(page.locator('#cart-holiday-note')).toHaveCount(0);
       await page.click('#cart-close');
       await page.click('#add-to-cart-btn');
       await page.waitForFunction(() => { const b = document.getElementById('cart-badge'); return b && getComputedStyle(b).display !== 'none'; }, { timeout: 10_000 });
       await page.click('#cart-icon-btn');
       await page.waitForSelector('#cart-drawer.open');
       await page.waitForTimeout(700);
-      await expect(page.locator('#cart-holiday-note')).toHaveText(COPY.note);
+      await expect(page.locator('#cart-holiday-note')).toHaveCount(0);
       await expect(page.locator('#cart-total-label')).toHaveText('Total with delivery');
       await shot(page, `cart-${vp.name}`);
     });

@@ -1699,18 +1699,6 @@
     animation: rewards-pop 0.4s ease;
 }
 
-.cart-giftcard-link {
-    display: block;
-    margin: 0 0 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #5B3E96;
-    text-align: center;
-    text-decoration: none;
-}
-.cart-giftcard-link[hidden] { display: none; }
-.cart-giftcard-link i { color: #e8a020; margin-right: 4px; }
-.cart-giftcard-link:hover { text-decoration: underline; }
 
 .rewards-nextorder-msg {
     font-size: 0.85rem;
@@ -1841,19 +1829,7 @@
     gap: 8px;
 }
 
-.cart-payment-note {
-    text-align: center;
-    font-size: 0.75rem;
-    color: #999;
-    margin: 8px 0 4px;
-    font-family: var(--font-primary);
-}
 
-.cart-payment-note i {
-    font-size: 0.7rem;
-    margin-right: 3px;
-    color: #4caf50;
-}
 
 .cart-policy-links {
     display: flex;
@@ -3487,5 +3463,4 @@ body.seasonal--halloween {
 /* Holiday notice (ship date, /holiday.js): product page note and cart note */
 .holiday-note { margin: 0 0 14px; max-width: 420px; font-size: 0.9rem; font-weight: 600; color: var(--dark); }
 .holiday-note i { color: var(--primary); margin-right: 6px; }
-.holiday-note[hidden], .cart-holiday-note[hidden] { display: none; }
-.cart-holiday-note { margin: 0 0 10px; font-size: 0.85rem; font-weight: 600; color: var(--dark); text-align: center; }
+.holiday-note[hidden] { display: none; }

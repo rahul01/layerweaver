@@ -622,9 +622,6 @@
         <div class="cart-body" id="cart-body"></div>
         <div class="cart-extras" id="cart-extras" style="display:none">
           <div class="orderby orderby-cart" data-orderby hidden></div>
-          <a class="cart-giftcard-link" id="cart-giftcard-link" href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/" hidden>
-            <i class="fa-solid fa-gift"></i> Can't decide? Send an e-gift card instead
-          </a>
         </div>
         <div class="cart-footer" id="cart-footer">
           <div id="cart-checkout-section" style="display:none">
@@ -638,7 +635,6 @@
               <p class="rewards-bar-msg" id="rewards-bar-msg"></p>
               <p class="rewards-nextorder-msg" id="rewards-nextorder-msg" hidden></p>
             </div>
-            <p class="cart-holiday-note" id="cart-holiday-note" hidden></p>
             <div class="cart-delivery-row" id="cart-delivery-row" hidden>
               <span>Delivery</span>
               <span id="cart-delivery-price"></span>
@@ -652,7 +648,6 @@
             </a>
             <p class="cart-returns-note" id="cart-returns-note" hidden></p>
           </div>
-          <p class="cart-payment-note"><i class="fa-solid fa-lock"></i> UPI · Debit/Credit Cards · Net Banking via Razorpay</p>
         </div>
         <div class="cart-policy-links">
           <a href="${SITE_ROOT}shipping-policy/"><i class="fa-solid fa-truck-fast"></i> Shipping Policy</a>
@@ -842,13 +837,6 @@
 
     const subtotal = cartSubtotal(cart);
 
-    // E-gift card nudge, unless one's already in the cart or this is its page.
-    const giftLink = document.getElementById('cart-giftcard-link');
-    if (giftLink) {
-      giftLink.hidden = path.includes(`/products/${GIFT_CARD_HANDLE}/`)
-        || cart.lines.edges.some(e => e.node.merchandise.product.handle === GIFT_CARD_HANDLE);
-    }
-
     if (subtotal <= 0) { progressEl.style.display = 'none'; return; }
     progressEl.style.display = '';
 
@@ -975,19 +963,6 @@
       if (label) label.textContent = 'Total';
       totalEl.textContent = fmt(costAmt.amount, costAmt.currencyCode);
     }
-  }
-
-  // Holiday notice in the cart (/holiday.js): new orders ship on the ship date. Not for carts that
-  // only hold gift cards (nothing ships). Hides itself after the ship date.
-  function renderHolidayNote(cart) {
-    const el = document.getElementById('cart-holiday-note');
-    if (!el) return;
-    try {
-      const holiday = window.LWHoliday;
-      const ships = cart.lines.edges.some(e => e.node.merchandise.requiresShipping !== false);
-      el.hidden = !(holiday && holiday.active() && ships);
-      if (!el.hidden) el.textContent = holiday.COPY.note;
-    } catch { el.hidden = true; }
   }
 
   function renderCart() {
@@ -1131,7 +1106,6 @@
     const costAmt = cart.cost.totalAmount;
     total.textContent = fmt(costAmt.amount, costAmt.currencyCode);
     renderPromiseRow(cart, total, costAmt);
-    renderHolidayNote(cart);
     chkBtn.href = cart.checkoutUrl;
     const checkoutSection = document.getElementById('cart-checkout-section');
     if (checkoutSection) checkoutSection.style.display = 'contents';

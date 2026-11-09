@@ -173,27 +173,6 @@ test.describe('Cart next-order progress', () => {
   });
 });
 
-// ── Cart: e-gift card link ──────────────────────────────────────────────────
-
-test.describe('Cart e-gift card link', () => {
-  test('shows under the progress card and goes to the gift card page', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(450)]);
-    const link = page.locator('#cart-giftcard-link');
-    await expect(link).toBeVisible();
-    await expect(link).toHaveText("Can't decide? Send an e-gift card instead");
-    expect(await link.evaluate(a => a.href)).toMatch(new RegExp(`/shop/products/${GIFT_CARD}/$`));
-  });
-
-  test('hides when a gift card is already in the cart', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(450), line(1000, { handle: GIFT_CARD })]);
-    await expect(page.locator('#cart-giftcard-link')).toBeHidden();
-  });
-
-  test('hides on the gift card page itself', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(450)], { path: `/shop/products/${GIFT_CARD}/` });
-    await expect(page.locator('#cart-giftcard-link')).toBeHidden();
-  });
-});
 
 // ── Cart layout ─────────────────────────────────────────────────────────────
 
