@@ -36,48 +36,6 @@
     flex-shrink: 1;
 }
 
-/* Diwali 2026 logo ribbon (like the Rakhi one): sits under the wordmark on
-   every page, links to the Diwali collection. Remove in the Nov 9 cleanup
-   (the ribbon markup in build-shop.js shopHeaderHtml() and the hand-written
-   pages too - grep logo-diwali-ribbon). */
-.logo-diwali-ribbon {
-    position: absolute;
-    top: 100%;
-    right: 4px;
-    margin-top: -6px;
-    background: linear-gradient(90deg, #f4b53f 0%, #e8a020 100%);
-    color: #5a2d00;
-    font-family: var(--font-primary);
-    font-size: 0.62rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    padding: 4px 12px;
-    text-decoration: none;
-    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
-    transform: rotate(-5deg);
-    clip-path: polygon(0% 0%, 3% 20%, 0% 40%, 2% 60%, 0% 80%, 1% 100%, 100% 100%, 98% 80%, 100% 60%, 97% 40%, 100% 20%, 99% 0%);
-    transition: background 0.2s ease, color 0.2s ease;
-    z-index: 1;
-}
-
-.logo-diwali-ribbon:hover {
-    background: #5a2d00;
-    color: #ffd66b;
-}
-
-@media (max-width: 480px) {
-    .logo-diwali-ribbon {
-        font-size: 0.5rem;
-        padding: 3px 8px;
-        right: 0;
-    }
-}
-@media (max-width: 370px) {
-    /* The wordmark stacks here and the logo gets narrower than the ribbon. */
-    .logo-diwali-ribbon { right: auto; left: 0; margin-top: 2px; }
-}
-
 .logo-link:hover { opacity: 0.8; }
 
 .logo-link .logo {
@@ -1397,23 +1355,6 @@
     font-size: 1.2rem;
     margin: 0;
 }
-
-/* Light Diwali touch in the cart (html.diwali-touch, till Nov 8 - see
-   styles.css): a mandala in the cart's corner, a diya after the title, a
-   warm empty-bag icon. Remove in the Nov 9 cleanup. */
-html.diwali-touch #cart-drawer {
-    /* The cart's own mandala in its bottom-right corner, washed lighter than
-       the page's a touch: the cart is busier. */
-    background-image: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.75)), var(--diwali-mandala);
-    background-position: 0 0, right -230px bottom -230px;
-    background-size: auto, 460px 460px;
-    background-repeat: no-repeat;
-}
-html.diwali-touch .cart-header h3::after { content: ' 🪔'; font-size: 1rem; }
-/* Cream cards in the cart let its mandala show through. */
-html.diwali-touch .cart-empty-card,
-html.diwali-touch .rewards-progress.rewards-has-marks { background-color: rgba(255, 250, 240, 0.6); }
-html.diwali-touch .cart-empty > i { color: #f0c36a; }
 
 .drawer-back-link {
     width: 100%;

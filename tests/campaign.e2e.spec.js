@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-// Diwali 2026 campaign: the logo ribbon, the gift card tab and the cart's
+// Diwali 2026 campaign: the gift card tab and the cart's
 // next-order progress (the announcement bar is now the ship-date notice, see
 // holiday-notice.e2e.spec.js). The clock is faked to IST dates and the
 // cart is stubbed, so these don't depend on today's date or on Shopify.
-// Remove with the campaign in the Nov 9 cleanup.
 
 const GIFT_CARD = 'layerweaver-e-gift-card';
 
@@ -46,61 +45,6 @@ async function openCart(page, day, lines, { orderOff = 0, path = '/shop/' } = {}
   await page.waitForSelector('#cart-drawer.open');
   await expect(page.locator('#rewards-progress')).toBeVisible();
 }
-
-// ── Light Diwali touch ──────────────────────────────────────────────────────
-
-test.describe('Light Diwali touch', () => {
-  // One large mandala centred on the bottom-right corner of the window.
-  const mandala = page => page.evaluate(() => {
-    const st = getComputedStyle(document.body, '::before');
-    return { image: st.backgroundImage, position: st.position, right: st.right, width: st.width };
-  });
-
-  for (const path of ['/', '/shop/', '/faq/']) {
-    test(`${path} - corner mandala through Diwali day, gone after`, async ({ page }) => {
-      await onDay(page, '2026-11-08');
-      await page.goto(path);
-      await expect(page.locator('html')).toHaveClass(/diwali-touch/);
-      const on = await mandala(page);
-      expect(on.image).toContain('/images/diwali-mandala.webp');
-      expect(on.position).toBe('fixed');
-      // Centred on the corner: pushed out by half its own width.
-      expect(parseFloat(on.right)).toBe(-parseFloat(on.width) / 2);
-      await page.clock.setFixedTime(new Date('2026-11-09T12:00:00+05:30'));
-      await page.reload();
-      await expect(page.locator('html')).not.toHaveClass(/diwali-touch/);
-      expect((await mandala(page)).image).toBe('none');
-    });
-  }
-
-  test('cards are see-through during the touch, solid after', async ({ page }) => {
-    const bg = sel => page.evaluate(s => getComputedStyle(document.querySelector(s)).backgroundColor, sel);
-    await onDay(page, '2026-10-25');
-    await page.goto('/shop/');
-    expect(await bg('.shop-product-card')).toBe('rgba(255, 255, 255, 0.55)');
-    await page.goto('/faq/');
-    expect(await bg('.faq-item summary')).toBe('rgba(247, 244, 253, 0.6)');
-    // The Halloween page keeps its dark cards, see-through.
-    await page.goto('/shop/collections/halloween/');
-    expect(await bg('.shop-product-card')).toBe('rgba(31, 23, 41, 0.7)');
-    await page.clock.setFixedTime(new Date('2026-11-09T12:00:00+05:30'));
-    await page.goto('/shop/');
-    expect(await bg('.shop-product-card')).toBe('rgb(255, 255, 255)');
-  });
-
-  test('the mandala image is served', async ({ page }) => {
-    const res = await page.request.get('/images/diwali-mandala.webp');
-    expect(res.status()).toBe(200);
-    expect(res.headers()['content-type']).toContain('image/webp');
-  });
-
-  test('cart gets the mandala and a diya after the title', async ({ page }) => {
-    await openCart(page, '2026-10-25', [line(450)]);
-    const after = await page.evaluate(() => getComputedStyle(document.querySelector('.cart-header h3'), '::after').content);
-    expect(after).toContain('🪔');
-    expect(await page.evaluate(() => getComputedStyle(document.getElementById('cart-drawer')).backgroundImage)).toContain('/images/diwali-mandala.webp');
-  });
-});
 
 // ── Logo ribbon and gift card tab ───────────────────────────────────────────
 

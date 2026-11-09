@@ -671,7 +671,7 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
 function shopHeaderHtml(base, shopBase) {
   return `
 ${holidayBarHtml(`${base}shipping-policy/`)}
-    <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on;if(t<='2026-11-08')document.documentElement.classList.add('diwali-touch');on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
+    <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on;on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
     <header class="shop-header">
         <div class="container">
             <div class="logo-container">
@@ -1752,19 +1752,8 @@ function collagebannerHtml(title, description, images, eyebrow = '') {
 // While HERO_FESTIVE is set, the hero's eyebrow, heading, left-hand callouts,
 // CTA and carousel are all about its collections. Set it to null after the
 // season to restore the evergreen hero below - nothing to hand-edit.
-// Nov 9 2026: set to null after Diwali and Halloween; the previous festive object is in git history (commit before this one).
+// Nov 9 2026: null = evergreen hero. The Diwali/Halloween festive object (eyebrow, heading, callouts, cta) is in git history before the Nov 9 2026 cleanup.
 const HERO_FESTIVE = null;
-const HERO_FESTIVE_UNUSED = {
-  eyebrow: '3D printed in Pune',
-  heading: 'Lamps, desk toys and gifts, <span class="brand-text">printed to order</span>',
-  collections: ['diwali', 'halloween'],
-  callouts: [
-    { theme: 'diwali', icon: '🪔', name: 'Diwali Collection', desc: 'Lamps, lotus lights &amp; festive decor', href: 'shop/collections/diwali/' },
-    { theme: 'halloween', icon: '🎃', name: 'Halloween Collection', desc: 'Glowing pumpkins, spiders &amp; spooky desk buddies', href: 'shop/collections/halloween/' },
-    { faIcon: 'fa-truck-fast', name: 'Free Shipping', desc: 'On every order above ₹299', href: 'shop/' },
-  ],
-  cta: { label: 'Shop Lamps &amp; Gifts', href: 'shop/collections/diwali/', theme: 'diwali' },
-};
 
 const HERO_EVERGREEN_HEADER = `                    <p class="hero-eyebrow">3D Printed Products</p>
                     <h1>Bringing Ideas to Life <span class="brand-text">Layer by Layer</span></h1>`;
