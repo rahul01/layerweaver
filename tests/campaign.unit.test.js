@@ -52,7 +52,7 @@ describe('announcement bar copies', () => {
     const links = [...reference.matchAll(/<a href="" data-from="([\d-]+)" data-to="([\d-]+)" hidden><i class="fa-solid fa-calendar-days" aria-hidden="true"><\/i><span>([^<]*)<\/span><\/a>/g)];
     expect(links).toHaveLength(1);
     expect(links[0][1]).toBe(HOLIDAY.from);
-    expect(links[0][2]).toBe(HOLIDAY.shipDate);
+    expect(links[0][2]).toBe(HOLIDAY.until);
     expect(links[0][3]).toBe(COPY.bar);
     expect(reference.match(/<a /g)).toHaveLength(1);
   });

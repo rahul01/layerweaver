@@ -517,21 +517,12 @@
     badge.style.display = qty > 0 ? 'flex' : 'none';
   }
 
-  // ── Delivery time and Diwali order-by date by pincode ──────────────────
-  // Mirrors orderByForPincode() and arrivesInForPincode() in
-  // shop/cart-utils.js (unit-tested there). Fills every [data-orderby] box
-  // (product pages, cart drawer): the buyer types a pincode and sees how long
-  // delivery usually takes there, plus, until Oct 29, their own order-by
-  // date, worked out from their clock in IST, so a passed date flips without
-  // a rebuild. The pincode is remembered on this device only (lw_pincode).
-  const ORDER_BY_ENDS = '2026-10-30'; // from this IST day: delivery time only, no order-by / Diwali wording
-  const ORDER_BY_ZONES = {
-    pune:        { by: '2026-11-01', date: 'Sun, Nov 1' },
-    mumbai:      { by: '2026-11-01', date: 'Sun, Nov 1' },
-    maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
-    metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },
-    india:       { by: '2026-10-26', date: 'Mon, Oct 26' },
-  };
+  // ── Delivery time by pincode ────────────────────────────────────────────
+  // Mirrors arrivesInForPincode() in shop/cart-utils.js (unit-tested there). Fills every
+  // [data-orderby] box (product pages, cart drawer): the buyer types a pincode and sees how
+  // long delivery usually takes there (the ship date while the holiday notice is on). The
+  // pincode is remembered on this device only (lw_pincode). The Diwali order-by dates that
+  // used to sit here ended Oct 30 and were removed on Nov 9 (see git history).
   const METRO_PREFIXES = new Set([110, 121, 122, 201, 560, 500, 600, 700]);
   const ARRIVES_IN = { pune: '3-5', mumbai: '3-5', maharashtra: '3-6', metro: '5-7', india: '6-8' };
   const PIN_KEY = 'lw_pincode';
@@ -547,16 +538,6 @@
     if (p3 >= 400 && p3 <= 445 && p3 !== 403) return 'maharashtra';
     if (METRO_PREFIXES.has(p3)) return 'metro';
     return 'india';
-  }
-
-  function orderByForPincode(pin) {
-    const zone = pincodeZone(pin);
-    const today = istToday();
-    if (!zone || today >= ORDER_BY_ENDS) return null;
-    const z = ORDER_BY_ZONES[zone];
-    return today <= z.by
-      ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
-      : { zone, open: false, text: 'Orders to your pincode might arrive after Diwali.' };
   }
 
   function arrivesInForPincode(pin) {
@@ -575,23 +556,14 @@
   function showOrderBy(box, pin) {
     const res = box.querySelector('.orderby-result');
     const eta = arrivesInForPincode(pin);
-    const r = orderByForPincode(pin);
     if (!pin) { res.textContent = ''; res.className = 'orderby-result'; return; }
     if (!eta) { res.textContent = 'Enter a 6-digit pincode.'; res.className = 'orderby-result orderby-error'; return; }
-    if (!r) { res.textContent = eta; res.className = 'orderby-result orderby-eta'; return; } // from ORDER_BY_ENDS on
-    res.className = `orderby-result ${r.open ? 'orderby-open' : 'orderby-closed'}`;
-    if (r.open) { res.textContent = `${r.text} ${eta}`; return; }
-    // Past the date: offer the e-gift card (arrives instantly), and the chat
-    // in case we can still make it.
-    const wa = `https://wa.me/917558783018?text=${encodeURIComponent(`Hi! Can you deliver to ${pin} before Diwali?`)}`;
-    res.innerHTML = `${esc(r.text)} ${esc(eta)} <a href="${SHOP_ROOT}products/${GIFT_CARD_HANDLE}/"><i class="fa-solid fa-gift"></i> Send an e-gift card - it arrives instantly</a> or <a href="${wa}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> check with us on WhatsApp</a>`;
+    res.textContent = eta; res.className = 'orderby-result orderby-eta';
   }
 
   function renderOrderBy() {
     const pin = savedPincode();
-    const label = istToday() < ORDER_BY_ENDS
-      ? '<i class="fa-solid fa-gift"></i> Want it before Diwali?'
-      : '<i class="fa-solid fa-truck-fast"></i> When will it arrive?';
+    const label = '<i class="fa-solid fa-truck-fast"></i> When will it arrive?';
     document.querySelectorAll('[data-orderby]').forEach(box => {
       box.innerHTML = `
         <form class="orderby-form" novalidate>

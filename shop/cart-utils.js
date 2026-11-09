@@ -119,25 +119,9 @@ export function shippingProgress(total, min) {
   return { isUnlocked, pct, message };
 }
 
-// Mirrors shop/cart.js's orderByForPincode(). Diwali order-by date for a
-// pincode (Diwali 2026 plan, section 7). Zones by the first three digits:
-// Pune 411-412, Mumbai 400-401, the rest of Maharashtra 400-445 except 403 (Goa); metro cities Delhi 110, Faridabad
-// 121, Gurugram 122, Noida/Ghaziabad 201, Bengaluru 560, Hyderabad 500,
-// Chennai 600, Kolkata 700; everything else is the rest of India. A zone
-// stays open through its date (IST). Returns null for a pincode that isn't
-// 6 digits, or from `ends` on (Oct 30 00:00 IST: Diwali ads are halted, so every zone,
-// Maharashtra included, gets the year-round "usually arrives in X days"
-// wording only - no order-by date, no "after Diwali" line).
-export const ORDER_BY = {
-  ends: '2026-10-30',
-  zones: {
-    pune:        { by: '2026-11-01', date: 'Sun, Nov 1' },
-    mumbai:      { by: '2026-11-01', date: 'Sun, Nov 1' },
-    maharashtra: { by: '2026-11-01', date: 'Sun, Nov 1' },
-    metro:       { by: '2026-10-30', date: 'Fri, Oct 30' },
-    india:       { by: '2026-10-26', date: 'Mon, Oct 26' },
-  },
-};
+// Pincode zones by the first three digits: Pune 411-412, Mumbai 400-401, the rest of Maharashtra
+// 400-445 except 403 (Goa); metro cities Delhi 110, Faridabad 121, Gurugram 122, Noida/Ghaziabad 201,
+// Bengaluru 560, Hyderabad 500, Chennai 600, Kolkata 700; everything else is the rest of India.
 const METRO_PREFIXES = new Set([110, 121, 122, 201, 560, 500, 600, 700]);
 export function pincodeZone(pin) {
   const p = String(pin ?? '').trim();
@@ -149,16 +133,6 @@ export function pincodeZone(pin) {
   if (METRO_PREFIXES.has(p3)) return 'metro';
   return 'india';
 }
-export function orderByForPincode(pin, now = Date.now(), cfg = ORDER_BY) {
-  const zone = pincodeZone(pin);
-  const today = new Date(now).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-  if (!zone || today >= cfg.ends) return null;
-  const z = cfg.zones[zone];
-  return today <= z.by
-    ? { zone, open: true, text: `Order by ${z.date} to get it before Diwali.` }
-    : { zone, open: false, text: 'Orders to your pincode might arrive after Diwali. Check with us on WhatsApp.' };
-}
-
 // Mirrors shop/cart.js's arrivesInForPincode(). Order-to-door time by zone,
 // p80 of 374 delivered orders (Sep 15 - Oct 30, 2026) - the same ranges
 // as the FAQ and the Shipping Policy.

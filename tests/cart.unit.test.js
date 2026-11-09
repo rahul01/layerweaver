@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, orderByForPincode, arrivesInForPincode, withUtmTags, giftCardRecipientAttributes, nextOrderValue, nextOrderProgress, rewardsBarMarks, freeShippingLine } from '../shop/cart-utils.js';
+import { fmt, esc, cartQtyMap, shippingProgress, attributionCartAttributes, metaCookies, nextAttribution, addedLines, pincodeZone, arrivesInForPincode, withUtmTags, giftCardRecipientAttributes, nextOrderValue, nextOrderProgress, rewardsBarMarks, freeShippingLine } from '../shop/cart-utils.js';
 
 function makeLine(variantId, price, qty, handle = 'product', title = 'Product', attrs = []) {
   return {
@@ -266,40 +266,6 @@ describe('pincodeZone', () => {
   it('rejects anything that is not a 6-digit pincode', () => {
     for (const p of ['', '41100', '4110011', '011001', 'abcdef', null]) expect(pincodeZone(p)).toBeNull();
     expect(pincodeZone(' 411001 ')).toBe('pune');
-  });
-});
-
-describe('orderByForPincode', () => {
-  const at = s => new Date(s).getTime();
-  it('gives each zone its own date', () => {
-    const now = at('2026-10-15T12:00:00+05:30');
-    expect(orderByForPincode('411001', now).text).toBe('Order by Sun, Nov 1 to get it before Diwali.');
-    expect(orderByForPincode('560001', now).text).toBe('Order by Fri, Oct 30 to get it before Diwali.');
-    expect(orderByForPincode('781001', now).text).toBe('Order by Mon, Oct 26 to get it before Diwali.');
-  });
-  it('stays open through the date in IST, then says after Diwali', () => {
-    expect(orderByForPincode('781001', at('2026-10-26T23:59:00+05:30')).open).toBe(true);
-    expect(orderByForPincode('781001', at('2026-10-27T00:01:00+05:30'))).toEqual({ zone: 'india', open: false, text: 'Orders to your pincode might arrive after Diwali. Check with us on WhatsApp.' });
-    expect(orderByForPincode('411001', at('2026-10-27T00:01:00+05:30')).open).toBe(true);
-  });
-  it('null for a bad pincode', () => {
-    expect(orderByForPincode('123', at('2026-10-15T12:00:00+05:30'))).toBeNull();
-  });
-  it('switches to the year-round wording (null) from Oct 30 00:00 IST, every zone', () => {
-    for (const pin of ['411001', '560001', '781001']) {
-      expect(orderByForPincode(pin, at('2026-10-29T23:59:00+05:30'))).not.toBeNull();
-      expect(orderByForPincode(pin, at('2026-10-30T00:00:00+05:30'))).toBeNull();
-      expect(orderByForPincode(pin, at('2026-11-01T12:00:00+05:30'))).toBeNull();
-      expect(orderByForPincode(pin, at('2026-11-08T00:00:00+05:30'))).toBeNull();
-    }
-    // Last minute before the switch: Maharashtra and metros open, the rest past their date.
-    expect(orderByForPincode('411001', at('2026-10-29T23:59:00+05:30')).open).toBe(true);
-    expect(orderByForPincode('560001', at('2026-10-29T23:59:00+05:30')).open).toBe(true);
-    expect(orderByForPincode('781001', at('2026-10-29T23:59:00+05:30')).open).toBe(false);
-  });
-  it('the switch follows IST, not UTC (Oct 29 18:30 UTC is already Oct 30 in IST)', () => {
-    expect(orderByForPincode('411001', at('2026-10-29T18:30:00Z'))).toBeNull();
-    expect(orderByForPincode('411001', at('2026-10-29T18:29:00Z')).open).toBe(true);
   });
 });
 
