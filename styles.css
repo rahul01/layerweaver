@@ -444,25 +444,12 @@ header .container {
 /* Festive rows get the same card look as the seasonal nav chips */
 .hero-services { position: relative; z-index: 0; }
 
-.hero-service-link--diwali,
 .hero-service-link--halloween {
     position: relative;
     padding: 14px 16px;
     margin-bottom: 12px;
     border-radius: 14px;
     border: 1px solid transparent;
-}
-
-.hero-service-link--diwali {
-    background: linear-gradient(135deg, #fff6dc 0%, #ffe39a 100%);
-    border-color: #e8a020;
-    color: #7f3c00;
-    box-shadow: 0 0 12px rgba(232, 160, 32, 0.3);
-}
-.hero-service-link--diwali .hero-service-desc { color: #9a5a1a; }
-.hero-service-link--diwali:hover {
-    color: #5e2c00;
-    box-shadow: 0 0 18px rgba(232, 160, 32, 0.5);
 }
 
 .hero-service-link--halloween {
@@ -478,68 +465,8 @@ header .container {
 }
 
 /* The card is the background, so the icon sits on it without a tile */
-.hero-service-link--diwali .hero-service-icon,
+
 .hero-service-link--halloween .hero-service-icon { background: none; }
-
-/* Moving shine (two glints + glow) shared by the Diwali nav chip in
-   shop.css and the Diwali hero card. */
-@property --diwali-shine-angle {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
-}
-
-@keyframes diwali-shine {
-    to { --diwali-shine-angle: 360deg; }
-}
-
-.hero-service-link--diwali::before,
-.hero-service-link--diwali::after {
-    content: '';
-    position: absolute;
-    border-radius: inherit;
-    pointer-events: none;
-    animation: diwali-shine 4s linear infinite;
-}
-
-.hero-service-link--diwali::before {
-    inset: -1px;
-    padding: 1px;
-    background: repeating-conic-gradient(
-        from var(--diwali-shine-angle),
-        #e8a020 0deg,
-        #e8a020 110deg,
-        #ffd66b 130deg,
-        #fff8dc 145deg,
-        #ffffff 155deg,
-        #fff8dc 165deg,
-        #ffd66b 172deg,
-        #e8a020 180deg
-    );
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-}
-
-.hero-service-link--diwali::after {
-    inset: -5px;
-    z-index: -1;
-    background: repeating-conic-gradient(
-        from var(--diwali-shine-angle),
-        transparent 0deg,
-        transparent 120deg,
-        rgba(255, 196, 60, 0.85) 142deg,
-        rgba(255, 244, 200, 1) 155deg,
-        rgba(255, 196, 60, 0.85) 167deg,
-        transparent 180deg
-    );
-    filter: blur(7px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .hero-service-link--diwali::before,
-    .hero-service-link--diwali::after { animation: none; }
-}
 
 .hero-service-icon span {
     font-size: 24px;
@@ -579,27 +506,6 @@ header .container {
     background: var(--btn-yellow-bg-hover);
     color: var(--dark);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 30px rgba(239, 207, 32, 0.48);
-}
-
-/* Premium gold CTA for the festive Diwali hero */
-.hero-left .hero-shop-btn--diwali {
-    background: linear-gradient(135deg, #fbe3a0 0%, #eab042 35%, #d18a1c 70%, #b86a0c 100%);
-    color: #3b1600;
-    border: 1px solid #fff0c2;
-    text-shadow: 0 1px 0 rgba(255, 238, 190, 0.6);
-    box-shadow:
-        0 8px 28px rgba(201, 120, 14, 0.45),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6),
-        inset 0 -3px 8px rgba(120, 55, 0, 0.25);
-}
-
-.hero-left .hero-shop-btn--diwali:hover {
-    background: linear-gradient(135deg, #fde9b0 0%, #efb94d 35%, #d99322 70%, #c07210 100%);
-    color: #2a0f00;
-    box-shadow:
-        0 12px 36px rgba(201, 120, 14, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.7),
-        inset 0 -3px 8px rgba(120, 55, 0, 0.25);
 }
 
 .hero-rating-badge {
@@ -704,11 +610,6 @@ header .container {
 }
 
 .hero-carousel-icon { margin-right: 12px; }
-
-.hero-carousel-slide--diwali .hero-carousel-caption {
-    background: linear-gradient(to top, rgba(92, 42, 0, 0.8) 0%, transparent 100%);
-}
-.hero-carousel-slide--diwali .hero-carousel-title { color: #ffd66b; }
 
 .hero-carousel-slide--halloween .hero-carousel-caption {
     background: linear-gradient(to top, rgba(31, 23, 41, 0.85) 0%, transparent 100%);
@@ -1007,7 +908,6 @@ section {
     color: var(--light);
 }
 
-
 /* Lightbox Styles */
 .lightbox {
     display: none;
@@ -1171,8 +1071,6 @@ section {
 .step-content {
     padding-top: 10px;
 }
-
-
 
 /* Testimonials Section */
 .testimonials {
@@ -2899,7 +2797,6 @@ footer {
         padding: calc(90px + var(--announcement-height)) 0 24px;
     }
 }
-
 
 /* Ship-date notice: loud on purpose (brand yellow, near-black bold text, calendar icon, still, up to two lines on a phone). */
 .announcement-bar a { font-size: 0.95rem; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
