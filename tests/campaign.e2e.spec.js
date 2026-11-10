@@ -71,7 +71,7 @@ test.describe('Logo ribbon and gift card tab', () => {
   test('phones list it under Gifts in the dropdown, with no extra chip', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 700 });
     await page.goto('/shop/');
-    await expect(page.locator('.collection-nav-mobile .collection-nav-icon-chip')).toHaveCount(2);
+    await expect(page.locator('.collection-nav-mobile .collection-nav-icon-chip')).toHaveCount(0); // the two festive chips left the nav on Nov 9
     await page.click('.collection-filter-btn');
     await expect(page.locator('.collection-dropdown-item--giftcard')).toBeVisible();
   });

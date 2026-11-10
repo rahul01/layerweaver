@@ -9,6 +9,9 @@ const IN = '2026-11-05';
 const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: `${SHOTS}/${name}.png` }); };
 const bar = page => page.locator('.announcement-bar');
 
+// Nov 10 2026: the notice is switched off in holiday.js (off: true), so there is nothing to see. Set off: false to run these again.
+test.skip(HOLIDAY.off, 'holiday notice switched off');
+
 for (const vp of [{ name: 'phone', width: 375, height: 800 }, { name: 'desktop', width: 1280, height: 900 }]) {
   test.describe(`holiday notice ${vp.name}`, () => {
     test.use({ viewport: { width: vp.width, height: vp.height } });

@@ -13,6 +13,7 @@
     shipDate: '2026-11-12',    // orders placed in the window ship on this day
     until: '2026-11-10',       // last IST day the notice shows (an order from this day ships within the normal 2 days)
     shipLabel: '12 Nov',
+    off: true,                 // Nov 10: notice taken off the site. Set false (and set new dates) to bring it back for the next holiday.
   };
 
   // Days a parcel usually takes AFTER it has shipped (Delhivery label to door). From the same
@@ -29,7 +30,8 @@
   };
 
   const istToday = (now = Date.now()) => new Date(now).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-  const active = (today = istToday()) => today >= HOLIDAY.from && today <= HOLIDAY.until;
+  const inWindow = (today = istToday()) => today >= HOLIDAY.from && today <= HOLIDAY.until;
+  const active = (today = istToday()) => !HOLIDAY.off && inWindow(today);
 
   // Pincode line while the notice is on: when it ships, then the transit after that.
   function arrivesAfterShip(zone) {
@@ -47,5 +49,5 @@
     else applyDates();
   }
 
-  return { HOLIDAY, AFTER_SHIP, COPY, active, istToday, arrivesAfterShip, applyDates };
+  return { HOLIDAY, AFTER_SHIP, COPY, active, inWindow, istToday, arrivesAfterShip, applyDates };
 });

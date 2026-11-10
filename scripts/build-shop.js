@@ -670,8 +670,8 @@ function headHtml(base, shopBase, { title, description, ogImage, ogUrl, structur
 
 function shopHeaderHtml(base, shopBase) {
   return `
-${holidayBarHtml(`${base}shipping-policy/`)}
-    <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on;on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>
+${LWHoliday.HOLIDAY.off ? '' : `${holidayBarHtml(`${base}shipping-policy/`)}
+    <script>(function(){var b=document.currentScript.previousElementSibling,k=b.firstElementChild,t=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kolkata'}),on;on=[].filter.call(k.children,function(a){return t>=(a.dataset.from||'')&&t<=a.dataset.to});if(!on.length)return;on.forEach(function(a){a.hidden=false});on.forEach(function(a){var c=a.cloneNode(true);c.classList.add('announcement-dup');c.setAttribute('aria-hidden','true');c.tabIndex=-1;k.appendChild(c)});b.classList.toggle('announcement-rotate',on.length>1);b.hidden=false;document.documentElement.classList.add('has-announcement')})();</script>`}
     <header class="shop-header">
         <div class="container">
             <div class="logo-container">
@@ -1451,7 +1451,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                         </a>
                     </div>
 
-                    ${giftCard || isContactOnly(product) || isCustomPrice(product) || LWHoliday.istToday() > LWHoliday.HOLIDAY.until ? '' : `<p class="holiday-note" data-holiday-from="${LWHoliday.HOLIDAY.from}" data-holiday-to="${LWHoliday.HOLIDAY.until}"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> ${LWHoliday.COPY.note}</p>`}
+                    ${giftCard || isContactOnly(product) || isCustomPrice(product) || LWHoliday.HOLIDAY.off || LWHoliday.istToday() > LWHoliday.HOLIDAY.until ? '' : `<p class="holiday-note" data-holiday-from="${LWHoliday.HOLIDAY.from}" data-holiday-to="${LWHoliday.HOLIDAY.until}"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> ${LWHoliday.COPY.note}</p>`}
 
                     ${giftCard
                       ? '<p class="giftcard-delivery"><i class="fa-solid fa-envelope"></i> Delivered by email - no shipping. Spend it on anything in the store.</p>'

@@ -29,7 +29,13 @@ function barBlock(html) {
   return m.map(b => b.replace(/href="[^"]*"/g, 'href=""').replace(/^[ \t]+/gm, ''));
 }
 
-describe('announcement bar copies', () => {
+describe('announcement bar is off (holiday.js off: true)', () => {
+  it.each([...HAND_PAGES, ...GENERATED_PAGES, 'shop/index.html'])('%s has no bar', page => {
+    expect(read(page)).not.toContain('class="announcement-bar"');
+  });
+});
+
+describe.skipIf(HOLIDAY.off)('announcement bar copies', () => {
   const reference = barBlock(read('shop/index.html'))[0];
 
   it('is generated into the shop pages', () => {

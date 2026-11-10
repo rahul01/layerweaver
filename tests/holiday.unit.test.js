@@ -1,19 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { arrivesInForPincode } from '../shop/cart-utils.js';
-const { HOLIDAY, AFTER_SHIP, COPY, active, arrivesAfterShip } = createRequire(import.meta.url)('../holiday.js');
+const { HOLIDAY, AFTER_SHIP, COPY, active, inWindow, arrivesAfterShip } = createRequire(import.meta.url)('../holiday.js');
 
 describe('holiday notice dates (IST)', () => {
-  it('on from the start day through 10 Nov, off before and after', () => {
+  it('window: from the start day through 10 Nov, off before and after', () => {
     expect(HOLIDAY).toMatchObject({ from: '2026-11-03', shipDate: '2026-11-12', until: '2026-11-10' });
-    expect(active('2026-11-02')).toBe(false);
-    expect(active('2026-11-03')).toBe(true);
-    expect(active('2026-11-10')).toBe(true);
-    expect(active('2026-11-11')).toBe(false);
-    expect(active('2026-11-12')).toBe(false);
+    expect(inWindow('2026-11-02')).toBe(false);
+    expect(inWindow('2026-11-03')).toBe(true);
+    expect(inWindow('2026-11-10')).toBe(true);
+    expect(inWindow('2026-11-11')).toBe(false);
+    expect(inWindow('2026-11-12')).toBe(false);
   });
   it('follows IST, not UTC (Nov 2 19:00 UTC is already Nov 3 in India)', () => {
-    expect(active(new Date('2026-11-02T19:00:00Z').toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }))).toBe(true);
+    expect(inWindow(new Date('2026-11-02T19:00:00Z').toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }))).toBe(true);
+  });
+  it('switched off on Nov 10: never active, whatever the day', () => {
+    expect(HOLIDAY.off).toBe(true);
+    expect(active('2026-11-05')).toBe(false);
   });
 });
 

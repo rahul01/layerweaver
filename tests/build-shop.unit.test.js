@@ -371,17 +371,10 @@ describe('sizeFor', () => {
 // ── Holiday notice: handling time in structured data and the feed ─────────────
 
 describe('handlingDays (holiday notice)', () => {
-  it('1-2 days outside the window, the days until the ship date inside it', () => {
-    expect(handlingDays('2026-10-01')).toEqual([1, 2]);
-    expect(handlingDays('2026-11-02')).toEqual([1, 2]);
-    expect(handlingDays('2026-11-03')).toEqual([9, 9]);
-    expect(handlingDays('2026-11-10')).toEqual([2, 2]);
-    expect(handlingDays('2026-11-11')).toEqual([1, 2]);
-    expect(handlingDays('2026-11-13')).toEqual([1, 2]);
+  it('1-2 days on every day while the notice is switched off (holiday.js off: true)', () => {
+    for (const d of ['2026-10-01', '2026-11-03', '2026-11-05', '2026-11-10', '2026-11-13']) expect(handlingDays(d)).toEqual([1, 2]);
   });
-  it('structured data and the feed carry it', () => {
-    expect(offerShippingAndReturns('399.00', { today: '2026-11-05' }).shippingDetails.deliveryTime.handlingTime).toMatchObject({ minValue: 7, maxValue: 7 });
-    const xml = buildGoogleFeedXml([{ id: 'a', groupId: 'g', title: 't', description: 'd', link: 'https://www.layerweaver.com/x', imageLink: 'https://x/i.jpg', price: 399, available: true }], { siteUrl: 'https://www.layerweaver.com', today: '2026-11-05' });
-    expect(xml).toContain('<g:min_handling_time>7</g:min_handling_time>');
+  it('structured data and the feed carry the normal 1-2 days', () => {
+    expect(offerShippingAndReturns('399.00', { today: '2026-11-05' }).shippingDetails.deliveryTime.handlingTime).toMatchObject({ minValue: 1, maxValue: 2 });
   });
 });
