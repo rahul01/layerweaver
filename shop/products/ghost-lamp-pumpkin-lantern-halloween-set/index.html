@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1794839851344">
+    <link rel="stylesheet" href="../../shop.css?v=1794853229537">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -145,7 +145,7 @@
                             <a href="../../products/ghost-balloon-lamp/" class="bundle-includes-item">
                                 <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-red-v5.png?v=1791981506&width=300" alt="Red balloon ghost" loading="lazy">
                                 <span class="bundle-includes-title">Ghost Balloon Lamp</span>
-                                <span class="bundle-includes-variant">Red</span>
+                                <span class="bundle-includes-variant">Red / None</span>
                                 
                             </a>
                             <a href="../../products/glowing-halloween-pumpkin-lantern-🎃/" class="bundle-includes-item">
@@ -162,6 +162,7 @@
                         <p class="variants-label">Select Option:</p>
                         <div class="variant-buttons" id="variant-buttons">
                             <button class="variant-btn active"
+                    
                     data-variant-id="49184182534366"
                     data-variant-gid="gid://shopify/ProductVariant/49184182534366"
                     data-price="₹749"
@@ -170,6 +171,7 @@
                     Red
                 </button>
 <button class="variant-btn"
+                    
                     data-variant-id="49184182567134"
                     data-variant-gid="gid://shopify/ProductVariant/49184182567134"
                     data-price="₹749"
@@ -178,6 +180,7 @@
                     Yellow
                 </button>
 <button class="variant-btn"
+                    
                     data-variant-id="49184182599902"
                     data-variant-gid="gid://shopify/ProductVariant/49184182599902"
                     data-price="₹749"
@@ -186,6 +189,7 @@
                     Blue
                 </button>
 <button class="variant-btn"
+                    
                     data-variant-id="49184182632670"
                     data-variant-gid="gid://shopify/ProductVariant/49184182632670"
                     data-price="₹749"
@@ -194,6 +198,7 @@
                     Orange
                 </button>
 <button class="variant-btn"
+                    
                     data-variant-id="49184182665438"
                     data-variant-gid="gid://shopify/ProductVariant/49184182665438"
                     data-price="₹749"
@@ -202,6 +207,7 @@
                     Pink
                 </button>
 <button class="variant-btn"
+                    
                     data-variant-id="49184182698206"
                     data-variant-gid="gid://shopify/ProductVariant/49184182698206"
                     data-price="₹749"
@@ -316,7 +322,7 @@
                   <button class="wishlist-btn"
                           data-handle="ghost-balloon-lamp"
                           data-title="Ghost balloon lamp"
-                          data-price="₹399"
+                          data-price="₹399 – ₹549"
                           data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-1.png?v=1783875014"
                           data-url="https://www.layerweaver.com/shop/products/ghost-balloon-lamp/"
                           aria-label="Add to wishlist">
@@ -329,7 +335,7 @@
     <span class="stars-visual" style="--pct:92.0%"></span>
     <span class="review-count">4.6 (15)</span>
   </div>
-                  <p class="product-price">₹399</p>
+                  <p class="product-price">₹399 – ₹549</p>
               </div>
           </a>
           <div class="product-card-actions">
@@ -619,10 +625,32 @@
                 url.searchParams.set('variant', btn.dataset.variantId);
                 history.replaceState(null, '', url);
             }
+            syncOptionBtns(btn);
+        }
+
+        // Option rows (colour + another option): show the active variant's values.
+        function syncOptionBtns(btn) {
+            if (!btn || !btn.dataset.options) return;
+            const vals = JSON.parse(btn.dataset.options);
+            document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
+            document.querySelectorAll('.option-label').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
             btn.addEventListener('click', () => selectVariantBtn(btn));
+        });
+
+        // An option click picks the hidden variant button with that combination
+        // (its click also updates the cart button via cart.js).
+        document.querySelectorAll('.option-btn').forEach(ob => {
+            ob.addEventListener('click', () => {
+                const want = [];
+                document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
+                want[ob.dataset.optionIndex] = ob.dataset.value;
+                const key = JSON.stringify(want);
+                const match = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
+                if (match && !match.disabled) match.click();
+            });
         });
 
         // Preselect the variant named in the URL (e.g. shared/bookmarked link), if any.
@@ -663,6 +691,7 @@
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
+                            syncOptionBtns(btn);
                             const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
@@ -710,12 +739,12 @@
         });
     </script>
     <script>window.LW_SWATCHES = {};</script>
-    <script src="../../auth.js?v=1794839851344"></script>
-    <script src="/holiday.js?v=1794839851344"></script>
-    <script src="../../promise-row.js?v=1794839851344"></script>
-    <script src="../../cart.js?v=1794839851344"></script>
-    <script src="../../search.js?v=1794839851344"></script>
-    <script src="../../wishlist.js?v=1794839851344"></script>
+    <script src="../../auth.js?v=1794853229537"></script>
+    <script src="/holiday.js?v=1794853229537"></script>
+    <script src="../../promise-row.js?v=1794853229537"></script>
+    <script src="../../cart.js?v=1794853229537"></script>
+    <script src="../../search.js?v=1794853229537"></script>
+    <script src="../../wishlist.js?v=1794853229537"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

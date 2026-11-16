@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1794839851344">
+    <link rel="stylesheet" href="../../shop.css?v=1794853229537">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -173,9 +173,19 @@
 
                     
                     <div class="variants-section">
-                        <p class="variants-label">Select Option:</p>
-                        <div class="variant-buttons" id="variant-buttons">
+                        <p class="variants-label">Colour: <span class="option-label" data-option-index="0">Pink</span></p>
+                        <div class="variant-buttons option-buttons"><button type="button" class="option-btn color-swatch active" data-option-index="0" data-value="Pink"
+                       title="Pink" aria-label="Pink"
+                       style="background:#ffc0cb;"></button>
+<button type="button" class="option-btn color-swatch" data-option-index="0" data-value="White"
+                       title="White" aria-label="White"
+                       style="background:#ffffff;border-color:#ddd;"></button></div>
+<p class="variants-label">Top: <span class="option-label" data-option-index="1">whipped cream</span></p>
+                        <div class="variant-buttons option-buttons"><button type="button" class="option-btn active" data-option-index="1" data-value="whipped cream">whipped cream</button>
+<button type="button" class="option-btn" data-option-index="1" data-value="marshmello">marshmello</button></div>
+                        <div class="variant-buttons" id="variant-buttons" style="display:none">
                             <button class="variant-btn active"
+                    data-options="[&quot;Pink&quot;,&quot;whipped cream&quot;]"
                     data-variant-id="48192319717598"
                     data-variant-gid="gid://shopify/ProductVariant/48192319717598"
                     data-price="₹199"
@@ -184,6 +194,7 @@
                     Pink / whipped cream
                 </button>
 <button class="variant-btn"
+                    data-options="[&quot;Pink&quot;,&quot;marshmello&quot;]"
                     data-variant-id="48192319750366"
                     data-variant-gid="gid://shopify/ProductVariant/48192319750366"
                     data-price="₹199"
@@ -192,6 +203,7 @@
                     Pink / marshmello
                 </button>
 <button class="variant-btn"
+                    data-options="[&quot;White&quot;,&quot;whipped cream&quot;]"
                     data-variant-id="48192319783134"
                     data-variant-gid="gid://shopify/ProductVariant/48192319783134"
                     data-price="₹199"
@@ -200,6 +212,7 @@
                     White / whipped cream
                 </button>
 <button class="variant-btn"
+                    data-options="[&quot;White&quot;,&quot;marshmello&quot;]"
                     data-variant-id="48192319815902"
                     data-variant-gid="gid://shopify/ProductVariant/48192319815902"
                     data-price="₹199"
@@ -251,7 +264,7 @@
 
                     <ul class="promise-icons"><li><a href="../../../shipping-policy/" title="Delivery ₹49, free on orders above ₹299."><i class="fa-solid fa-truck-fast" aria-hidden="true"></i><span>Delivery ₹49</span></a></li><li><a href="../../../return-and-exchange-policy/" title="Damaged in transit? We'll make it right."><i class="fa-solid fa-rotate-left" aria-hidden="true"></i><span>7-day easy returns</span></a></li><li><a href="../../../faq/" title="Questions? See our FAQ"><i class="fa-solid fa-circle-question" aria-hidden="true"></i><span>Questions? FAQ</span></a></li></ul>
 
-                    <div class="product-facts"><h3>Product details</h3><dl><dt>Material</dt><dd>Plant-based filament, 3D printed</dd><dt>Made</dt><dd>Printed to order in Pune</dd></dl></div>
+                    <div class="product-facts"><h3>Product details</h3><dl><dt>Material</dt><dd>Plant-based filament, 3D printed</dd><dt>Made</dt><dd>Printed to order in Pune</dd><dt>Colours</dt><dd>Pink, White</dd></dl></div>
 
                     <div class="product-description">
                         <h3>About this product</h3>
@@ -651,10 +664,32 @@
                 url.searchParams.set('variant', btn.dataset.variantId);
                 history.replaceState(null, '', url);
             }
+            syncOptionBtns(btn);
+        }
+
+        // Option rows (colour + another option): show the active variant's values.
+        function syncOptionBtns(btn) {
+            if (!btn || !btn.dataset.options) return;
+            const vals = JSON.parse(btn.dataset.options);
+            document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
+            document.querySelectorAll('.option-label').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
             btn.addEventListener('click', () => selectVariantBtn(btn));
+        });
+
+        // An option click picks the hidden variant button with that combination
+        // (its click also updates the cart button via cart.js).
+        document.querySelectorAll('.option-btn').forEach(ob => {
+            ob.addEventListener('click', () => {
+                const want = [];
+                document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
+                want[ob.dataset.optionIndex] = ob.dataset.value;
+                const key = JSON.stringify(want);
+                const match = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
+                if (match && !match.disabled) match.click();
+            });
         });
 
         // Preselect the variant named in the URL (e.g. shared/bookmarked link), if any.
@@ -695,6 +730,7 @@
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
+                            syncOptionBtns(btn);
                             const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
@@ -742,12 +778,12 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"coffee-mug-clicker-one-piece-red-or-white-mug":{"Pink":"#ffc0cb","White":"#ffffff"}};</script>
-    <script src="../../auth.js?v=1794839851344"></script>
-    <script src="/holiday.js?v=1794839851344"></script>
-    <script src="../../promise-row.js?v=1794839851344"></script>
-    <script src="../../cart.js?v=1794839851344"></script>
-    <script src="../../search.js?v=1794839851344"></script>
-    <script src="../../wishlist.js?v=1794839851344"></script>
+    <script src="../../auth.js?v=1794853229537"></script>
+    <script src="/holiday.js?v=1794853229537"></script>
+    <script src="../../promise-row.js?v=1794853229537"></script>
+    <script src="../../cart.js?v=1794853229537"></script>
+    <script src="../../search.js?v=1794853229537"></script>
+    <script src="../../wishlist.js?v=1794853229537"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

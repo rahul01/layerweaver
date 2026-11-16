@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1794839851344">
+    <link rel="stylesheet" href="../../shop.css?v=1794853229537">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -552,10 +552,32 @@
                 url.searchParams.set('variant', btn.dataset.variantId);
                 history.replaceState(null, '', url);
             }
+            syncOptionBtns(btn);
+        }
+
+        // Option rows (colour + another option): show the active variant's values.
+        function syncOptionBtns(btn) {
+            if (!btn || !btn.dataset.options) return;
+            const vals = JSON.parse(btn.dataset.options);
+            document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
+            document.querySelectorAll('.option-label').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
             btn.addEventListener('click', () => selectVariantBtn(btn));
+        });
+
+        // An option click picks the hidden variant button with that combination
+        // (its click also updates the cart button via cart.js).
+        document.querySelectorAll('.option-btn').forEach(ob => {
+            ob.addEventListener('click', () => {
+                const want = [];
+                document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
+                want[ob.dataset.optionIndex] = ob.dataset.value;
+                const key = JSON.stringify(want);
+                const match = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
+                if (match && !match.disabled) match.click();
+            });
         });
 
         // Preselect the variant named in the URL (e.g. shared/bookmarked link), if any.
@@ -596,6 +618,7 @@
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
+                            syncOptionBtns(btn);
                             const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
@@ -643,12 +666,12 @@
         });
     </script>
     <script>window.LW_SWATCHES = {};</script>
-    <script src="../../auth.js?v=1794839851344"></script>
-    <script src="/holiday.js?v=1794839851344"></script>
-    <script src="../../promise-row.js?v=1794839851344"></script>
-    <script src="../../cart.js?v=1794839851344"></script>
-    <script src="../../search.js?v=1794839851344"></script>
-    <script src="../../wishlist.js?v=1794839851344"></script>
+    <script src="../../auth.js?v=1794853229537"></script>
+    <script src="/holiday.js?v=1794853229537"></script>
+    <script src="../../promise-row.js?v=1794853229537"></script>
+    <script src="../../cart.js?v=1794853229537"></script>
+    <script src="../../search.js?v=1794853229537"></script>
+    <script src="../../wishlist.js?v=1794853229537"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
