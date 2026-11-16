@@ -1323,15 +1323,29 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
   const optionGroups = colourOpt
     ? product.options.map((o, i) => {
         const current = optionValue(firstAvailable, o.name) || '';
+        // A two-value add-on option ("None" + the add-on, e.g. Santa cap + gift box)
+        // shows as Exclude / Include +price, with the add-on named in the heading.
+        const names = o.optionValues.map(v => v.name);
+        const addOn = o.name !== colourOpt && names.length === 2 && names.includes('None') ? names.find(n => n !== 'None') : null;
+        const minPrice = val => Math.min(...variants.filter(v => optionValue(v, o.name) === val).map(v => parseFloat(v.price.amount)));
+        const extra = addOn ? minPrice(addOn) - minPrice('None') : 0;
         const buttons = o.optionValues.map(val => {
           const active = val.name === current ? ' active' : '';
           const hex = o.name === colourOpt ? swatchMap[val.name] : null;
+          if (addOn) {
+            const text = val.name === 'None' ? 'Exclude' : `Include${extra > 0 ? ` +${formatPrice(extra, firstAvailable.price.currencyCode)}` : ''}`;
+            return `<button type="button" class="option-btn${active}" data-option-index="${i}" data-value="${escAttr(val.name)}">${text}</button>`;
+          }
           return hex
             ? `<button type="button" class="option-btn color-swatch${active}" data-option-index="${i}" data-value="${escAttr(val.name)}"
                        title="${escAttr(val.name)}" aria-label="${escAttr(val.name)}"
                        style="background:${hex};${hex === '#ffffff' ? 'border-color:#ddd;' : ''}"></button>`
             : `<button type="button" class="option-btn${active}" data-option-index="${i}" data-value="${escAttr(val.name)}">${escAttr(val.name)}</button>`;
         }).join('\n');
+        if (addOn) {
+          return `<p class="variants-label">${escAttr(o.name)}: <span class="option-label option-label-fixed">${escAttr(addOn)}</span></p>
+                        <div class="variant-buttons option-buttons">${buttons}</div>`;
+        }
         return `<p class="variants-label">${o.name === colourOpt ? 'Colour' : escAttr(o.name)}: <span class="option-label" data-option-index="${i}">${escAttr(current)}</span></p>
                         <div class="variant-buttons option-buttons">${buttons}</div>`;
       }).join('\n')
@@ -1452,7 +1466,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                     ${hasVariants ? `
                     <div class="variants-section">
                         ${colourOpt ? `${optionGroups}
-                        <div class="variant-buttons" id="variant-buttons" style="display:none">
+                        <div class="variant-buttons" id="variant-buttons" style="display:none" data-colour-index="${optionNames.indexOf(colourOpt)}">
                             ${variantButtons}
                         </div>` : `<p class="variants-label">${allColors ? `Colour: <span id="selected-variant-label">${firstAvailable.title}</span>` : giftCard ? 'Amount:' : 'Select Option:'}</p>
                         <div class="variant-buttons" id="variant-buttons">
@@ -1677,7 +1691,7 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
             if (!btn || !btn.dataset.options) return;
             const vals = JSON.parse(btn.dataset.options);
             document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
-            document.querySelectorAll('.option-label').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
+            document.querySelectorAll('.option-label[data-option-index]').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
@@ -1730,13 +1744,26 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
                         // Pick the first variant sharing this thumbnail's image as the
                         // one to activate - the others remain reachable via their own
                         // variant buttons, which show the same (correct) image too.
-                        const firstGid = thumb.dataset.variantGid.split(',')[0];
-                        const btn = document.querySelector(\`.variant-btn[data-variant-gid="\${firstGid}"]\`);
+                        const thumbGids = thumb.dataset.variantGid.split(',');
+                        let btn = document.querySelector(\`.variant-btn[data-variant-gid="\${thumbGids[0]}"]\`);
+                        // Option rows: a photo of one variant changes only the colour; a photo
+                        // shared by several (the Santa cap photo, all colours) changes only what
+                        // they have in common (the add-on). The other choices stay.
+                        const current = document.querySelector('.variant-btn.active');
+                        if (btn && btn.dataset.options && current && current.dataset.options) {
+                            const cur = JSON.parse(current.dataset.options);
+                            const colourIndex = Number(document.getElementById('variant-buttons').dataset.colourIndex);
+                            const opts = thumbGids.map(g => document.querySelector('.variant-btn[data-variant-gid="' + g + '"]')).filter(Boolean).map(b => JSON.parse(b.dataset.options));
+                            const decides = i => opts.length === 1 ? i === colourIndex : opts.every(o => o[i] === opts[0][i]);
+                            const key = JSON.stringify(cur.map((v, i) => decides(i) ? opts[0][i] : v));
+                            const keep = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
+                            if (keep) btn = keep;
+                        }
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
                             syncOptionBtns(btn);
-                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
+                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = btn.dataset.price || thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
                             const url = new URL(location.href);
