@@ -615,6 +615,10 @@ header .container {
     background: linear-gradient(to top, rgba(31, 23, 41, 0.85) 0%, transparent 100%);
 }
 .hero-carousel-slide--halloween .hero-carousel-title { color: #ffa24d; }
+.hero-carousel-slide--christmas .hero-carousel-caption {
+    background: linear-gradient(to top, rgba(14, 42, 32, 0.88) 0%, transparent 100%);
+}
+.hero-carousel-slide--christmas .hero-carousel-title { color: #f2c94c; }
 
 .hero-carousel-title {
     font-family: var(--font-primary);

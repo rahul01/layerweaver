@@ -119,6 +119,7 @@ async function fetchCollections() {
     'car-die-cast-lovers',
   ];
   const ORDER = [
+    'christmas',
     'halloween',
     'diwali',
     'lamps-and-lighting',
@@ -939,6 +940,7 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
 // COLLECTION_NAV (and take it out of NAV_OFF_SEASON) when its season returns.
 const NAV_OFF_SEASON = ['halloween', 'diwali'];
 const COLLECTION_NAV = [
+  'christmas',
   { label: 'Gifts', handles: ['gifts-for-her', 'made-for-you', 'gamers-and-geek-gifts', 'bundles'] },
   { label: 'Home & Decor', handles: ['lamps-and-lighting', 'lamps-and-decor', 'plants-and-nature', 'aquarium-tech-and-accessories'] },
   { label: 'Toys & Fidgets', handles: ['toys-games-and-desk-buddies', 'articulated-fidgets', 'dino-skeletons'] },
@@ -957,6 +959,14 @@ const SEASONAL_THEMES = {
     icon: '🎃',
     eyebrow: 'Spooky season',
     featured: ['glowing-halloween-pumpkin-lantern-🎃', 'ghost-balloon-lamp', 'pumpkin-articulated-legs', 'articulated-cute-spider', 'skull-brain-clicker-keychain'],
+  },
+  christmas: {
+    theme: 'christmas',
+    icon: '🎄',
+    eyebrow: 'Christmas gifts',
+    // Shown on the collection page banner and in its meta tags instead of Shopify's collection text.
+    description: 'Wobble Santas, snowmen and name ornaments, 3D printed to order in Pune. Gifts and tree decor with a smile.',
+    featured: ['wobble-santa', 'wobble-snowman', 'personalized-christmas-name-ornament', 'snowman-clicker'],
   },
   diwali: {
     theme: 'diwali',
