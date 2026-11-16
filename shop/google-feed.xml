@@ -1800,5 +1800,27 @@
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
     </item>
+    <item>
+      <g:id>9433136562398</g:id>
+      <g:title>Snowman With Articulated Legs</g:title>
+      <g:description>A snowman in a red beanie and scarf that sits on the edge of a shelf, desk or box with its legs dangling. The jointed legs swing and bend, so you can pose it however you like. It will still be sitting there long after the tree comes down. Size: about 11 cm from head to toeFinish: white body, red beanie and scarf, black boots and buttons, orange nose</g:description>
+      <g:link>https://www.layerweaver.com/shop/products/snowman-with-articulated-legs/</g:link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Snowman_Figurine_on_Kraft_Box.png?v=1794839439</g:image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/snowman-articulated-legs-dimensions.png?v=1794839439</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/PXL_20261116_041127262.jpg?v=1794839440</g:additional_image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>449.00 INR</g:price>
+      <g:brand>LayerWeaver</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0.00 INR</g:price>
+        <g:min_handling_time>1</g:min_handling_time>
+        <g:max_handling_time>2</g:max_handling_time>
+        <g:min_transit_time>3</g:min_transit_time>
+        <g:max_transit_time>7</g:max_transit_time>
+      </g:shipping>
+    </item>
   </channel>
 </rss>
