@@ -679,7 +679,8 @@ ${LWHoliday.HOLIDAY.off ? '' : `${holidayBarHtml(`${base}shipping-policy/`)}
                 <a href="${base}" class="logo-link">
                     <img src="${base}images/layerweaver-logo.svg" alt="LayerWeaver Logo" class="logo">
                     <span class="logo-text"><span class="logo-word">Layer</span><span class="logo-word">Weaver</span></span>
-                </a>
+                </a>${CHRISTMAS_RIBBON ? `
+                <a href="${shopBase}collections/christmas/" class="logo-christmas-ribbon">Christmas gifts 🎄</a>` : ''}
             </div>
             <div class="search-container" data-index-url="${shopBase}search-index.json" data-products-url="${shopBase}products/">
                 <div class="search-bar">
@@ -966,7 +967,7 @@ const SEASONAL_THEMES = {
     eyebrow: 'Christmas gifts',
     // Shown on the collection page banner and in its meta tags instead of Shopify's collection text.
     description: 'Wobble Santas, snowmen and name ornaments, 3D printed to order in Pune. Gifts and tree decor with a smile.',
-    featured: ['wobble-santa', 'wobble-snowman', 'personalized-christmas-name-ornament', 'snowman-clicker'],
+    featured: ['wobble-santa', 'wobble-snowman', 'personalized-christmas-name-ornament', 'snowman-clicker', 'tree-articulated-legs'],
   },
   diwali: {
     theme: 'diwali',
@@ -1764,6 +1765,10 @@ function collagebannerHtml(title, description, images, eyebrow = '') {
 // season to restore the evergreen hero below - nothing to hand-edit.
 // Nov 9 2026: null = evergreen hero. The Diwali/Halloween festive object (eyebrow, heading, callouts, cta) is in git history before the Nov 9 2026 cleanup.
 const HERO_FESTIVE = null;
+
+// Christmas 2026: the paper strip under the logo on every shop page (hand-written pages: node scripts/apply-christmas-ribbon.js).
+// Set to false after Dec 25 and run the script with --remove.
+const CHRISTMAS_RIBBON = true;
 
 const HERO_EVERGREEN_HEADER = `                    <p class="hero-eyebrow">3D Printed Products</p>
                     <h1>Bringing Ideas to Life <span class="brand-text">Layer by Layer</span></h1>`;
