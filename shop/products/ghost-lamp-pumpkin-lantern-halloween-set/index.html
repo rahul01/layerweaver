@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1794854081694">
+    <link rel="stylesheet" href="../../shop.css?v=1794854665320">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -344,6 +344,42 @@
       </div>
 
       <div class="shop-product-card">
+          <a href="../../products/pumpkin-articulated-legs/" class="product-card-link">
+              <div class="product-image-wrap">
+                  <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/pumpkin-articulated-legs-1.png?v=1783875090&width=500" alt="Pumpkin Articulated Legs" loading="lazy">
+                  
+                  
+                  <button class="wishlist-btn"
+                          data-handle="pumpkin-articulated-legs"
+                          data-title="Pumpkin Articulated legs"
+                          data-price="₹129"
+                          data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/pumpkin-articulated-legs-1.png?v=1783875090"
+                          data-url="https://www.layerweaver.com/shop/products/pumpkin-articulated-legs/"
+                          aria-label="Add to wishlist">
+                      <i class="fa-regular fa-heart"></i>
+                  </button>
+              </div>
+              <div class="product-card-info">
+                  <h3>Pumpkin Articulated Legs</h3>
+                  <div class="product-stars product-stars--sm">
+    <span class="stars-visual" style="--pct:100.0%"></span>
+    <span class="review-count">5.0 (1)</span>
+  </div>
+                  <p class="product-price">₹129</p>
+              </div>
+          </a>
+          <div class="product-card-actions">
+                  
+                  <div class="product-card-actions-row">
+                      <button class="listing-add-to-cart"
+                                 data-variant-gid="gid://shopify/ProductVariant/48079834284254">
+                                 Add to Cart
+                             </button>
+                  </div>
+              </div>
+      </div>
+
+      <div class="shop-product-card">
           <a href="../../products/ghost-balloon-lamp/" class="product-card-link">
               <div class="product-image-wrap">
                   <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ghost-balloon-lamp-1.png?v=1783875014&width=500" alt="Ghost Balloon Lamp" loading="lazy">
@@ -409,42 +445,6 @@
                   <div class="product-card-actions-row">
                       <button class="listing-add-to-cart"
                                  data-variant-gid="gid://shopify/ProductVariant/48034459484382">
-                                 Add to Cart
-                             </button>
-                  </div>
-              </div>
-      </div>
-
-      <div class="shop-product-card">
-          <a href="../../products/pumpkin-articulated-legs/" class="product-card-link">
-              <div class="product-image-wrap">
-                  <img src="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/pumpkin-articulated-legs-1.png?v=1783875090&width=500" alt="Pumpkin Articulated Legs" loading="lazy">
-                  
-                  
-                  <button class="wishlist-btn"
-                          data-handle="pumpkin-articulated-legs"
-                          data-title="Pumpkin Articulated legs"
-                          data-price="₹129"
-                          data-image="https://cdn.shopify.com/s/files/1/0784/9404/0286/files/pumpkin-articulated-legs-1.png?v=1783875090"
-                          data-url="https://www.layerweaver.com/shop/products/pumpkin-articulated-legs/"
-                          aria-label="Add to wishlist">
-                      <i class="fa-regular fa-heart"></i>
-                  </button>
-              </div>
-              <div class="product-card-info">
-                  <h3>Pumpkin Articulated Legs</h3>
-                  <div class="product-stars product-stars--sm">
-    <span class="stars-visual" style="--pct:100.0%"></span>
-    <span class="review-count">5.0 (1)</span>
-  </div>
-                  <p class="product-price">₹129</p>
-              </div>
-          </a>
-          <div class="product-card-actions">
-                  
-                  <div class="product-card-actions-row">
-                      <button class="listing-add-to-cart"
-                                 data-variant-gid="gid://shopify/ProductVariant/48079834284254">
                                  Add to Cart
                              </button>
                   </div>
@@ -630,7 +630,7 @@
             if (!btn || !btn.dataset.options) return;
             const vals = JSON.parse(btn.dataset.options);
             document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
-            document.querySelectorAll('.option-label').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
+            document.querySelectorAll('.option-label[data-option-index]').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
@@ -683,13 +683,26 @@
                         // Pick the first variant sharing this thumbnail's image as the
                         // one to activate - the others remain reachable via their own
                         // variant buttons, which show the same (correct) image too.
-                        const firstGid = thumb.dataset.variantGid.split(',')[0];
-                        const btn = document.querySelector(`.variant-btn[data-variant-gid="${firstGid}"]`);
+                        const thumbGids = thumb.dataset.variantGid.split(',');
+                        let btn = document.querySelector(`.variant-btn[data-variant-gid="${thumbGids[0]}"]`);
+                        // Option rows: a photo of one variant changes only the colour; a photo
+                        // shared by several (the Santa cap photo, all colours) changes only what
+                        // they have in common (the add-on). The other choices stay.
+                        const current = document.querySelector('.variant-btn.active');
+                        if (btn && btn.dataset.options && current && current.dataset.options) {
+                            const cur = JSON.parse(current.dataset.options);
+                            const colourIndex = Number(document.getElementById('variant-buttons').dataset.colourIndex);
+                            const opts = thumbGids.map(g => document.querySelector('.variant-btn[data-variant-gid="' + g + '"]')).filter(Boolean).map(b => JSON.parse(b.dataset.options));
+                            const decides = i => opts.length === 1 ? i === colourIndex : opts.every(o => o[i] === opts[0][i]);
+                            const key = JSON.stringify(cur.map((v, i) => decides(i) ? opts[0][i] : v));
+                            const keep = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
+                            if (keep) btn = keep;
+                        }
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
                             syncOptionBtns(btn);
-                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
+                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = btn.dataset.price || thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
                             const url = new URL(location.href);
@@ -736,12 +749,12 @@
         });
     </script>
     <script>window.LW_SWATCHES = {};</script>
-    <script src="../../auth.js?v=1794854081694"></script>
-    <script src="/holiday.js?v=1794854081694"></script>
-    <script src="../../promise-row.js?v=1794854081694"></script>
-    <script src="../../cart.js?v=1794854081694"></script>
-    <script src="../../search.js?v=1794854081694"></script>
-    <script src="../../wishlist.js?v=1794854081694"></script>
+    <script src="../../auth.js?v=1794854665320"></script>
+    <script src="/holiday.js?v=1794854665320"></script>
+    <script src="../../promise-row.js?v=1794854665320"></script>
+    <script src="../../cart.js?v=1794854665320"></script>
+    <script src="../../search.js?v=1794854665320"></script>
+    <script src="../../wishlist.js?v=1794854665320"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>

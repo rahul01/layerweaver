@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1794854081694">
+    <link rel="stylesheet" href="../../shop.css?v=1794854665320">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -619,7 +619,7 @@
             if (!btn || !btn.dataset.options) return;
             const vals = JSON.parse(btn.dataset.options);
             document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
-            document.querySelectorAll('.option-label').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
+            document.querySelectorAll('.option-label[data-option-index]').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
@@ -672,13 +672,26 @@
                         // Pick the first variant sharing this thumbnail's image as the
                         // one to activate - the others remain reachable via their own
                         // variant buttons, which show the same (correct) image too.
-                        const firstGid = thumb.dataset.variantGid.split(',')[0];
-                        const btn = document.querySelector(`.variant-btn[data-variant-gid="${firstGid}"]`);
+                        const thumbGids = thumb.dataset.variantGid.split(',');
+                        let btn = document.querySelector(`.variant-btn[data-variant-gid="${thumbGids[0]}"]`);
+                        // Option rows: a photo of one variant changes only the colour; a photo
+                        // shared by several (the Santa cap photo, all colours) changes only what
+                        // they have in common (the add-on). The other choices stay.
+                        const current = document.querySelector('.variant-btn.active');
+                        if (btn && btn.dataset.options && current && current.dataset.options) {
+                            const cur = JSON.parse(current.dataset.options);
+                            const colourIndex = Number(document.getElementById('variant-buttons').dataset.colourIndex);
+                            const opts = thumbGids.map(g => document.querySelector('.variant-btn[data-variant-gid="' + g + '"]')).filter(Boolean).map(b => JSON.parse(b.dataset.options));
+                            const decides = i => opts.length === 1 ? i === colourIndex : opts.every(o => o[i] === opts[0][i]);
+                            const key = JSON.stringify(cur.map((v, i) => decides(i) ? opts[0][i] : v));
+                            const keep = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
+                            if (keep) btn = keep;
+                        }
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
                             syncOptionBtns(btn);
-                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
+                            const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = btn.dataset.price || thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';
                             const url = new URL(location.href);
@@ -725,12 +738,12 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"floating-lotus-flower":{"Pink":"#ffc0cb","White":"#ffffff","Purple":"#a54dcf"}};</script>
-    <script src="../../auth.js?v=1794854081694"></script>
-    <script src="/holiday.js?v=1794854081694"></script>
-    <script src="../../promise-row.js?v=1794854081694"></script>
-    <script src="../../cart.js?v=1794854081694"></script>
-    <script src="../../search.js?v=1794854081694"></script>
-    <script src="../../wishlist.js?v=1794854081694"></script>
+    <script src="../../auth.js?v=1794854665320"></script>
+    <script src="/holiday.js?v=1794854665320"></script>
+    <script src="../../promise-row.js?v=1794854665320"></script>
+    <script src="../../cart.js?v=1794854665320"></script>
+    <script src="../../search.js?v=1794854665320"></script>
+    <script src="../../wishlist.js?v=1794854665320"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
