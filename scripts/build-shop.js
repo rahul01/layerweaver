@@ -510,6 +510,20 @@ function optionValue(variant, name) {
   return (variant.selectedOptions || []).find(o => o.name === name)?.value;
 }
 
+// An add-on option: two values, "None" and the add-on (ghost lamp: Santa cap + gift box).
+// Returns { name, value } or null.
+function addOnOption(product) {
+  for (const o of product.options || []) {
+    const names = o.optionValues.map(v => v.name);
+    if (names.length === 2 && names.includes('None')) return { name: o.name, value: names.find(n => n !== 'None') };
+  }
+  return null;
+}
+
+// Collection pages whose cards lead with a product's add-on variant (its photo,
+// price and swatches, linking to the product page with the add-on chosen).
+const ADD_ON_COLLECTIONS = ['christmas'];
+
 // The first variant of each colour (e.g. the plain one), for listing swatches.
 function firstVariantPerColour(variants, colourOpt) {
   const seen = new Map();
@@ -868,15 +882,25 @@ function swatchDataScript(products) {
 //   shop/index.html           → 'products/'
 //   shop/collections/*/       → '../../products/'
 
-function productCardHtml(product, productsBase, reviewData = null, eager = false) {
+function productCardHtml(product, productsBase, reviewData = null, eager = false, { preferAddOn = false } = {}) {
   const minPrice    = formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
   const maxPrice    = formatPrice(product.priceRange.maxVariantPrice.amount, product.priceRange.maxVariantPrice.currencyCode);
-  const priceDisplay = product.priceRange.minVariantPrice.amount === product.priceRange.maxVariantPrice.amount
+  let priceDisplay  = product.priceRange.minVariantPrice.amount === product.priceRange.maxVariantPrice.amount
     ? minPrice : `${minPrice} – ${maxPrice}`;
-  const image        = product.images.edges[0]?.node;
+  let image          = product.images.edges[0]?.node;
   const available    = product.variants.edges.some(v => v.node.availableForSale);
-  const firstVariant = product.variants.edges.find(v => v.node.availableForSale)?.node
+  let firstVariant   = product.variants.edges.find(v => v.node.availableForSale)?.node
                        || product.variants.edges[0].node;
+  let cardLink       = `${productsBase}${product.handle}/`;
+  // ADD_ON_COLLECTIONS: lead with the add-on variant (photo, price, link with it chosen).
+  const addOn        = preferAddOn ? addOnOption(product) : null;
+  const addOnVariants = addOn ? product.variants.edges.map(e => e.node).filter(v => optionValue(v, addOn.name) === addOn.value) : [];
+  if (addOnVariants.length) {
+    firstVariant = addOnVariants.find(v => v.availableForSale) || addOnVariants[0];
+    if (firstVariant.image) image = firstVariant.image;
+    priceDisplay = formatPrice(firstVariant.price.amount, firstVariant.price.currencyCode);
+    cardLink += `?variant=${getNumericId(firstVariant.id)}`;
+  }
   const hasMultiple      = product.variants.edges.length > 1 && product.variants.edges[0].node.title !== 'Default Title';
   const swatchMap        = buildSwatchMap(product);
   const allAreColors     = hasMultiple && product.variants.edges.every(e => swatchMap[e.node.title]);
@@ -884,7 +908,7 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
   const hasVariantImages = hasMultiple && uniqueListingVariantImgs.size > 1;
   // When variants have distinct images the user must visit the product page to choose;
   // only applies to non-color products (color swatches handle selection inline).
-  const listingVariants  = product.variants.edges.map(e => e.node);
+  const listingVariants  = addOnVariants.length ? addOnVariants : product.variants.edges.map(e => e.node);
   const listingColourOpt = hasMultiple && !allAreColors ? colourOptionName(product, swatchMap) : null;
   // Swatches: one per variant, or for colour + another option one per colour (its first variant).
   const swatchItems      = allAreColors ? listingVariants.map(v => ({ colour: v.title, v }))
@@ -912,7 +936,7 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
 
   return `
       <div class="shop-product-card">
-          <a href="${productsBase}${product.handle}/" class="product-card-link">
+          <a href="${cardLink}" class="product-card-link">
               <div class="product-image-wrap">
                   ${image
                     ? `<img src="${resizedImageUrl(image.url, IMG_WIDTH_GRID)}" alt="${escAttr(productImageAlt(product, image.altText))}" ${eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'}>`
@@ -2034,7 +2058,8 @@ function generateCollectionPage(collection, collections, reviewsMap = {}) {
   const base     = '../../../';
   const shopBase = '../../';
 
-  const productCards = collection.products.map((p, i) => productCardHtml(p, '../../products/', reviewsMap[p.handle], i < 4)).join('\n');
+  const productCards = collection.products.map((p, i) => productCardHtml(p, '../../products/', reviewsMap[p.handle], i < 4,
+    { preferAddOn: ADD_ON_COLLECTIONS.includes(collection.handle) })).join('\n');
 
   const BANNER_EXCLUDE = ['cone-fidget'];
   const seasonal = SEASONAL_THEMES[collection.handle];
