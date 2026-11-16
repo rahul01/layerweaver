@@ -73,6 +73,7 @@ async function fetchCollectionsUnfiltered() {
                   edges {
                     node {
                       id title
+                      selectedOptions { name value }
                       price { amount currencyCode }
                       availableForSale
                       image { url altText }
@@ -194,6 +195,7 @@ async function fetchProducts() {
               edges {
                 node {
                   id title
+                  selectedOptions { name value }
                   price { amount currencyCode }
                   availableForSale
                   image { url altText }
@@ -492,6 +494,30 @@ function buildSwatchMap(product) {
     }
   }
   return map;
+}
+
+// A product with a colour option AND another option (Nov 2026: the ghost balloon
+// lamp, balloon colour x Christmas accessories). Returns the colour option's name,
+// or null. Single-option colour products keep the per-variant swatch path (allColors).
+function colourOptionName(product, swatchMap) {
+  const opts = product.options || [];
+  if (opts.length < 2) return null;
+  const o = opts.find(o => o.optionValues.length && o.optionValues.every(v => swatchMap[v.name]));
+  return o ? o.name : null;
+}
+
+function optionValue(variant, name) {
+  return (variant.selectedOptions || []).find(o => o.name === name)?.value;
+}
+
+// The first variant of each colour (e.g. the plain one), for listing swatches.
+function firstVariantPerColour(variants, colourOpt) {
+  const seen = new Map();
+  for (const v of variants) {
+    const c = optionValue(v, colourOpt);
+    if (c && !seen.has(c)) seen.set(c, v);
+  }
+  return [...seen.entries()].map(([colour, v]) => ({ colour, v }));
 }
 
 function sanitizeDescriptionHtml(html) {
@@ -858,16 +884,21 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
   const hasVariantImages = hasMultiple && uniqueListingVariantImgs.size > 1;
   // When variants have distinct images the user must visit the product page to choose;
   // only applies to non-color products (color swatches handle selection inline).
-  const needsProductPage = hasMultiple && !allAreColors && hasVariantImages;
+  const listingVariants  = product.variants.edges.map(e => e.node);
+  const listingColourOpt = hasMultiple && !allAreColors ? colourOptionName(product, swatchMap) : null;
+  // Swatches: one per variant, or for colour + another option one per colour (its first variant).
+  const swatchItems      = allAreColors ? listingVariants.map(v => ({ colour: v.title, v }))
+                         : listingColourOpt ? firstVariantPerColour(listingVariants, listingColourOpt) : null;
+  const needsProductPage = hasMultiple && !swatchItems && hasVariantImages;
 
-  const colorSwatchesHtml = allAreColors
+  const colorSwatchesHtml = swatchItems
     ? `<div class="listing-color-swatches">${
-        product.variants.edges.map(e => e.node).map(v => {
-          const hex     = swatchMap[v.title];
+        swatchItems.map(({ colour, v }) => {
+          const hex     = swatchMap[colour];
           const isFirst = v.id === firstVariant.id;
           return `<button class="listing-swatch${isFirst ? ' active' : ''}${!v.availableForSale ? ' sold-out' : ''}"
                        style="background:${hex}${hex === '#ffffff' ? ';border-color:#ddd' : ''}"
-                       title="${escAttr(v.title)}"
+                       title="${escAttr(colour)}"
                        data-variant-gid="${v.id}"
                        data-variant-id="${getNumericId(v.id)}"
                        data-price="${formatPrice(v.price.amount, v.price.currencyCode)}"
@@ -877,7 +908,7 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
     : '';
   // Non-color multi-variant products without per-variant images (e.g. bundles) need
   // a "Choose option" link inside the actions row, sized like the other pill buttons.
-  const needsChooseOption = hasMultiple && !allAreColors && !needsProductPage;
+  const needsChooseOption = hasMultiple && !swatchItems && !needsProductPage;
 
   return `
       <div class="shop-product-card">
@@ -1186,6 +1217,12 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
   const hasVariants     = variants.length > 1 || variants[0].title !== 'Default Title';
   const swatchMap       = buildSwatchMap(product);
   const allColors       = hasVariants && variants.every(v => swatchMap[v.title]);
+  // Colour + another option (see colourOptionName): one row per option - colour
+  // swatches, then text buttons. The per-variant .variant-btn buttons stay in the
+  // page, hidden, so cart.js and ?variant= links keep working; an option click
+  // clicks the matching hidden variant button.
+  const colourOpt       = hasVariants && !allColors && !giftCard ? colourOptionName(product, swatchMap) : null;
+  const optionNames     = colourOpt ? product.options.map(o => o.name) : [];
   // Only use variant-image mode when variants have 2+ distinct images -
   // color products often share the same image across all variants.
   const uniqueVariantImageUrls = new Set(variants.map(v => v.image?.url).filter(Boolean));
@@ -1272,6 +1309,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                   </button>`;
         }
         return `<button class="variant-btn${v.id === firstAvailable.id ? ' active' : ''}"
+                    ${colourOpt ? `data-options="${escAttr(JSON.stringify(optionNames.map(n => optionValue(v, n) || '')))}"` : ''}
                     data-variant-id="${getNumericId(v.id)}"
                     data-variant-gid="${v.id}"
                     data-price="${vPrice}"
@@ -1279,6 +1317,23 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
                     ${!v.availableForSale ? 'disabled' : ''}>
                     ${giftCard ? giftCardAmountLabel(v) : v.title}${!v.availableForSale ? ' (Sold Out)' : ''}
                 </button>`;
+      }).join('\n')
+    : '';
+
+  const optionGroups = colourOpt
+    ? product.options.map((o, i) => {
+        const current = optionValue(firstAvailable, o.name) || '';
+        const buttons = o.optionValues.map(val => {
+          const active = val.name === current ? ' active' : '';
+          const hex = o.name === colourOpt ? swatchMap[val.name] : null;
+          return hex
+            ? `<button type="button" class="option-btn color-swatch${active}" data-option-index="${i}" data-value="${escAttr(val.name)}"
+                       title="${escAttr(val.name)}" aria-label="${escAttr(val.name)}"
+                       style="background:${hex};${hex === '#ffffff' ? 'border-color:#ddd;' : ''}"></button>`
+            : `<button type="button" class="option-btn${active}" data-option-index="${i}" data-value="${escAttr(val.name)}">${escAttr(val.name)}</button>`;
+        }).join('\n');
+        return `<p class="variants-label">${o.name === colourOpt ? 'Colour' : escAttr(o.name)}: <span class="option-label" data-option-index="${i}">${escAttr(current)}</span></p>
+                        <div class="variant-buttons option-buttons">${buttons}</div>`;
       }).join('\n')
     : '';
 
@@ -1396,10 +1451,13 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
 
                     ${hasVariants ? `
                     <div class="variants-section">
-                        <p class="variants-label">${allColors ? `Colour: <span id="selected-variant-label">${firstAvailable.title}</span>` : giftCard ? 'Amount:' : 'Select Option:'}</p>
+                        ${colourOpt ? `${optionGroups}
+                        <div class="variant-buttons" id="variant-buttons" style="display:none">
+                            ${variantButtons}
+                        </div>` : `<p class="variants-label">${allColors ? `Colour: <span id="selected-variant-label">${firstAvailable.title}</span>` : giftCard ? 'Amount:' : 'Select Option:'}</p>
                         <div class="variant-buttons" id="variant-buttons">
                             ${variantButtons}
-                        </div>
+                        </div>`}
                     </div>` : ''}
 
                     ${product.tags.includes('personalized') ? `
@@ -1474,7 +1532,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
 
                     ${PRODUCT_ICON_ROW && !isContactOnly(product) && !isCustomPrice(product) && !giftCard ? iconRowHtml(isPersonalised(product), parseFloat(product.priceRange.minVariantPrice.amount)) : ''}
 
-                    ${PRODUCT_DETAILS_BOX && !giftCard ? productDetailsHtml(hasVariants && allColors ? variants.map(v => toTitleCase(v.title)) : [], sizeFor(product, { fallback: SIZE_FALLBACK_TO_DESCRIPTION })) : ''}
+                    ${PRODUCT_DETAILS_BOX && !giftCard ? productDetailsHtml(hasVariants && allColors ? variants.map(v => toTitleCase(v.title)) : colourOpt ? product.options.find(o => o.name === colourOpt).optionValues.map(v => toTitleCase(v.name)) : [], sizeFor(product, { fallback: SIZE_FALLBACK_TO_DESCRIPTION })) : ''}
 
                     <div class="product-description">
                         <h3>About this product</h3>
@@ -1611,10 +1669,32 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
                 url.searchParams.set('variant', btn.dataset.variantId);
                 history.replaceState(null, '', url);
             }
+            syncOptionBtns(btn);
+        }
+
+        // Option rows (colour + another option): show the active variant's values.
+        function syncOptionBtns(btn) {
+            if (!btn || !btn.dataset.options) return;
+            const vals = JSON.parse(btn.dataset.options);
+            document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
+            document.querySelectorAll('.option-label').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
         document.querySelectorAll('.variant-btn').forEach(btn => {
             btn.addEventListener('click', () => selectVariantBtn(btn));
+        });
+
+        // An option click picks the hidden variant button with that combination
+        // (its click also updates the cart button via cart.js).
+        document.querySelectorAll('.option-btn').forEach(ob => {
+            ob.addEventListener('click', () => {
+                const want = [];
+                document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
+                want[ob.dataset.optionIndex] = ob.dataset.value;
+                const key = JSON.stringify(want);
+                const match = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
+                if (match && !match.disabled) match.click();
+            });
         });
 
         // Preselect the variant named in the URL (e.g. shared/bookmarked link), if any.
@@ -1655,6 +1735,7 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
                         if (btn) {
                             document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
+                            syncOptionBtns(btn);
                             const priceEl2 = document.getElementById('product-price'); if (priceEl2) priceEl2.textContent = thumb.dataset.price;
                             const label = document.getElementById('selected-variant-label');
                             if (label) label.textContent = thumb.dataset.variantTitle || '';

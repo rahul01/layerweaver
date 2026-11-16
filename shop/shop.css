@@ -1019,7 +1019,13 @@
     gap: 18px;
 }
 
-.variant-btn {
+/* Second option row (colour + another option) */
+.option-buttons + .variants-label {
+    margin-top: 18px;
+}
+
+.variant-btn,
+.option-btn {
     padding: 8px 18px;
     border-radius: 50px;
     border: 2px solid var(--gray);
@@ -1032,12 +1038,14 @@
     color: var(--gray-dark);
 }
 
-.variant-btn:hover:not(:disabled) {
+.variant-btn:hover:not(:disabled),
+.option-btn:hover:not(:disabled) {
     border-color: var(--primary);
     color: var(--primary);
 }
 
-.variant-btn.active {
+.variant-btn.active,
+.option-btn.active {
     border-color: var(--primary);
     background: var(--primary);
     color: var(--light);
@@ -1046,17 +1054,20 @@
 /* .variant-btn:hover:not(:disabled) above has higher specificity than .active
    alone, so without this it wins on hover and repaints the text purple - on a
    purple .active background that makes the label invisible. */
-.variant-btn.active:hover:not(:disabled) {
+.variant-btn.active:hover:not(:disabled),
+.option-btn.active:hover:not(:disabled) {
     color: var(--light);
 }
 
-.variant-btn:disabled {
+.variant-btn:disabled,
+.option-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
 /* Color swatch dots */
-.variant-btn.color-swatch {
+.variant-btn.color-swatch,
+.option-btn.color-swatch {
     width: 36px;
     height: 36px;
     padding: 0;
@@ -1069,19 +1080,22 @@
     transition: outline-color 0.2s, transform 0.15s;
 }
 
-.variant-btn.color-swatch:hover:not(:disabled) {
+.variant-btn.color-swatch:hover:not(:disabled),
+.option-btn.color-swatch:hover:not(:disabled) {
     outline-color: var(--gray-medium);
     color: transparent;
 }
 
-.variant-btn.color-swatch.active {
+.variant-btn.color-swatch.active,
+.option-btn.color-swatch.active {
     outline: 2px solid var(--primary);
     outline-offset: 4px;
     background-color: inherit;
     color: transparent;
 }
 
-.variant-btn.color-swatch:disabled {
+.variant-btn.color-swatch:disabled,
+.option-btn.color-swatch:disabled {
     opacity: 0.35;
 }
 
@@ -1095,7 +1109,8 @@
 }
 
 /* Colour label next to the heading */
-.variants-label #selected-variant-label {
+.variants-label #selected-variant-label,
+.variants-label .option-label {
     font-weight: 700;
     color: var(--primary);
     text-transform: capitalize;
