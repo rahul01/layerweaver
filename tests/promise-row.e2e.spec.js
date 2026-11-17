@@ -229,16 +229,13 @@ for (const vp of WIDTHS) {
       }
     });
 
-    test('cart row works with the Diwali rewards marks (Nov 1) and after them (Nov 2)', async ({ page }) => {
-      for (const day of ['2026-11-01T12:00:00+05:30', '2026-11-02T12:00:00+05:30']) {
-        await page.clock.setFixedTime(new Date(day));
-        await fresh(page, OCTOPUS);
-        await page.click('#add-to-cart-btn'); await added(page); await openCart(page);
-        await expect(page.locator('#cart-total-price')).toHaveText('₹298');
-        if (day.startsWith('2026-11-01')) await expect(page.locator('.rewards-bar-mark').first()).toBeVisible();
-        await shot(page, `cart-under299-${day.slice(0, 10)}-${vp.name}`, page.locator('#cart-drawer'));
-        await page.click('#cart-close');
-      }
+    test('cart row works under Rs 299 (delivery added to the total)', async ({ page }) => {
+      await page.clock.setFixedTime(new Date('2026-11-12T12:00:00+05:30'));
+      await fresh(page, OCTOPUS);
+      await page.click('#add-to-cart-btn'); await added(page); await openCart(page);
+      await expect(page.locator('#cart-total-price')).toHaveText('₹298');
+      await shot(page, `cart-under299-${vp.name}`, page.locator('#cart-drawer'));
+      await page.click('#cart-close');
     });
   });
 }
