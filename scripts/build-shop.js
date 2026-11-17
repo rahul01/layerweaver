@@ -1357,8 +1357,10 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
           const active = val.name === current ? ' active' : '';
           const hex = o.name === colourOpt ? swatchMap[val.name] : null;
           if (addOn) {
-            const text = val.name === 'None' ? 'Exclude' : `Include${extra > 0 ? ` +${formatPrice(extra, firstAvailable.price.currencyCode)}` : ''}`;
-            return `<button type="button" class="option-btn${active}" data-option-index="${i}" data-value="${escAttr(val.name)}">${text}</button>`;
+            // One on/off toggle for the add-on (no Exclude/Include pair, no heading).
+            if (val.name === 'None') return '';
+            const price = extra > 0 ? ` for ${formatPrice(extra, firstAvailable.price.currencyCode)}` : '';
+            return `<button type="button" class="option-btn option-toggle${active}" role="switch" aria-checked="${active ? 'true' : 'false'}" data-option-index="${i}" data-value="${escAttr(val.name)}" data-off-value="None"><span class="option-toggle-text">Include ${escAttr(o.name)}${price}<small>${escAttr(val.name)}</small></span></button>`;
           }
           return hex
             ? `<button type="button" class="option-btn color-swatch${active}" data-option-index="${i}" data-value="${escAttr(val.name)}"
@@ -1367,8 +1369,7 @@ function generateProductPage(product, collection, reviewData = null, reviewsMap 
             : `<button type="button" class="option-btn${active}" data-option-index="${i}" data-value="${escAttr(val.name)}">${escAttr(val.name)}</button>`;
         }).join('\n');
         if (addOn) {
-          return `<p class="variants-label">${escAttr(o.name)}: <span class="option-label option-label-fixed">${escAttr(addOn)}</span></p>
-                        <div class="variant-buttons option-buttons">${buttons}</div>`;
+          return `<div class="variant-buttons option-buttons option-toggle-row">${buttons}</div>`;
         }
         return `<p class="variants-label">${o.name === colourOpt ? 'Colour' : escAttr(o.name)}: <span class="option-label" data-option-index="${i}">${escAttr(current)}</span></p>
                         <div class="variant-buttons option-buttons">${buttons}</div>`;
@@ -1700,7 +1701,9 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => {
                     const gids = (t.dataset.variantGid || '').split(',');
                     t.classList.toggle('active', gids.includes(btn.dataset.variantGid));
+                
                 });
+                revealThumb();
             }
             if (updateUrl) {
                 const url = new URL(location.href);
@@ -1710,11 +1713,20 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
             syncOptionBtns(btn);
         }
 
+        // Keep the active thumbnail in view in the sideways strip (no page scroll).
+        function revealThumb() {
+            const strip = document.querySelector('.thumbnails');
+            const el = strip && strip.querySelector('.thumbnail.active, .video-thumb.active');
+            if (!el) return;
+            const left = el.offsetLeft - (strip.clientWidth - el.offsetWidth) / 2;
+            strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+        }
+
         // Option rows (colour + another option): show the active variant's values.
         function syncOptionBtns(btn) {
             if (!btn || !btn.dataset.options) return;
             const vals = JSON.parse(btn.dataset.options);
-            document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
+            document.querySelectorAll('.option-btn').forEach(o => { const on = vals[o.dataset.optionIndex] === o.dataset.value; o.classList.toggle('active', on); if (o.classList.contains('option-toggle')) o.setAttribute('aria-checked', on ? 'true' : 'false'); });
             document.querySelectorAll('.option-label[data-option-index]').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
@@ -1728,7 +1740,8 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
             ob.addEventListener('click', () => {
                 const want = [];
                 document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
-                want[ob.dataset.optionIndex] = ob.dataset.value;
+                // A toggle flips between its add-on value and its off value ("None").
+                want[ob.dataset.optionIndex] = ob.classList.contains('option-toggle') && ob.classList.contains('active') ? ob.dataset.offValue : ob.dataset.value;
                 const key = JSON.stringify(want);
                 const match = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
                 if (match && !match.disabled) match.click();
@@ -1748,6 +1761,7 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
             thumb.addEventListener('click', () => {
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
+                revealThumb();
 
                 if (thumb.dataset.videoSrc) {
                     if (mainImg) mainImg.style.display = 'none';

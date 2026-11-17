@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1794920621360">
+    <link rel="stylesheet" href="../../shop.css?v=1794922896414">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -482,7 +482,9 @@
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => {
                     const gids = (t.dataset.variantGid || '').split(',');
                     t.classList.toggle('active', gids.includes(btn.dataset.variantGid));
+                
                 });
+                revealThumb();
             }
             if (updateUrl) {
                 const url = new URL(location.href);
@@ -492,11 +494,20 @@
             syncOptionBtns(btn);
         }
 
+        // Keep the active thumbnail in view in the sideways strip (no page scroll).
+        function revealThumb() {
+            const strip = document.querySelector('.thumbnails');
+            const el = strip && strip.querySelector('.thumbnail.active, .video-thumb.active');
+            if (!el) return;
+            const left = el.offsetLeft - (strip.clientWidth - el.offsetWidth) / 2;
+            strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+        }
+
         // Option rows (colour + another option): show the active variant's values.
         function syncOptionBtns(btn) {
             if (!btn || !btn.dataset.options) return;
             const vals = JSON.parse(btn.dataset.options);
-            document.querySelectorAll('.option-btn').forEach(o => o.classList.toggle('active', vals[o.dataset.optionIndex] === o.dataset.value));
+            document.querySelectorAll('.option-btn').forEach(o => { const on = vals[o.dataset.optionIndex] === o.dataset.value; o.classList.toggle('active', on); if (o.classList.contains('option-toggle')) o.setAttribute('aria-checked', on ? 'true' : 'false'); });
             document.querySelectorAll('.option-label[data-option-index]').forEach(l => { l.textContent = vals[l.dataset.optionIndex] || ''; });
         }
 
@@ -510,7 +521,8 @@
             ob.addEventListener('click', () => {
                 const want = [];
                 document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
-                want[ob.dataset.optionIndex] = ob.dataset.value;
+                // A toggle flips between its add-on value and its off value ("None").
+                want[ob.dataset.optionIndex] = ob.classList.contains('option-toggle') && ob.classList.contains('active') ? ob.dataset.offValue : ob.dataset.value;
                 const key = JSON.stringify(want);
                 const match = [...document.querySelectorAll('.variant-btn[data-options]')].find(b => b.dataset.options === key);
                 if (match && !match.disabled) match.click();
@@ -530,6 +542,7 @@
             thumb.addEventListener('click', () => {
                 document.querySelectorAll('.thumbnail, .video-thumb').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
+                revealThumb();
 
                 if (thumb.dataset.videoSrc) {
                     if (mainImg) mainImg.style.display = 'none';
@@ -616,12 +629,12 @@
         });
     </script>
     <script>window.LW_SWATCHES = {"aquarium-cave":{"Brown":"#9a5630","White":"#ffffff","Black":"#000000"}};</script>
-    <script src="../../auth.js?v=1794920621360"></script>
-    <script src="/holiday.js?v=1794920621360"></script>
-    <script src="../../promise-row.js?v=1794920621360"></script>
-    <script src="../../cart.js?v=1794920621360"></script>
-    <script src="../../search.js?v=1794920621360"></script>
-    <script src="../../wishlist.js?v=1794920621360"></script>
+    <script src="../../auth.js?v=1794922896414"></script>
+    <script src="/holiday.js?v=1794922896414"></script>
+    <script src="../../promise-row.js?v=1794922896414"></script>
+    <script src="../../cart.js?v=1794922896414"></script>
+    <script src="../../search.js?v=1794922896414"></script>
+    <script src="../../wishlist.js?v=1794922896414"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
