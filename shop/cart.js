@@ -1076,6 +1076,14 @@
     return map;
   }
 
+  // Once an item is in the cart its button reads "In Cart (n)" and a tap opens the cart
+  // (more of the same go in with + there; another colour or size is a different
+  // variant, so its button says Add to Cart again). Personalised items and gift cards
+  // keep adding: the same variant can be wanted again with another name or recipient.
+  function opensCartWhenIn(btn) {
+    return btn.classList.contains('btn-in-cart') && !btn.dataset.personalized && !btn.dataset.giftCard;
+  }
+
   // Sync all Add to Cart buttons on the page with current cart state
   function updateCartBtns() {
     const qtyMap = cartQtyMap();
@@ -1107,7 +1115,35 @@
     }
   }
 
-  function refreshUI() { updateBadge(); renderCart(); updateCartBtns(); updateScrollHint(); }
+  // Phones: a round floating cart button (FAB) at the bottom right once the cart has
+  // items, with the item count. It floats over the page (no extra padding: scroll to
+  // see everything). Hidden while the cart drawer is open; on a product page it sits
+  // above the sticky Add to Cart bar when that bar shows (CSS). Phones only (shop.css).
+  function updateCartFab() {
+    let fab = document.getElementById('cart-fab');
+    if (!fab) {
+      fab = document.createElement('button');
+      fab.type = 'button';
+      fab.id = 'cart-fab';
+      fab.className = 'cart-fab';
+      fab.hidden = true;
+      fab.addEventListener('click', openDrawer);
+      document.body.appendChild(fab);
+      const drawers = document.querySelectorAll('#cart-drawer, #wishlist-drawer');
+      const hideBehindDrawer = () => {
+        fab.classList.toggle('behind-drawer', !!document.querySelector('#cart-drawer.open, #wishlist-drawer.open'));
+      };
+      drawers.forEach(d => new MutationObserver(hideBehindDrawer).observe(d, { attributes: true, attributeFilter: ['class'] }));
+    }
+    const qty = cart ? cart.totalQuantity : 0;
+    if (qty > 0) {
+      fab.setAttribute('aria-label', `View cart, ${qty} item${qty === 1 ? '' : 's'}`);
+      fab.innerHTML = `<i class="fa-solid fa-bag-shopping"></i><span class="cart-fab-count">${qty}</span>`;
+    }
+    fab.hidden = qty <= 0;
+  }
+
+  function refreshUI() { updateBadge(); renderCart(); updateCartBtns(); updateCartFab(); updateScrollHint(); }
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -1427,6 +1463,7 @@
     drawers.forEach(d => new MutationObserver(update).observe(d, { attributes: true, attributeFilter: ['class'] }));
 
     btn.addEventListener('click', () => {
+      if (opensCartWhenIn(addBtn)) { openDrawer(); return; }
       const field = addBtn.dataset.personalized ? document.getElementById('custom-text') : null;
       if (field && !field.value.trim()) {
         // the choice comes first: take them back to the field
@@ -1447,6 +1484,7 @@
     if (!addBtn) return;
 
     addBtn.addEventListener('click', () => {
+      if (opensCartWhenIn(addBtn)) { openDrawer(); return; }
       const activeBtn = document.querySelector('.variant-btn.active');
       const variantGid = activeBtn
         ? activeBtn.dataset.variantGid
@@ -1476,6 +1514,7 @@
 
     document.querySelectorAll('.listing-add-to-cart').forEach(btn => {
       btn.addEventListener('click', async () => {
+        if (btn.classList.contains('btn-in-cart')) { openDrawer(); return; }
         const variantGid = btn.dataset.variantGid;
         if (!variantGid) return;
         btn.disabled = true;

@@ -3407,6 +3407,51 @@ body.seasonal--christmas {
     html.has-sticky-add body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
 
+/* Cart FAB on phones (updateCartFab in cart.js): a round bag button, bottom right, once the
+   cart has items. Floats over the page, no padding added. Above the sticky Add to Cart bar
+   (900) when that bar shows; below the cart and wishlist overlays (1002). */
+.cart-fab { display: none; }
+@media (max-width: 768px) {
+    .cart-fab {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        right: 16px;
+        bottom: calc(18px + env(safe-area-inset-bottom));
+        z-index: 880;
+        width: 56px;
+        height: 56px;
+        border: none;
+        border-radius: 50%;
+        background: var(--primary);
+        color: var(--light);
+        font-size: 1.25rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+    .cart-fab-count {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        border-radius: 11px;
+        background: #ffd400;
+        color: #1a1a1a;
+        font-family: var(--font-primary);
+        font-size: 0.75rem;
+        font-weight: 800;
+        line-height: 22px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+    .cart-fab[hidden],
+    .cart-fab.behind-drawer { display: none; }
+    html.has-sticky-add .cart-fab { bottom: calc(84px + env(safe-area-inset-bottom)); }
+}
+
 /* Photos from customers under the product gallery (customerPhotosHtml in build-shop.js).
    Fixed 72px squares, so the page does not jump when they load. */
 .customer-photos { margin: 12px 0 0; }
