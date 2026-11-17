@@ -1740,6 +1740,8 @@ ${relatedProducts.map(p => productCardHtml(p, `${shopBase}products/`, reviewsMap
             ob.addEventListener('click', () => {
                 const want = [];
                 document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
+                // A switched-off toggle has no active button: it stands for its off value ("None").
+                document.querySelectorAll('.option-toggle:not(.active)').forEach(t => { want[t.dataset.optionIndex] = t.dataset.offValue; });
                 // A toggle flips between its add-on value and its off value ("None").
                 want[ob.dataset.optionIndex] = ob.classList.contains('option-toggle') && ob.classList.contains('active') ? ob.dataset.offValue : ob.dataset.value;
                 const key = JSON.stringify(want);

@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="../../../images/spider-fevicon.svg">
     <meta name="theme-color" content="#A083D5">
     <link rel="stylesheet" href="../../../styles.css">
-    <link rel="stylesheet" href="../../shop.css?v=1794922896414">
+    <link rel="stylesheet" href="../../shop.css?v=1794928780185">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -694,6 +694,8 @@
             ob.addEventListener('click', () => {
                 const want = [];
                 document.querySelectorAll('.option-btn.active').forEach(o => { want[o.dataset.optionIndex] = o.dataset.value; });
+                // A switched-off toggle has no active button: it stands for its off value ("None").
+                document.querySelectorAll('.option-toggle:not(.active)').forEach(t => { want[t.dataset.optionIndex] = t.dataset.offValue; });
                 // A toggle flips between its add-on value and its off value ("None").
                 want[ob.dataset.optionIndex] = ob.classList.contains('option-toggle') && ob.classList.contains('active') ? ob.dataset.offValue : ob.dataset.value;
                 const key = JSON.stringify(want);
@@ -802,12 +804,12 @@
         });
     </script>
     <script>window.LW_SWATCHES = {};</script>
-    <script src="../../auth.js?v=1794922896414"></script>
-    <script src="/holiday.js?v=1794922896414"></script>
-    <script src="../../promise-row.js?v=1794922896414"></script>
-    <script src="../../cart.js?v=1794922896414"></script>
-    <script src="../../search.js?v=1794922896414"></script>
-    <script src="../../wishlist.js?v=1794922896414"></script>
+    <script src="../../auth.js?v=1794928780185"></script>
+    <script src="/holiday.js?v=1794928780185"></script>
+    <script src="../../promise-row.js?v=1794928780185"></script>
+    <script src="../../cart.js?v=1794928780185"></script>
+    <script src="../../search.js?v=1794928780185"></script>
+    <script src="../../wishlist.js?v=1794928780185"></script>
     <script src="../../../script.js"></script>
 </body>
 </html>
