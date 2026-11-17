@@ -1205,6 +1205,26 @@
       </g:shipping>
     </item>
     <item>
+      <g:id>9294871298270</g:id>
+      <g:title>Named &amp; Glossy</g:title>
+      <g:description>Her name. Her glam. Made to order.</g:description>
+      <g:link>https://www.layerweaver.com/shop/products/named-glossy/</g:link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/ChatGPTImageJul12_2026_02_43_16AM.png?v=1785961645</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>448.00 INR</g:price>
+      <g:brand>LayerWeaver</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0.00 INR</g:price>
+        <g:min_handling_time>1</g:min_handling_time>
+        <g:max_handling_time>2</g:max_handling_time>
+        <g:min_transit_time>3</g:min_transit_time>
+        <g:max_transit_time>7</g:max_transit_time>
+      </g:shipping>
+    </item>
+    <item>
       <g:id>9296146333918</g:id>
       <g:title>Floating Cat</g:title>
       <g:description>Add a playful touch to your space with this 3D printed floating black cat figurine, suspended beneath a bright red balloon. A charming conversation piece for desks, shelves, or gifts. Lightweight, durable, and perfect for cat lovers, home décor, and unique workspaces.</g:description>
