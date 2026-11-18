@@ -887,6 +887,13 @@ function productCardHtml(product, productsBase, reviewData = null, eager = false
   const maxPrice    = formatPrice(product.priceRange.maxVariantPrice.amount, product.priceRange.maxVariantPrice.currencyCode);
   let priceDisplay  = product.priceRange.minVariantPrice.amount === product.priceRange.maxVariantPrice.amount
     ? minPrice : `${minPrice} – ${maxPrice}`;
+  // An add-on option (ghost lamp: None / Santa cap) isn't a price range - show the plain price.
+  const priceAddOn   = addOnOption(product);
+  const plainVariants = priceAddOn ? product.variants.edges.map(e => e.node).filter(v => optionValue(v, priceAddOn.name) === 'None') : [];
+  if (plainVariants.length) {
+    const lowest = plainVariants.reduce((a, v) => parseFloat(v.price.amount) < parseFloat(a.price.amount) ? v : a);
+    priceDisplay = formatPrice(lowest.price.amount, lowest.price.currencyCode);
+  }
   let image          = product.images.edges[0]?.node;
   const available    = product.variants.edges.some(v => v.node.availableForSale);
   let firstVariant   = product.variants.edges.find(v => v.node.availableForSale)?.node
