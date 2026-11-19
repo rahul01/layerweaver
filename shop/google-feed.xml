@@ -1876,5 +1876,27 @@
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
     </item>
+    <item>
+      <g:id>9439490015454</g:id>
+      <g:title>Sitting Santa</g:title>
+      <g:description>A little Santa that sits on the edge of your monitor, shelf or mantel with his boots hanging over. Red suit, white beard and black boots, ready for a desk or the Christmas shelf. Size: about 9.5 cm tallFinish: red, white, black and skin tone</g:description>
+      <g:link>https://www.layerweaver.com/shop/products/sitting-santa/</g:link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/3D-Printed_Santa_on_a_Shelf.png?v=1795106633</g:image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Santa_Figurine_Perched_on_Monitor.png?v=1795106633</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/sitting-santa-dimensions.png?v=1795106861</g:additional_image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>499.00 INR</g:price>
+      <g:brand>LayerWeaver</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0.00 INR</g:price>
+        <g:min_handling_time>1</g:min_handling_time>
+        <g:max_handling_time>2</g:max_handling_time>
+        <g:min_transit_time>3</g:min_transit_time>
+        <g:max_transit_time>7</g:max_transit_time>
+      </g:shipping>
+    </item>
   </channel>
 </rss>
