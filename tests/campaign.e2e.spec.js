@@ -56,24 +56,28 @@ test.describe('Logo ribbon and gift card tab', () => {
     });
   }
 
-  test('e-gift card is first in the Gifts menu on desktop', async ({ page }) => {
+  // Nov 19 2026: the e-gift card is out of the menu (GIFT_CARD_IN_MENU in build-shop.js);
+  // its product page still works by link.
+  test('e-gift card is not in the Gifts menu on desktop', async ({ page }) => {
     await page.goto('/shop/');
     await page.locator('.collection-nav-group-btn', { hasText: 'Gifts' }).click();
-    const first = page.locator('.collection-nav-group:has(.collection-nav-group-btn:has-text("Gifts")) .collection-nav-menu-item').first();
-    await expect(first).toBeVisible();
-    await expect(first).toHaveText('🎁E-gift card');
-    // The gift card isn't a collection: the Gifts group isn't marked active.
-    await expect(page.locator('.collection-nav-group-btn.active')).toHaveCount(0);
-    await first.click();
-    await expect(page).toHaveURL(new RegExp(`/shop/products/${GIFT_CARD}/$`));
+    const items = page.locator('.collection-nav-group:has(.collection-nav-group-btn:has-text("Gifts")) .collection-nav-menu-item');
+    await expect(items.first()).toBeVisible();
+    await expect(page.locator('.collection-nav-menu-item--giftcard')).toHaveCount(0);
+    await expect(items.filter({ hasText: /e-gift/i })).toHaveCount(0);
   });
 
-  test('phones list it under Gifts in the dropdown, with no extra chip', async ({ page }) => {
+  test('phones do not list it in the dropdown either, and have no extra chip', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 700 });
     await page.goto('/shop/');
-    await expect(page.locator('.collection-nav-mobile .collection-nav-icon-chip:not(.collection-nav-chip--christmas)')).toHaveCount(0); // only the Christmas chip is festive now (the others left the nav on Nov 9)
+    await expect(page.locator('.collection-nav-mobile .collection-nav-icon-chip:not(.collection-nav-chip--christmas)')).toHaveCount(0); // only the Christmas chip is festive now
     await page.click('.collection-filter-btn');
-    await expect(page.locator('.collection-dropdown-item--giftcard')).toBeVisible();
+    await expect(page.locator('.collection-dropdown-item--giftcard')).toHaveCount(0);
+  });
+
+  test('the gift card page still opens by its link', async ({ page }) => {
+    await page.goto(`/shop/products/${GIFT_CARD}/`);
+    await expect(page.locator('h1')).toContainText(/gift card/i);
   });
 });
 

@@ -78,13 +78,14 @@ describe('Diwali logo ribbon (removed Nov 9 2026)', () => {
   });
 });
 
-describe('e-gift card in the Gifts menu', () => {
-  it.each(GENERATED_PAGES.filter(p => p.includes('collections') || p === 'shop/index.html'))('%s lists it first in Gifts, on desktop and in the phone dropdown', page => {
+// Nov 19 2026: the e-gift card is out of the menu (GIFT_CARD_IN_MENU = false in build-shop.js).
+describe('e-gift card is not in the Gifts menu', () => {
+  it.each(GENERATED_PAGES.filter(p => p.includes('collections') || p === 'shop/index.html'))('%s has no gift card entry in the menu or the phone dropdown', page => {
     const html = read(page);
+    expect(html).not.toContain('collection-nav-menu-item--giftcard');
+    expect(html).not.toContain('collection-dropdown-item--giftcard');
     const menu = html.match(/Gifts <i[^>]*><\/i>\s*<\/button>\s*<div class="collection-nav-menu">\s*(<a [^>]*>)/);
-    expect(menu?.[1]).toMatch(/href="[^"]*products\/layerweaver-e-gift-card\/" class="collection-nav-menu-item collection-nav-menu-item--giftcard"/);
-    const dropdown = html.match(/<div class="collection-dropdown-heading">Gifts<\/div>\s*(<a [^>]*>)/);
-    expect(dropdown?.[1]).toMatch(/href="[^"]*products\/layerweaver-e-gift-card\/" class="collection-dropdown-item collection-dropdown-item--giftcard"/);
+    expect(menu?.[1]).toMatch(/collections\/gifts-for-her\//);
   });
 
   it('has no chip of its own in the strip', () => {

@@ -1086,9 +1086,11 @@ function collectionNavHtml(collections, shopBase, activeHandle = null, basePath 
   ];
   // The e-gift card isn't in any collection, so it goes first in the Gifts
   // group (desktop menu and phone dropdown), linking to its product page.
+  // Nov 19 2026: off (Rahul: too many visits to it). Its page still works by link.
+  const GIFT_CARD_IN_MENU = false;
   const giftItem = { handle: '__giftcard', gift: true, title: 'E-gift card', href: `${shopBase}products/${GIFT_CARD_HANDLE}/` };
   const giftsGroup = tree.find(node => node.items && node.label === 'Gifts');
-  if (giftsGroup) giftsGroup.items = [giftItem, ...giftsGroup.items];
+  if (GIFT_CARD_IN_MENU && giftsGroup) giftsGroup.items = [giftItem, ...giftsGroup.items];
   const flatItems = tree.flatMap(node => node.items || [node]).filter(i => !i.gift);
   const activeTitle = flatItems.find(i => i.handle === activeHandle)?.title || 'All';
   const isActive = handle => handle === activeHandle ? ' active' : '';
