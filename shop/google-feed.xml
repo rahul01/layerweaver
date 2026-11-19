@@ -1898,5 +1898,28 @@
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
     </item>
+    <item>
+      <g:id>9439553945822</g:id>
+      <g:title>Santa Hat Spiral Fidget</g:title>
+      <g:description>A Santa hat fidget made of two spiral pieces. Slide them through each other for a smooth, satisfying twist, the same motion as our cone fidget. Between turns it sits on a desk as a little Christmas decoration. Includes: hat and brimSize: about 8 cm tall, 6 cm wideFinish: red and white</g:description>
+      <g:link>https://www.layerweaver.com/shop/products/santa-hat-spiral-fidget/</g:link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Red-and-White_Spiral_Sculptures.png?v=1795109061</g:image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Red_Spiral_Vortex_Vase.png?v=1795109061</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/santa-hat-spiral-fidget-dimensions-2.png?v=1795109292</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/PXL_20261119_161618672.MACRO_FOCUS.jpg?v=1795109135</g:additional_image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>199.00 INR</g:price>
+      <g:brand>LayerWeaver</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>49.00 INR</g:price>
+        <g:min_handling_time>1</g:min_handling_time>
+        <g:max_handling_time>2</g:max_handling_time>
+        <g:min_transit_time>3</g:min_transit_time>
+        <g:max_transit_time>7</g:max_transit_time>
+      </g:shipping>
+    </item>
   </channel>
 </rss>
