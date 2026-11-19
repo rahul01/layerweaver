@@ -2520,9 +2520,12 @@ async function main() {
     console.log(`Generated shop/collections/${collection.handle}/index.html`);
   }
 
-  // Map each product handle to its first collection (for breadcrumbs)
+  // Map each product handle to its first collection (for breadcrumbs). Festival
+  // collections (Christmas, Diwali, Halloween...) are never a breadcrumb, in
+  // season or not (Rahul, Nov 19); a product in nothing else gets Home > Shop.
   const productCollectionMap = {};
-  for (const collection of collections) {
+  const isFestival = c => c.handle in SEASONAL_THEMES || NAV_OFF_SEASON.includes(c.handle);
+  for (const collection of collections.filter(c => !isFestival(c))) {
     for (const product of collection.products) {
       if (!productCollectionMap[product.handle]) {
         productCollectionMap[product.handle] = collection;
