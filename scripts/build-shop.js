@@ -1920,8 +1920,23 @@ function collagebannerHtml(title, description, images, eyebrow = '') {
 // While HERO_FESTIVE is set, the hero's eyebrow, heading, left-hand callouts,
 // CTA and carousel are all about its collections. Set it to null after the
 // season to restore the evergreen hero below - nothing to hand-edit.
-// Nov 9 2026: null = evergreen hero. The Diwali/Halloween festive object (eyebrow, heading, callouts, cta) is in git history before the Nov 9 2026 cleanup.
-const HERO_FESTIVE = null;
+// Nov 9 2026: the Diwali/Halloween festive object is in git history before the Nov 9 2026 cleanup.
+// Christmas 2026 (Nov 21): set HERO_FESTIVE back to null after Dec 25, the same day as
+// CHRISTMAS_RIBBON = false + node scripts/apply-christmas-ribbon.js --remove, then rebuild.
+// `theme` adds hero-eyebrow--<theme>; callout/cta themes style their cards and button (styles.css).
+// Prices here are typed by hand - check them against Shopify when they change.
+const HERO_FESTIVE = {
+  eyebrow: '3D printed in Pune',
+  theme: 'christmas',
+  heading: 'Little gifts for a <span class="brand-text">merry Christmas</span>',
+  collections: ['christmas', 'lamps-and-lighting', 'made-for-you'],
+  callouts: [
+    { theme: 'christmas', icon: '🎄', name: 'Christmas Collection', desc: 'Wobble Santas, snowmen &amp; name ornaments', href: 'shop/collections/christmas/' },
+    { theme: 'christmas', icon: '🎅', name: 'Ghost balloon lamp, from ₹399', desc: 'Add a Santa cap and gift box for ₹150', href: 'shop/products/ghost-balloon-lamp/' },
+    { faIcon: 'fa-truck-fast', name: 'Free shipping above ₹299', desc: 'Printed to order in Pune. Arrives in 3 to 8 days anywhere in India.', href: 'shipping-policy/' },
+  ],
+  cta: { label: 'Shop Christmas gifts', href: 'shop/collections/christmas/', theme: 'christmas' },
+};
 
 // Christmas 2026: the paper strip under the logo on every shop page (hand-written pages: node scripts/apply-christmas-ribbon.js).
 // Set to false after Dec 25 and run the script with --remove.
@@ -1963,7 +1978,8 @@ const HERO_EVERGREEN_LEFT = `                <ul class="hero-services">
 
 function heroHeaderHtml(festive) {
   if (!festive) return HERO_EVERGREEN_HEADER;
-  return `                    <p class="hero-eyebrow hero-eyebrow--festive">${festive.eyebrow}</p>
+  const eyebrowTheme = festive.theme ? ` hero-eyebrow--${festive.theme}` : '';
+  return `                    <p class="hero-eyebrow hero-eyebrow--festive${eyebrowTheme}">${festive.eyebrow}</p>
                     <h1>${festive.heading}</h1>`;
 }
 
