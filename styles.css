@@ -403,7 +403,7 @@ header .container {
     flex-direction: column;
     justify-content: center;
     gap: 2rem;
-    padding: 56px 40px 56px 0;
+    padding: 76px 40px 56px 0; /* clears the logo ribbon when the column is taller than the screen */
 }
 
 .hero-eyebrow {
@@ -534,6 +534,7 @@ header .container {
     box-shadow: 0 0 18px rgba(242, 201, 76, 0.42);
 }
 .hero-service-link--christmas .hero-service-icon { background: none; }
+.hero-services--festive .hero-service-item:last-child .hero-service-link { margin-bottom: 0; }
 /* .hero-shop-btn.hero-shop-btn--christmas: beats the yellow .hero-left .hero-shop-btn further down */
 .hero-shop-btn.hero-shop-btn--christmas,
 .hero-left .hero-shop-btn.hero-shop-btn--christmas {
@@ -621,6 +622,53 @@ header .container {
     font-size: 0.85rem;
     color: var(--gray-medium);
 }
+
+/* Button, delivery line and trust row sit together under the callouts (homepage phase 1) */
+.hero-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.hero-left .hero-cta .hero-shop-btn { margin: 0; }
+
+.hero-delivery {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 2px;
+    font-family: var(--font-secondary);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--gray-medium);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.hero-delivery i { color: var(--primary); font-size: 0.85rem; }
+.hero-delivery:hover { color: var(--dark); }
+
+.hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+}
+.hero-trust .hero-rating-badge { align-self: center; }
+
+.hero-trust-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: rgba(160, 131, 213, 0.08);
+    font-family: var(--font-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+.hero-trust-item i { color: var(--primary); }
 
 /* Hero Carousel */
 .hero-right {
@@ -740,26 +788,36 @@ header .container {
     .hero-split {
         flex-direction: column;
     }
-    .hero-left {
-        flex: 0 0 auto;
-        padding: 24px 0 20px;
-        display: flex;
-        flex-direction: column;
+    /* The two columns dissolve so their parts can be ordered: heading, pictures,
+       button + delivery + trust, then the callouts. */
+    .hero-split {
+        gap: 20px;
+        padding: 8px 0 36px;
+        min-height: 0;
     }
-    .hero-left .hero-shop-btn {
-        order: -1;
-        width: 100%;
-        justify-content: center;
-        margin-top: 10px;
-        margin-bottom: 4px;
-    }
+    .hero-left,
     .hero-right {
-        flex: 0 0 auto;
-        padding: 16px 0 24px;
+        display: contents;
     }
     .hero-right-header {
+        order: 1;
         flex: 0 0 auto;
+        padding-bottom: 0;
     }
+    .hero-carousel-wrap { order: 2; }
+    .hero-cta {
+        order: 3;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .hero-services { order: 4; }
+    .hero-left .hero-cta .hero-shop-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .hero-delivery { display: block; text-align: center; padding: 0 8px; }
+    .hero-delivery i { margin-right: 6px; }
+    .hero-trust { justify-content: center; }
     .hero-carousel-wrap {
         flex: none;
         height: 300px;
@@ -1605,6 +1663,17 @@ footer {
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.9rem;
 }
+
+.footer-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.footer-phone:hover { color: var(--primary); }
 
 .footer-social {
     display: flex;

@@ -10,9 +10,23 @@ const festiveOn = !/const HERO_FESTIVE = null;/.test(read('scripts/build-shop.js
 const between = (html, name) => html.split(`<!-- ${name}-START -->`)[1].split(`<!-- ${name}-END -->`)[0];
 
 describe('homepage hero', () => {
+  it('has the delivery line and the trust row with the rating badge', () => {
+    const left = between(index, 'HERO-LEFT');
+    expect(left).toContain('class="hero-delivery"');
+    expect(left).toMatch(/class="hero-trust"[\s\S]*HERO-RATING-BADGE-START/);
+    expect(index.split('HERO-RATING-BADGE-START').length - 1).toBe(1);
+  });
+
+  it('first carousel slide loads first, the rest lazily', () => {
+    const imgs = between(index, 'HERO-CAROUSEL-SLIDES').match(/<img [^>]*>/g);
+    expect(imgs[0]).toContain('fetchpriority="high"');
+    expect(imgs[0]).not.toContain('loading="lazy"');
+    expect(imgs.at(-1)).toContain('loading="lazy"');
+  });
+
   if (!festiveOn) {
     it('evergreen hero is built while HERO_FESTIVE is null', () => {
-      expect(between(index, 'HERO-HEADER')).toContain('Layer by Layer');
+      expect(between(index, 'HERO-HEADER')).not.toContain('hero-eyebrow--festive');
       expect(between(index, 'HERO-LEFT')).not.toMatch(/hero-service-link--/);
     });
     return;
@@ -32,7 +46,7 @@ describe('homepage hero', () => {
   it('a "from ₹N" price on a product callout is that product\'s lowest price', () => {
     const rows = [...left.matchAll(/href="shop\/products\/([^/]+)\/"[\s\S]*?hero-service-name">([^<]*)</g)];
     for (const [, handle, name] of rows) {
-      const from = name.match(/from ₹([\d,]+)/);
+      const from = name.match(/from(?: |&nbsp;)₹([\d,]+)/);
       if (!from) continue;
       // The product's own offers (structured data); data-price also covers related products on the page
       const prices = [...read(`shop/products/${handle}/index.html`).matchAll(/"@type":"Offer","price":"([\d.]+)"/g)]

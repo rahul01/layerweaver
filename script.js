@@ -390,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 : el.closest('.hero-service-link')         ? 'collection_link'
                 : el.closest('.hero-shop-btn')             ? 'shop_button'
                 : el.closest('.hero-rating-badge')         ? 'rating'
+                : el.closest('.hero-delivery')             ? 'delivery'
                 : 'other';
             gtag('event', 'hero_click', { link_url: href, link_text: `${part}: ${label}` });
         }

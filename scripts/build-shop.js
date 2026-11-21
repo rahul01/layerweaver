@@ -838,7 +838,7 @@ function footerHtml(base) {
                     <img src="${base}images/layerweaver-logo-white.svg" alt="LayerWeaver Logo" class="logo">
                     <div class="footer-text">
                         <h2>LayerWeaver</h2>
-                        <p>Affordable 3D Printing Solutions · Pune, India</p>
+                        <p>3D printed gifts and decor · Pune, India</p>
                     </div>
                 </div>
                 <nav class="footer-nav">
@@ -1924,7 +1924,7 @@ function collagebannerHtml(title, description, images, eyebrow = '') {
 // Christmas 2026 (Nov 21): set HERO_FESTIVE back to null after Dec 25, the same day as
 // CHRISTMAS_RIBBON = false + node scripts/apply-christmas-ribbon.js --remove, then rebuild.
 // `theme` adds hero-eyebrow--<theme>; callout/cta themes style their cards and button (styles.css).
-// Prices here are typed by hand - check them against Shopify when they change.
+// Prices here are typed by hand - tests/hero.unit.test.js checks "from ₹N" against the product page.
 const HERO_FESTIVE = {
   eyebrow: '3D printed in Pune',
   theme: 'christmas',
@@ -1932,8 +1932,7 @@ const HERO_FESTIVE = {
   collections: ['christmas', 'lamps-and-lighting', 'made-for-you'],
   callouts: [
     { theme: 'christmas', icon: '🎄', name: 'Christmas Collection', desc: 'Wobble Santas, snowmen &amp; name ornaments', href: 'shop/collections/christmas/' },
-    { theme: 'christmas', icon: '🎅', name: 'Ghost balloon lamp, from ₹399', desc: 'Add a Santa cap and gift box for ₹150', href: 'shop/products/ghost-balloon-lamp/' },
-    { faIcon: 'fa-truck-fast', name: 'Free shipping above ₹299', desc: 'Printed to order in Pune. Arrives in 3 to 8 days anywhere in India.', href: 'shipping-policy/' },
+    { theme: 'christmas', icon: '🎅', name: 'Ghost balloon lamp, from&nbsp;₹399', desc: 'Add a Santa cap and gift box for ₹150', href: 'shop/products/ghost-balloon-lamp/' },
   ],
   cta: { label: 'Shop Christmas gifts', href: 'shop/collections/christmas/', theme: 'christmas' },
 };
@@ -1942,50 +1941,41 @@ const HERO_FESTIVE = {
 // Set to false after Dec 25 and run the script with --remove.
 const CHRISTMAS_RIBBON = true;
 
-const HERO_EVERGREEN_HEADER = `                    <p class="hero-eyebrow">3D Printed Products</p>
-                    <h1>Bringing Ideas to Life <span class="brand-text">Layer by Layer</span></h1>`;
+// The hero outside festivals: shop first (Rahul, Oct 24), services last. Same shape as HERO_FESTIVE;
+// the carousel shows every in-season collection.
+const HERO_EVERGREEN = {
+  eyebrow: '3D printed in Pune',
+  heading: 'Gifts and decor, <span class="brand-text">made to order</span>',
+  callouts: [
+    { faIcon: 'fa-lightbulb', name: 'Lamps &amp; Lighting', desc: 'Table lamps, lanterns &amp; LED tea lights', href: 'shop/collections/lamps-and-lighting/' },
+    { faIcon: 'fa-signature', name: 'Made for You', desc: 'Name keyrings, nameplates &amp; personalised gifts', href: 'shop/collections/made-for-you/' },
+    { faIcon: 'fa-cube', name: 'Custom 3D Printing', desc: 'Send us your idea or file, we design and print it', href: 'services/on-demand/' },
+  ],
+  cta: { label: 'Shop all gifts', href: 'shop/' },
+};
 
-const HERO_EVERGREEN_LEFT = `                <ul class="hero-services">
-                    <li class="hero-service-item">
-                        <a href="services/on-demand/" class="hero-service-link">
-                            <div class="hero-service-icon"><i class="fa-solid fa-cube"></i></div>
-                            <div class="hero-service-info">
-                                <span class="hero-service-name">On Demand Printing</span>
-                                <span class="hero-service-desc">Fast turnaround, any quantity</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="hero-service-item">
-                        <a href="services/3d-design/" class="hero-service-link">
-                            <div class="hero-service-icon"><i class="fa-solid fa-drafting-compass"></i></div>
-                            <div class="hero-service-info">
-                                <span class="hero-service-name">3D Design</span>
-                                <span class="hero-service-desc">Custom models &amp; prototypes</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="hero-service-item">
-                        <a href="workshop/" class="hero-service-link">
-                            <div class="hero-service-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
-                            <div class="hero-service-info">
-                                <span class="hero-service-name">Workshops</span>
-                                <span class="hero-service-desc">Hands-on learning for all ages</span>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-                <a href="shop/" class="hero-shop-btn"><i class="fa-solid fa-bag-shopping"></i> Shop Now</a>`;
+// Delivery line under the hero button, both seasons. Ranges are the FAQ's (Pune and Mumbai 3-5 days
+// up to 6-8 for the rest of India, order to door) - change both together.
+// Evergreen carousel: the first few in-season collections (16 dots crowd the caption on phones).
+const HERO_EVERGREEN_SLIDES = 6;
+
+const HERO_DELIVERY_LINE = 'Printed to order in Pune. Arrives in 3 to 8 days anywhere in India.';
+const HERO_TRUST_ITEMS = [
+  { faIcon: 'fa-truck-fast', text: 'Free shipping over ₹299' },
+];
 
 function heroHeaderHtml(festive) {
-  if (!festive) return HERO_EVERGREEN_HEADER;
-  const eyebrowTheme = festive.theme ? ` hero-eyebrow--${festive.theme}` : '';
-  return `                    <p class="hero-eyebrow hero-eyebrow--festive${eyebrowTheme}">${festive.eyebrow}</p>
-                    <h1>${festive.heading}</h1>`;
+  const hero = festive || HERO_EVERGREEN;
+  const eyebrowClass = festive ? ` hero-eyebrow--festive${festive.theme ? ` hero-eyebrow--${festive.theme}` : ''}` : '';
+  return `                    <p class="hero-eyebrow${eyebrowClass}">${hero.eyebrow}</p>
+                    <h1>${hero.heading}</h1>`;
 }
 
-function heroLeftHtml(festive) {
-  if (!festive) return HERO_EVERGREEN_LEFT;
-  const items = festive.callouts.map(c => {
+// ratingBadge: the current badge markup, kept between its own markers so the rating step
+// further down can refresh it (and a build without reviews keeps the old one).
+function heroLeftHtml(festive, ratingBadge = '') {
+  const hero = festive || HERO_EVERGREEN;
+  const items = hero.callouts.map(c => {
     const icon = c.faIcon ? `<i class="fa-solid ${c.faIcon}"></i>` : `<span aria-hidden="true">${c.icon}</span>`;
     const linkTheme = c.theme ? ` hero-service-link--${c.theme}` : '';
     return `                    <li class="hero-service-item">
@@ -1998,10 +1988,18 @@ function heroLeftHtml(festive) {
                         </a>
                     </li>`;
   }).join('\n');
-  return `                <ul class="hero-services">
+  const trust = HERO_TRUST_ITEMS.map(t =>
+    `\n                    <span class="hero-trust-item"><i class="fa-solid ${t.faIcon}" aria-hidden="true"></i> ${t.text}</span>`).join('');
+  return `                <ul class="hero-services${festive ? ' hero-services--festive' : ''}">
 ${items}
                 </ul>
-                <a href="${festive.cta.href}" class="hero-shop-btn${festive.cta.theme ? ` hero-shop-btn--${festive.cta.theme}` : ''}"><i class="fa-solid fa-bag-shopping"></i> ${festive.cta.label}</a>`;
+                <div class="hero-cta">
+                <a href="${hero.cta.href}" class="hero-shop-btn${hero.cta.theme ? ` hero-shop-btn--${hero.cta.theme}` : ''}"><i class="fa-solid fa-bag-shopping"></i> ${hero.cta.label}</a>
+                <a href="shipping-policy/" class="hero-delivery"><i class="fa-solid fa-box" aria-hidden="true"></i> ${HERO_DELIVERY_LINE}</a>
+                <div class="hero-trust">
+<!-- HERO-RATING-BADGE-START -->${ratingBadge}<!-- HERO-RATING-BADGE-END -->${trust}
+                </div>
+                </div>`;
 }
 
 function heroCarouselSlidesHtml(collections) {
@@ -2013,13 +2011,15 @@ function heroCarouselSlidesHtml(collections) {
     const imgs = (featuredProducts(collection) || collection.products
       .filter(p => !BANNER_EXCLUDE.includes(p.handle))
       .slice(-5))
-      .map(p => p.images.edges[0]?.node)
-      .filter(img => img?.url && !seen.has(img.url) && seen.add(img.url))
+      .map(p => ({ img: p.images.edges[0]?.node, title: p.title }))
+      .filter(({ img }) => img?.url && !seen.has(img.url) && seen.add(img.url))
       .slice(0, 5);
 
-    const cells = imgs.map(img => `
+    // The first slide is the biggest thing on screen: load it first, the others lazily.
+    const loading = i === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+    const cells = imgs.map(({ img, title }) => `
                         <div class="banner-cell">
-                            <img src="${resizedImageUrl(img.url, IMG_WIDTH_BANNER)}" alt="${img.altText || collection.title}" loading="lazy">
+                            <img src="${resizedImageUrl(img.url, IMG_WIDTH_BANNER)}" alt="${escAttr(title || img.altText || collection.title)}" ${loading}>
                         </div>`).join('');
 
     return `
@@ -2615,11 +2615,14 @@ async function main() {
     /<!-- HERO-HEADER-START -->[\s\S]*?<!-- HERO-HEADER-END -->/,
     `<!-- HERO-HEADER-START -->\n${heroHeaderHtml(heroFestive)}\n<!-- HERO-HEADER-END -->`
   );
+  // The rating badge now lives inside HERO-LEFT (trust row); carry the current one over.
+  const currentBadge = (indexHtml.match(/<!-- HERO-RATING-BADGE-START -->([\s\S]*?)<!-- HERO-RATING-BADGE-END -->/) || [])[1] || '';
+  indexHtml = indexHtml.replace(/\n?<!-- HERO-RATING-BADGE-START -->[\s\S]*?<!-- HERO-RATING-BADGE-END -->/, '');
   indexHtml = indexHtml.replace(
     /<!-- HERO-LEFT-START -->[\s\S]*?<!-- HERO-LEFT-END -->/,
-    `<!-- HERO-LEFT-START -->\n${heroLeftHtml(heroFestive)}\n<!-- HERO-LEFT-END -->`
+    `<!-- HERO-LEFT-START -->\n${heroLeftHtml(heroFestive, currentBadge)}\n<!-- HERO-LEFT-END -->`
   );
-  const { slides, dots } = heroCarouselSlidesHtml(heroFestive ? festiveCollections : collections.filter(c => !NAV_OFF_SEASON.includes(c.handle)));
+  const { slides, dots } = heroCarouselSlidesHtml(heroFestive ? festiveCollections : collections.filter(c => !NAV_OFF_SEASON.includes(c.handle)).slice(0, HERO_EVERGREEN_SLIDES));
   indexHtml = indexHtml.replace(
     /<!-- HERO-CAROUSEL-SLIDES-START -->[\s\S]*?<!-- HERO-CAROUSEL-SLIDES-END -->/,
     `<!-- HERO-CAROUSEL-SLIDES-START -->\n${slides}\n<!-- HERO-CAROUSEL-SLIDES-END -->`
