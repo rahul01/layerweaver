@@ -1922,7 +1922,8 @@ function collagebannerHtml(title, description, images, eyebrow = '') {
 // season to restore the evergreen hero below - nothing to hand-edit.
 // Nov 9 2026: the Diwali/Halloween festive object is in git history before the Nov 9 2026 cleanup.
 // Christmas 2026 (Nov 21): set HERO_FESTIVE back to null after Dec 25, the same day as
-// CHRISTMAS_RIBBON = false + node scripts/apply-christmas-ribbon.js --remove, then rebuild.
+// CHRISTMAS_RIBBON = false + node scripts/apply-christmas-ribbon.js --remove; also add 'christmas'
+// to NAV_OFF_SEASON (and take it out of COLLECTION_NAV), or its slide stays in the evergreen carousel. Then rebuild.
 // `theme` adds hero-eyebrow--<theme>; callout/cta themes style their cards and button (styles.css).
 // Prices here are typed by hand - tests/hero.unit.test.js checks "from ₹N" against the product page.
 const HERO_FESTIVE = {
