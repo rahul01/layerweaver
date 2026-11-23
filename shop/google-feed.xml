@@ -1919,5 +1919,27 @@
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
     </item>
+    <item>
+      <g:id>9442792145118</g:id>
+      <g:title>GTA PS5 Controller Stand</g:title>
+      <g:description>Park your PS5 controller on a stand with the full-colour GTA VI logo across the front. The controller sits in a cradle behind the logo, ready to pick up. It makes a good desk piece for anyone counting down to the game. Size: about 14 x 8 cm footprintFits: PS5 DualSense controller (not included)Finish: black base with a pink, teal and white logo</g:description>
+      <g:link>https://www.layerweaver.com/shop/products/gta-ps5-controller-stand/</g:link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/DualSense_Controller_on_Vice_City_Stand.png?v=1795460686</g:image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Vibrant_GTA_Logo_Desk_Sign.png?v=1795460797</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Retro_Neon_GTA_Phone_Stand.png?v=1795460797</g:additional_image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>499.00 INR</g:price>
+      <g:brand>LayerWeaver</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0.00 INR</g:price>
+        <g:min_handling_time>1</g:min_handling_time>
+        <g:max_handling_time>2</g:max_handling_time>
+        <g:min_transit_time>3</g:min_transit_time>
+        <g:max_transit_time>7</g:max_transit_time>
+      </g:shipping>
+    </item>
   </channel>
 </rss>
