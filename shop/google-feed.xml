@@ -1918,5 +1918,29 @@
         <g:max_transit_time>7</g:max_transit_time>
       </g:shipping>
     </item>
+    <item>
+      <g:id>9446659260638</g:id>
+      <g:title>Custom Photo Christmas Ornament</g:title>
+      <g:description>A Christmas ornament with your own photo set inside the frame. Pick a circle or a star, in red or gold. After you order, send us the photo on WhatsApp and we print it to fit. Size: Small about 6 cm, Large about 11 cmFinish: textured frame with a hanging loopPhoto: send it on WhatsApp after ordering</g:description>
+      <g:link>https://www.layerweaver.com/shop/products/custom-photo-christmas-ornament/</g:link>
+      <g:image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Red_Ornament_Frame_with_Smiling_Family.png?v=1795755362</g:image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Family_Photo_Ornaments_on_a_Christmas_Tree.png?v=1795755361</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Golden_Star_Frame_Family_Portrait.png?v=1795755361</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Golden_Keepsake_Portrait_Keychain.png?v=1795755796</g:additional_image_link>
+      <g:additional_image_link>https://cdn.shopify.com/s/files/1/0784/9404/0286/files/Red_Star_Keychain_with_Smiling_Boy_Photo.png?v=1795755797</g:additional_image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>199.00 INR</g:price>
+      <g:brand>LayerWeaver</g:brand>
+      <g:condition>new</g:condition>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>49.00 INR</g:price>
+        <g:min_handling_time>1</g:min_handling_time>
+        <g:max_handling_time>2</g:max_handling_time>
+        <g:min_transit_time>3</g:min_transit_time>
+        <g:max_transit_time>7</g:max_transit_time>
+      </g:shipping>
+    </item>
   </channel>
 </rss>
